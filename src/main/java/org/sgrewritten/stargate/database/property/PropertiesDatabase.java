@@ -37,20 +37,10 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
     @Override
     public void setProperty(@NotNull StoredProperty property, String value) {
         handle.setProperty(property.getKey(), value);
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(fileLocation);
+        try(OutputStream outputStream = new FileOutputStream(fileLocation)) {
             handle.store(outputStream, null);
         } catch (IOException e) {
             Stargate.log(e);
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException e) {
-                Stargate.log(e);
-            }
         }
     }
 

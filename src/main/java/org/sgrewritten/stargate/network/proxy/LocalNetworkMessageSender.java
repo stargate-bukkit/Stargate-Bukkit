@@ -4,6 +4,9 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 
+/**
+ * Currently does not send any messages to the other servers connected to the proxy
+ */
 public class LocalNetworkMessageSender implements PluginMessageSender {
     @Override
     public void sendCreatePortal(RealPortal realPortal) {

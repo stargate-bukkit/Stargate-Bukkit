@@ -87,7 +87,7 @@ public class CommandParity implements CommandExecutor {
             downloadPlugin(customizations, customizationsFile);
             downloadPlugin(mapper, mapperFile);
             if (oldConfig.exists()) {
-                File targetDir = new File(pluginsFolder, "StargateCustomizations");
+                File targetDir = new File(pluginsFolder, CUSTOMIZATIONS_NAME);
                 if (!targetDir.exists() && !targetDir.mkdir()) {
                     throw new IOException("Could not create directory: " + targetDir);
                 }

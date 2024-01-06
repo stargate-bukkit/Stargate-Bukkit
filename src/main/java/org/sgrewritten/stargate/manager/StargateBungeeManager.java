@@ -113,6 +113,8 @@ public class StargateBungeeManager implements BungeeManager {
                     Stargate.log(Level.FINE, String.format("Removing virtual portal %s in inter-server network %s", portalName, network));
                     targetNetwork.removePortal(portal);
                 }
+                default -> throw new UnsupportedOperationException();
+
             }
             targetNetwork.updatePortals();
         } catch (NameConflictException exception) {

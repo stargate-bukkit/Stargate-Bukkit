@@ -36,6 +36,9 @@ public class CommandTrace implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if(args.length > 1){
+            return false;
+        }
         if (!sender.hasPermission(CommandPermission.TRACE.getPermissionNode())) {
             sender.sendMessage(stargate.getLanguageManager().getErrorMessage(TranslatableMessage.DENY));
             return true;

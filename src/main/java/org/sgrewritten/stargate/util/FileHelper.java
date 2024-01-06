@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 
 /**
@@ -168,7 +169,9 @@ public final class FileHelper {
             } else {
                 path = Paths.get(uri);
             }
-            walk = Files.walk(path, 1).toList();
+            try(Stream<Path> paths = Files.walk(path, 1)){
+                walk = paths.toList();
+            }
         } finally {
             if (fileSystem != null) {
                 fileSystem.close();

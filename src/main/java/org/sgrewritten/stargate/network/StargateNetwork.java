@@ -195,8 +195,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public void destroy() {
-        for (String portalName : nameToPortalMap.keySet()) {
-            Portal portal = nameToPortalMap.get(portalName);
+        for (Portal portal : nameToPortalMap.values()) {
             portal.destroy();
         }
         nameToPortalMap.clear();

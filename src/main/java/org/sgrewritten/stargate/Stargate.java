@@ -587,7 +587,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private void fetchServerId() {
 
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            String INTERNAL_FOLDER = ".internal";
             BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
         }
     }
@@ -708,11 +707,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
-    }
-
-    @SuppressWarnings("unused")
-    public static ConfigurationAPI getConfigAPIStatic() {
-        return instance;
     }
 
     @Override

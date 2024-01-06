@@ -204,7 +204,7 @@ public class PlayerEventListener implements Listener {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
                 dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
-                Bukkit.getServer().sendPluginMessage(Stargate.getPlugin(Stargate.class), PluginChannel.BUNGEE.getChannel(),
+                Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
                         byteArrayOutputStream.toByteArray());
                 return true;
             } catch (IOException e) {
@@ -246,7 +246,7 @@ public class PlayerEventListener implements Listener {
      * @param event <p>The event causing the right click</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
-    private boolean clickIsBug(PlayerInteractEvent event) {
+    private static boolean clickIsBug(PlayerInteractEvent event) {
         if (previousEvent != null &&
                 event.getPlayer() == previousEvent.getPlayer() && eventTime + 15 > System.currentTimeMillis()) {
             previousEvent = null;

@@ -10,7 +10,7 @@ public class LocalisedMessageException extends TranslatableException {
 
 
     private final String localizedMessage;
-    private final Portal portal;
+    private final transient Portal portal;
     private final MessageType messageType;
 
     public LocalisedMessageException(String localizedMessage) {

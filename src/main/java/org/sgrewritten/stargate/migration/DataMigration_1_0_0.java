@@ -30,7 +30,7 @@ import java.util.logging.Level;
  */
 public class DataMigration_1_0_0 extends DataMigration {
 
-    private static HashMap<String, String> CONFIG_CONVERSIONS;
+    private static Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
     private final Server server;
     private final StoredPropertiesAPI storedProperties;
     private String versionFrom;
@@ -42,9 +42,6 @@ public class DataMigration_1_0_0 extends DataMigration {
      * @param server <p>The server to use for loading legacy portals</p>
      */
     public DataMigration_1_0_0(@NotNull Server server, StoredPropertiesAPI storedProperties) {
-        if (CONFIG_CONVERSIONS == null) {
-            loadConfigConversions();
-        }
         this.server = Objects.requireNonNull(server);
         this.storedProperties = storedProperties;
     }
@@ -267,9 +264,10 @@ public class DataMigration_1_0_0 extends DataMigration {
     /**
      * Loads the configuration conversions used to load legacy configuration files
      */
-    private void loadConfigConversions() {
-        CONFIG_CONVERSIONS = new HashMap<>();
-        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", CONFIG_CONVERSIONS);
+    private static Map<String,String> loadConfigConversions() {
+        Map<String,String> output = new HashMap<>();
+        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", output);
+        return output;
     }
 
 }

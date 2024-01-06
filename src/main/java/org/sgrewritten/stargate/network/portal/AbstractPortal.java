@@ -468,7 +468,7 @@ public abstract class AbstractPortal implements RealPortal {
         // Has to be done one tick later to avoid a bukkit bug
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {
             if (changedColor != null) {
-                gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach((portalPosition) -> {
+                gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
                     Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
                         Sign sign = (Sign) signBlock.getState();
@@ -560,7 +560,7 @@ public abstract class AbstractPortal implements RealPortal {
                 new TextLine(this.colorDrawer
                         .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY))),
                 new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
-                new TextLine(this.colorDrawer.formatLine(getAllFlagsString().replaceAll("[0-9]", "")))
+                new TextLine(this.colorDrawer.formatLine(getAllFlagsString().replaceAll("\\d", "")))
         };
 
         Stargate.addSynchronousTickAction(new SupplierAction(() -> {

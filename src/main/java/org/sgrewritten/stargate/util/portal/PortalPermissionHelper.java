@@ -26,6 +26,8 @@ public final class PortalPermissionHelper {
 
     }
 
+    private static final String SG_USE = "sg.use";
+
     /**
      * Generate access permissions
      *
@@ -37,16 +39,15 @@ public final class PortalPermissionHelper {
         if (!(actor instanceof Player)) {
             return new ArrayList<>();
         }
-        String identifier = "sg.use";
-        List<String> permissionList = generateDefaultPortalPermissionList(portal, identifier);
+        List<String> permissionList = generateDefaultPortalPermissionList(portal, SG_USE);
         if (portal.hasFlag(PortalFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permissionList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         if (portal.hasFlag(PortalFlag.FIXED)) {
-            permissionList.add(identifier + ".type.fixed");
+            permissionList.add(SG_USE + ".type.fixed");
         }
         if (portal.hasFlag(PortalFlag.NETWORKED)) {
-            permissionList.add(identifier + ".type.networked");
+            permissionList.add(SG_USE + ".type.networked");
         }
         return permissionList;
     }
@@ -101,14 +102,13 @@ public final class PortalPermissionHelper {
         if (!(actor instanceof Player)) {
             return new ArrayList<>();
         }
-        String identifier = "sg.use";
-        List<String> permList = generateDefaultPortalPermissionList(entrance, identifier);
-        if (exit instanceof VirtualPortal) {
-            String server = ((VirtualPortal) exit).getServer();
-            permList.add(identifier + ".server." + server);
+        List<String> permList = generateDefaultPortalPermissionList(entrance, SG_USE);
+        if (exit instanceof VirtualPortal virtualPortal) {
+            String server = virtualPortal.getServer();
+            permList.add(SG_USE + ".server." + server);
         }
-        if (exit instanceof RealPortal) {
-            permList.add(generateWorldPermission((RealPortal) exit, identifier));
+        if (exit instanceof RealPortal realPortal) {
+            permList.add(generateWorldPermission(realPortal, SG_USE));
         }
         return permList;
     }

@@ -65,3 +65,4 @@ nbactions.xml
 !.vscode/*.code-snippets
 .history/
 *.vsix
+stargate.iml

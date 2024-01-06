@@ -21,12 +21,15 @@ public class CommandAbout implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
-                             @NotNull String[] strings) {
+                             @NotNull String[] args) {
+        if(args.length > 0){
+            return false;
+        }
         if (!commandSender.hasPermission(CommandPermission.ABOUT.getPermissionNode())) {
             commandSender.sendMessage(languageManager.getErrorMessage(TranslatableMessage.DENY));
-            return true;
+        } else {
+            commandSender.sendMessage(languageManager.getMessage(TranslatableMessage.COMMAND_HELP));
         }
-        commandSender.sendMessage(languageManager.getMessage(TranslatableMessage.COMMAND_HELP));
         return true;
     }
 

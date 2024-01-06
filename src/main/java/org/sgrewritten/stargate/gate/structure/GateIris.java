@@ -63,7 +63,7 @@ public class GateIris extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-
+        throw new UnsupportedOperationException();
     }
 
     /**
