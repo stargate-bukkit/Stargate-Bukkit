@@ -31,8 +31,8 @@ public final class NameHelper {
     /**
      * Gets the normalized version of the given name
      *
-     * <p>This basically just lower-cases the name, and strips color if enabled. This is to make names
-     * case-agnostic and optionally color-agnostic.</p>
+     * <p>This basically just lower-cases the name, trims the name and strips color if enabled.
+     * This is to make names case-agnostic and optionally color-agnostic.</p>
      *
      * @param name <p>The name to "hash"</p>
      * @return <p>The "hashed" name</p>
@@ -42,7 +42,7 @@ public final class NameHelper {
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
             normalizedName = ChatColor.stripColor(normalizedName);
         }
-        return normalizedName;
+        return getTrimmedName(normalizedName);
     }
 
     /**

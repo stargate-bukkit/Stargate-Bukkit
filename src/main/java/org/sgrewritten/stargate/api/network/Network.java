@@ -132,9 +132,9 @@ public interface Network {
     /**
      * Change the name of the network
      * <p>
-     * Does not save to database. Use {@link NetworkManager#rename(Network, String)} instead.
+     * Does not save to database. Use {@link NetworkManager#rename(Network, String)} instead. </p>
      *
-     * @param newName
+     * @param newName <p>The new name of the network</p>
      * @throws InvalidNameException
      * @throws NameLengthException
      * @throws UnimplementedFlagException
@@ -144,6 +144,7 @@ public interface Network {
 
     /**
      *
+     * @return <p>The plugin message sender</p>
      */
     PluginMessageSender getPluginMessageSender();
 

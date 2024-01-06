@@ -42,7 +42,6 @@ public class StargateNetworkRegistry implements NetworkRegistry {
         }
     }
 
-
     @Override
     public void registerNetwork(Network network) {
         networkMap.put(network.getId(), network);
@@ -106,7 +105,7 @@ public class StargateNetworkRegistry implements NetworkRegistry {
 
     @Override
     public boolean networkNameExists(String name) {
-        return networkNameMap.containsKey(NameHelper.getNormalizedName(name));
+        return networkNameMap.containsKey(NameHelper.getTrimmedName(NameHelper.getNormalizedName(name)));
     }
 
     @Override

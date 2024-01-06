@@ -16,17 +16,27 @@ import org.sgrewritten.stargate.gate.GateFormat;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * Scans through available gate formats, given a sign position. Finds all parameters for a valid gate format, or throws
+ * an exception if no format matched. If one already knows these parameters, look into {@link ExplicitGateBuilder}
+ */
 public class ImplicitGateBuilder implements GateBuilder {
 
     private final Location signLocation;
     private final RegistryAPI registryAPI;
     private boolean generateButtonPositions = false;
 
+    /**
+     * Construct an instance of {@link ImplicitGateBuilder}
+     * @param signLocation <p>The location of the sign to figure out gate format</p>
+     * @param registryAPI  <p>The stargate registry containing portal and network data</p>
+     */
     public ImplicitGateBuilder(Location signLocation, RegistryAPI registryAPI) {
         this.signLocation = signLocation;
         this.registryAPI = registryAPI;
     }
 
+    @Override
     public ImplicitGateBuilder setGenerateButtonPositions(boolean generateButtonPositions) {
         this.generateButtonPositions = generateButtonPositions;
         return this;

@@ -71,5 +71,10 @@ public abstract class GateStructure {
      */
     protected abstract boolean isValidBlock(BlockVector blockVector, Material material);
 
+    /**
+     * Generate the structure from format
+     * @param converter <p>Conversion between real space and format space</p>
+     * @param topLeft <p>Top left corner in real space</p>
+     */
     public abstract void generateStructure(VectorOperation converter, Location topLeft);
 }

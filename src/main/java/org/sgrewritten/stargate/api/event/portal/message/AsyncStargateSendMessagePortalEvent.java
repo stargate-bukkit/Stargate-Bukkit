@@ -17,8 +17,8 @@ public class AsyncStargateSendMessagePortalEvent extends StargateSendMessagePort
      * @param entity <p>The entity receiving the message</p>
      * @param type   <p>The type of message being sent</p>
      */
-    public AsyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type) {
-        super(portal, entity, type, true);
+    public AsyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, String message) {
+        super(portal, entity, type, message, true);
     }
 
     @Override

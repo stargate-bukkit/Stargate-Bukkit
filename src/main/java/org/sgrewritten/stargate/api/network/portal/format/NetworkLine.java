@@ -26,6 +26,9 @@ public class NetworkLine extends AbstractSignLine {
         this.network = network;
     }
 
+    /**
+     * @return <p>The network this line relates to</p>
+     */
     public Network getNetwork() {
         return this.network;
     }

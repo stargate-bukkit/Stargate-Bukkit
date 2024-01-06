@@ -17,13 +17,14 @@ public class MessageUtils {
         }
         StargateSendMessagePortalEvent event;
         if (Bukkit.isPrimaryThread()) {
-            event = new SyncStargateSendMessagePortalEvent(portal, receiver, type);
+            event = new SyncStargateSendMessagePortalEvent(portal, receiver, type, message);
         } else {
-            event = new AsyncStargateSendMessagePortalEvent(portal, receiver, type);
+            event = new AsyncStargateSendMessagePortalEvent(portal, receiver, type, message);
         }
         Bukkit.getPluginManager().callEvent(event);
+        String messageToSend = event.getMessage();
         if (!event.isCancelled()) {
-            receiver.sendMessage(message);
+            receiver.sendMessage(messageToSend);
         }
     }
 

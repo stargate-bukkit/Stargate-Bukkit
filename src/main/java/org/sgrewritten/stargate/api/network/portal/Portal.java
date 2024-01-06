@@ -18,8 +18,10 @@ public interface Portal {
     /**
      * The method used when destroying a portal
      *
-     * <p>This should remove all references to the portal, both from temporary memory and from any databases.</p>
+     * <p>Mainly clears the sign, see {@link org.sgrewritten.stargate.api.network.NetworkManager#destroyPortal(RealPortal)}
+     * to really destroy a portal</p>
      */
+    @ApiStatus.Internal
     void destroy();
 
     /**

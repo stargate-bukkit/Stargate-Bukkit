@@ -7,6 +7,11 @@ import java.util.List;
 
 public class StargateComponentDeserialiser {
 
+    /**
+     * Convert from SignLine to {@link Component}
+     * @param line <p>A sign line to be converted</p>
+     * @return <p>A text component</p>
+     */
     public static Component getComponent(@Nullable SignLine line) {
         if (line == null) {
             return Component.empty();
@@ -19,6 +24,11 @@ public class StargateComponentDeserialiser {
         return output;
     }
 
+    /**
+     * Convert from SignLine to legacy text
+     * @param line <p>A sign line</p>
+     * @return <p>Legacy text</p>
+     */
     public static String getLegacyText(SignLine line) {
         if (line == null) {
             return "";

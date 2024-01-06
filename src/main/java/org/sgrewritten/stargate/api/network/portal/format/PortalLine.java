@@ -35,6 +35,10 @@ public class PortalLine extends AbstractSignLine {
         return this.type;
     }
 
+    /**
+     *
+     * @return <p>The portal this line relates to</p>
+     */
     public Portal getPortal() {
         return this.portal;
     }

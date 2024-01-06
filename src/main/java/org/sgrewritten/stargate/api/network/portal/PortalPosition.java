@@ -84,6 +84,11 @@ public class PortalPosition {
         }
     }
 
+    /**
+     * Set the metadata for specified portal position
+     * @param portal <p>The owner of this portal position</p>
+     * @param data <p>The new metadata</p>
+     */
     public void setMetaData(@NotNull RealPortal portal, @NotNull String data) {
         try {
             this.metaData = Objects.requireNonNull(data);
@@ -93,6 +98,9 @@ public class PortalPosition {
         }
     }
 
+    /**
+     * @return <p>The name of the plugin that owns this portal position</p>
+     */
     public @NotNull String getPluginName() {
         return this.pluginName;
     }
@@ -110,10 +118,18 @@ public class PortalPosition {
         return String.format("{x=%d,y=%d,z=%d,%s}", relativePositionLocation.getBlockX(), relativePositionLocation.getBlockY(), relativePositionLocation.getBlockZ(), positionType);
     }
 
+    /**
+     *
+     * @return <p> Whether the portal position is currently active</p>
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Activate/deactive this portal position
+     * @param active <p>Whether to activate or deactivate the portal position</p>
+     */
     public void setActive(boolean active) {
         this.active = active;
     }

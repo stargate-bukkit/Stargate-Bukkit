@@ -3,17 +3,21 @@ package org.sgrewritten.stargate.api.gate;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
 
 /**
- * An API describing a Gate
+ * Acts as an interface between a minecraft world, and a format space. In comparison to {@link org.sgrewritten.stargate.api.network.portal.Portal}
+ * this interface has nothing to do with entities and teleportation.
  */
 public interface GateAPI {
 
@@ -139,7 +143,17 @@ public interface GateAPI {
      */
     @Nullable PortalPosition removePortalPosition(Location location);
 
+    /**
+     * Remove a portal position from this gate. Does not remove the portal position in the registry or database.
+     * Please use {@link org.sgrewritten.stargate.api.network.RegistryAPI#removePortalPosition(Location)} with conjunction
+     * to {@link org.sgrewritten.stargate.api.database.StorageAPI#removePortalPosition(RealPortal, StorageType, PortalPosition)}
+     * @param portalPosition <p>The portal position to remove</p>
+     */
+    @ApiStatus.Internal
     void removePortalPosition(PortalPosition portalPosition);
 
+    /**
+     * Modify the world such that the gate follows its gateformat
+     */
     void forceGenerateStructure();
 }

@@ -3,6 +3,10 @@ package org.sgrewritten.stargate.api.network.portal.format;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
+/**
+ * A wrapper class to be able to store both legacy text and {@link Component} text without causing failures when adventure
+ * is not shaded.
+ */
 public class StargateComponent {
 
     private String legacyText;
@@ -16,6 +20,9 @@ public class StargateComponent {
         this.text = text;
     }
 
+    /**
+     * @return <p>The text text</p>
+     */
     public Component getText() {
         if (text == null) {
             return LegacyComponentSerializer.legacySection().deserialize(legacyText);
@@ -23,6 +30,9 @@ public class StargateComponent {
         return text;
     }
 
+    /**
+     * @return <p>The text as legacy format</p>
+     */
     public String getLegacyText() {
         if (legacyText == null) {
             return LegacyComponentSerializer.legacySection().serialize(text);
@@ -30,6 +40,10 @@ public class StargateComponent {
         return legacyText;
     }
 
+    /**
+     * Also overwrites previous set legacy text
+     * @param text <p>The text to set</p>
+     */
     public void setText(Component text) {
         if (legacyText != null) {
             legacyText = null;
@@ -37,6 +51,10 @@ public class StargateComponent {
         this.text = text;
     }
 
+    /**
+     * Also overwrites previous set non-legacy text
+     * @param legacyText <p>The legacy text to set</p>
+     */
     public void setLegacyText(String legacyText) {
         if (text != null) {
             text = null;

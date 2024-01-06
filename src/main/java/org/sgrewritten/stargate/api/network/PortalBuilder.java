@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
@@ -45,6 +46,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * Used to build portals
+ */
 public class PortalBuilder {
 
     private final StargateAPI stargateAPI;
@@ -65,6 +69,14 @@ public class PortalBuilder {
     private boolean adaptiveGatePositionGeneration = false;
     private String metaData;
 
+    /**
+     * Construct an instance of a PortalBuilder
+     * @param stargateAPI <p>The stargate api</p>
+     * @param owner       <p>The owner of the portal</p>
+     * @param flagsString <p>The flags argument provided for the portal</p>
+     * @param portalName  <p>The name of the portal</p>
+     * @param gateBuilder <p>A gate builder</p>
+     */
     public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
                          @Nullable GateBuilder gateBuilder) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
@@ -74,6 +86,14 @@ public class PortalBuilder {
         this.gateBuilder = gateBuilder;
     }
 
+    /**
+     * Construct an instance of a PortalBuilder
+     * @param stargateAPI <p>The stargate api</p>
+     * @param owner       <p>The owner of the portal</p>
+     * @param flagsString <p>The flags argument provided for the portal</p>
+     * @param portalName  <p>The name of the portal</p>
+     * @param gate        <p>A gate</p>
+     */
     public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
                          @Nullable GateAPI gate) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
@@ -83,37 +103,73 @@ public class PortalBuilder {
         this.gateAPI = gate;
     }
 
-    public PortalBuilder addPermissionCheck(Player permissionTarget) {
+    /**
+     * Check for all stargate related permissions for target
+     * @param permissionTarget <p>The target of the permissions</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder addPermissionCheck(@NotNull Player permissionTarget) {
+        Objects.requireNonNull(permissionTarget);
         this.permissionManager = new StargatePermissionManager(permissionTarget, stargateAPI.getLanguageManager());
         return this;
     }
 
-    public PortalBuilder setCost(double cost, Player economyTarget) {
+    /**
+     * Set a cost for this portal
+     * @param cost <p>A cost</p>
+     * @param economyTarget <p>The payee</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setCost(double cost, @NotNull Player economyTarget) {
         this.cost = cost;
-        this.economyTarget = economyTarget;
+        this.economyTarget = Objects.requireNonNull(economyTarget);
         return this;
     }
 
-    public PortalBuilder addEventHandling(Player eventTarget) {
+    /**
+     * Make the builder throw an {@link StargateCreatePortalEvent}
+     * @param eventTarget <p>The target of the event</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder addEventHandling(@Nullable Player eventTarget) {
         this.eventTarget = eventTarget;
         return this;
     }
 
-    public PortalBuilder addMessageReceiver(Entity messageTarget) {
+    /**
+     * @param messageTarget <p>The entity that receives any messages related to the attempt of the portal creation</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder addMessageReceiver(@Nullable Entity messageTarget) {
         this.messageTarget = messageTarget;
         return this;
     }
 
-    public PortalBuilder setDestination(String destinationName) {
+    /**
+     *
+     * @param destinationName <p>Set a fixed destination portal</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setDestination(@Nullable String destinationName) {
         this.destinationName = destinationName;
         return this;
     }
 
+    /**
+     * Requires the constructor {@link PortalBuilder#PortalBuilder(StargateAPI, OfflinePlayer, String, String, GateBuilder)} to matter
+     * @param adaptiveGatePositionGeneration <p>Whether to generate portal positions for the gate</p>
+     * @return
+     */
     public PortalBuilder setAdaptiveGatePositionGeneration(boolean adaptiveGatePositionGeneration) {
         this.adaptiveGatePositionGeneration = adaptiveGatePositionGeneration;
         return this;
     }
 
+    /**
+     *
+     * @param metaData <p>The metadata for the portal</p>
+     * @return <p>This portal builder</p>
+     */
     public PortalBuilder setMetaData(String metaData) {
         this.metaData = metaData;
         return this;
@@ -122,26 +178,43 @@ public class PortalBuilder {
     /**
      * Set the name of the server this portal should point to (only relevant for bungee portals)
      *
-     * @param serverName
-     * @return
+     * @param serverName <p>The name of the server this portal points to</p>
+     * @return <p>This portal builder</p>
      */
     public PortalBuilder setDestinationServerName(String serverName) {
         this.serverName = serverName;
         return this;
     }
 
+    /**
+     * @param network <p>the network this portal points to</p>
+     * @return <p>This portal builder</p>
+     */
     public PortalBuilder setNetwork(Network network) {
         this.network = network;
         this.networkString = null;
         return this;
     }
 
+    /**
+     *
+     * @param networkName <p>The network argument to select networks from</p>
+     * @return <p>This portal builder</p>
+     */
     public PortalBuilder setNetwork(String networkName) {
         this.network = null;
         this.networkString = networkName;
         return this;
     }
 
+    /**
+     * Build an instance of a portal
+     * @return <p>An instance of a portal</p>
+     * @throws TranslatableException
+     * @throws GateConflictException
+     * @throws NoFormatFoundException
+     * @throws InvalidStructureException
+     */
     public RealPortal build() throws TranslatableException, GateConflictException, NoFormatFoundException, InvalidStructureException {
         Set<PortalFlag> flags = PortalFlag.parseFlags(flagsString);
         //Prevent the player from explicitly setting any internal flags

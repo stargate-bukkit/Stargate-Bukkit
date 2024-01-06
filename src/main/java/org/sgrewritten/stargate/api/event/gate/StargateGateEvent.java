@@ -12,6 +12,10 @@ public abstract class StargateGateEvent extends Event {
         this.gate = gate;
     }
 
+    /**
+     * Get the gate this event relates to
+     * @return <p>The gate this event relates to</p>
+     */
     public GateAPI getGate() {
         return this.gate;
     }

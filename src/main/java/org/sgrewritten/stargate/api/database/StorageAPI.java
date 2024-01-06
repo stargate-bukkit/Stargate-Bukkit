@@ -25,10 +25,9 @@ public interface StorageAPI {
      * Loads all portals from storage and adds them to the portal registry
      *
      * @param stargateAPI <p> The stargate API </p>
-     * @param registry    <p> The registry to insert the portals into</p>
      * @throws StorageReadException <p>If unable to read from storage</p>
      */
-    void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException;
+    void loadFromStorage(StargateAPI stargateAPI) throws StorageReadException;
 
     /**
      * Saves the given portal to storage

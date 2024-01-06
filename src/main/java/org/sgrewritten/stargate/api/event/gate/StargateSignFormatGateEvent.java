@@ -22,6 +22,9 @@ public class StargateSignFormatGateEvent extends StargateGateEvent {
         this.location = location;
     }
 
+    /**
+     * @return <p> The that will be formatted</p>
+     */
     public SignLine[] getLines() {
         return this.lines;
     }
@@ -38,6 +41,9 @@ public class StargateSignFormatGateEvent extends StargateGateEvent {
         throw new IllegalStateException("Could not find any sign at " + location + ", found " + block.getType());
     }
 
+    /**
+     * @return <p>The portal position of the sign that will be formatted</p>
+     */
     public PortalPosition getPortalPosition() {
         return this.portalPosition;
     }

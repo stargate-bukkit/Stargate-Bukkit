@@ -20,6 +20,9 @@ public class StargateListPortalEvent extends DeniableStargatePortalEvent {
         this.listedPortal = listedPortal;
     }
 
+    /**
+     * @return <p>The portal that will be listed</p>
+     */
     public Portal getListedPortal() {
         return listedPortal;
     }

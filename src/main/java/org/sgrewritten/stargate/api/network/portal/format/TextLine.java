@@ -6,6 +6,9 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A line which does not relate to any stargate object, it is pure text
+ */
 public class TextLine extends AbstractSignLine {
     private final SignLineType type;
 

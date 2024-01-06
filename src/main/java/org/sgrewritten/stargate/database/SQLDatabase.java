@@ -95,7 +95,7 @@ public class SQLDatabase implements StorageAPI {
     }
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) throws StorageReadException {
+    public void loadFromStorage(StargateAPI stargateAPI) throws StorageReadException {
         try {
             Stargate.log(Level.FINER, "Loading portals from base database");
             loadAllPortals(database, StorageType.LOCAL, stargateAPI);

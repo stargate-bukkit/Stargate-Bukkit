@@ -110,8 +110,8 @@ public interface RegistryAPI {
      * Get portal from block next to portal, will randomly choose one portal if block is
      * next to two portals
      *
-     * @param location
-     * @param structureType
+     * @param location <p>The location to check for</p>
+     * @param structureType <p>The structure type to check for</p>
      * @return
      */
     List<RealPortal> getPortalsFromTouchingBlock(Location location, GateStructureType structureType);
@@ -122,11 +122,19 @@ public interface RegistryAPI {
      * <p>Stores the portals that exist at the given locations, but using the structure type as the key to be
      * able to check locations for the given structure type.</p>
      *
+     * <p>Does not save to storage!</p>
+     *
      * @param structureType <p>The structure type to register</p>
      * @param locationsMap  <p>The locations and the corresponding portals to register</p>
      */
     void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap);
 
+    /**
+     * Registers a location with attached portal and structure type to this registry
+     * @param structureType <p>The structure type to register</p>
+     * @param location      <p>The location to register</p>
+     * @param portal        <p>The portal to register</p>
+     */
     void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal);
 
     /**
@@ -202,9 +210,9 @@ public interface RegistryAPI {
     PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin);
 
     /**
-     * Remove portal position from registry and storage
+     * Remove portal position from registry
      *
-     * @param location
+     * @param location <p>The location of the portal position</p>
      */
     void removePortalPosition(Location location);
 
@@ -237,7 +245,7 @@ public interface RegistryAPI {
     /**
      * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
      *
-     * @param network
+     * @param network <p>The network to register</p>
      */
     @ApiStatus.Internal
     void registerNetwork(Network network);
@@ -245,8 +253,8 @@ public interface RegistryAPI {
     /**
      * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
      *
-     * @param newId
-     * @param oldId
+     * @param newId <p>The new id of the network</p>
+     * @param oldId <p>The old id of the network</p>
      */
     @ApiStatus.Internal
     void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException;

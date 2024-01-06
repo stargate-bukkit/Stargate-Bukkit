@@ -17,8 +17,8 @@ public class SyncStargateSendMessagePortalEvent extends StargateSendMessagePorta
      * @param entity <p>The entity receiving the message</p>
      * @param type   <p>The type of message being sent</p>
      */
-    public SyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type) {
-        super(portal, entity, type, false);
+    public SyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, String message) {
+        super(portal, entity, type, message, false);
     }
 
     @Override
