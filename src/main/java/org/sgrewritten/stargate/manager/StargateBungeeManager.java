@@ -151,7 +151,7 @@ public class StargateBungeeManager implements BungeeManager {
             return;
         }
         if(destinationPortal instanceof VirtualPortal){
-            Stargate.log(Level.WARNING, "The receiving portal for this message should not be a virtual portal, contact developers (do /sg for more info)");
+            Stargate.log(Level.WARNING, "The receiving portal for this bungee teleport message should not be a virtual portal, contact developers (do /sg for more info)");
             return;
         }
         destinationPortal.teleportHere(player, null);
