@@ -80,7 +80,7 @@ public enum TranslatableMessage {
     /**
      * The message to display when a network is in conflict with a network of another type
      */
-    NET_CONFLICT("faultNetworkConflict"),
+    NET_CONFLICT("faultConflictNetwork"),
 
     /**
      * The message to display when a player is lacking permission to create a gateDesign
