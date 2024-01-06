@@ -118,7 +118,7 @@ public class StargateBungeeManager implements BungeeManager {
             }
             targetNetwork.updatePortals();
         } catch (NameConflictException exception) {
-            Stargate.log(exception);
+            Stargate.log(Level.FINE, exception);
         }
     }
 
@@ -148,6 +148,10 @@ public class StargateBungeeManager implements BungeeManager {
         Portal destinationPortal = network.getPortal(portalName);
         if (destinationPortal == null) {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
+            return;
+        }
+        if(destinationPortal instanceof VirtualPortal){
+            Stargate.log(Level.WARNING, "The receiving portal for this bungee teleport message should not be a virtual portal, contact developers (do /sg for more info)");
             return;
         }
         destinationPortal.teleportHere(player, null);

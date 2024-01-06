@@ -45,4 +45,17 @@ public class BukkitPluginMessageInterface implements PluginMessageInterface {
             Bukkit.getServer().sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
         }
     }
+
+    @Override
+    public void sendDirectedMessage(String message, PluginChannel channel, Plugin plugin, String server) throws IOException {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeUTF(PluginChannel.FORWARD.getChannel());
+            dataOutputStream.writeUTF(server);
+            dataOutputStream.writeUTF(channel.getChannel());
+            Stargate.log(Level.FINER, String.format("Sending bungee message:%n%s", message));
+            dataOutputStream.writeUTF(message);
+            Bukkit.getServer().sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), byteArrayOutputStream.toByteArray());
+        }
+    }
 }
