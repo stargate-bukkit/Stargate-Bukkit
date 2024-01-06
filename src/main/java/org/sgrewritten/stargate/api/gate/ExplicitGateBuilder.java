@@ -24,8 +24,9 @@ public class ExplicitGateBuilder implements GateBuilder {
 
     /**
      * Constructor for {@link ExplicitGateBuilder}
-     * @param registryAPI <p>The stargate registry for portals and networks</p>
-     * @param topLeft <p>The to be top left position of the gate (or top right if the gate is flipped)</p>
+     *
+     * @param registryAPI   <p>The stargate registry for portals and networks</p>
+     * @param topLeft       <p>The to be top left position of the gate (or top right if the gate is flipped)</p>
      * @param gateFormatAPI <p>The format of the gate</p>
      */
     public ExplicitGateBuilder(RegistryAPI registryAPI, Location topLeft, GateFormatAPI gateFormatAPI) {
@@ -35,7 +36,6 @@ public class ExplicitGateBuilder implements GateBuilder {
     }
 
     /**
-     *
      * @param calculatePortalPositions <p>Whether the gate should calculate its own portal positions</p>
      * @return <p>This gate builder</p>
      */
@@ -53,6 +53,7 @@ public class ExplicitGateBuilder implements GateBuilder {
     /**
      * Whether the gate should be flipped, this effectively makes the top left position top right (flip z axis in format
      * space)
+     *
      * @param flipGate <p>Whether the gate should be flipped</p>
      * @return <p>This gate builder</p>
      */
@@ -64,6 +65,7 @@ public class ExplicitGateBuilder implements GateBuilder {
     /**
      * Set the facing of this gate, this equals the facing of the sign. You can alternatively see this as setting the
      * gate to different rotations.
+     *
      * @param facing <p>The facing of this gate</p>
      * @return <p>This gate builder</p>
      */

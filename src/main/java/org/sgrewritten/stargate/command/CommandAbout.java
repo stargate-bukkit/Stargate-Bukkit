@@ -22,7 +22,7 @@ public class CommandAbout implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
-        if(args.length > 0){
+        if (args.length > 0) {
             return false;
         }
         if (!commandSender.hasPermission(CommandPermission.ABOUT.getPermissionNode())) {

@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.api.database;
 
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -32,7 +31,7 @@ public interface StorageAPI {
     /**
      * Saves the given portal to storage
      *
-     * @param portal     <p>The portal to save</p>
+     * @param portal <p>The portal to save</p>
      * @return <p>Whether or not the portal was successfully saved</p>
      * @throws StorageWriteException <p>If unable to write to storage</p>
      */
@@ -41,7 +40,7 @@ public interface StorageAPI {
     /**
      * Removes a portal and its associated data from storage
      *
-     * @param portal     <p>The portal to remove</p>
+     * @param portal <p>The portal to remove</p>
      * @throws StorageWriteException <p>If unable to write to storage</p>
      */
     void removePortalFromStorage(Portal portal) throws StorageWriteException;

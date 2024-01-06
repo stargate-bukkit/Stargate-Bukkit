@@ -102,13 +102,14 @@ public interface NetworkManager {
     /**
      * Add portal to network and save to storage
      *
-     * @param portal <p>The portal to be saved</p>
+     * @param portal  <p>The portal to be saved</p>
      * @param network <p>The network to assign the portal to</p>
      */
     void savePortal(RealPortal portal, Network network) throws NameConflictException;
 
     /**
      * Saves to database
+     *
      * @param portal <p>Destroy portal</p>
      */
     void destroyPortal(RealPortal portal);

@@ -42,14 +42,14 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
     /**
      * @return <p>The message that will be sent</p>
      */
-    public String getMessage(){
+    public String getMessage() {
         return this.message;
     }
 
     /**
      * @param message <p>The message that will be sent</p>
      */
-    public void setMessage(String message){
+    public void setMessage(String message) {
         this.message = message;
     }
 }

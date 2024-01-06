@@ -6,7 +6,6 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.property.PluginChannel;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 

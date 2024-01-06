@@ -198,6 +198,7 @@ public enum PortalFlag {
 
     /**
      * Ignores arguments enveloped within {}
+     *
      * @param flagString <p>A string of all flags</p>
      * @return <p>Flags that were unrecognised, but might be addon flags</p>
      */
@@ -213,7 +214,6 @@ public enum PortalFlag {
     }
 
     /**
-     *
      * @return <p>Whether this flag relates to how a portal selects destinations</p>
      */
     public boolean isSelectorTypeFlag() {

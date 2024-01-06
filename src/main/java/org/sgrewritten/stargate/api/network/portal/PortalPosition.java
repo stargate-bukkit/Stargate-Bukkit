@@ -86,8 +86,9 @@ public class PortalPosition {
 
     /**
      * Set the metadata for specified portal position
+     *
      * @param portal <p>The owner of this portal position</p>
-     * @param data <p>The new metadata</p>
+     * @param data   <p>The new metadata</p>
      */
     public void setMetaData(@NotNull RealPortal portal, @NotNull String data) {
         try {
@@ -119,7 +120,6 @@ public class PortalPosition {
     }
 
     /**
-     *
      * @return <p> Whether the portal position is currently active</p>
      */
     public boolean isActive() {
@@ -128,6 +128,7 @@ public class PortalPosition {
 
     /**
      * Activate/deactive this portal position
+     *
      * @param active <p>Whether to activate or deactivate the portal position</p>
      */
     public void setActive(boolean active) {

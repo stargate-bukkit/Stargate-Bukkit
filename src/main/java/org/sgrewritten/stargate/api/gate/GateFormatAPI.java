@@ -48,6 +48,7 @@ public interface GateFormatAPI {
 
     /**
      * Get a structure based on the type of structure
+     *
      * @param gateFormatStructureType <p>A gate structure type</p>
      * @return <p>A gate structure</p>
      */
@@ -55,6 +56,7 @@ public interface GateFormatAPI {
 
     /**
      * Determines whether the format matches when provided a conversion between minecraft space and format space.
+     *
      * @param converter <p>Vector operation which converts between format space and minecraft space</p>
      * @param topLeft   <p>Origo in format space, top left of format in real space</p>
      * @return

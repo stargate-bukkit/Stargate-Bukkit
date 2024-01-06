@@ -14,6 +14,7 @@ public abstract class StargateGateEvent extends Event {
 
     /**
      * Get the gate this event relates to
+     *
      * @return <p>The gate this event relates to</p>
      */
     public GateAPI getGate() {

@@ -147,6 +147,7 @@ public interface GateAPI {
      * Remove a portal position from this gate. Does not remove the portal position in the registry or database.
      * Please use {@link org.sgrewritten.stargate.api.network.RegistryAPI#removePortalPosition(Location)} with conjunction
      * to {@link org.sgrewritten.stargate.api.database.StorageAPI#removePortalPosition(RealPortal, StorageType, PortalPosition)}
+     *
      * @param portalPosition <p>The portal position to remove</p>
      */
     @ApiStatus.Internal

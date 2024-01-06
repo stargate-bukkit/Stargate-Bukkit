@@ -264,8 +264,8 @@ public class DataMigration_1_0_0 extends DataMigration {
     /**
      * Loads the configuration conversions used to load legacy configuration files
      */
-    private static Map<String,String> loadConfigConversions() {
-        Map<String,String> output = new HashMap<>();
+    private static Map<String, String> loadConfigConversions() {
+        Map<String, String> output = new HashMap<>();
         FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", output);
         return output;
     }

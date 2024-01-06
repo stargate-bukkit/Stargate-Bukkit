@@ -28,7 +28,7 @@ public class CommandReload implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
                              @NotNull String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             return false;
         }
 

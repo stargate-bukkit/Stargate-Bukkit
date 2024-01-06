@@ -57,24 +57,29 @@ public class StargateNetwork implements Network {
      * @throws NameLengthException
      * @throws UnimplementedFlagException
      */
-    public StargateNetwork(String name, Set<PortalFlag> flags, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+    public StargateNetwork(String name, Set<PortalFlag> flags, StorageType storageType) throws InvalidNameException,
+            NameLengthException, UnimplementedFlagException {
         this(name, NetworkType.getNetworkTypeFromFlags(flags), storageType);
     }
 
-    public StargateNetwork(String name, NetworkType type, StorageType storageType) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+    public StargateNetwork(String name, NetworkType type, StorageType storageType) throws InvalidNameException,
+            NameLengthException, UnimplementedFlagException {
         load(name, type);
         this.storageType = storageType;
-        this.messageSender = storageType == StorageType.INTER_SERVER ? new InterServerMessageSender() : new LocalNetworkMessageSender();
+        this.messageSender = storageType == StorageType.INTER_SERVER ? new InterServerMessageSender() :
+                new LocalNetworkMessageSender();
     }
 
-    private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+    private void load(String name, NetworkType type) throws InvalidNameException, NameLengthException,
+            UnimplementedFlagException {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
         setId(name, type);
         nameToPortalMap = new HashMap<>();
     }
 
-    private void setId(String name, NetworkType type) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+    private void setId(String name, NetworkType type) throws InvalidNameException, NameLengthException,
+            UnimplementedFlagException {
         switch (type) {
             case DEFAULT -> loadAsDefault(name);
             case PERSONAL -> loadAsPersonalNetwork(name);
@@ -87,7 +92,8 @@ public class StargateNetwork implements Network {
     private void loadAsDefault(String name) throws InvalidNameException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
         if (!DEFAULT_NETWORK_ID.equals(name)) {
-            throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" + DEFAULT_NETWORK_ID + "'");
+            throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" +
+                    DEFAULT_NETWORK_ID + "'");
         }
         id = DEFAULT_NETWORK_ID;
     }
@@ -95,7 +101,8 @@ public class StargateNetwork implements Network {
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (NameHelper.isInvalidName(networkName)) {
-            throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 and under " + Stargate.getMaxTextLength());
+            throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 " +
+                    "and under " + Stargate.getMaxTextLength());
         }
         this.name = networkName.trim();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
@@ -145,7 +152,8 @@ public class StargateNetwork implements Network {
     @Override
     public void addPortal(Portal portal) throws NameConflictException {
         if (isPortalNameTaken(portal.getName())) {
-            throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" + this.getId() + "'", false);
+            throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" +
+                    this.getId() + "'", false);
         }
         if (portal instanceof RealPortal realPortal) {
             registry.registerPortal(realPortal);
@@ -160,8 +168,8 @@ public class StargateNetwork implements Network {
 
     @Override
     public void updatePortals() {
-        for (String portal : nameToPortalMap.keySet()) {
-            getPortal(portal).updateState();
+        for (Portal portal : nameToPortalMap.values()) {
+            portal.updateState();
         }
     }
 
@@ -203,7 +211,8 @@ public class StargateNetwork implements Network {
 
     @Override
     public String getName() {
-        if (getType() == NetworkType.PERSONAL && registry != null && (registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType()))) {
+        if (getType() == NetworkType.PERSONAL && registry != null &&
+                (registry.networkExists(NameHelper.getNormalizedName(name), this.getStorageType()))) {
             return id.split("-")[0];
         }
         return name;

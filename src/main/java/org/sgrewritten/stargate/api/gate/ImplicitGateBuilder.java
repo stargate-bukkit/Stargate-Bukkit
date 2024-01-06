@@ -28,6 +28,7 @@ public class ImplicitGateBuilder implements GateBuilder {
 
     /**
      * Construct an instance of {@link ImplicitGateBuilder}
+     *
      * @param signLocation <p>The location of the sign to figure out gate format</p>
      * @param registryAPI  <p>The stargate registry containing portal and network data</p>
      */

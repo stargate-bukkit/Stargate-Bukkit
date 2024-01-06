@@ -90,8 +90,8 @@ public class PlayerEventListener implements Listener {
     /**
      * Handles a right-click event that is known to be relevant
      *
-     * @param block  <p>The block that was interacted with</p>
-     * @param event  <p>The player interact event to handle</p>
+     * @param block <p>The block that was interacted with</p>
+     * @param event <p>The player interact event to handle</p>
      */
     private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();

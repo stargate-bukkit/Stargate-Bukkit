@@ -19,7 +19,7 @@ public interface GateBuilder {
      *
      * @return <p>A gate</p>
      * @throws NoFormatFoundException    <p>If no format was found see {@link ImplicitGateBuilder}</p>
-     * @throws GateConflictException <p>If the location of the gate to be built conflicts with another gate</p>
+     * @throws GateConflictException     <p>If the location of the gate to be built conflicts with another gate</p>
      * @throws InvalidStructureException <p>When the gate to be built does not match the format</p>
      */
     GateAPI build() throws NoFormatFoundException, GateConflictException, InvalidStructureException;

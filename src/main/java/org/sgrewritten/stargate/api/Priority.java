@@ -47,7 +47,6 @@ public enum Priority {
     }
 
     /**
-     *
      * @return <p>A list going from the highest to lowest priority level</p>
      */
     static List<Priority> getHighToLowPriority() {

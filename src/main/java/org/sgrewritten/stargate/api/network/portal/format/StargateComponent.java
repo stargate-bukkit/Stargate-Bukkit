@@ -42,6 +42,7 @@ public class StargateComponent {
 
     /**
      * Also overwrites previous set legacy text
+     *
      * @param text <p>The text to set</p>
      */
     public void setText(Component text) {
@@ -53,6 +54,7 @@ public class StargateComponent {
 
     /**
      * Also overwrites previous set non-legacy text
+     *
      * @param legacyText <p>The legacy text to set</p>
      */
     public void setLegacyText(String legacyText) {

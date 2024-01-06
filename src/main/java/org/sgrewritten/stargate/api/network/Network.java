@@ -143,7 +143,6 @@ public interface Network {
     void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException;
 
     /**
-     *
      * @return <p>The plugin message sender</p>
      */
     PluginMessageSender getPluginMessageSender();

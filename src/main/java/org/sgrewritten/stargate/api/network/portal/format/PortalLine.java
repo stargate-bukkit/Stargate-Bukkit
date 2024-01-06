@@ -36,7 +36,6 @@ public class PortalLine extends AbstractSignLine {
     }
 
     /**
-     *
      * @return <p>The portal this line relates to</p>
      */
     public Portal getPortal() {

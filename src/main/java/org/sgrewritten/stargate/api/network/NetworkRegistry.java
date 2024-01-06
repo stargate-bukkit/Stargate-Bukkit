@@ -64,26 +64,22 @@ public interface NetworkRegistry {
     void updatePortals();
 
     /**
-     *
      * @return <p>A stream of all networks</p>
      */
     Stream<Network> stream();
 
     /**
-     *
      * @return <p>An iterator of all networks</p>
      */
     Iterator<Network> iterator();
 
     /**
-     *
      * @param name <p>The name of the network</p>
      * @return <p>Whether any network has that name</p>
      */
     boolean networkNameExists(String name);
 
     /**
-     *
      * @param name <p>The name of the network</p>
      * @return <p>The network of that name</p>
      */
@@ -95,7 +91,6 @@ public interface NetworkRegistry {
     void closeAllPortals();
 
     /**
-     *
      * @return <p>The amount of networks stored in this registry</p>
      */
     int size();

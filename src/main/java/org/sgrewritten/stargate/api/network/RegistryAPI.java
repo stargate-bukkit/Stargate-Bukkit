@@ -110,7 +110,7 @@ public interface RegistryAPI {
      * Get portal from block next to portal, will randomly choose one portal if block is
      * next to two portals
      *
-     * @param location <p>The location to check for</p>
+     * @param location      <p>The location to check for</p>
      * @param structureType <p>The structure type to check for</p>
      * @return
      */
@@ -131,6 +131,7 @@ public interface RegistryAPI {
 
     /**
      * Registers a location with attached portal and structure type to this registry
+     *
      * @param structureType <p>The structure type to register</p>
      * @param location      <p>The location to register</p>
      * @param portal        <p>The portal to register</p>

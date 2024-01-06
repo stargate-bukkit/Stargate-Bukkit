@@ -2,10 +2,8 @@ package org.sgrewritten.stargate.colors;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -12,7 +13,6 @@ import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;

@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
+import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateBuilder;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -27,7 +28,6 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.util.EconomyHelper;
@@ -71,6 +71,7 @@ public class PortalBuilder {
 
     /**
      * Construct an instance of a PortalBuilder
+     *
      * @param stargateAPI <p>The stargate api</p>
      * @param owner       <p>The owner of the portal</p>
      * @param flagsString <p>The flags argument provided for the portal</p>
@@ -88,6 +89,7 @@ public class PortalBuilder {
 
     /**
      * Construct an instance of a PortalBuilder
+     *
      * @param stargateAPI <p>The stargate api</p>
      * @param owner       <p>The owner of the portal</p>
      * @param flagsString <p>The flags argument provided for the portal</p>
@@ -105,6 +107,7 @@ public class PortalBuilder {
 
     /**
      * Check for all stargate related permissions for target
+     *
      * @param permissionTarget <p>The target of the permissions</p>
      * @return <p>This portal builder</p>
      */
@@ -116,7 +119,8 @@ public class PortalBuilder {
 
     /**
      * Set a cost for this portal
-     * @param cost <p>A cost</p>
+     *
+     * @param cost          <p>A cost</p>
      * @param economyTarget <p>The payee</p>
      * @return <p>This portal builder</p>
      */
@@ -128,6 +132,7 @@ public class PortalBuilder {
 
     /**
      * Make the builder throw an {@link StargateCreatePortalEvent}
+     *
      * @param eventTarget <p>The target of the event</p>
      * @return <p>This portal builder</p>
      */
@@ -146,7 +151,6 @@ public class PortalBuilder {
     }
 
     /**
-     *
      * @param destinationName <p>Set a fixed destination portal</p>
      * @return <p>This portal builder</p>
      */
@@ -157,6 +161,7 @@ public class PortalBuilder {
 
     /**
      * Requires the constructor {@link PortalBuilder#PortalBuilder(StargateAPI, OfflinePlayer, String, String, GateBuilder)} to matter
+     *
      * @param adaptiveGatePositionGeneration <p>Whether to generate portal positions for the gate</p>
      * @return
      */
@@ -166,7 +171,6 @@ public class PortalBuilder {
     }
 
     /**
-     *
      * @param metaData <p>The metadata for the portal</p>
      * @return <p>This portal builder</p>
      */
@@ -197,7 +201,6 @@ public class PortalBuilder {
     }
 
     /**
-     *
      * @param networkName <p>The network argument to select networks from</p>
      * @return <p>This portal builder</p>
      */
@@ -209,6 +212,7 @@ public class PortalBuilder {
 
     /**
      * Build an instance of a portal
+     *
      * @return <p>An instance of a portal</p>
      * @throws TranslatableException
      * @throws GateConflictException

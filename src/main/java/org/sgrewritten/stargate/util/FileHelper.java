@@ -169,7 +169,7 @@ public final class FileHelper {
             } else {
                 path = Paths.get(uri);
             }
-            try(Stream<Path> paths = Files.walk(path, 1)){
+            try (Stream<Path> paths = Files.walk(path, 1)) {
                 walk = paths.toList();
             }
         } finally {
