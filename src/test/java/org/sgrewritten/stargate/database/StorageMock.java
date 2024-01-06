@@ -25,7 +25,7 @@ public class StorageMock implements StorageAPI {
     final Stack<ThreeTuple<RealPortal, StorageType, PortalPosition>> nextRemovedPortalPosition = new Stack<>();
 
     @Override
-    public void loadFromStorage(RegistryAPI registry, StargateAPI stargateAPI) {
+    public void loadFromStorage(StargateAPI stargateAPI) {
 
     }
 

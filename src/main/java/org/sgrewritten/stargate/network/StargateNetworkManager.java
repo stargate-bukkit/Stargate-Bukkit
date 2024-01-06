@@ -191,7 +191,7 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void loadPortals(StargateAPI stargateAPI) {
         try {
-            storageAPI.loadFromStorage(registry, stargateAPI);
+            storageAPI.loadFromStorage(stargateAPI);
         } catch (StorageReadException e) {
             Stargate.log(e);
             return;
