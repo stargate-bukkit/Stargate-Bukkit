@@ -150,6 +150,10 @@ public class StargateBungeeManager implements BungeeManager {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
             return;
         }
+        if(destinationPortal instanceof VirtualPortal){
+            Stargate.log(Level.WARNING, "The receiving portal for this message should not be a virtual portal, contact developers (do /sg for more info)");
+            return;
+        }
         destinationPortal.teleportHere(player, null);
     }
 
