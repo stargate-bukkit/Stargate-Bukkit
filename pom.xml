@@ -6,8 +6,36 @@
     <artifactId>stargate</artifactId>
     <version>1.0.0.14-ALPHA</version>
     <name>StarGate</name>
-    <description>Spigot plugin to create and manage networks of Stargates.</description>
+    <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
+    <url>https://sgrewitten.org</url>
+    <organization>
+        <name>Stargate Rewitten</name>
+        <url>https://sgrewitten.org</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>Thorin</id>
+            <url>thorinwasher.dev</url>
+        </developer>
+        <developer>
+            <id>Knarvik</id>
+            <url>knarcraft.net</url>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>The contributors of the SGR Project</name>
+            <url>https://sgrewitten.org/credits</url>
+        </contributor>
+    </contributors>
 
+    <licenses>
+        <license>
+            <name>Lesser General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html#license-text</url>
+        </license>
+    </licenses>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.17</spigot-version>
@@ -204,7 +232,7 @@
                     </filters>
                     <transformers>
                         <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
                     </transformers>
                 </configuration>
                 <executions>

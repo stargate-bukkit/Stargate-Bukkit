@@ -1,11 +1,11 @@
 name: Stargate
 main: org.sgrewritten.stargate.Stargate
 version: @version@
-description: Stargate mod for Bukkit
-authors: [ Dinnerbone, Drakia, PseudoKnight, Thorin, Knarvik ]
-website: https://discord.gg/mTaHuK6BVa
+description: The original, and still the best, transportation plugin for the Bukkit Ecosystem.
+authors: [ Knarvik, Thorin, sgrewitten.org/credits ]
+website: https://sgrewitten.org
 api-version: 1.16
-softdepend: [ Vault ]
+softdepend: [ Vault, StargateInterfaces, StargateCustomizations, StargateMechanics ]
 commands:
   stargate:
     description: Used to interact with the Stargate plugin at a system level.
