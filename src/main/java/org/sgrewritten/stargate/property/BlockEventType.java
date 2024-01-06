@@ -44,7 +44,9 @@ public enum BlockEventType {
 
     BLOCK_DISPENSE("BlockDispenseEvent"),
 
-    BLOCK_BREAK("BlockBreakEvent");
+    BLOCK_BREAK("BlockBreakEvent"),
+
+    TNT_PRIME("TNTPrimeEvent");
 
 
     private final String eventName;

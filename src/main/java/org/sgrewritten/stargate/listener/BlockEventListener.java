@@ -25,6 +25,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.block.TNTPrimeEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -354,5 +355,10 @@ public class BlockEventListener implements Listener {
         }
         Location dispensedLocation = event.getBlock().getLocation().clone().add(dispenser.getFacing().getDirection());
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_DISPENSE, dispensedLocation, stargateAPI);
+    }
+
+    @EventHandler(priority =  EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTNTPrime(TNTPrimeEvent tntPrimeEvent){
+        BlockEventHelper.onAnyBlockChangeEvent(tntPrimeEvent, BlockEventType.TNT_PRIME, tntPrimeEvent.getBlock().getLocation(), stargateAPI);
     }
 }
