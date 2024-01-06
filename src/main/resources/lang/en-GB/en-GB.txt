@@ -26,6 +26,7 @@ faultExists=A gate by that name already exists!
 faultFull=That network is full!
 faultWorldDeny=You do not have access to world %world%!
 faultConflict=This gate conflicts with an existing gate.
+faultConflictNetwork=Unable to forcefully specify network type; it would conflict with the %type% network of the same name!
 faultFlag=You lack permission to use the %flags% flags; your portal has been created without them!
 faultControls=This gate's design has too few control blocks to accommodate the flags you have selected!
 faultAddon=An add-on has prevented you from doing that!

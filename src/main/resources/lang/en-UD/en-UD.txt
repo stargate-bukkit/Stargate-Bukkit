@@ -26,6 +26,7 @@ faultExists=¡sʇsᴉxǝ ʎpɐǝɹlɐ ǝɯɐu ʇɐɥʇ ʎq ǝʇɐƃ ∀
 faultFull=¡llnɟ sᴉ ʞɹoʍʇǝu ʇɐɥ┴
 faultWorldDeny=¡%world% plɹoʍ oʇ ssǝɔɔɐ ǝʌɐɥ ʇou op no⅄
 faultConflict=˙ǝʇɐƃ ƃuᴉʇsᴉxǝ uɐ ɥʇᴉʍ sʇɔᴉlɟuoɔ ǝʇɐƃ sᴉɥ┴
+faultConflictNetwork=¡ǝɯɐu ǝɯɐs ǝɥʇ ɟo ʞɹoʍʇǝu %type% ǝɥʇ ɥʇᴉʍ ʇɔᴉlɟuoɔ plnoʍ ʇᴉ ;ǝdʎʇ ʞɹoʍʇǝu ʎɟᴉɔǝds ʎllnɟǝɔɹoɟ oʇ ǝlqɐu∩
 faultFlag=¡ɯǝɥʇ ʇnoɥʇᴉʍ pǝʇɐǝɹɔ uǝǝq sɐɥ lɐʇɹod ɹnoʎ ;sƃɐlɟ %flags% ǝɥʇ ǝsn oʇ uoᴉssᴉɯɹǝd ʞɔɐl no⅄
 faultControls=¡pǝʇɔǝlǝs ǝʌɐɥ noʎ sƃɐlɟ ǝɥʇ ǝʇɐpoɯɯoɔɔɐ oʇ sʞɔolq loɹʇuoɔ ʍǝɟ ooʇ sɐɥ uƃᴉsǝp s,ǝʇɐƃ sᴉɥ┴
 faultAddon=¡ʇɐɥʇ ƃuᴉop ɯoɹɟ noʎ pǝʇuǝʌǝɹd sɐɥ uo-ppɐ u∀

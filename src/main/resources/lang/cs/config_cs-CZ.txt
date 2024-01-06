@@ -24,3 +24,4 @@ tagNote=POZN.:
 
 
 #Admin
+translatedBy=Domavatus

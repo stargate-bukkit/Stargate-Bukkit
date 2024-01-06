@@ -12,3 +12,4 @@
 
 
 #Admin
+translatedBy=EpicKnarvik97 (Kristian Knarvik)

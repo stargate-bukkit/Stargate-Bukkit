@@ -21,3 +21,4 @@ subheaderDebug=Debug
 
 
 #Admin
+translatedBy=YK_DZ
