@@ -286,6 +286,9 @@ public class StargatePermissionManager implements PermissionManager {
      * @return <p> If the entity has the meta </p>
      */
     private boolean canFollow() {
+        if(!canProcessMetaData){
+            return hasPermission(target, "sg.use.follow");
+        }
         String metaString = "can-followthrough";
         Player player = (Player) target;
         String group = metadataProvider.getPrimaryGroup(metaString, player);
