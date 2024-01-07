@@ -26,6 +26,7 @@ public class GateLayoutTest {
     public static void setUp() {
         ServerMock server = MockBukkit.mock();
         server.addWorld(new WorldMock(Material.DIRT, 5));
+        System.setProperty("bstats.relocatecheck", "false");
         MockBukkit.load(Stargate.class);
         layout = GateHandler.getGateByName("nethergate.gate").getLayout();
     }
