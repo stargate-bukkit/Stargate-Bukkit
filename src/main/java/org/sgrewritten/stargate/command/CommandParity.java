@@ -75,12 +75,13 @@ public class CommandParity implements CommandExecutor {
             Stargate.log(Level.INFO, " Rejected parity upgrades.");
             return true;
         }
-        sender.sendMessage(languageManager.getWarningMessage(TranslatableMessage.PARITY_UPGRADE));
         File pluginsFolder = pluginFolder.getParentFile();
         File mechanicsFile = determineDestinationJarName(mechanics, MECHANICS_NAME, pluginsFolder);
         File interfacesFile = determineDestinationJarName(interfaces, INTERFACES_NAME, pluginsFolder);
         File customizationsFile = determineDestinationJarName(customizations, CUSTOMIZATIONS_NAME, pluginsFolder);
         File mapperFile = determineDestinationJarName(mapper, MAPPER_NAME, pluginsFolder);
+        sender.sendMessage(languageManager.getWarningMessage(TranslatableMessage.PARITY_UPGRADE).replace("%modules%",
+                String.format("%s, %s, %s, %s",MECHANICS_NAME,INTERFACES_NAME,CUSTOMIZATIONS_NAME,MAPPER_NAME)));
         try {
             downloadPlugin(mechanics, mechanicsFile);
             downloadPlugin(interfaces, interfacesFile);
@@ -97,6 +98,7 @@ public class CommandParity implements CommandExecutor {
             Stargate.log(e);
             Stargate.log(Level.WARNING, "Unable to download modules. It could be that they are not completed yet");
         }
+        properties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, false);
         return true;
     }
 
