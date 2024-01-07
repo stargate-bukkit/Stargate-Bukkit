@@ -81,7 +81,7 @@ public enum PluginChannel {
      * @param channel <p>The channel name to parse</p>
      * @return <p>The matching channel enum, or null if no match was found</p>
      */
-    static public PluginChannel parse(String channel) {
+    public static PluginChannel parse(String channel) {
         if (map.isEmpty()) {
             for (PluginChannel value : values()) {
                 map.put(value.getChannel(), value);
