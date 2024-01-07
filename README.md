@@ -1,5 +1,5 @@
 > **Documentation may be found** [here](https://sgrewritten.org/legacywiki)<br>
-> **Support is available via** [discord](https://discord.gg/mTaHuK6BVa)**.**
+> **Support is available via** [discord](https://sgrewritten.org/discord)**.**
 
 > **THIS IS A LEGACY-BASED BRANCH: IT IS SUPPORTED, BUT NOT ACTIVELY UPDATED**<br>
 > This branch expands upon Drakia's original 2013 codebase, with fixes as needed.<br>
@@ -521,6 +521,12 @@ portalInfoServer=Server: %server%
 > currently support your language, please submit a translation [here](https://sgrewritten.org/translate)!
 
 # Changes
+#### \[Version 0.11.5.6] Unified Legacy Fork
+- Fixed a potential stack trace experienced when disabling Dynmap
+- Fixed some problems related to negative economy transactions.
+- Fixed an exception occuring when negative yaw values are encountered.
+- Updated the about command and added a debug command.
+
 #### \[Version 0.11.5.5] Unified Legacy Fork
 - Hotfix for a compatibility issue preventing the plugin from working on most pre-1.20 server jars.
 
