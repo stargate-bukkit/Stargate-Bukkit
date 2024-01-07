@@ -6,8 +6,8 @@
 
 > **THIS IS A TESTING BUILD FROM THE ALPHA CHANNEL!**<br>
 > <br>
-> **FOR**: Addon developers, early adopters, and adventure seekers.
-> **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.
+> **FOR**: Addon developers, early adopters, and adventure seekers.<br>
+> **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.<br>
 > **EXPECT**: Test builds with bugs, incompatible addons, and possible crashes.<br>
 >
 > **THIS BUILD IS NOT YET SUITABLE FOR USE AT SCALE OR ON MOST PRODUCTION SERVERS**<BR>
@@ -19,7 +19,7 @@
 
 **The original, and still the best, transportation solution for the [Bukkit](https://docs.papermc.io/paper) ecosystem!**<br>A Minecraft [Spigot](https://www.spigotmc.org/wiki/spigot/)/[Paper](https://github.com/PaperMC/Paper) plugin facilitating player interactions through interconnection.
 
-> **:desktop_computer: [Website](https://sgrewritten.org)**<br>**⬇[Downloads](https://sgrewritten.org/download)**<br>**📑[Documentation](https://sgrewritten.org/wiki)**<br>**🗣[Support](https://sgrewritten.org/discord)**
+> **🖥️[Website](https://sgrewritten.org)**<br>**⬇[Downloads](https://sgrewritten.org/download)**<br>**📑[Documentation](https://sgrewritten.org/wiki)**<br>**🗣[Support](https://sgrewritten.org/discord)**
 
 ## Features
 
@@ -37,4 +37,4 @@
 
 *The continuation of Minecraft's first portal plugin, Stargate, by [Sturmeh](https://github.com/sturmeh) and [Dinnerbone](https://github.com/dinnerbone).*<br>*Guided by [the original philosophy](https://sgrewritten.org/philosophy) and [rewritten](https://sgrewritten.org/rewrite) from the ground up for modern versions of MC.*<br>*With inspiration from [Drakia](https://github.com/drakiaxyz)'s [port](https://bukkit.org/threads/stargate-the-original-portal-plugin.3274/) and it's subsequent revivals (notably [SGRevived](https://github.com/epicknarvik97) and [SG10](https://github.com/thorinwasher))*.
 
-*:heart: [Credits](https://sgrewritten.org/credits)*
+*♥️ [Credits](https://sgrewritten.org/credits)*
