@@ -1,5 +1,117 @@
 # Changes
 
+#### [Version 1.0.0.15] Stargate-Rewritten
+
+- Added a trace command to improve UX for bug reporting
+- Changed to new package name (org.sgrewitten)
+- Moved low-usage flags to the SG-Mechanics module (`Q`, `H`, `N`, `S`)
+- Updated localisation targets and pulled most recent translations from crowdin.
+- Added default detections for sublanguage specifications based on parent locales.
+- Significant documentation improvements, partial javadoc overhaul, javadoc update, and typo fixes.
+- Overhauled config comments, updated links therein, and connected to documentation.
+- Significantly expanded and improved unit testing.
+- Improved and updated config migrator and legacy importers.
+- Removed unused or redundant redundant code and classes and removed a number of duplicate methods.
+- Cleaned up unneccessary resource usage and other significant optimisations including some asynchronization.
+- Completely overhauled the API and massively refactored its implementation.
+- Improved consistency of errors and error levels; improved logging.
+- Improved vector logic and some internal handling thereof.
+- Removed a bunch of unneccessary imports and fixed some code formatting.
+- Improved and updated build and meta files notably including pom.xml and plugin.yml.
+- Refactored a bunch of database handling logic as to prevent a number of related bugs.
+- Improved database query abstraction and engine support.
+- Re-added the concept of portal ownership, and implemented an assortment of methods to support it.
+- Added internal support for several paradigms likely to be used in addons (including multisign or nonsign gates)
+- Major redesign of portal validation logic and significant refactors to improve support of it.
+- Significantly improved portal detection and loading logic.
+- Massively overhauled and completely refactored name handling, both locally and for interserver setups, to completely support conflicts between differently typed networks with the same name.
+- Improved integration with Crowdin and some CI systems.
+- Completely overhauled the colour system and related configurations as to ensure legibility.
+- Completely overhauled the vanilla dye interaction system.
+- Massively overhauled database handling and massively refactored the internal registry.
+- Cleaned up shading of some dependencies.
+- Major refactor on portal and networking logic.
+- Added code to make use of upstream PRs in such a way as to support Powered Minecarts.
+- Renamed, moved, cleaned, and refactored a great number of miscellaneous classes.
+- Added a load of interfaces for the API, with the aim of facilitating modules.
+- Simplified logic for internal handling of virtual portals.
+- Improved a number of miscellaneous checks.
+- Completely reworked and refactored events and handling thereof; moved all permissions away from events.
+- Updated a load of dependencies.
+- Improved a bunch of debug messages and code commenting.
+- Greatly improved the stability and safety of the teleporter algorithm; added DFS.
+- Made some changes to the information storage model for addons.
+- Improved support for importing legacy configurations using old material names or numbers.
+- Added a number of translatable messages for many circumstantial warnings; started config localisation project.
+- Added the concept of hidden configuration values and properties.
+- Added a `sg.owned` parent permission.
+- Added support for glow ink.
+- Added some missing listeners
+- Prevented use of sign editing and text on the back of signs (for now)
+- Cleaned up a bunch of code according to various conventions
+- Fixed some pathing issues.
+- Adds paper as a soft dependency
+- Added a debug folder to populate with internal files and backups of converted user-provided files.
+- Added cone based portal exit handling to minimise entity chain suffocation.
+- Fixed some connections failing to close.
+- Fixed some problems involving vanilla worldborders.
+- Fixed some portal deactivation problems.
+- Fixed a handful of problems involving the end, end teleportation, and some related visual problems.
+- Fixed a bunch of problems involving server bank accounts (for closed economies)
+- Fixed a handful of encoding problems.
+- Fixed interserver and bungee portals failing to destinate at a specified stargate.
+- Fixed a bunch of economy problems including a potential currency duplication issue.
+- Fixed a bunch of behaviour problems with relation to `I` portals as destinations.
+- Fixed some spacing issues on signs.
+- Fixed a number of visual problems involving long distance entity teleportation in the overworld.
+- Fixed countless edge cases
+- Fixed a bunch of block-state errors for underwater portals
+- Fixes handling of invalid languages specified by users.
+- Fixed some potential legacy migration crashes.
+- Fixed a number of flaws impacting network initialisation.
+- Fixed some crashes related to invalid portal gate materials. 
+- Fixed a bunch of version incompatibilities and flaws in checks for these.
+- Fixed a bunch of incorrect assumptions regarding interserver teleportation.
+- Fixed a bunch of permission problems resulting from UUID issues.
+- Fixed a number of issues involving crashes related to improper handling of named network type conflicts.
+- Fixed an assortment of potential bungeecord problems; velocity now indirectly supported.
+- Fixed a situation wherein the plugin could enter an infinite loop of stack-trace printing warnings.
+- Fixed some illegal casting problems.
+- Fixed some issues that could lead to certain configuration options being ignored
+- Fixed some issues wherein explosions could crash the plugin in certain circumstances.
+- Fixed a bug wherein portals with invalid destinations could crash the plugin in certain circumstances.
+- Fixed a bunch of bungs that could lead to the emergence of "ghost signs".
+- Fixed some behaviour that could cause portals to point to non-existent destinations.
+
+- Fixed an issue wherein spawn protection warning could produce false positives.
+- Fixed a number of visual problems.
+- Fixes some encapsulation problems
+- Fixed some invalid handling of tnt and some flaws in portal protection.
+- Fixed an assortment of sortation problems.
+- Fixed a bunch of circumstances wherein certain permission nodes would be improperly ignored.
+- Fixed a bunch of sanitization problems; prevents a bunch of crashes from unusual user input.
+- Fixed a painfully large number of database bugs.
+- Fixed a bug wherein improper loading could cause database corruption.
+- Fixed incorrect portal position calculation and related logic.
+- Fixed a litany of issues involving portal loading and the `A` flag.
+- Fixed a load of incorrect assumptions regarding plugin behaviour.
+- Fixed a bunch of metrics problems.
+- Fixed a bunch of crashes involving mismatches in internal network handling
+- Fixed some bugs involving rotation; fixed some related bugs involving legacy imports.
+- Fixed a bug where imported configurations could end up incorrectly commented.
+- Fixed a bunch of storage logic to prevent an assortment of storage related crashes.
+- Fixed a load of invalid unit tests, some indexing, and a few related potential crashes.
+- Fixed a number of miscellaneous crash bugs including a number of potential null pointers.
+- Fixed a bug that prevented certain combinations of flags from erroneously blocking portal creation.
+- Fixed a load of incorrect, missing, or improperly nested permission nodes and groups thereof.
+- Fixed a bug that could result in the reload command crashing the plugin.
+- Fixed a crash bug that could be caused by creating an Always On Networked portal.
+- Fixed a bunch of debug messages, errors, and user feedback messages being sent prematurely or incorrectly.
+- Fixed a bug which could break virtual portals
+- Fixed a bug wherein buttons could generate in invalid positions and in invalid circumstances.
+- Fixed a bug that could cause registration of invalid control blocks.
+- And fixed hundreds, if not thousands, of other random miscellaneous bugs too specific to specify above.
+
 #### [Version 1.0.0.0] Stargate-Rewritten
 
 - Rewrote entire codebase and reached parity with legacy's features.
