@@ -25,13 +25,13 @@ public class CommandParity implements CommandExecutor {
 
     private final @NotNull StoredPropertiesAPI properties;
     private final boolean doParityUpgrades;
-    private static final String MECHANICS_URL = "https://sgrewritten.org/download-sgm";
+    private static final String MECHANICS_URL = "https://sgrewritten.org/downloadsgm";
     private static final String MECHANICS_NAME = "StargateMechanics";
-    private static final String INTERFACES_URL = "https://sgrewritten.org/download-sgi";
+    private static final String INTERFACES_URL = "https://sgrewritten.org/downloadsgi";
     private static final String INTERFACES_NAME = "StargateInterfaces";
-    private static final String CUSTOMIZATIONS_URL = "https://sgrewritten.org/download-sgc";
+    private static final String CUSTOMIZATIONS_URL = "https://sgrewritten.org/downloadsgc";
     private static final String CUSTOMIZATIONS_NAME = "StargateCustomizations";
-    private static final String MAPPER_URL = "https://sgrewritten.org/download-sgmap";
+    private static final String MAPPER_URL = "https://sgrewritten.org/downloadmapper";
     private static final String MAPPER_NAME = "StargateMapper";
     private static final String OLD_CONFIG_LOCATION = "debug/config.yml.old";
     private final File pluginFolder;
