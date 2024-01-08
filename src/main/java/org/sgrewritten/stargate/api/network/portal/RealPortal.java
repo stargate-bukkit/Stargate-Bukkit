@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * A real portal with a physical sign that is located on this server
  */
 @SuppressWarnings("unused")
-public interface RealPortal extends Portal {
+public interface RealPortal extends Portal, MetadataHolder {
 
     /**
      * Gets the line to be drawn for the signs
@@ -83,20 +84,6 @@ public interface RealPortal extends Portal {
      * @return <p>The location of this portal's signs</p>
      */
     List<Location> getPortalPosition(PositionType type);
-
-    /**
-     * Set metadata for this portal
-     *
-     * @param data <p> The meta data to set </p>
-     */
-    void setMetaData(String data);
-
-    /**
-     * Get metadata for this portal
-     *
-     * @return <p> The meta data of this portal </p>
-     */
-    String getMetaData();
 
     /**
      * Get the facing entities exit from this portal.

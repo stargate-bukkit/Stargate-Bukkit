@@ -617,7 +617,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setMetaData(String data) {
+    public void setMetadata(String data) {
         try {
             this.metaData = data;
             if (this.savedToStorage) {
@@ -629,7 +629,7 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public String getMetaData() {
+    public String getMetadata() {
         if (this.metaData != null || !this.savedToStorage) {
             return this.metaData;
         }

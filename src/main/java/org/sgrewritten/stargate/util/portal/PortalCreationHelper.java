@@ -47,6 +47,7 @@ public final class PortalCreationHelper {
                                           StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
 
+        RealPortal portal;
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL);

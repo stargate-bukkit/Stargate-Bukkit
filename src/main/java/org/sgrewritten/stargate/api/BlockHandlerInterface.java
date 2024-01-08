@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.network.portal.MetaData;
+import org.sgrewritten.stargate.api.network.portal.Metadata;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 
@@ -46,7 +46,7 @@ public interface BlockHandlerInterface {
      * @param portal        The affected portal
      * @return Whether to claim the block
      */
-    boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, MetaData metaData);
+    boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, Metadata metaData);
 
     /**
      * Called if a Stargate is removed, and the add-on has registered this location

@@ -419,9 +419,9 @@ public class SQLQueryGenerator {
 
         if (isInterServer) {
             statement.setString(12, Stargate.getServerUUID());
-            statement.setString(13, portal.getMetaData());
+            statement.setString(13, portal.getMetadata());
         } else {
-            statement.setString(12, portal.getMetaData());
+            statement.setString(12, portal.getMetadata());
         }
 
         Stargate.log(Level.FINEST, "sql query: " + statementMessage);

@@ -248,6 +248,7 @@ public class PortalBuilder {
         flags.add(network.getType().getRelatedFlag());
         UUID ownerUUID = network.getType() == NetworkType.PERSONAL ? UUID.fromString(network.getId()) : owner.getUniqueId();
         RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, unrecognisedFlags, gateAPI, ownerUUID, stargateAPI, metaData);
+        gateAPI.assignPortal(portal);
         permissionAndEventHandling(portal, network);
 
         flagChecks(flags);

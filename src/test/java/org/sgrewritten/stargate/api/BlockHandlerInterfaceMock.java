@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.MetaData;
+import org.sgrewritten.stargate.api.network.portal.Metadata;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -60,7 +60,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
     }
 
     @Override
-    public boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, MetaData data) {
+    public boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, Metadata data) {
         if (isRegisterPlacedBlock) {
             registeredBlocks.put(new BlockLocation(blockLocation), new TwoTuple<>(player, portal));
         }

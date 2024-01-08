@@ -157,4 +157,11 @@ public interface GateAPI {
      * Modify the world such that the gate follows its gateformat
      */
     void forceGenerateStructure();
+
+    /**
+     * Assign a real portal to this gate
+     * @param realPortal <p>The portal to assign to this gate</p>
+     */
+    @ApiStatus.Internal
+    void assignPortal(RealPortal realPortal);
 }

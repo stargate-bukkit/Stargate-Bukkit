@@ -31,6 +31,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
 import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
@@ -64,6 +65,7 @@ public class Gate implements GateAPI {
     private boolean isOpen = false;
     private boolean flipped;
     private final @NotNull RegistryAPI registry;
+    private RealPortal portal;
 
 
     /**
@@ -528,5 +530,16 @@ public class Gate implements GateAPI {
      */
     public void addPortalPositions(List<PortalPosition> portalPositions) {
         this.portalPositions.addAll(portalPositions);
+    }
+
+    @Override
+    public void assignPortal(@NotNull RealPortal realPortal){
+        if(this.portal != null){
+            throw new IllegalStateException("A portal position can only be assigned to a portal once.");
+        }
+        this.portal = Objects.requireNonNull(realPortal);
+        for(PortalPosition portalPosition : this.portalPositions){
+            portalPosition.assignPortal(realPortal);
+        }
     }
 }

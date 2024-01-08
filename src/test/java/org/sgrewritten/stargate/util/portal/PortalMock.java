@@ -197,12 +197,12 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public void setMetaData(String data) {
+    public void setMetadata(String data) {
 
     }
 
     @Override
-    public String getMetaData() {
+    public String getMetadata() {
         return null;
     }
 

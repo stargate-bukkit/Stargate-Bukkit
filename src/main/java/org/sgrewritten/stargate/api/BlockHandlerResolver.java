@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.MetaData;
+import org.sgrewritten.stargate.api.network.portal.Metadata;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -82,13 +82,14 @@ public class BlockHandlerResolver {
         }
         for (RealPortal portal : portals) {
             for (BlockHandlerInterface blockHandlerInterface : blockHandlerMap.get(material)) {
-                MetaData metaData = new MetaData("");
+                Metadata metaData = new Metadata("");
                 if (portal.hasFlag(blockHandlerInterface.getFlag()) && blockHandlerInterface.registerBlock(location, player, portal, metaData)) {
                     PortalPosition portalPosition = registry.savePortalPosition(portal, location, blockHandlerInterface.getInterfaceType(), blockHandlerInterface.getPlugin());
+                    portalPosition.assignPortal(portal);
                     registry.registerPortalPosition(portalPosition, location, portal);
                     blockBlockHandlerMap.put(new BlockLocation(location), blockHandlerInterface);
-                    if (!metaData.getMetaDataString().isEmpty()) {
-                        portalPosition.setMetaData(portal, metaData.getMetaDataString());
+                    if (metaData.getMetadata() != null && !metaData.getMetadata().isEmpty()) {
+                        portalPosition.setMetadata(metaData.getMetadata());
                     }
                     return;
                 }

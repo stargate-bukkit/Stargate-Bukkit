@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 
 import java.util.List;
@@ -109,6 +110,11 @@ public class GateMock implements GateAPI {
 
     @Override
     public void forceGenerateStructure() {
+
+    }
+
+    @Override
+    public void assignPortal(RealPortal realPortal) {
 
     }
 }

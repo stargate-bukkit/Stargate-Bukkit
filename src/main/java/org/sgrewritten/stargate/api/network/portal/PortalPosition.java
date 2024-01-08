@@ -1,9 +1,14 @@
 package org.sgrewritten.stargate.api.network.portal;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
@@ -12,13 +17,14 @@ import java.util.Objects;
 /**
  * A position of a portal's control block
  */
-public class PortalPosition {
+public class PortalPosition implements MetadataHolder {
 
     private final PositionType positionType;
     private final BlockVector relativePositionLocation;
     private final String pluginName;
     private boolean active;
     private @Nullable String metaData = null;
+    private RealPortal portal;
 
     /**
      * Instantiates a new active portal position
@@ -66,37 +72,12 @@ public class PortalPosition {
         return this.relativePositionLocation;
     }
 
-    /**
-     * @param portal <p> The portal which this position belongs to </p>
-     * @return
-     */
-    @Nullable
-    public String getMetaData(RealPortal portal) {
-        if (metaData != null) {
-            return metaData;
+    @ApiStatus.Internal
+    public void assignPortal(RealPortal portal) {
+        if (this.portal != null) {
+            throw new IllegalStateException("A portal position can only be assigned to a portal once.");
         }
-        try {
-            metaData = Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
-            return metaData;
-        } catch (StorageReadException e) {
-            Stargate.log(e);
-            return null;
-        }
-    }
-
-    /**
-     * Set the metadata for specified portal position
-     *
-     * @param portal <p>The owner of this portal position</p>
-     * @param data   <p>The new metadata</p>
-     */
-    public void setMetaData(@NotNull RealPortal portal, @NotNull String data) {
-        try {
-            this.metaData = Objects.requireNonNull(data);
-            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        this.portal = Objects.requireNonNull(portal);
     }
 
     /**
@@ -133,5 +114,29 @@ public class PortalPosition {
      */
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void setMetadata(@Nullable String data) {
+        try {
+            this.metaData = Objects.requireNonNull(data);
+            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public String getMetadata() {
+        if (metaData != null) {
+            return metaData;
+        }
+        try {
+            metaData = Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
+            return metaData;
+        } catch (StorageReadException e) {
+            Stargate.log(e);
+            return null;
+        }
     }
 }
