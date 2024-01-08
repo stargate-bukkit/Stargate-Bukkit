@@ -167,6 +167,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
         if(registry.getPortal(event.getBlock().getLocation()) != null){
+            event.setCancelled(true);
             return;
         }
         Player player = event.getPlayer();
