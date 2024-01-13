@@ -71,7 +71,11 @@ public class StargateNetworkManager implements NetworkManager {
             if (finalNetworkName.equals(player.getName())) {
                 finalNetworkName = player.getUniqueId().toString();
             } else {
-                finalNetworkName = this.getPlayerUUID(finalNetworkName).toString();
+                UUID playerUUID = this.getPlayerUUID(finalNetworkName);
+                if(playerUUID == null){
+                    throw new InvalidNameException("No such player: " + finalNetworkName);
+                }
+                finalNetworkName = playerUUID.toString();
             }
         }
         if (type == NetworkType.DEFAULT
@@ -137,8 +141,7 @@ public class StargateNetworkManager implements NetworkManager {
         if (possibleNetwork != null) {
             return new TwoTuple<>(possibleNetwork.getType(), name);
         }
-        UUID playerUUID = this.getPlayerUUID(name);
-        if (registry.getNetwork(playerUUID.toString(), storageType) != null) {
+        if (registry.getNetworkRegistry(storageType).getFromName(name) != null) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         return new TwoTuple<>(NetworkType.CUSTOM, name);
