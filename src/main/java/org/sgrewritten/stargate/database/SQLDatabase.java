@@ -263,6 +263,9 @@ public class SQLDatabase implements StorageAPI {
         }
         gate.addPortalPositions(portalPositions);
         RealPortal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
+        if(portal instanceof AbstractPortal abstractPortal){
+            abstractPortal.setSavedToStorage();
+        }
         gate.assignPortal(portal);
         network.addPortal(portal);
         Stargate.log(Level.FINEST, "Added as normal portal");
