@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.gate;
 
 import org.bukkit.Material;
+import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.gate.GateFormat;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class GateFormatRegistry {
      *
      * @param gateFormats <p>The new list of known gate formats</p>
      */
+    @ApiStatus.Internal
     public static void setFormats(List<GateFormat> gateFormats) {
         controlMaterialToGateFormatsMap = new EnumMap<>(Material.class);
         knownGateFormats = new HashMap<>();
