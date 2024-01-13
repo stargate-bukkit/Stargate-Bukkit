@@ -29,27 +29,27 @@ public interface MetadataHolder {
     /**
      * Set the metadata of this instance
      * @param data <p>The data to set</p>
-     * @param plugin <p>The name of the plugin this relates to</p>
+     * @param field <p>The name of the plugin or field this relates to</p>
      */
-    default void setMetadata(@Nullable JsonElement data, String plugin){
+    default void setMetadata(@Nullable JsonElement data, String field){
         JsonObject metadata = loadMetadata();
         if (data == null) {
-            metadata.remove(plugin);
+            metadata.remove(field);
         } else {
-            metadata.add(plugin, data);
+            metadata.add(field, data);
         }
         this.setMetadata(metadata.toString());
     }
 
     /**
      * Get the metadata of this instance
-     * @param pluginName <p>The name of the plugin this relates to</p>
+     * @param field <p>The name of the plugin or field this relates to</p>
      * @return <p>The metadata of this instance</p>
      */
     @Nullable
-    default JsonElement getMetadata(String pluginName){
+    default JsonElement getMetadata(String field){
         JsonObject metaData = loadMetadata();
-        return metaData.get(pluginName);
+        return metaData.get(field);
     }
 
     private @NotNull JsonObject loadMetadata(){

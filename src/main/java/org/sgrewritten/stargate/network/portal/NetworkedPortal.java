@@ -1,10 +1,14 @@
 package org.sgrewritten.stargate.network.portal;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateActivatePortalEvent;
@@ -25,6 +29,8 @@ import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.property.MetadataType;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
@@ -42,11 +48,13 @@ import java.util.logging.Level;
 public class NetworkedPortal extends AbstractPortal {
 
     private static final int NO_DESTINATION_SELECTED = -1;
+    private @Nullable String loadedDestination = null;
 
     private int selectedDestination = NO_DESTINATION_SELECTED;
     private List<Portal> destinations = new ArrayList<>();
 
     private boolean isActive;
+    private long previousDestinationSelectionTime;
 
     /**
      * Instantiates a new networked portal
@@ -59,8 +67,17 @@ public class NetworkedPortal extends AbstractPortal {
      * @throws NameLengthException
      */
     public NetworkedPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
-                           LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
-        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
+                           LanguageManager languageManager, StargateEconomyAPI economyAPI, String metadataString) throws NameLengthException {
+        super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metadataString);
+        if (!hasFlag(PortalFlag.ALWAYS_ON)) {
+            return;
+        }
+        JsonElement destinationElement = getMetadata(MetadataType.DESTINATION.name());
+        if (destinationElement == null) {
+            return;
+        }
+        this.loadedDestination = destinationElement.getAsString();
+        this.isActive = true;
     }
 
     @Override
@@ -91,10 +108,11 @@ public class NetworkedPortal extends AbstractPortal {
             return;
         }
 
-        selectedDestination = selectNewDestination(event.getAction(), previouslyActivated);
+        setSelectedDestination(selectNewDestination(event.getAction(), previouslyActivated));
         this.updateState();
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             super.destination = getDestination();
+
         }
     }
 
@@ -110,18 +128,18 @@ public class NetworkedPortal extends AbstractPortal {
             if (!ConfigurationHelper.getBoolean(ConfigurationOption.REMEMBER_LAST_DESTINATION)) {
                 return 0;
             } else {
-                if (selectedDestination == NO_DESTINATION_SELECTED) {
-                    selectedDestination = 0;
+                if (getSelectedDestination() == NO_DESTINATION_SELECTED) {
+                    setSelectedDestination(0);
                 }
-                return selectedDestination;
+                return getSelectedDestination();
             }
         }
 
         if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
             int step = (action == Action.RIGHT_CLICK_BLOCK) ? 1 : -1;
-            return getNextDestination(step, selectedDestination);
+            return getNextDestination(step, getSelectedDestination());
         }
-        return selectedDestination;
+        return getSelectedDestination();
     }
 
     @Override
@@ -134,29 +152,37 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public void updateState() {
-        Portal destination = getDestination();
+        Portal destination;
+        if(hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null){
+            destination = network.getPortal(this.loadedDestination);
+            this.loadedDestination = null;
+        } else {
+            destination = getDestination();
+        }
         if (this.isActive && (destination == null || network.getPortal(destination.getName()) == null)) {
             this.deactivate();
             this.isActive = false; // in case of alwaysOn portal
             this.close(true);
         }
 
-        this.selectedDestination = reloadSelectedDestination();
+        setSelectedDestination(reloadSelectedDestination(destination));
         super.updateState();
     }
 
     /**
      * Calculate the position of the portal that is selected, assuming the available destinations have changed.
      *
+     * @param destination <p>The previously selected portal</p>
      * @return <p> The position of the selected portal in the destinations list</p>
      */
-    private int reloadSelectedDestination() {
-        if (!this.isActive || super.activator == null) {
-            return NO_DESTINATION_SELECTED;
+    private int reloadSelectedDestination(Portal destination){
+        Player player;
+        if (super.activator == null || hasFlag(PortalFlag.ALWAYS_ON)) {
+            player = null;
+        } else {
+            player = Bukkit.getPlayer(activator);
         }
-
-        Portal destination = this.destinations.get(this.selectedDestination);
-        destinations = getDestinations(Bukkit.getPlayer(activator));
+        destinations = getDestinations(player);
         if (destinations.contains(destination)) {
             return destinations.indexOf(destination);
         }
@@ -177,7 +203,7 @@ public class NetworkedPortal extends AbstractPortal {
     public SignLine[] getDrawnControlLines() {
         SignLine[] lines = new SignLine[4];
         lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL);
-        if (!this.isActive || this.selectedDestination == NO_DESTINATION_SELECTED) {
+        if (!this.isActive || this.getSelectedDestination() == NO_DESTINATION_SELECTED) {
             lines[1] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK)));
             lines[2] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE)));
             lines[3] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()), getNetwork());
@@ -189,10 +215,10 @@ public class NetworkedPortal extends AbstractPortal {
 
     @Override
     public Portal getDestination() {
-        if (selectedDestination == NO_DESTINATION_SELECTED || selectedDestination >= destinations.size()) {
+        if (getSelectedDestination() == NO_DESTINATION_SELECTED || getSelectedDestination() >= destinations.size()) {
             return null;
         }
-        return destinations.get(selectedDestination);
+        return destinations.get(getSelectedDestination());
     }
 
     /**
@@ -201,8 +227,8 @@ public class NetworkedPortal extends AbstractPortal {
      * @param lines <p>The sign lines to update</p>
      */
     private void drawActiveSign(SignLine[] lines) {
-        int destinationIndex = selectedDestination % 3;
-        int firstDestination = selectedDestination - destinationIndex;
+        int destinationIndex = getSelectedDestination() % 3;
+        int firstDestination = getSelectedDestination() - destinationIndex;
         int maxLength = destinations.size();
         for (int lineIndex = 0; lineIndex < 3; lineIndex++) {
             int destination = lineIndex + firstDestination;
@@ -240,17 +266,20 @@ public class NetworkedPortal extends AbstractPortal {
      * The destinations available to the player
      * </p>
      */
-    private List<Portal> getDestinations(Player player) {
+    private List<Portal> getDestinations(@Nullable Player player) {
+        List<String> availablePortals;
         if (player == null) {
-            return new ArrayList<>();
+            availablePortals = new ArrayList<>(network.getAllPortals().stream().map(Portal::getId).toList());
+            availablePortals.remove(this.getId());
+        } else {
+            availablePortals = new ArrayList<>(network.getAvailablePortals(player, this));
         }
-        List<String> availablePortals = new ArrayList<>(network.getAvailablePortals(player, this));
         Collections.sort(availablePortals);
-        List<Portal> destinations = new ArrayList<>();
+        List<Portal> output = new ArrayList<>();
         for (String name : availablePortals) {
-            destinations.add(network.getPortal(name));
+            output.add(network.getPortal(name));
         }
-        return destinations;
+        return output;
     }
 
     /**
@@ -356,5 +385,26 @@ public class NetworkedPortal extends AbstractPortal {
         super.deactivate();
     }
 
+    private void setSelectedDestination(int selectedDestination) {
+        if (hasFlag(PortalFlag.ALWAYS_ON)) {
+            final long currentTime = System.currentTimeMillis();
+            this.previousDestinationSelectionTime = currentTime;
+            Bukkit.getScheduler().runTaskLater(Stargate.getInstance(), () -> {
+                Portal destination = getDestination();
+                if (currentTime == previousDestinationSelectionTime && destination != null) {
+                    /*
+                     * setSelectedDestination(int) can be called multiple times within the same millisecond, this avoids
+                     * duplicate unnecessary calls
+                     */
+                    previousDestinationSelectionTime = -1;
+                    ThreadHelper.callAsynchronously(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
+                }
+            },20);
+        }
+        this.selectedDestination = selectedDestination;
+    }
 
+    private int getSelectedDestination() {
+        return this.selectedDestination;
+    }
 }
