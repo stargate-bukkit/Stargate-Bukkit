@@ -1,7 +1,9 @@
 package org.sgrewritten.stargate.network;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.StargateAPI;
@@ -69,7 +71,7 @@ public class StargateNetworkManager implements NetworkManager {
             if (finalNetworkName.equals(player.getName())) {
                 finalNetworkName = player.getUniqueId().toString();
             } else {
-                finalNetworkName = NetworkCreationHelper.getPlayerUUID(finalNetworkName).toString();
+                finalNetworkName = this.getPlayerUUID(finalNetworkName).toString();
             }
         }
         if (type == NetworkType.DEFAULT
@@ -98,7 +100,7 @@ public class StargateNetworkManager implements NetworkManager {
         return network;
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, StorageType storageType) {
+    private TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, StorageType storageType) {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
@@ -115,7 +117,7 @@ public class StargateNetworkManager implements NetworkManager {
         return new TwoTuple<>(type, nameToTestFor);
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
+    private TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
                                                                                    PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
             return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
@@ -123,8 +125,8 @@ public class StargateNetworkManager implements NetworkManager {
         return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
-                                                                                      PermissionManager permissionManager, StorageType storageType, RegistryAPI registry) {
+    private TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
+                                                                               PermissionManager permissionManager, StorageType storageType, RegistryAPI registry) {
         if (name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
@@ -135,7 +137,7 @@ public class StargateNetworkManager implements NetworkManager {
         if (possibleNetwork != null) {
             return new TwoTuple<>(possibleNetwork.getType(), name);
         }
-        UUID playerUUID = NetworkCreationHelper.getPlayerUUID(name);
+        UUID playerUUID = this.getPlayerUUID(name);
         if (registry.getNetwork(playerUUID.toString(), storageType) != null) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
@@ -250,6 +252,18 @@ public class StargateNetworkManager implements NetworkManager {
             }
         });
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
+    }
+
+
+    /**
+     * Gets a player's UUID from the player's name
+     *
+     * @param playerName <p>The name of a player</p>
+     * @return <p>The player's unique ID</p>
+     */
+    private @Nullable UUID getPlayerUUID(String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
+        return offlinePlayer == null ? null : offlinePlayer.getUniqueId();
     }
 
 }

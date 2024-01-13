@@ -35,16 +35,6 @@ public final class NetworkCreationHelper {
     }
 
     /**
-     * Gets a player's UUID from the player's name
-     *
-     * @param playerName <p>The name of a player</p>
-     * @return <p>The player's unique ID</p>
-     */
-    public static UUID getPlayerUUID(String playerName) {
-        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
-    }
-
-    /**
      * Get a network that is conflicting with the
      *
      * @param network
