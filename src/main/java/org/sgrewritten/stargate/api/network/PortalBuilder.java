@@ -163,7 +163,7 @@ public class PortalBuilder {
      * Requires the constructor {@link PortalBuilder#PortalBuilder(StargateAPI, OfflinePlayer, String, String, GateBuilder)} to matter
      *
      * @param adaptiveGatePositionGeneration <p>Whether to generate portal positions for the gate</p>
-     * @return
+     * @return <p>This portal builder</p>
      */
     public PortalBuilder setAdaptiveGatePositionGeneration(boolean adaptiveGatePositionGeneration) {
         this.adaptiveGatePositionGeneration = adaptiveGatePositionGeneration;
@@ -229,7 +229,7 @@ public class PortalBuilder {
         }
         if (permissionManager != null) {
             Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
-            if (disallowedFlags.size() > 0 && messageTarget != null) {
+            if (disallowedFlags.isEmpty() && messageTarget != null) {
                 String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
                 messageTarget.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
             }
@@ -254,7 +254,7 @@ public class PortalBuilder {
         flagChecks(flags);
         economyCheck(portal);
         finalChecks(portal, network);
-        getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
+        getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
         portal.setSignColor(Stargate.getDefaultDyeColor());

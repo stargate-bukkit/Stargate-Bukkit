@@ -91,7 +91,6 @@ public class GateFormatRegistry {
             return new ArrayList<>();
         }
         return possibleGates;
-
     }
 
 }
