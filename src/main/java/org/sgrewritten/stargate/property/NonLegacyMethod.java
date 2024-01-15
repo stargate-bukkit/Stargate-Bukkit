@@ -86,7 +86,7 @@ public enum NonLegacyMethod {
      * 
      * <p>An experiment from the PaperMC project that adds regional scheduling</p>
      */
-    FOLIA("io.papermc.threadedregions.scheduler.EntityScheduler", "equals", Object.class);
+    FOLIA("io.papermc.paper.threadedregions.RegionizedServer", "equals", Object.class);
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;

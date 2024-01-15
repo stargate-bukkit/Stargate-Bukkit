@@ -85,7 +85,6 @@ import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -96,7 +95,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -187,12 +185,13 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             
             registerListeners();
             if (NonLegacyMethod.FOLIA.isImplemented()) {
-                GlobalRegionScheduler globalscheduler = getServer().getGlobalRegionScheduler();
-                globalscheduler.runAtFixedRate(this, (Consumer<ScheduledTask>) synchronousTickPopulator, 0L, 1L);
-                globalscheduler.runAtFixedRate(this, (Consumer<ScheduledTask>) syncSecPopulator, 0L, 1L);
+                GlobalRegionScheduler globalScheduler = getServer().getGlobalRegionScheduler();
+                globalScheduler.runAtFixedRate(this, task -> synchronousTickPopulator.run(), 1L, 1L);
+                globalScheduler.runAtFixedRate(this, task -> syncSecPopulator.run(), 1L, 20L);
                         
             } else {
-                BukkitScheduler scheduler = getServer().getScheduler();
+                BukkitScheduler scheduler;
+                scheduler = getServer().getScheduler();
                 scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
                 scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
                 ThreadHelper.setAsyncQueueEnabled(true);
@@ -630,9 +629,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             messenger.unregisterOutgoingPluginChannel(this);
             messenger.unregisterIncomingPluginChannel(this);
         }
-        getServer().getScheduler().cancelTasks(this);
-
+        
+        if (NonLegacyMethod.FOLIA.isImplemented()) {
+            getServer().getGlobalRegionScheduler().cancelTasks(this);
+        } else {
+            getServer().getScheduler().cancelTasks(this);
+        }
         instance = null;
+        
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
