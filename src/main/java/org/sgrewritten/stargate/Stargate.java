@@ -84,6 +84,7 @@ import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
+import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,6 +95,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -181,12 +183,21 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
 
             pluginManager = getServer().getPluginManager();
+            
             registerListeners();
-            BukkitScheduler scheduler = getServer().getScheduler();
-            scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
-            scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
-            ThreadHelper.setAsyncQueueEnabled(true);
-            this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
+            if (NonLegacyMethod.FOLIA.isImplemented()) {
+                GlobalRegionScheduler globalscheduler = getServer().getGlobalRegionScheduler();
+                globalscheduler.runAtFixedRate(this, (Consumer<ScheduledTask>) synchronousTickPopulator, 0L, 1L);
+                globalscheduler.runAtFixedRate(this, (Consumer<ScheduledTask>) syncSecPopulator, 0L, 1L);
+                        
+            } else {
+                BukkitScheduler scheduler = getServer().getScheduler();
+                scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
+                scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
+                ThreadHelper.setAsyncQueueEnabled(true);
+                this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
+            }
+            
             registerCommands();
 
             //Register bStats metrics
