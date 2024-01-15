@@ -5,6 +5,7 @@ description: The original, and still the best, transportation plugin for the Buk
 authors: [ Knarvik, Thorin, sgrewitten.org/credits ]
 website: https://sgrewitten.org
 api-version: 1.16
+folia-supported: true
 softdepend: [ Vault, StargateInterfaces, StargateCustomizations, StargateMechanics ]
 commands:
   stargate:
