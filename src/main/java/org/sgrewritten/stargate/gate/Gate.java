@@ -186,7 +186,7 @@ public class Gate implements GateAPI {
                 buttonData.setFacing(facing);
 
                 buttonLocation.getBlock().setBlockData(buttonData);
-            });
+            }).run();
 
         }
     }
