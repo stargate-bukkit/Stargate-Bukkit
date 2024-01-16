@@ -52,6 +52,9 @@ public class StargateRegionTask extends StargateTask {
     }
 
     public static void startPopulator(Plugin plugin){
+        if(USING_FOLIA){
+            return;
+        }
         new StargatBukkitRunnable(populator).runTaskTimer(plugin,0,1);
     }
 }
