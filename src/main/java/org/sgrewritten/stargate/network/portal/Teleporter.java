@@ -26,6 +26,8 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.thread.task.StargateEntityTask;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.VectorUtils;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
@@ -59,7 +61,6 @@ public class Teleporter {
     private List<LivingEntity> nearbyLeashed;
     private final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
-    private final Consumer<SimpleAction> registerAction;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -73,13 +74,6 @@ public class Teleporter {
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
                       BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager, StargateEconomyAPI economyManager) {
-        this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
-                economyManager, (Stargate::addSynchronousTickAction));
-    }
-
-    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
-                      StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -90,7 +84,6 @@ public class Teleporter {
         this.teleportMessage = teleportMessage;
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
-        this.registerAction = Objects.requireNonNull(registerAction);
     }
 
     /**
@@ -163,11 +156,7 @@ public class Teleporter {
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
-
-        registerAction.accept(new SupplierAction(() -> {
-            betterTeleport(baseEntity, exit, rotation);
-            return true;
-        }));
+        new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation));
     }
 
     /**
@@ -257,12 +246,11 @@ public class Teleporter {
      */
     private void teleportPassengers(Entity target, Location exit, List<Entity> passengers) {
         for (Entity passenger : passengers) {
-            Supplier<Boolean> action = () -> {
+            Runnable action = () -> {
                 betterTeleport(passenger, exit, rotation);
                 target.addPassenger(passenger);
-                return true;
             };
-            registerAction.accept(new DelayedAction(1, action));
+            new StargateEntityTask(target, action).runDelayed(1);
         }
     }
 
@@ -284,13 +272,12 @@ public class Teleporter {
                 modifiedExit = exit;
             }
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
-                Supplier<Boolean> action = () -> {
+                Runnable action = () -> {
                     entity.setLeashHolder(null);
                     betterTeleport(entity, modifiedExit, rotation);
                     entity.setLeashHolder(holder);
-                    return true;
                 };
-                registerAction.accept(new SupplierAction(action));
+                new StargateEntityTask(entity, action).run();
             }
         }
     }
@@ -352,15 +339,7 @@ public class Teleporter {
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
-            poweredMinecart.setVelocity(targetVelocity);
-            double pushX = 1; //any new pushing direction
-            double pushZ = 0;
-            poweredMinecart.setPushX(pushX);
-            poweredMinecart.setPushZ(pushZ);
-        }, 1);
-        registerAction.accept(new DelayedAction(1, () -> {
+        new StargateEntityTask(poweredMinecart, () -> {
             //Re-apply fuel and velocity
             Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
             poweredMinecart.setVelocity(targetVelocity);
@@ -377,8 +356,7 @@ public class Teleporter {
                 Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
                         " use Paper 1.18.2+ for this feature.", location));
             }
-            return true;
-        }));
+        }).runDelayed(1);
     }
 
     /**

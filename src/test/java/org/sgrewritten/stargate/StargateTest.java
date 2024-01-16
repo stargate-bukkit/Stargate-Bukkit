@@ -93,24 +93,6 @@ class StargateTest {
     }
 
     @Test
-    public void addSynchronousTickAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousBungeeSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true), true));
-        scheduler.performOneTick();
-    }
-
-    @Test
     public void setGetConfigurationOptionValue() {
         plugin.setConfigurationOptionValue(ConfigurationOption.UPKEEP_COST, 2);
         Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));

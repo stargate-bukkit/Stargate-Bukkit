@@ -397,7 +397,7 @@ public class NetworkedPortal extends AbstractPortal {
                      * duplicate unnecessary calls
                      */
                     previousDestinationSelectionTime = -1;
-                    ThreadHelper.callAsynchronously(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
+                    ThreadHelper.runAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
                 }
             },20);
         }

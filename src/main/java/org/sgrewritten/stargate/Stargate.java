@@ -271,49 +271,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return gateFolder;
     }
 
-    /**
-     * Adds a 1-tick action
-     *
-     * <p>The task is added to a queue which is processed every tick. Should be used in tasks that need to be finished
-     * within a short time frame</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousTickAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().synchronousTickPopulator.addAction(action);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, false);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action   <p>The action to add</p>
-     * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action, boolean isBungee) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, isBungee);
-    }
 
     /**
      * Gets the max text length which will fit on a sign

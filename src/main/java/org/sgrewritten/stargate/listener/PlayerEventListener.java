@@ -32,6 +32,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.PluginChannel;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
@@ -199,23 +200,19 @@ public class PlayerEventListener implements Listener {
      */
     private void getBungeeServerName() {
         //Action for loading bungee server id
-        Supplier<Boolean> action = (() -> {
+        Runnable action = (() -> {
             try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
                 dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
                 Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
                         byteArrayOutputStream.toByteArray());
-                return true;
             } catch (IOException e) {
                 Stargate.log(e);
-                return false;
             }
         });
+        new StargateGlobalTask(action).run(true);
 
-        //Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
-        Stargate.addSynchronousSecAction(new ConditionalRepeatedTask(action,
-                () -> !((Stargate.knowsServerName()) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
 
         //Update the server name in the database once it's known
         updateServerName();
@@ -225,15 +222,13 @@ public class PlayerEventListener implements Listener {
      * Updates this server's name in the database if necessary
      */
     private void updateServerName() {
-        ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
+        new StargateGlobalTask(() -> {
             try {
                 storageAPI.startInterServerConnection();
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }
-            return true;
-        }, Stargate::knowsServerName);
-        Stargate.addSynchronousSecAction(action, true);
+        }).run(true);
     }
 
     /**

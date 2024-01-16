@@ -62,12 +62,18 @@ public abstract class StargateTask implements Runnable {
         tasks.remove(runnable);
     }
 
+    /**
+     * Runns all tasks
+     */
     public static void forceRunAllTasks(){
         tasks.forEach(Runnable::run);
     }
 
+    /**
+     * Run the task if not already been running (should be threadsafe)
+     */
     protected void runTask() {
-        if(running){
+        if(running || cancelled){
             return;
         }
         running = true;
@@ -75,7 +81,11 @@ public abstract class StargateTask implements Runnable {
         runnable.run();
     }
 
-    public void runTask(ScheduledTask scheduledTask) {
+    /**
+     * Convenience method, does same as {@link StargateTask#runTask()}
+     * @param scheduledTask
+     */
+    protected void runTask(ScheduledTask scheduledTask) {
         this.runTask();
     }
 }

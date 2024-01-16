@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.DelayedAction;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
@@ -53,7 +51,8 @@ import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
-import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -83,7 +82,7 @@ public abstract class AbstractPortal implements RealPortal {
      */
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
-    protected final int openDelay = 20;
+    protected final int openDelay = 20 * 20; // ticks
     protected Network network;
     protected String name;
     protected UUID openFor;
@@ -101,7 +100,7 @@ public abstract class AbstractPortal implements RealPortal {
     protected boolean isDestroyed = false;
     protected final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
-    private static final int ACTIVE_DELAY = 15;
+    private static final int ACTIVE_DELAY = 15 * 20; // ticks
     private @Nullable String metaData;
     private boolean savedToStorage = false;
 
@@ -193,13 +192,10 @@ public abstract class AbstractPortal implements RealPortal {
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             return;
         }
-        long openTime = System.currentTimeMillis();
-        this.openTime = openTime;
+        final long openTimeForAction = System.currentTimeMillis();
+        this.openTime = openTimeForAction;
 
-        Stargate.addSynchronousSecAction(new DelayedAction(openDelay, () -> {
-            close(openTime);
-            return true;
-        }));
+        new StargateGlobalTask(() -> close(openTimeForAction)).runDelayed(openDelay);
     }
 
     @Override
@@ -419,16 +415,6 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void setSignColor(@Nullable DyeColor changedColor) {
-        ThreadHelper.callSynchronously(() -> setSignColorSync(changedColor));
-    }
-
-    /**
-     * Needs to be called synchronously
-     *
-     * @param changedColor <p>Color to change the sign text to. If null, then the default color will be used</p>
-     */
-    private void setSignColorSync(@Nullable DyeColor changedColor) {
-
         /* NoLineColorFormatter should only be used during startup, this means
          * that if it has already been changed, and if there's no color to change to,
          * then the line formatter does not need to be reinstated again
@@ -443,44 +429,51 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
-
-            if (!(location.getBlock().getState() instanceof Sign sign)) {
-                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
-                                + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
-                        this.name, this.network.getName()));
-                continue;
-            }
-            DyeColor color;
-            if (changedColor == null) {
-                color = sign.getColor();
-            } else {
-                StargateSignDyeChangePortalEvent event = new StargateSignDyeChangePortalEvent(this, changedColor, location, portalPosition);
-                Bukkit.getPluginManager().callEvent(event);
-                color = changedColor;
-            }
-
-            if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                colorDrawer = new LineColorFormatter(color, sign.getType());
-            } else {
-                colorDrawer = new LegacyLineColorFormatter();
-            }
+            new StargateRegionTask(location, () ->
+                updateColorDrawer(location,changedColor, portalPosition)
+            );
         }
         // Has to be done one tick later to avoid a bukkit bug
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            if (changedColor != null) {
-                gate.getPortalPositions().stream().filter((portalPosition) -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
-                    Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
+        if (changedColor != null) {
+            gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
+                final Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
+                new StargateRegionTask(signBlock.getLocation(), () -> {
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
                         Sign sign = (Sign) signBlock.getState();
                         sign.setColor(Stargate.getDefaultDyeColor());
                         sign.update();
                     }
-                });
-            }
+                }).run();
+            });
+        }
+
+        new StargateGlobalTask(() -> {
             SignLine[] lines = this.getDrawnControlLines();
             getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
-            return true;
-        }));
+        }).run();
+    }
+
+    private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition){
+        if (!(location.getBlock().getState() instanceof Sign sign)) {
+            Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
+                            + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
+                    this.name, this.network.getName()));
+            return;
+        }
+        DyeColor color;
+        if (changedColor == null) {
+            color = sign.getColor();
+        } else {
+            StargateSignDyeChangePortalEvent event = new StargateSignDyeChangePortalEvent(this, changedColor, location, portalPosition);
+            Bukkit.getPluginManager().callEvent(event);
+            color = changedColor;
+        }
+
+        if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
+            colorDrawer = new LineColorFormatter(color, sign.getType());
+        } else {
+            colorDrawer = new LegacyLineColorFormatter();
+        }
     }
 
     @Override
@@ -562,11 +555,7 @@ public abstract class AbstractPortal implements RealPortal {
                 new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
                 new TextLine(this.colorDrawer.formatLine(getAllFlagsString().replaceAll("\\d", "")))
         };
-
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            gate.drawControlMechanisms(lines, false);
-            return true;
-        }));
+        new StargateGlobalTask(() -> gate.drawControlMechanisms(lines, false)).run();
         activate(event.getPlayer());
     }
 
@@ -577,10 +566,7 @@ public abstract class AbstractPortal implements RealPortal {
         this.activatedTime = activationTime;
 
         //Schedule for deactivation
-        Stargate.addSynchronousSecAction(new DelayedAction(ACTIVE_DELAY, () -> {
-            deactivate(activationTime);
-            return true;
-        }));
+        new StargateGlobalTask(() -> deactivate(activationTime)).runDelayed(ACTIVE_DELAY);
     }
 
 
