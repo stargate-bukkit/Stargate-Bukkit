@@ -156,7 +156,7 @@ public class Teleporter {
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
-        new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation));
+        new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation)).run();
     }
 
     /**
@@ -366,7 +366,11 @@ public class Teleporter {
      * @param exitPoint <p>The exit location to teleport the entity to</p>
      */
     private void teleport(Entity target, Location exitPoint) {
-        target.teleport(exitPoint);
+        if(NonLegacyMethod.FOLIA.isImplemented()){
+            target.teleportAsync(exitPoint);
+        }else {
+            target.teleport(exitPoint);
+        }
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
             MessageUtils.sendMessageFromPortal(origin, target, teleportMessage, MessageType.DENY);

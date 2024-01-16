@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 
 public class StargateRegionTask extends StargateTask {

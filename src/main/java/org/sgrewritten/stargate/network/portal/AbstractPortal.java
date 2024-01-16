@@ -431,7 +431,7 @@ public abstract class AbstractPortal implements RealPortal {
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
             new StargateRegionTask(location, () ->
                 updateColorDrawer(location,changedColor, portalPosition)
-            );
+            ).run();
         }
         // Has to be done one tick later to avoid a bukkit bug
         if (changedColor != null) {
