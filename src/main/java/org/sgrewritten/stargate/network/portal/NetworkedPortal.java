@@ -31,6 +31,8 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.MetadataType;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
@@ -389,7 +391,10 @@ public class NetworkedPortal extends AbstractPortal {
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             final long currentTime = System.currentTimeMillis();
             this.previousDestinationSelectionTime = currentTime;
-            Bukkit.getScheduler().runTaskLater(Stargate.getInstance(), () -> {
+            /**
+             * Avoid unnecessary database spam whenever the destination has changed.
+             */
+            new StargateGlobalTask( ()->{
                 Portal destination = getDestination();
                 if (currentTime == previousDestinationSelectionTime && destination != null) {
                     /*
@@ -399,7 +404,7 @@ public class NetworkedPortal extends AbstractPortal {
                     previousDestinationSelectionTime = -1;
                     ThreadHelper.runAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
                 }
-            },20);
+            }).runDelayed(20);
         }
         this.selectedDestination = selectedDestination;
     }

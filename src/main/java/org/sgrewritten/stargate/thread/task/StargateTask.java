@@ -4,6 +4,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -14,7 +15,7 @@ public abstract class StargateTask implements Runnable {
     private volatile boolean running;
     private ScheduledTask scheduledTask;
     private BukkitRunnable scheduledBukkitTask;
-    private static Set<Runnable> tasks = new ConcurrentSkipListSet<>();
+    private static LinkedList<Runnable> tasks = new LinkedList<>();
 
     abstract void runDelayed(long delay);
 
