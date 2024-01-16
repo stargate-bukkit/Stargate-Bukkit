@@ -175,16 +175,19 @@ public class Gate implements GateAPI {
     private void drawButtons() {
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.BUTTON)) {
             Location buttonLocation = getLocation(portalPosition.getRelativePositionLocation());
-            Material blockType = buttonLocation.getBlock().getType();
-            if (ButtonHelper.isButton(blockType)) {
-                continue;
-            }
-            Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
-            Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
-            Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
-            buttonData.setFacing(facing);
+            new StargateRegionTask(buttonLocation, () -> {
+                Material blockType = buttonLocation.getBlock().getType();
+                if (ButtonHelper.isButton(blockType)) {
+                    return;
+                }
+                Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
+                Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
+                Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
+                buttonData.setFacing(facing);
 
-            buttonLocation.getBlock().setBlockData(buttonData);
+                buttonLocation.getBlock().setBlockData(buttonData);
+            });
+
         }
     }
 
