@@ -31,7 +31,6 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.MetadataType;
 import org.sgrewritten.stargate.thread.ThreadHelper;
-import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 

@@ -80,6 +80,7 @@ import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
@@ -187,6 +188,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             
             registerListeners();
             StargateRegionTask.startPopulator(this);
+            new StargateAsyncTask(ThreadHelper::cycleThroughAsyncQueue).run();
             registerCommands();
 
             //Register bStats metrics

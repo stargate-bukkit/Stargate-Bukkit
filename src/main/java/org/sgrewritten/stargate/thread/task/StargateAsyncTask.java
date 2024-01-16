@@ -9,7 +9,7 @@ public class StargateAsyncTask extends StargateTask{
 
     private final Stargate plugin;
 
-    StargateAsyncTask(Runnable runnable){
+    public StargateAsyncTask(Runnable runnable){
         super(runnable);
         this.plugin = Stargate.getInstance();
     }
