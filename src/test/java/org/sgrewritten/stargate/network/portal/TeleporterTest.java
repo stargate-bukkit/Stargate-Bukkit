@@ -66,7 +66,7 @@ class TeleporterTest {
     }
 
     @AfterEach
-    public static void tearDown() {
+    public void tearDown() {
         MockBukkit.unmock();
     }
 
