@@ -153,7 +153,7 @@ public class Gate implements GateAPI {
                 Bukkit.getPluginManager().callEvent(event);
                 SignLine[] newSignLines = event.getLines();
                 setSignLines(sign, newSignLines);
-            });
+            }).run();
         }
     }
 
