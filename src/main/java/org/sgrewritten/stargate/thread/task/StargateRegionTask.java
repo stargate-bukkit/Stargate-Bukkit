@@ -3,7 +3,9 @@ package org.sgrewritten.stargate.thread.task;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 
 public class StargateRegionTask extends StargateTask {
@@ -47,5 +49,9 @@ public class StargateRegionTask extends StargateTask {
     private void runPopulatorTask(){
         populator.addAction(super::runTask, bungee);
         super.registerTask();
+    }
+
+    public static void startPopulator(Plugin plugin){
+        new StargatBukkitRunnable(populator).runTaskTimer(plugin,0,1);
     }
 }

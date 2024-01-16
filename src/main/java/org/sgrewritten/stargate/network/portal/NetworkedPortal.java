@@ -350,7 +350,7 @@ public class NetworkedPortal extends AbstractPortal {
      */
     private List<Portal> getPortals(List<String> names) {
         List<Portal> portals = new ArrayList<>(names.size());
-        names.forEach((item) -> portals.add(network.getPortal(item)));
+        names.forEach(item -> portals.add(network.getPortal(item)));
         return portals;
     }
 
@@ -362,7 +362,7 @@ public class NetworkedPortal extends AbstractPortal {
      */
     private List<String> getPortalNames(List<Portal> portals) {
         List<String> names = new ArrayList<>(portals.size());
-        portals.forEach((item) -> names.add(item.getName()));
+        portals.forEach(item -> names.add(item.getName()));
         return names;
     }
 

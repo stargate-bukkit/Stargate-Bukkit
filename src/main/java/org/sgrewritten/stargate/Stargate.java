@@ -80,6 +80,8 @@ import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
+import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -184,20 +186,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             pluginManager = getServer().getPluginManager();
             
             registerListeners();
-            if (NonLegacyMethod.FOLIA.isImplemented()) {
-                GlobalRegionScheduler globalScheduler = getServer().getGlobalRegionScheduler();
-                globalScheduler.runAtFixedRate(this, task -> synchronousTickPopulator.run(), 1L, 1L);
-                globalScheduler.runAtFixedRate(this, task -> syncSecPopulator.run(), 1L, 20L);
-                        
-            } else {
-                BukkitScheduler scheduler;
-                scheduler = getServer().getScheduler();
-                scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
-                scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
-                ThreadHelper.setAsyncQueueEnabled(true);
-                this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
-            }
-            
+            StargateRegionTask.startPopulator(this);
             registerCommands();
 
             //Register bStats metrics
