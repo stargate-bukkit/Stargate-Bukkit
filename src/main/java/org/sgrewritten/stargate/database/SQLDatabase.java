@@ -244,7 +244,7 @@ public class SQLDatabase implements StorageAPI {
                         portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
                         portalData.gateData().topLeft()));
             }
-        });
+        }).run();
 
 
     }
