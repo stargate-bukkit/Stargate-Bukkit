@@ -19,7 +19,7 @@ public class StargateEntityTask extends StargateTask {
         if (USING_FOLIA) {
             entity.getScheduler().run(plugin, super::registerFoliaTask, super::runTask);
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(super::runTask)).runTask(plugin);
+            super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTask(plugin);
         }
     }
 
@@ -28,7 +28,7 @@ public class StargateEntityTask extends StargateTask {
         if (USING_FOLIA) {
             entity.getScheduler().runDelayed(plugin, super::registerFoliaTask, super::runTask, delay);
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(super::runTask)).runTaskLater(plugin, delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTaskLater(plugin, delay);
         }
     }
 }

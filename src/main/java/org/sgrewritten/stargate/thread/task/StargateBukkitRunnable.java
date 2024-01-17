@@ -2,10 +2,10 @@ package org.sgrewritten.stargate.thread.task;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class StargatBukkitRunnable extends BukkitRunnable {
+public class StargateBukkitRunnable extends BukkitRunnable {
     private final Runnable runnable;
 
-    StargatBukkitRunnable(Runnable runnable){
+    StargateBukkitRunnable(Runnable runnable){
         this.runnable = runnable;
     }
     @Override

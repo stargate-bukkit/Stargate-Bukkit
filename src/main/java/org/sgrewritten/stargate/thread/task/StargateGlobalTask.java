@@ -21,7 +21,7 @@ public class StargateGlobalTask extends StargateTask {
         if(USING_FOLIA){
             super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().run(plugin, this::runTask));
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(this::runTask)).runTask(plugin);
+            super.registerBukkitTask(new StargateBukkitRunnable(this::runTask)).runTask(plugin);
         }
     }
 
@@ -29,7 +29,7 @@ public class StargateGlobalTask extends StargateTask {
         if(USING_FOLIA){
             super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> runnable.run(), delay));
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(runnable)).runTaskLater(plugin, delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(runnable)).runTaskLater(plugin, delay);
         }
     }
 

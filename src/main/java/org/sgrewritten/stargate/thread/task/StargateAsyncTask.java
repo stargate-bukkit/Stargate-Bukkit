@@ -18,7 +18,7 @@ public class StargateAsyncTask extends StargateTask{
         if(USING_FOLIA){
             super.registerFoliaTask(Bukkit.getServer().getAsyncScheduler().runNow(plugin, super::runTask));
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(super::runTask)).runTask(plugin);
+            super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTaskAsynchronously(plugin);
         }
     }
 
@@ -27,7 +27,7 @@ public class StargateAsyncTask extends StargateTask{
         if(USING_FOLIA){
             super.registerFoliaTask(Bukkit.getServer().getAsyncScheduler().runDelayed(plugin, super::runTask,delay, TimeUnit.MILLISECONDS));
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(super::runTask)).runTaskLaterAsynchronously(plugin, delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTaskLaterAsynchronously(plugin, delay);
         }
     }
 }

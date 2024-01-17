@@ -41,7 +41,7 @@ public class StargateRegionTask extends StargateTask {
             ScheduledTask theTask = Bukkit.getServer().getRegionScheduler().runDelayed(plugin, location, super::runTask, delay);
             super.registerFoliaTask(theTask);
         } else {
-            super.registerBukkitTask(new StargatBukkitRunnable(this::runPopulatorTask )).runTaskLater(plugin,delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(this::runPopulatorTask )).runTaskLater(plugin,delay);
         }
     }
 
@@ -54,6 +54,6 @@ public class StargateRegionTask extends StargateTask {
         if(USING_FOLIA){
             return;
         }
-        new StargatBukkitRunnable(populator).runTaskTimer(plugin,0,1);
+        new StargateBukkitRunnable(populator).runTaskTimer(plugin,0,1);
     }
 }
