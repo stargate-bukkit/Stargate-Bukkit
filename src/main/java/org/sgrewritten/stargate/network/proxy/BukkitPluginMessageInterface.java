@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.network.proxy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 

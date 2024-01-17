@@ -30,10 +30,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -82,12 +80,10 @@ import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
-import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
-import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -185,9 +181,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
 
             pluginManager = getServer().getPluginManager();
-            
+
             registerListeners();
             StargateRegionTask.startPopulator(this);
+            ThreadHelper.setAsyncQueueEnabled(true);
             new StargateAsyncTask(ThreadHelper::cycleThroughAsyncQueue).run();
             registerCommands();
 
@@ -577,14 +574,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             messenger.unregisterOutgoingPluginChannel(this);
             messenger.unregisterIncomingPluginChannel(this);
         }
-        
+
         if (NonLegacyMethod.FOLIA.isImplemented()) {
             getServer().getGlobalRegionScheduler().cancelTasks(this);
         } else {
             getServer().getScheduler().cancelTasks(this);
         }
         instance = null;
-        
+
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }

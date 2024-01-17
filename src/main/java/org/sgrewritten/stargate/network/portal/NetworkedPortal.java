@@ -8,7 +8,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateActivatePortalEvent;
@@ -154,7 +153,7 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void updateState() {
         Portal destination;
-        if(hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null){
+        if (hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null) {
             destination = network.getPortal(this.loadedDestination);
             this.loadedDestination = null;
         } else {
@@ -176,7 +175,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param destination <p>The previously selected portal</p>
      * @return <p> The position of the selected portal in the destinations list</p>
      */
-    private int reloadSelectedDestination(Portal destination){
+    private int reloadSelectedDestination(Portal destination) {
         Player player;
         if (super.activator == null || hasFlag(PortalFlag.ALWAYS_ON)) {
             player = null;
@@ -393,7 +392,7 @@ public class NetworkedPortal extends AbstractPortal {
             /**
              * Avoid unnecessary database spam whenever the destination has changed.
              */
-            new StargateGlobalTask( ()->{
+            new StargateGlobalTask(() -> {
                 Portal destination = getDestination();
                 if (currentTime == previousDestinationSelectionTime && destination != null) {
                     /*

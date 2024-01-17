@@ -5,7 +5,6 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -73,7 +72,7 @@ public class StargateNetworkManager implements NetworkManager {
                 finalNetworkName = player.getUniqueId().toString();
             } else {
                 UUID playerUUID = this.getPlayerUUID(finalNetworkName);
-                if(playerUUID == null){
+                if (playerUUID == null) {
                     throw new InvalidNameException("No such player: " + finalNetworkName);
                 }
                 finalNetworkName = playerUUID.toString();
@@ -123,7 +122,7 @@ public class StargateNetworkManager implements NetworkManager {
     }
 
     private TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
-                                                                                   PermissionManager permissionManager) {
+                                                                            PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
             return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
         }

@@ -1,8 +1,6 @@
 package org.sgrewritten.stargate.thread;
 
-import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
