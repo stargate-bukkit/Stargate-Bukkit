@@ -291,17 +291,19 @@ public class Gate implements GateAPI {
 
         for (BlockLocation blockLocation : locations) {
             Block block = blockLocation.getLocation().getBlock();
-            block.setBlockData(blockData);
-            if (material == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
-                EndGateway gateway = (EndGateway) block.getState();
-                // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
-                gateway.setAge(-9223372036854775808L);
-                if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
-                    gateway.setExitLocation(block.getLocation());
-                    gateway.setExactTeleport(true);
+            new StargateRegionTask(block.getLocation(), ()->{
+                block.setBlockData(blockData);
+                if (material == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
+                    EndGateway gateway = (EndGateway) block.getState();
+                    // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
+                    gateway.setAge(-9223372036854775808L);
+                    if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
+                        gateway.setExitLocation(block.getLocation());
+                        gateway.setExactTeleport(true);
+                    }
+                    gateway.update(false, false);
                 }
-                gateway.update(false, false);
-            }
+            }).run();
         }
     }
 

@@ -245,8 +245,6 @@ public class SQLDatabase implements StorageAPI {
                         portalData.gateData().topLeft()));
             }
         }).run();
-
-
     }
 
     /**
