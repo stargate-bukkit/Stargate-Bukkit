@@ -4,30 +4,31 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class StargateTask implements Runnable {
     protected static final boolean USING_FOLIA = NonLegacyMethod.FOLIA.isImplemented();
+    private static final int MAXIMUM_SHUTDOWN_CYCLES = 10;
     private final Runnable runnable;
     private volatile boolean cancelled;
     private volatile boolean running;
     private ScheduledTask scheduledTask;
     private BukkitRunnable scheduledBukkitTask;
-    private static LinkedList<Runnable> tasks = new LinkedList<>();
+    private static final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
 
     abstract void runDelayed(long delay);
 
-    protected StargateTask(Runnable runnable){
+    protected StargateTask(Runnable runnable) {
         this.runnable = runnable;
     }
+
     public void cancel() {
         this.cancelled = true;
         cancelIfTaskHasBeenScheduled(!USING_FOLIA);
     }
 
-    protected void registerTask(){
+    protected void registerTask() {
         tasks.add(runnable);
     }
 
@@ -51,10 +52,6 @@ public abstract class StargateTask implements Runnable {
     }
 
     private void cancelIfTaskHasBeenScheduled(boolean bukkit) {
-        if(cancelled){
-            return;
-        }
-        cancelled = true;
         if (bukkit) {
             scheduledBukkitTask.cancel();
         } else if (scheduledTask != null) {
@@ -66,15 +63,18 @@ public abstract class StargateTask implements Runnable {
     /**
      * Runns all tasks
      */
-    public static void forceRunAllTasks(){
-        tasks.forEach(Runnable::run);
+    public static void forceRunAllTasks() {
+        int counter = 0;
+        while(!tasks.isEmpty() && counter > MAXIMUM_SHUTDOWN_CYCLES) {
+            tasks.forEach(Runnable::run);
+        }
     }
 
     /**
      * Run the task if not already been running (should be threadsafe)
      */
     protected void runTask() {
-        if(running || cancelled){
+        if (running || cancelled) {
             return;
         }
         running = true;
@@ -84,6 +84,7 @@ public abstract class StargateTask implements Runnable {
 
     /**
      * Convenience method, does same as {@link StargateTask#runTask()}
+     *
      * @param scheduledTask
      */
     protected void runTask(ScheduledTask scheduledTask) {
