@@ -17,7 +17,7 @@ public class StargateEntityTask extends StargateTask {
     @Override
     public void run() {
         if (USING_FOLIA) {
-            entity.getScheduler().run(plugin, super::registerFoliaTask, super::runTask);
+            entity.getScheduler().run(plugin, super::runTask, null);
         } else {
             super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTask(plugin);
         }
@@ -26,7 +26,7 @@ public class StargateEntityTask extends StargateTask {
     @Override
     public void runDelayed(long delay) {
         if (USING_FOLIA) {
-            entity.getScheduler().runDelayed(plugin, super::registerFoliaTask, super::runTask, delay);
+            entity.getScheduler().runDelayed(plugin, super::runTask, null, delay);
         } else {
             super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTaskLater(plugin, delay);
         }

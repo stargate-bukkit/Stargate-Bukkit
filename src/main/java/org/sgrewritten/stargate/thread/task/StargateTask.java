@@ -88,6 +88,9 @@ public abstract class StargateTask implements Runnable {
      * @param scheduledTask
      */
     protected void runTask(ScheduledTask scheduledTask) {
+        if(this.scheduledTask == null){
+            this.scheduledTask = scheduledTask;
+        }
         this.runTask();
     }
 }
