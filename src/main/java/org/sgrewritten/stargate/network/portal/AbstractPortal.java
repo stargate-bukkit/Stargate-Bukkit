@@ -434,7 +434,7 @@ public abstract class AbstractPortal implements RealPortal {
             ).run();
         }
         // Has to be done one tick later to avoid a bukkit bug
-        if (changedColor != null) {
+        if (changedColor == null) {
             gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
                 final Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
                 new StargateRegionTask(signBlock.getLocation(), () -> {
@@ -450,7 +450,7 @@ public abstract class AbstractPortal implements RealPortal {
         new StargateGlobalTask(() -> {
             SignLine[] lines = this.getDrawnControlLines();
             getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
-        }).run();
+        }).runDelayed(1);
     }
 
     private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition){
