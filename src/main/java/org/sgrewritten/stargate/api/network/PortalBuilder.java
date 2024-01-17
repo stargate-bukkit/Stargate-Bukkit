@@ -254,7 +254,7 @@ public class PortalBuilder {
         flagChecks(flags);
         economyCheck(portal);
         finalChecks(portal, network);
-        getLocationsAdjacentToPortal(gateAPI).forEach((position) -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
+        getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
         portal.setSignColor(Stargate.getDefaultDyeColor());

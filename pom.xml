@@ -4,7 +4,7 @@
 
     <groupId>org.sgrewritten</groupId>
     <artifactId>stargate</artifactId>
-    <version>1.0.0.15-ALPHA</version>
+    <version>1.0.0.16-NIGHTLY-1</version>
     <name>StarGate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
     <url>https://sgrewitten.org</url>
@@ -64,9 +64,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.20.2-R0.1-SNAPSHOT</version>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

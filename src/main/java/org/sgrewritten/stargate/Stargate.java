@@ -30,10 +30,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.action.SimpleAction;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -80,6 +78,8 @@ import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -181,12 +181,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
 
             pluginManager = getServer().getPluginManager();
+
             registerListeners();
-            BukkitScheduler scheduler = getServer().getScheduler();
-            scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
-            scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
+            StargateRegionTask.startPopulator(this);
             ThreadHelper.setAsyncQueueEnabled(true);
-            this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
+            new StargateAsyncTask(ThreadHelper::cycleThroughAsyncQueue).run();
             registerCommands();
 
             //Register bStats metrics
@@ -260,49 +259,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return gateFolder;
     }
 
-    /**
-     * Adds a 1-tick action
-     *
-     * <p>The task is added to a queue which is processed every tick. Should be used in tasks that need to be finished
-     * within a short time frame</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousTickAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().synchronousTickPopulator.addAction(action);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, false);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action   <p>The action to add</p>
-     * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action, boolean isBungee) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, isBungee);
-    }
 
     /**
      * Gets the max text length which will fit on a sign
@@ -618,9 +574,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             messenger.unregisterOutgoingPluginChannel(this);
             messenger.unregisterIncomingPluginChannel(this);
         }
-        getServer().getScheduler().cancelTasks(this);
 
+        if (NonLegacyMethod.FOLIA.isImplemented()) {
+            getServer().getGlobalRegionScheduler().cancelTasks(this);
+        } else {
+            getServer().getScheduler().cancelTasks(this);
+        }
         instance = null;
+
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }

@@ -3,8 +3,8 @@ package org.sgrewritten.stargate.network.proxy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.ForcibleFunctionAction;
 import org.sgrewritten.stargate.property.PluginChannel;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -17,19 +17,15 @@ public class BukkitPluginMessageInterface implements PluginMessageInterface {
     public void scheduleSendMessage(String message, PluginChannel channel) {
         Stargate stargate = Stargate.getInstance();
 
-        Stargate.addSynchronousSecAction(new ForcibleFunctionAction((forceEnd) -> {
-            if (stargate.getServer().getOnlinePlayers().size() > 0 || forceEnd) {
-                try {
-                    this.sendMessage(message, channel, stargate);
-                    return true;
-                } catch (IOException e) {
-                    Stargate.log(Level.WARNING, "Error sending BungeeCord connect packet");
-                    Stargate.log(e);
-                }
-            }
-            return false;
 
-        }), true);
+        new StargateGlobalTask(() -> {
+            try {
+                this.sendMessage(message, channel, stargate);
+            } catch (IOException e) {
+                Stargate.log(Level.WARNING, "Error sending BungeeCord connect packet");
+                Stargate.log(e);
+            }
+        }).run(true);
     }
 
 

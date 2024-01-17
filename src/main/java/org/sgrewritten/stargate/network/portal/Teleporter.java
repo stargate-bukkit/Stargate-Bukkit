@@ -12,9 +12,6 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.DelayedAction;
-import org.sgrewritten.stargate.action.SimpleAction;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
@@ -26,6 +23,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.thread.task.StargateEntityTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.VectorUtils;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
@@ -35,8 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -59,7 +55,6 @@ public class Teleporter {
     private List<LivingEntity> nearbyLeashed;
     private final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
-    private final Consumer<SimpleAction> registerAction;
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -73,13 +68,6 @@ public class Teleporter {
      */
     public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
                       BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager, StargateEconomyAPI economyManager) {
-        this(destination, origin, destinationFace, entranceFace, cost, teleportMessage, languageManager,
-                economyManager, (Stargate::addSynchronousTickAction));
-    }
-
-    public Teleporter(@NotNull RealPortal destination, RealPortal origin, BlockFace destinationFace,
-                      BlockFace entranceFace, int cost, String teleportMessage, LanguageManager languageManager,
-                      StargateEconomyAPI economyManager, Consumer<SimpleAction> registerAction) {
         // Center the destination in the destination block
         this.exit = destination.getExit().clone().add(new Vector(0.5, 0, 0.5));
         this.destinationFace = destinationFace;
@@ -90,7 +78,6 @@ public class Teleporter {
         this.teleportMessage = teleportMessage;
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
-        this.registerAction = Objects.requireNonNull(registerAction);
     }
 
     /**
@@ -163,11 +150,7 @@ public class Teleporter {
             entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
-
-        registerAction.accept(new SupplierAction(() -> {
-            betterTeleport(baseEntity, exit, rotation);
-            return true;
-        }));
+        new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation)).run();
     }
 
     /**
@@ -257,12 +240,11 @@ public class Teleporter {
      */
     private void teleportPassengers(Entity target, Location exit, List<Entity> passengers) {
         for (Entity passenger : passengers) {
-            Supplier<Boolean> action = () -> {
+            Runnable action = () -> {
                 betterTeleport(passenger, exit, rotation);
                 target.addPassenger(passenger);
-                return true;
             };
-            registerAction.accept(new DelayedAction(1, action));
+            new StargateEntityTask(target, action).runDelayed(1);
         }
     }
 
@@ -284,13 +266,12 @@ public class Teleporter {
                 modifiedExit = exit;
             }
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
-                Supplier<Boolean> action = () -> {
+                Runnable action = () -> {
                     entity.setLeashHolder(null);
                     betterTeleport(entity, modifiedExit, rotation);
                     entity.setLeashHolder(holder);
-                    return true;
                 };
-                registerAction.accept(new SupplierAction(action));
+                new StargateEntityTask(entity, action).run();
             }
         }
     }
@@ -352,15 +333,7 @@ public class Teleporter {
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), () -> {
-            poweredMinecart.setVelocity(targetVelocity);
-            double pushX = 1; //any new pushing direction
-            double pushZ = 0;
-            poweredMinecart.setPushX(pushX);
-            poweredMinecart.setPushZ(pushZ);
-        }, 1);
-        registerAction.accept(new DelayedAction(1, () -> {
+        new StargateEntityTask(poweredMinecart, () -> {
             //Re-apply fuel and velocity
             Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
             poweredMinecart.setVelocity(targetVelocity);
@@ -377,8 +350,7 @@ public class Teleporter {
                 Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
                         " use Paper 1.18.2+ for this feature.", location));
             }
-            return true;
-        }));
+        }).runDelayed(1);
     }
 
     /**
@@ -388,7 +360,11 @@ public class Teleporter {
      * @param exitPoint <p>The exit location to teleport the entity to</p>
      */
     private void teleport(Entity target, Location exitPoint) {
-        target.teleport(exitPoint);
+        if (NonLegacyMethod.FOLIA.isImplemented()) {
+            target.teleportAsync(exitPoint);
+        } else {
+            target.teleport(exitPoint);
+        }
         boatsTeleporting.remove(target);
         if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
             MessageUtils.sendMessageFromPortal(origin, target, teleportMessage, MessageType.DENY);
