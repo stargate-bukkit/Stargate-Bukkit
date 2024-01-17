@@ -32,6 +32,7 @@ import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
@@ -229,17 +230,23 @@ public class SQLDatabase implements StorageAPI {
             portalData.flags().add(PortalFlag.NETWORKED);
         }
 
+        final List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
+
         //Actually register the gate and its positions
-        try {
-            registerPortalGate(portalData, network, stargateAPI);
-        } catch (TranslatableException | GateConflictException e) {
-            Stargate.log(e);
-        } catch (InvalidStructureException e) {
-            Stargate.log(Level.WARNING, String.format(
-                    "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                    portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
-                    portalData.gateData().topLeft()));
-        }
+        new StargateRegionTask(portalData.gateData().topLeft(),() -> {
+            try {
+                registerPortalGate(portalData, network, stargateAPI, portalPositions);
+            } catch (TranslatableException | GateConflictException e) {
+                Stargate.log(e);
+            } catch (InvalidStructureException e) {
+                Stargate.log(Level.WARNING, String.format(
+                        "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
+                        portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
+                        portalData.gateData().topLeft()));
+            }
+        });
+
+
     }
 
     /**
@@ -253,9 +260,8 @@ public class SQLDatabase implements StorageAPI {
      * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
      * @throws TranslatableException     <p>If some input is invalid</p>
      */
-    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI) throws SQLException,
+    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI,List<PortalPosition> portalPositions) throws
             InvalidStructureException, GateConflictException, TranslatableException {
-        List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
         if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
                 && !gate.isValid()) {
