@@ -450,7 +450,7 @@ public abstract class AbstractPortal implements RealPortal {
         new StargateGlobalTask(() -> {
             SignLine[] lines = this.getDrawnControlLines();
             getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
-        }).runDelayed(1);
+        }).runDelayed(2);
     }
 
     private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition){
