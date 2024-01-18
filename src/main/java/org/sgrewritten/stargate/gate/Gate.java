@@ -41,6 +41,7 @@ import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ButtonHelper;
+import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -309,7 +310,7 @@ public class Gate implements GateAPI {
 
     @Override
     public Location getLocation(@NotNull Vector vector) {
-        return topLeft.clone().add(converter.performToRealSpaceOperation(vector));
+        return VectorUtils.getLocation(topLeft,converter,vector);
     }
 
     /**

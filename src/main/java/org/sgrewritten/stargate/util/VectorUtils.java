@@ -1,8 +1,10 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 public class VectorUtils {
     /**
@@ -52,5 +54,13 @@ public class VectorUtils {
      */
     public static double directionalAngleOperator(Vector vector1, Vector vector2) {
         return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
+    }
+
+    public static Location getLocation(Location topLeft, VectorOperation vectorOperation, Vector vector){
+        return topLeft.clone().add(vectorOperation.performToRealSpaceOperation(vector));
+    }
+
+    public static Vector getFormatSpaceCoordinate(Location topLeft, VectorOperation vectorOperation, Location location){
+        return vectorOperation.performToAbstractSpaceOperation(topLeft.clone().subtract(location).toVector());
     }
 }
