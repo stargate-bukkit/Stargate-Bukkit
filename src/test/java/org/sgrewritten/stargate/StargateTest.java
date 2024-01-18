@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -90,24 +89,6 @@ class StargateTest {
     @Test
     public void getGateFolder() {
         assertNotNull(plugin.getGateFolder());
-    }
-
-    @Test
-    public void addSynchronousTickAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousBungeeSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true), true));
-        scheduler.performOneTick();
     }
 
     @Test

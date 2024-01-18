@@ -8,7 +8,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateActivatePortalEvent;
@@ -31,6 +30,7 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.MetadataType;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class NetworkedPortal extends AbstractPortal {
     @Override
     public void updateState() {
         Portal destination;
-        if(hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null){
+        if (hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null) {
             destination = network.getPortal(this.loadedDestination);
             this.loadedDestination = null;
         } else {
@@ -175,7 +175,7 @@ public class NetworkedPortal extends AbstractPortal {
      * @param destination <p>The previously selected portal</p>
      * @return <p> The position of the selected portal in the destinations list</p>
      */
-    private int reloadSelectedDestination(Portal destination){
+    private int reloadSelectedDestination(Portal destination) {
         Player player;
         if (super.activator == null || hasFlag(PortalFlag.ALWAYS_ON)) {
             player = null;
@@ -348,7 +348,7 @@ public class NetworkedPortal extends AbstractPortal {
      */
     private List<Portal> getPortals(List<String> names) {
         List<Portal> portals = new ArrayList<>(names.size());
-        names.forEach((item) -> portals.add(network.getPortal(item)));
+        names.forEach(item -> portals.add(network.getPortal(item)));
         return portals;
     }
 
@@ -360,7 +360,7 @@ public class NetworkedPortal extends AbstractPortal {
      */
     private List<String> getPortalNames(List<Portal> portals) {
         List<String> names = new ArrayList<>(portals.size());
-        portals.forEach((item) -> names.add(item.getName()));
+        portals.forEach(item -> names.add(item.getName()));
         return names;
     }
 
@@ -389,7 +389,10 @@ public class NetworkedPortal extends AbstractPortal {
         if (hasFlag(PortalFlag.ALWAYS_ON)) {
             final long currentTime = System.currentTimeMillis();
             this.previousDestinationSelectionTime = currentTime;
-            Bukkit.getScheduler().runTaskLater(Stargate.getInstance(), () -> {
+            /**
+             * Avoid unnecessary database spam whenever the destination has changed.
+             */
+            new StargateGlobalTask(() -> {
                 Portal destination = getDestination();
                 if (currentTime == previousDestinationSelectionTime && destination != null) {
                     /*
@@ -397,9 +400,9 @@ public class NetworkedPortal extends AbstractPortal {
                      * duplicate unnecessary calls
                      */
                     previousDestinationSelectionTime = -1;
-                    ThreadHelper.callAsynchronously(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
+                    ThreadHelper.runAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
                 }
-            },20);
+            }).runDelayed(20);
         }
         this.selectedDestination = selectedDestination;
     }

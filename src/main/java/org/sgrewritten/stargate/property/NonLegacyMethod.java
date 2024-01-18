@@ -67,9 +67,26 @@ public enum NonLegacyMethod {
      */
     GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart", "getFuel"),
 
+    /**
+     * The adventure text API
+     * 
+     * <p>Used to handle modern in-game text and its colouring</p>
+     */
     COMPONENT("net.kyori.adventure.text.Component", "equals", Object.class),
 
-    TWO_SIDED_SIGNS(" org.bukkit.block.sign.SignSide", "equals", Object.class);
+    /**
+     * Methods used to deal with double sided signs signs
+     * 
+     * <p>This was added as part of the 1.20 sign update
+     */
+    TWO_SIDED_SIGNS(" org.bukkit.block.sign.SignSide", "equals", Object.class),
+    
+    /**
+     * Checks for folia
+     * 
+     * <p>An experiment from the PaperMC project that adds regional scheduling</p>
+     */
+    FOLIA("io.papermc.paper.threadedregions.RegionizedServer", "equals", Object.class);
 
     private String classToCheckFor;
     private String methodInClassToCheckFor;
