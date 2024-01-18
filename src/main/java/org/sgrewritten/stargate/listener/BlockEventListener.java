@@ -194,9 +194,7 @@ public class BlockEventListener implements Listener {
             }
         } catch (TranslatableException e) {
             event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
-        } catch (InvalidStructureException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (InvalidStructureException ignored) {}
     }
 
     /**

@@ -17,6 +17,10 @@ import java.util.logging.Level;
 
 public class BlockEventHelper {
 
+    private BlockEventHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Does event handling for any event that changes one block
      *

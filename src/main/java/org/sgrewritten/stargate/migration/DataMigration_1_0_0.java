@@ -253,11 +253,9 @@ public class DataMigration_1_0_0 extends DataMigration {
                 renameSuccessful = false;
             }
         }
-        if (renameSuccessful) {
-            if (!directory.delete()) {
+        if (renameSuccessful && !directory.delete()) {
                 Stargate.log(Level.WARNING, "Unable to remove folder " + directory.getPath() + ". " +
                         "Make sure you have write permissions for the folder.");
-            }
         }
     }
 

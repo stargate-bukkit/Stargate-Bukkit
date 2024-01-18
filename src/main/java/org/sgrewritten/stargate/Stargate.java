@@ -114,6 +114,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private static Stargate instance;
 
 
+    public static final String NAME = "Stargate";
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
     private static final String INTERNAL_GATE_FOLDER = "gates";
     private static final String INTERNAL_FOLDER = ".internal";

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -44,7 +46,7 @@ class StargateTest {
     private static final String PORTAL2 = "name2";
 
     @BeforeEach
-    public void setup() throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void setup() throws TranslatableException, NoFormatFoundException, GateConflictException {
         server = MockBukkit.mock();
         scheduler = server.getScheduler();
         WorldMock world = server.addSimpleWorld("world");
@@ -67,32 +69,32 @@ class StargateTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         MockBukkit.unmock();
     }
 
     @Test
-    public void getEconomyManager() {
+    void getEconomyManager() {
         assertNotNull(plugin.getEconomyManager());
     }
 
     @Test
-    public void getCurrentConfigVersion() {
-        Assertions.assertNotEquals(Stargate.getCurrentConfigVersion(), 0);
+    void getCurrentConfigVersion() {
+        Assertions.assertNotEquals(0, Stargate.getCurrentConfigVersion());
     }
 
     @Test
-    public void getAbsoluteDataFolder() {
+    void getAbsoluteDataFolder() {
         assertNotNull(plugin.getAbsoluteDataFolder());
     }
 
     @Test
-    public void getGateFolder() {
+    void getGateFolder() {
         assertNotNull(plugin.getGateFolder());
     }
 
     @Test
-    public void setGetConfigurationOptionValue() {
+    void setGetConfigurationOptionValue() {
         plugin.setConfigurationOptionValue(ConfigurationOption.UPKEEP_COST, 2);
         Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));
         plugin.reload();
@@ -100,14 +102,14 @@ class StargateTest {
     }
 
     @Test
-    public void reload() {
+    void reload() {
         Stargate.log(Level.FINEST, "reloading");
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
 
     @Test
-    public void reload_StupidDefaultNetworkNameUUID() {
+    void reload_StupidDefaultNetworkNameUUID() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
         plugin.reload();
@@ -115,47 +117,30 @@ class StargateTest {
         Assertions.assertFalse(plugin.isEnabled());
     }
 
-    @Test
-    public void reload_StupidDefaultNetworkNameTooLong() {
+    @ParameterizedTest
+    @ValueSource(strings = {"thisNameIsWayTooLong", "", "Test1\nTest2"})
+    void reload_StupidDefaultNetworkNameTooLong(String name) {
         Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, name);
         plugin.reload();
         Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
     }
 
     @Test
-    public void reload_StupidDefaultNetworkNameEmpty() {
-        Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "");
-        plugin.reload();
-        Stargate.setLogLevel(Level.INFO);
-        Assertions.assertFalse(plugin.isEnabled());
-    }
-
-    @Test
-    public void reload_StupidDefaultNetworkNameNewlines() {
-        Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "Test1\nTest2");
-        plugin.reload();
-        Stargate.setLogLevel(Level.INFO);
-        Assertions.assertFalse(plugin.isEnabled());
-    }
-
-    @Test
-    public void reloadInterServer() {
+    void reloadInterServer() {
         setInterServerEnabled();
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
 
     @Test
-    public void reloadConfig() {
+    void reloadConfig() {
         Assertions.assertDoesNotThrow(() -> plugin.reloadConfig());
     }
 
     @Test
-    public void restart() {
+    void restart() {
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
@@ -168,7 +153,7 @@ class StargateTest {
     }
 
     @Test
-    public void restartInterServer() {
+    void restartInterServer() {
         setInterServerEnabled();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());

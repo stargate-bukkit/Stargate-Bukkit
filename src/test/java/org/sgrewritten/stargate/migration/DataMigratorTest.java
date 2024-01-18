@@ -232,7 +232,7 @@ public class DataMigratorTest {
         ThreadHelper.setAsyncQueueEnabled(true);
         // TODO: Fix passing null to this @NotNull method
         BukkitTask task = server.getScheduler().runTaskAsynchronously(null, ThreadHelper::cycleThroughAsyncQueue);
-        dataMigrator.run(sqlDatabase, stargateAPI);
+        Assertions.assertDoesNotThrow(()->dataMigrator.run(sqlDatabase, stargateAPI));
         ThreadHelper.setAsyncQueueEnabled(false);
         server.getScheduler().waitAsyncTasksFinished();
     }

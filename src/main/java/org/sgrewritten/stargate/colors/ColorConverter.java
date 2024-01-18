@@ -12,6 +12,7 @@ import java.util.EnumMap;
  */
 public final class ColorConverter {
 
+    private static final String STRING_TO_INSERT = "#%02X%02X%02X";
     private static final EnumMap<Material, DyeColor> materialToColorsConversionMap = new EnumMap<>(Material.class);
     private static final EnumMap<DyeColor, Material> dyeColorToMaterialColorsConversionMap = new EnumMap<>(DyeColor.class);
 
@@ -35,7 +36,7 @@ public final class ColorConverter {
      */
     public static ChatColor getChatColorFromDyeColor(DyeColor dyeColor) {
         Color color = dyeColor.getColor();
-        return ChatColor.of(String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
+        return ChatColor.of(String.format(STRING_TO_INSERT, color.getRed(), color.getGreen(), color.getBlue()));
     }
 
     /**
@@ -66,7 +67,7 @@ public final class ColorConverter {
      */
     public static ChatColor getInvertedChatColor(ChatColor initialColor) {
         java.awt.Color color = initialColor.getColor();
-        return ChatColor.of(String.format("#%02X%02X%02X", 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue()));
+        return ChatColor.of(String.format(STRING_TO_INSERT, 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue()));
     }
 
     /**
@@ -76,7 +77,7 @@ public final class ColorConverter {
      * @return <p>A converted color</p>
      */
     public static ChatColor colorToChatColor(java.awt.Color color) {
-        return ChatColor.of(String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
+        return ChatColor.of(String.format(STRING_TO_INSERT, color.getRed(), color.getGreen(), color.getBlue()));
     }
 
     /**

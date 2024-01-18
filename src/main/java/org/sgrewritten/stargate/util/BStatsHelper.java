@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import com.google.common.collect.Iterators;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * A helper for preparing bStats metrics
@@ -197,21 +199,14 @@ public final class BStatsHelper {
      *                The metrics object to register metrics to</p>
      */
     private static void registerAddons(Metrics metrics) {
-        String stargate = "stargate";
         metrics.addCustomChart(new AdvancedPie("addonsUsed", () -> {
             Map<String, Integer> addonsList = new HashMap<>();
 
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                for (String depend : plugin.getDescription().getDepend()) {
-                    if (depend.toLowerCase().equals(stargate)) {
-                        addonsList.put(plugin.getName(), 1);
-                    }
-                }
-                for (String depend : plugin.getDescription().getSoftDepend()) {
-                    if (depend.toLowerCase().equals(stargate)) {
-                        addonsList.put(plugin.getName(), 1);
-                    }
-                }
+                Stream<String> hardDepend = plugin.getDescription().getDepend().stream();
+                Stream<String> softDepend = plugin.getDescription().getSoftDepend().stream();
+                Stream<String> dependStream = Stream.concat(hardDepend,softDepend);
+                dependStream.filter(depend -> depend.equalsIgnoreCase(Stargate.NAME)).forEach((depend)-> addonsList.put(plugin.getName(),1));
             }
             return addonsList;
         }));
@@ -227,18 +222,9 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
             Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
-            while (localNetworkIterator.hasNext()) {
-                for (Portal portal : localNetworkIterator.next().getAllPortals()) {
-                    if (!(portal instanceof RealPortal realPortal)) {
-                        continue;
-                    }
-                    if (realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
-                        count++;
-                    }
-                }
-            }
             Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
-            while (localNetworkIterator.hasNext()) {
+            Iterator<Network> networkIterator = Iterators.concat(localNetworkIterator, interserverNetworkIterator);
+            while (networkIterator.hasNext()) {
                 for (Portal portal : localNetworkIterator.next().getAllPortals()) {
                     if (!(portal instanceof RealPortal realPortal)) {
                         continue;

@@ -181,7 +181,7 @@ public class Gate implements GateAPI {
                 if (ButtonHelper.isButton(blockType)) {
                     return;
                 }
-                Material buttonMaterial = ButtonHelper.getButtonMaterial(getFormat().getIrisMaterial(false));
+                Material buttonMaterial = ButtonHelper.getButtonMaterial(buttonLocation);
                 Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
                 Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
                 buttonData.setFacing(facing);
@@ -204,7 +204,7 @@ public class Gate implements GateAPI {
                 Stargate.log(Level.FINEST, type.name() + ":" + portalPosition.getPositionType() + ", " + portalPosition.isActive() + ", " + portalPosition.getRelativePositionLocation());
                 continue;
             }
-            if (portalPosition.getPluginName().equals("Stargate")) {
+            if (portalPosition.getPluginName().equals(Stargate.NAME)) {
                 Stargate.log(Level.FINEST, "Found, " + type.name() + " at " + portalPosition.getRelativePositionLocation());
                 output.add(portalPosition);
             }
@@ -387,7 +387,7 @@ public class Gate implements GateAPI {
             if (registeredControls.contains(buttonVector)) {
                 continue;
             }
-            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, "Stargate"));
+            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, Stargate.NAME));
             break;
         }
 
@@ -409,10 +409,10 @@ public class Gate implements GateAPI {
             }
 
             if (Tag.WALL_SIGNS.isTagged(material)) {
-                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector, "Stargate"));
+                portalPositions.add(new PortalPosition(PositionType.SIGN, blockVector, Stargate.NAME));
                 Stargate.log(Level.FINEST, "Adding a SIGN at " + blockVector);
             } else if (!alwaysOn && ButtonHelper.isButton(material)) {
-                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector, "Stargate"));
+                portalPositions.add(new PortalPosition(PositionType.BUTTON, blockVector, Stargate.NAME));
                 Stargate.log(Level.FINEST, "Adding a BUTTON at " + blockVector);
             }
             foundVectors.add(blockVector);
