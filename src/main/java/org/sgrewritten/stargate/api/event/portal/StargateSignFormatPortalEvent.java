@@ -1,22 +1,22 @@
-package org.sgrewritten.stargate.api.event.gate;
+package org.sgrewritten.stargate.api.event.portal;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 
-public class StargateSignFormatGateEvent extends StargateGateEvent {
+public class StargateSignFormatPortalEvent extends StargatePortalEvent {
     private static final HandlerList handlers = new HandlerList();
     private final PortalPosition portalPosition;
     private final Location location;
     private final SignLine[] lines;
 
-    public StargateSignFormatGateEvent(@NotNull GateAPI gate, SignLine[] signLines, PortalPosition portalPosition, Location location) {
-        super(gate);
+    public StargateSignFormatPortalEvent(@NotNull RealPortal portal, SignLine[] signLines, PortalPosition portalPosition, Location location) {
+        super(portal,false);
         this.lines = signLines;
         this.portalPosition = portalPosition;
         this.location = location;

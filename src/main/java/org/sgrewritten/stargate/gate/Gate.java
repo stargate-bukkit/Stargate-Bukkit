@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateSignFormatPortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -150,7 +150,7 @@ public class Gate implements GateAPI {
                     Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
                     return;
                 }
-                StargateSignFormatGateEvent event = new StargateSignFormatGateEvent(this, signLines, portalPosition, signLocation);
+                StargateSignFormatPortalEvent event = new StargateSignFormatPortalEvent(portal, signLines, portalPosition, signLocation);
                 Bukkit.getPluginManager().callEvent(event);
                 SignLine[] newSignLines = event.getLines();
                 setSignLines(sign, newSignLines);
