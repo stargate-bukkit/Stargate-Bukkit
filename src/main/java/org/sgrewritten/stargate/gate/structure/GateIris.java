@@ -70,7 +70,7 @@ public class GateIris extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        // (Clear all blocks that are in the portal frame)
+        // (Clear all blocks that are in the portal iris)
         Material[] irisClosedList = irisClosed.toArray(new Material[0]);
         for(BlockVector blockVector : this.blocks){
             int target = RANDOM.nextInt(irisClosedList.length)-1;
