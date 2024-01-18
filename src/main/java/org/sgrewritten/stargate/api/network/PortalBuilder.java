@@ -229,7 +229,7 @@ public class PortalBuilder {
         }
         if (permissionManager != null) {
             Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
-            if (disallowedFlags.isEmpty() && messageTarget != null) {
+            if (!disallowedFlags.isEmpty() && messageTarget != null) {
                 String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
                 messageTarget.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
             }

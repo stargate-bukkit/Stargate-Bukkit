@@ -18,6 +18,8 @@ import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import java.util.List;
 
 public class GateMock implements GateAPI {
+    private RealPortal portal;
+
     @Override
     public void drawControlMechanisms(SignLine[] signLines, boolean drawButton) {
 
@@ -115,6 +117,11 @@ public class GateMock implements GateAPI {
 
     @Override
     public void assignPortal(RealPortal realPortal) {
+        this.portal = realPortal;
+    }
 
+    @Override
+    public RealPortal getPortal() {
+        return portal;
     }
 }

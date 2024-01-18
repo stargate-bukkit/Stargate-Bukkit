@@ -164,4 +164,10 @@ public interface GateAPI {
      */
     @ApiStatus.Internal
     void assignPortal(RealPortal realPortal);
+
+    /**
+     * Get the portal assigned to this portal position
+     * @return <p>The portal assigned to this portal position</p>
+     */
+    RealPortal getPortal();
 }

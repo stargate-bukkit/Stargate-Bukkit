@@ -74,9 +74,6 @@ public class PortalPosition implements MetadataHolder {
 
     @ApiStatus.Internal
     public void assignPortal(RealPortal portal) {
-        if (this.portal != null) {
-            throw new IllegalStateException("A portal position can only be assigned to a portal once.");
-        }
         this.portal = Objects.requireNonNull(portal);
     }
 
@@ -138,5 +135,9 @@ public class PortalPosition implements MetadataHolder {
             Stargate.log(e);
             return null;
         }
+    }
+
+    public RealPortal getPortal(){
+        return this.portal;
     }
 }

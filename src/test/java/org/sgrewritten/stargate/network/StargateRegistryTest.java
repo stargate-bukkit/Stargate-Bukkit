@@ -118,6 +118,6 @@ class StargateRegistryTest {
         Location location = new Location(world, 0, 0, 0);
         PortalMock portal = new PortalMock();
         this.registry.registerPortalPosition(portalPosition, location, portal);
-        Assertions.assertEquals(portal, this.registry.getPortalFromPortalPosition(portalPosition));
+        Assertions.assertEquals(portal, portalPosition.getPortal());
     }
 }

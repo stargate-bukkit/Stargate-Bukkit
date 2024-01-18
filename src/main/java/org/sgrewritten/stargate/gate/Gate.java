@@ -547,4 +547,9 @@ public class Gate implements GateAPI {
             portalPosition.assignPortal(realPortal);
         }
     }
+
+    @Override
+    public RealPortal getPortal() {
+        return this.portal;
+    }
 }

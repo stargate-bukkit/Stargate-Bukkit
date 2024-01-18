@@ -94,7 +94,7 @@ public class PlayerEventListener implements Listener {
     private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
-        RealPortal portal = registry.getPortalFromPortalPosition(portalPosition);
+        RealPortal portal = portalPosition.getPortal();
         if (portal == null) {
             Stargate.log(Level.WARNING, "Improper use of unregistered PortalPositions");
             return;

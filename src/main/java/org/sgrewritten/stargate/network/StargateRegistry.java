@@ -49,7 +49,6 @@ public class StargateRegistry implements RegistryAPI {
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
     private final Map<BlockLocation, PortalPosition> portalPositionMap = new HashMap<>();
     private final Map<String, Map<BlockLocation, PortalPosition>> portalPositionPluginNameMap = new HashMap<>();
-    private final Map<PortalPosition, RealPortal> portalPositionPortalRelation = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -169,7 +168,7 @@ public class StargateRegistry implements RegistryAPI {
     public RealPortal getPortal(Location location) {
         PortalPosition portalPosition = this.getPortalPosition(location);
         if (portalPosition != null) {
-            return this.getPortalFromPortalPosition(portalPosition);
+            return portalPosition.getPortal();
         }
         return getPortal(location, GateStructureType.values());
     }
@@ -302,7 +301,7 @@ public class StargateRegistry implements RegistryAPI {
         }
         portalPositionMap.remove(blockLocation);
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
-        RealPortal portal = portalPositionPortalRelation.remove(portalPosition);
+        RealPortal portal =portalPosition.getPortal();
         portal.getGate().removePortalPosition(portalPosition);
         try {
             storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
@@ -318,18 +317,13 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionMap.put(blockLocation, portalPosition);
         portalPositionPluginNameMap.putIfAbsent(portalPosition.getPluginName(), new HashMap<>());
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).put(blockLocation, portalPosition);
-        portalPositionPortalRelation.put(portalPosition, portal);
+        portalPosition.assignPortal(portal);
         portal.getGate().addPortalPosition(portalPosition);
     }
 
     @Override
     public PortalPosition getPortalPosition(Location location) {
         return portalPositionMap.get(new BlockLocation(location));
-    }
-
-    @Override
-    public @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition) {
-        return portalPositionPortalRelation.get(portalPosition);
     }
 
     @Override

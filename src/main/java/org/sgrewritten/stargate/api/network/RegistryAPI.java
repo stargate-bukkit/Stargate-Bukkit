@@ -236,14 +236,6 @@ public interface RegistryAPI {
     @Nullable PortalPosition getPortalPosition(Location location);
 
     /**
-     * Get the portal the given portal position belong to
-     *
-     * @param portalPosition <p> A portal position</p>
-     * @return <p> The portal that owns the portal position (or null if the portal position is not registered)</p>
-     */
-    @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition);
-
-    /**
      * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
      *
      * @param network <p>The network to register</p>
