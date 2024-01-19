@@ -46,20 +46,17 @@ public final class GateFormatReader {
      * @param characterMaterialMap <p>The map of characters to store valid symbols in</p>
      * @param design               <p>The list to store the loaded design/layout to</p>
      * @param config               <p>The map of config values to store to</p>
-     * @return <p>The column count/width of the loaded gate</p>
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    public static int readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
+    public static void readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
                                    List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
-        int columns;
         try {
-            columns = readGateFileContents(scanner, characterMaterialMap, design, config);
+            readGateFileContents(scanner, characterMaterialMap, design, config);
         } finally {
             if (scanner != null) {
                 scanner.close();
             }
         }
-        return columns;
     }
 
     /**
@@ -119,10 +116,9 @@ public final class GateFormatReader {
      * @param characterMaterialMap <p>The map of characters to store valid symbols in</p>
      * @param design               <p>The list to store the loaded design/layout to</p>
      * @param config               <p>The map of config values to store to</p>
-     * @return <p>The column count/width of the loaded gate</p>
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
-    private static int readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
+    private static void readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
                                             List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
@@ -134,7 +130,7 @@ public final class GateFormatReader {
                 //If we have reached the gate's layout/design, read it
                 columns = readGateDesignLine(line, columns, design);
                 if (columns < 0) {
-                    return -1;
+                    return;
                 }
             } else {
                 if (line.isEmpty() || line.startsWith("#")) {
@@ -146,7 +142,7 @@ public final class GateFormatReader {
                     //If we have reached the gate's layout/design, read it
                     columns = readGateDesignLine(line, columns, design);
                     if (columns < 0) {
-                        return -1;
+                        return;
                     }
                 } else {
                     //Read a normal config value
@@ -154,7 +150,6 @@ public final class GateFormatReader {
                 }
             }
         }
-        return columns;
     }
 
     /**

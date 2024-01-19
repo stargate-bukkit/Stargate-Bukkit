@@ -7,6 +7,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
@@ -19,12 +20,14 @@ import java.util.List;
 public class GateControlBlock extends GateStructure {
 
     final List<BlockVector> parts;
+    private final BoundingBox boundingBox;
 
     /**
      * Instantiates a new gate control block container
      */
     public GateControlBlock() {
         parts = new ArrayList<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -34,6 +37,7 @@ public class GateControlBlock extends GateStructure {
      */
     public void addPart(BlockVector blockVector) {
         parts.add(blockVector);
+        boundingBox.union(blockVector);
     }
 
     @Override
@@ -50,11 +54,6 @@ public class GateControlBlock extends GateStructure {
     public void generateStructure(VectorOperation converter, Location topLeft) {
         BlockVector signPosition = parts.get(0);
         Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(signPosition)).getBlock();
-        // TODO: isWaterLogged is never used
-        boolean isWaterlogged = false;
-        if (signLocation.getBlockData() instanceof Waterlogged waterlogged) {
-            isWaterlogged = waterlogged.isWaterlogged();
-        }
         BlockState state = signLocation.getState();
         /*
          * TODO: remove this hardcoded thing
@@ -64,5 +63,10 @@ public class GateControlBlock extends GateStructure {
         signData.setFacing(converter.getFacing());
         state.setBlockData(signData);
         state.update(true);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 }

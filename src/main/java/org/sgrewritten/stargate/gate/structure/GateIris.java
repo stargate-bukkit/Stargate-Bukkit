@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
@@ -24,6 +25,7 @@ public class GateIris extends GateStructure {
 
     public final Set<Material> irisOpen;
     public final Set<Material> irisClosed;
+    private final BoundingBox boundingBox;
     BlockVector exit;
     protected final List<BlockVector> blocks;
 
@@ -37,6 +39,7 @@ public class GateIris extends GateStructure {
         this.irisOpen = irisOpen;
         this.irisClosed = irisClosed;
         blocks = new ArrayList<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -46,6 +49,7 @@ public class GateIris extends GateStructure {
      */
     public void addPart(BlockVector blockVector) {
         blocks.add(blockVector);
+        boundingBox.union(blockVector);
     }
 
     /**
@@ -86,6 +90,11 @@ public class GateIris extends GateStructure {
                 block.setBlockData(blockData);
             }).run();
         }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 
     /**

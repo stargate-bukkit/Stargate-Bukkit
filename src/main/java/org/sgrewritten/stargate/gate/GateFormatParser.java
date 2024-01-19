@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.gate;
 
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
@@ -69,7 +70,7 @@ public class GateFormatParser {
         Map<Character, Set<Material>> characterMaterialMap = new HashMap<>();
         List<List<Character>> design = new ArrayList<>();
         Map<String, String> config = new HashMap<>();
-        int columns = GateFormatReader.readGateFile(scanner, characterMaterialMap, design, config);
+        GateFormatReader.readGateFile(scanner, characterMaterialMap, design, config);
 
         loadGateConfigValues(config);
         iris = new GateIris(irisOpen, irisClosed);
@@ -88,8 +89,7 @@ public class GateFormatParser {
             throw new ParsingErrorException("Design requires at least 2 control blocks '-' ");
         }
 
-        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials,
-                design.size(), columns);
+        return new GateFormat(iris, frame, controlBlocks, filename, canBeBlockedByIronDoor, controlMaterials);
     }
 
     /**

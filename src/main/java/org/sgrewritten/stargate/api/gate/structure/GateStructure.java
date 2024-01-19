@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
@@ -78,4 +79,6 @@ public abstract class GateStructure {
      * @param topLeft   <p>Top left corner in real space</p>
      */
     public abstract void generateStructure(VectorOperation converter, Location topLeft);
+
+    public abstract BoundingBox getBoundingBox();
 }

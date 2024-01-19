@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.gate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
@@ -27,8 +28,7 @@ public class GateFormat implements GateFormatAPI {
     private final Map<GateFormatStructureType, GateStructure> portalParts;
     private final String name;
     private final boolean isIronDoorBlockable;
-    private final int height;
-    private final int width;
+    private final BoundingBox boundingBox;
 
     /**
      * Instantiates a new gate format
@@ -39,11 +39,10 @@ public class GateFormat implements GateFormatAPI {
      * @param name                <p>The name of the new gate format</p>
      * @param isIronDoorBlockable <p>Whether the gate format's iris can be blocked by a single iron door</p>
      * @param controlMaterials    <b>The materials to use for this gatres control blocks</b>
-     * @param height              <p>The height of this gate format</p>
-     * @param width               <p>The width of this gate format</p>
+     * @param boundingBox         <p>The bounding box of this gate format</p>
      */
     public GateFormat(GateIris iris, GateFrame frame, GateControlBlock controlBlocks, String name,
-                      boolean isIronDoorBlockable, Set<Material> controlMaterials, int height, int width) {
+                      boolean isIronDoorBlockable, Set<Material> controlMaterials) {
         portalParts = new EnumMap<>(GateFormatStructureType.class);
         portalParts.put(GateFormatStructureType.IRIS, iris);
         portalParts.put(GateFormatStructureType.FRAME, frame);
@@ -51,26 +50,30 @@ public class GateFormat implements GateFormatAPI {
         this.name = name;
         this.isIronDoorBlockable = isIronDoorBlockable;
         this.controlMaterials = controlMaterials;
-        this.height = height;
-        this.width = width;
+        this.boundingBox = calculateBoundingBox();
     }
 
-    /**
-     * Gets the height of this gate format
-     *
-     * @return <p>The height of this gate format</p>
-     */
+    private BoundingBox calculateBoundingBox() {
+        BoundingBox output = new BoundingBox();
+        for(GateStructure gateStructure : portalParts.values()){
+            output.union(gateStructure.getBoundingBox());
+        }
+        return output;
+    }
+
+    @Override
     public int getHeight() {
-        return height;
+        return (int) boundingBox.getHeight() + 1;
     }
 
-    /**
-     * Gets the width of this gate format
-     *
-     * @return <p>The width of this gate format</p>
-     */
+    @Override
     public int getWidth() {
-        return width;
+        return (int) boundingBox.getWidthZ() + 1;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 
     @Override

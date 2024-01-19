@@ -1,9 +1,11 @@
 package org.sgrewritten.stargate.api.network;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -16,8 +18,10 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -252,4 +256,10 @@ public interface RegistryAPI {
     @ApiStatus.Internal
     void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException;
 
+    /**
+     * Get all the portals in a chunk
+     * @param chunk <p>The chunk to retrieve portals from</p>
+     * @return <p>The portals in the chunk</p>
+     */
+    @NotNull Set<RealPortal> getPortalsInChunk(Chunk chunk);
 }

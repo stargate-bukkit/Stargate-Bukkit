@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.gate.structure;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
@@ -22,12 +23,14 @@ public class GateFrame extends GateStructure {
 
     final Map<BlockVector, Set<Material>> parts;
     final static Random RANDOM = new Random();
+    private final BoundingBox boundingBox;
 
     /**
      * Instantiates a new gate frame
      */
     public GateFrame() {
         parts = new HashMap<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -38,6 +41,7 @@ public class GateFrame extends GateStructure {
      */
     public void addPart(BlockVector blockVector, Set<Material> materials) {
         parts.put(blockVector, materials);
+        boundingBox.union(blockVector);
     }
 
     @Override
@@ -63,6 +67,11 @@ public class GateFrame extends GateStructure {
             Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];
             location.getBlock().setType(material);
         }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
 }
