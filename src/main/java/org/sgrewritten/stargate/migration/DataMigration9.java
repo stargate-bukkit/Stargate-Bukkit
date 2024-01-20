@@ -31,7 +31,7 @@ public class DataMigration9 extends DataMigration {
         }
         String newKey = configConversions.getProperty(oldPair.getFirstValue());
         if (oldPair.getFirstValue().equals("checkPortalValidity")) {
-            return new TwoTuple<>(newKey, ((boolean) oldPair.getSecondValue()) ? PortalValidity.REMOVE : PortalValidity.IGNORE);
+            return new TwoTuple<>(newKey, (((boolean) oldPair.getSecondValue()) ? PortalValidity.REMOVE : PortalValidity.IGNORE).toString());
         }
         return new TwoTuple<>(newKey, oldPair.getSecondValue());
     }
