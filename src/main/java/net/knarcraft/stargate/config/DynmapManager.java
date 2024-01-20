@@ -30,7 +30,7 @@ public final class DynmapManager {
      * @throws NullPointerException <p>If dynmap has an invalid state</p>
      */
     public static void initialize(DynmapAPI dynmapAPI) throws NullPointerException {
-        if (dynmapAPI == null || dynmapAPI.getMarkerAPI() == null) {
+        if (dynmapAPI == null || !dynmapAPI.markerAPIInitialized() || dynmapAPI.getMarkerAPI() == null) {
             markerSet = null;
             portalIcon = null;
         } else {
