@@ -60,6 +60,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>MG-Dev Jenkins CI Maven Repository</id>
+            <url>https://ci.mg-dev.eu/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -151,6 +155,12 @@
             <artifactId>poi</artifactId>
             <version>5.2.5</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bergerkiller.bukkit</groupId>
+            <artifactId>BKCommonLib</artifactId>
+            <version>1.20.4-v1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

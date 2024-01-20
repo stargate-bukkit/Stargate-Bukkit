@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
@@ -104,6 +105,14 @@ public interface GateAPI {
      * @return <p>The location corresponding to the given vector</p>
      */
     Location getLocation(@NotNull Vector vector);
+
+    /**
+     * Check if this gate with the current settings is valid
+     *
+     * @return <p>True if this gate is valid</p>
+     * @throws GateConflictException <p>If this gate conflicts with another gate</p>
+     */
+    boolean isValid() throws GateConflictException;
 
     /**
      * Calculates all portal positions for this gate

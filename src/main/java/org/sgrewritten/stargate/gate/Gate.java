@@ -345,12 +345,7 @@ public class Gate implements GateAPI {
         return false;
     }
 
-    /**
-     * Check if this gate with the current settings is valid
-     *
-     * @return <p>True if this gate is valid</p>
-     * @throws GateConflictException <p>If this gate conflicts with another gate</p>
-     */
+    @Override
     public boolean isValid() throws GateConflictException {
         if (getFormat().matches(converter, topLeft)) {
             if (hasGateFrameConflict(registry)) {

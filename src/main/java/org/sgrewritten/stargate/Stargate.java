@@ -59,6 +59,7 @@ import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
 import org.sgrewritten.stargate.gate.GateFormat;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.listener.BKCommonLibListener;
 import org.sgrewritten.stargate.listener.BlockEventListener;
 import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
 import org.sgrewritten.stargate.listener.MoveEventListener;
@@ -112,7 +113,6 @@ import java.util.logging.Level;
 public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAPI {
 
     private static Stargate instance;
-
 
     public static final String NAME = "Stargate";
     private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
@@ -386,6 +386,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
         if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             pluginManager.registerEvents(new EntityInsideBlockEventListener(getRegistry()), this);
+        }
+        if (NonLegacyMethod.BK_COMMON_LIB.isImplemented()) {
+            pluginManager.registerEvents(new BKCommonLibListener(getRegistry(), getNetworkManager()), this);
         }
     }
 
