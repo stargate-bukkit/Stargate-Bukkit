@@ -28,7 +28,7 @@ import java.util.logging.Level;
 /**
  * The specification for data migration from legacy to 1.0.0
  */
-public class DataMigration_1_0_0 extends DataMigration {
+public class DataMigration6 extends DataMigration {
 
     private static Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
     private final Server server;
@@ -41,7 +41,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      *
      * @param server <p>The server to use for loading legacy portals</p>
      */
-    public DataMigration_1_0_0(@NotNull Server server, StoredPropertiesAPI storedProperties) {
+    public DataMigration6(@NotNull Server server, StoredPropertiesAPI storedProperties) {
         this.server = Objects.requireNonNull(server);
         this.storedProperties = storedProperties;
     }
@@ -175,7 +175,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      */
     private void moveFilesToDebugDirectory(String portalFolder) {
         Map<String, String> filesToMove = new HashMap<>();
-        FileHelper.readInternalFileToMap("/migration/file-migrations-1_0_0.properties", filesToMove);
+        FileHelper.readInternalFileToMap("/migration/file-migrations-6.properties", filesToMove);
         filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
 
         for (String directoryString : filesToMove.keySet()) {
@@ -264,7 +264,7 @@ public class DataMigration_1_0_0 extends DataMigration {
      */
     private static Map<String, String> loadConfigConversions() {
         Map<String, String> output = new HashMap<>();
-        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_0.properties", output);
+        FileHelper.readInternalFileToMap("/migration/config-migrations-6.properties", output);
         return output;
     }
 

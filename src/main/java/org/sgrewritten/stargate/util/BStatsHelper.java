@@ -263,7 +263,7 @@ public final class BStatsHelper {
                 ConfigurationOption.HANDLE_LEASHES))));
 
         metrics.addCustomChart(new SimplePie("checkPortalValidity", () -> String.valueOf(ConfigurationHelper.getBoolean(
-                ConfigurationOption.CHECK_PORTAL_VALIDITY))));
+                ConfigurationOption.PORTAL_VALIDITY))));
 
         metrics.addCustomChart(new SimplePie("destroyOnExplosion", () -> String.valueOf(ConfigurationHelper.getBoolean(
                 ConfigurationOption.DESTROY_ON_EXPLOSION))));

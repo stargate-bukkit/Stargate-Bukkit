@@ -36,11 +36,11 @@ import java.util.logging.Level;
 /**
  * A data migrator to upgrade data and config to the 1.0.14 alpha
  */
-public class DataMigration_1_0_14 extends DataMigration {
+public class DataMigration7 extends DataMigration {
 
-    private HashMap<String, String> CONFIG_CONVERSIONS;
+    private final Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
 
-    public DataMigration_1_0_14() {
+    public DataMigration7() {
         loadConfigConversions();
     }
 
@@ -222,15 +222,16 @@ public class DataMigration_1_0_14 extends DataMigration {
 
     @Override
     public String getVersionTo() {
-        return "1.0.0.14";
+        return "1.0.0.15";
     }
 
     /**
      * Loads the necessary config conversion for migrating
      */
-    private void loadConfigConversions() {
-        CONFIG_CONVERSIONS = new HashMap<>();
-        FileHelper.readInternalFileToMap("/migration/config-migrations-1_0_14.properties", CONFIG_CONVERSIONS);
+    private static Map<String, String> loadConfigConversions() {
+        Map<String, String> output = new HashMap<>();
+        FileHelper.readInternalFileToMap("/migration/config-migrations-7.properties", output);
+        return output;
     }
 
 }

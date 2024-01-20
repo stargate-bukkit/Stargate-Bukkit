@@ -100,11 +100,8 @@ handleVehicles: true
 # If a player teleports while attached with a lead to an entity, should SG also teleport the entity?
 handleLeashedCreatures: true
 
-# Will the server re-verify all existing portals on startup?
-# 
-# This checks that the expected gates are both present and using a valid layout.
-# Designed to catch .gate file modifications, world changes, and terrain regeneration.
-checkPortalValidity: true
+# The action that should be made whenever a loaded portal does not have a valid layout
+portalValidity: remove
 
 # Can StarGates be broken via an explosion?
 #  [tnt, creepers, etc.]
@@ -226,4 +223,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 8
+configVersion: 9

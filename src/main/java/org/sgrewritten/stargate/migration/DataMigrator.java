@@ -39,8 +39,8 @@ public class DataMigrator {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, storedProperties),
-                new DataMigration_1_0_14()
+                new DataMigration6(server, storedProperties),
+                new DataMigration7()
         };
 
         //Not StargateConfiguration, as we don't want to save comments

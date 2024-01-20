@@ -37,6 +37,7 @@ import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
+import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -233,7 +234,7 @@ public class SQLDatabase implements StorageAPI {
         final List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
 
         //Actually register the gate and its positions
-        new StargateRegionTask(portalData.gateData().topLeft(),() -> {
+        new StargateRegionTask(portalData.gateData().topLeft(), () -> {
             try {
                 registerPortalGate(portalData, network, stargateAPI, portalPositions);
             } catch (TranslatableException | GateConflictException e) {
@@ -258,16 +259,16 @@ public class SQLDatabase implements StorageAPI {
      * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
      * @throws TranslatableException     <p>If some input is invalid</p>
      */
-    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI,List<PortalPosition> portalPositions) throws
+    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI, List<PortalPosition> portalPositions) throws
             InvalidStructureException, GateConflictException, TranslatableException {
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                && !gate.isValid()) {
-            throw new InvalidStructureException();
-        }
+
         gate.addPortalPositions(portalPositions);
         RealPortal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
-        if(portal instanceof AbstractPortal abstractPortal){
+        if (!PortalHelper.portalValidityCheck(portal, stargateAPI.getNetworkManager())) {
+            return;
+        }
+        if (portal instanceof AbstractPortal abstractPortal) {
             abstractPortal.setSavedToStorage();
         }
         gate.assignPortal(portal);

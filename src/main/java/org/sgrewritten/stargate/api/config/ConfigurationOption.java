@@ -217,11 +217,11 @@ public enum ConfigurationOption {
     UPKEEP_COST("economy.upkeepCost", null, null, null, true),
 
     /**
-     * Check if the portal is valid on startup (prevent zombie portals)
+     * The action that should be made whenever a loaded portal does not have a valid layout
      */
-    CHECK_PORTAL_VALIDITY("checkPortalValidity",
-            "Check if the portal is valid on startup (prevent zombie portals)", true,
-            OptionDataType.BOOLEAN, false),
+    PORTAL_VALIDITY("portalValidity",
+            "The action that should be made whenever a loaded portal does not have a valid layout", "remove",
+            OptionDataType.PORTAL_VALIDITY, false),
 
     /**
      * Handle leashed entities during teleportation

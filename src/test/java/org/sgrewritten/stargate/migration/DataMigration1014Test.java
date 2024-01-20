@@ -24,7 +24,7 @@ import java.util.UUID;
 
 class DataMigration1014Test {
 
-    private DataMigration_1_0_14 migration;
+    private DataMigration7 migration;
     private SQLiteDatabase database;
     private static final File sqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.db");
     private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
@@ -33,7 +33,7 @@ class DataMigration1014Test {
 
     @BeforeEach
     void setUp() throws IOException, SQLException {
-        migration = new DataMigration_1_0_14();
+        migration = new DataMigration7();
         Files.copy(sqlDatabaseFile, oldSqlDatabaseFile);
         database = new SQLiteDatabase(sqlDatabaseFile);
         this.stargateAPI = new StargateAPIMock();
