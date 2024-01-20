@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,7 @@ class StargateTest {
 
     @BeforeEach
     void setup() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         scheduler = server.getScheduler();
         WorldMock world = server.addSimpleWorld("world");
         System.setProperty("bstats.relocatecheck", "false");
@@ -70,7 +71,7 @@ class StargateTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test
@@ -119,7 +120,7 @@ class StargateTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"thisNameIsWayTooLong", "", "Test1\nTest2"})
-    void reload_StupidDefaultNetworkNameTooLong(String name) {
+    void reload_StupidDefaultNetworkName(String name) {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, name);
         plugin.reload();

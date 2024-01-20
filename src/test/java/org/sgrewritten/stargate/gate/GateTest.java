@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.List;
@@ -37,7 +38,7 @@ class GateTest {
 
     @BeforeEach
     void setUp() {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 6, 0);
         BlockFace facing = BlockFace.SOUTH;
@@ -53,7 +54,7 @@ class GateTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -39,8 +39,7 @@ class StargateRegistryTest {
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
-        ServerMock server = MockBukkit.mock();
-        StargateTestHelper.setup();
+        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
         this.storageMock = new StorageMock();
@@ -52,7 +51,7 @@ class StargateRegistryTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

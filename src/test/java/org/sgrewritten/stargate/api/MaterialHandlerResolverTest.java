@@ -49,8 +49,7 @@ public class MaterialHandlerResolverTest {
 
     @BeforeEach
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
-        this.server = MockBukkit.mock();
-        StargateTestHelper.setup();
+        this.server = StargateTestHelper.setup();
         this.storage = new StorageMock();
         this.blockHandlerResolver = new BlockHandlerResolver(storage);
         this.registry = new RegistryMock(storage, blockHandlerResolver);
@@ -62,7 +61,7 @@ public class MaterialHandlerResolverTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

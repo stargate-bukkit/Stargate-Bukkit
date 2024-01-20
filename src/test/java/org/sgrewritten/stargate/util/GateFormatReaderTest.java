@@ -21,13 +21,13 @@ class GateFormatReaderTest {
 
     @BeforeAll
     static void setUp() {
-        MockBukkit.mock();
+        StargateTestHelper.setup();
         Stargate.setLogLevel(Level.FINEST);
     }
 
     @AfterAll
     static void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
         Stargate.setLogLevel(Level.INFO);
     }
 

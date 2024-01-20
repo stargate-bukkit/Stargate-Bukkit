@@ -81,6 +81,7 @@ import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
+import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
@@ -128,8 +129,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
-    private final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
-    private final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
     private static final int MAX_TEXT_LENGTH = 13;
 
     private StargateEconomyAPI economyManager;
@@ -566,12 +565,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        /*
-         * Replacement for legacy, which used:
-         * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
-         */
-        synchronousTickPopulator.clear();
-        syncSecPopulator.clear();
+        StargateTask.forceRunAllTasks();
+
         ThreadHelper.setAsyncQueueEnabled(false);
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();

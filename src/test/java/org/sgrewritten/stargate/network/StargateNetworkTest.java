@@ -22,13 +22,12 @@ public class StargateNetworkTest {
 
     @BeforeEach
     void setup() {
-        MockBukkit.mock();
         StargateTestHelper.setup();
     }
 
     @AfterEach
     void teardown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

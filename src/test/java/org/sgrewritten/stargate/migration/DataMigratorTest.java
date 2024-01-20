@@ -41,6 +41,7 @@ import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class DataMigratorTest {
         networkManager = stargateAPI.getNetworkManager();
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         server.addSimpleWorld("epicknarvik");
         server.addSimpleWorld("lclo");
         server.addSimpleWorld("pseudoknigth");
@@ -146,7 +147,7 @@ public class DataMigratorTest {
 
     @AfterAll
     public static void tearDown() throws IOException, InvalidConfigurationException {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
 
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");

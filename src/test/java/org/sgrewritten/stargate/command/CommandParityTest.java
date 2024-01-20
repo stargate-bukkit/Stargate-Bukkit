@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,7 @@ class CommandParityTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        @NotNull ServerMock server = MockBukkit.mock();
+        @NotNull ServerMock server = StargateTestHelper.setup();
         this.plugin = MockBukkit.createMockPlugin();
         console = server.getConsoleSender();
         player = server.addPlayer();
@@ -42,7 +43,7 @@ class CommandParityTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

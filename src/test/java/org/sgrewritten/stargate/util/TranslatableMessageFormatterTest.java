@@ -21,12 +21,12 @@ class TranslatableMessageFormatterTest {
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
     }
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

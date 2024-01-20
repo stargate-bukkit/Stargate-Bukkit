@@ -45,7 +45,7 @@ class BlockEventHelperTest {
 
     @BeforeAll
     static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         player = server.addPlayer();
         WorldMock world = server.addSimpleWorld("world");
 
@@ -61,7 +61,7 @@ class BlockEventHelperTest {
 
     @AfterAll
     static void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

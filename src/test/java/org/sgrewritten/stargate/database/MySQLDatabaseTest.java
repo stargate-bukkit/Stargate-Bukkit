@@ -14,6 +14,7 @@ import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,7 +54,7 @@ public class MySQLDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
 
         try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE Stargate;").execute();

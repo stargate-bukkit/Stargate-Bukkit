@@ -50,7 +50,7 @@ public class DataMigration9 extends DataMigration {
 
     @Override
     protected TwoTuple<String, Object> getNewConfigPair(TwoTuple<String, Object> oldPair) {
-        if (!configConversions.contains(oldPair.getFirstValue())) {
+        if (!configConversions.containsKey(oldPair.getFirstValue())) {
             return oldPair;
         }
         String newKey = configConversions.getProperty(oldPair.getFirstValue());
@@ -91,8 +91,8 @@ public class DataMigration9 extends DataMigration {
     private void runChangeWorldNameToUUID(SQLDatabaseAPI database, TableNameConfiguration nameConfiguration,
                                           StorageType type) throws SQLException, IOException {
         String directory = "/migration/database/v-9/";
-        String fileNameUpdate = directory + (type == StorageType.LOCAL ? "update_world_local" : "update_world_inter_server");
-        String fileNameGet = directory + (type == StorageType.LOCAL ? "get_world_local" : "get_world_inter_server");
+        String fileNameUpdate = directory + (type == StorageType.LOCAL ? "update_world_local.sql" : "update_world_inter_server.sql");
+        String fileNameGet = directory + (type == StorageType.LOCAL ? "get_world_local.sql" : "get_world_inter_server.sql");
         try (Connection connection = database.getConnection()) {
             Set<String> worldNames = new HashSet<>();
             try (InputStream stream = Stargate.class.getResourceAsStream(fileNameGet)) {

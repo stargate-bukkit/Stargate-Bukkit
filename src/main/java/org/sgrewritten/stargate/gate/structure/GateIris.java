@@ -77,7 +77,7 @@ public class GateIris extends GateStructure {
         // (Clear all blocks that are in the portal iris)
         Material[] irisClosedList = irisClosed.toArray(new Material[0]);
         for(BlockVector blockVector : this.blocks){
-            int target = RANDOM.nextInt(irisClosedList.length)-1;
+            int target = RANDOM.nextInt(irisClosedList.length);
             Material chosenType = irisClosedList[target];
             Location location = VectorUtils.getLocation(topLeft,converter,blockVector);
             new StargateRegionTask(location, () -> {

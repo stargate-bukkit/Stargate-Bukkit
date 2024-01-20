@@ -33,6 +33,7 @@ import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.HashSet;
@@ -61,7 +62,7 @@ class StargateBungeeManagerTest {
 
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException {
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         GateFormatRegistry.setFormats(
                 Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
@@ -84,7 +85,7 @@ class StargateBungeeManagerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

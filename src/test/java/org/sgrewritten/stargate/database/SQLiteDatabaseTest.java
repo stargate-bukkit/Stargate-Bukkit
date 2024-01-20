@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -37,7 +38,7 @@ public class SQLiteDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
         try {
             DatabaseTester.deleteAllTables(nameConfig);
         } finally {

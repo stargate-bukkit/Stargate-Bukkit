@@ -29,6 +29,7 @@ import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.Objects;
@@ -39,15 +40,13 @@ class TeleporterTest {
     private static Teleporter teleporter;
     private static SynchronousPopulator populator;
     private static PoweredMinecartMock furnaceMinecart;
-    private static final File testGatesDir = new File("src/test/resources/gates");
     private ServerMock server;
     private BukkitSchedulerMock scheduler;
 
     @BeforeEach
     public void setup() throws TranslatableException, InvalidStructureException {
-        this.server = MockBukkit.mock();
+        this.server = StargateTestHelper.setup();
         this.scheduler = server.getScheduler();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         WorldMock world = server.addSimpleWorld("world");
         PlayerMock player = server.addPlayer();
         PortalFactory fakePortalGenerator = new PortalFactory("Portal", "iPortal");
@@ -67,24 +66,20 @@ class TeleporterTest {
 
     @AfterEach
     public void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test
     public void teleport() {
         teleporter.teleport(horse);
-        while(!scheduler.getPendingTasks().isEmpty()){
-            scheduler.performOneTick();
-        }
+        StargateTestHelper.runAllTasks();
         Assertions.assertTrue(horse.hasTeleported());
     }
 
     @Test
     public void teleport_FurnaceMinecart() {
         teleporter.teleport(furnaceMinecart);
-        while(!scheduler.getPendingTasks().isEmpty()){
-            scheduler.performOneTick();
-        }
+        StargateTestHelper.runAllTasks();
         Assertions.assertTrue(furnaceMinecart.hasTeleported());
     }
 }

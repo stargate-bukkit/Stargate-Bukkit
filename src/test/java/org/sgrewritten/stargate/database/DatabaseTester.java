@@ -28,6 +28,7 @@ import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.SQLTestHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 
@@ -90,7 +91,7 @@ public class DatabaseTester {
         DatabaseTester.isMySQL = isMySQL;
         DatabaseTester.nameConfig = nameConfig;
 
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         world = new WorldMock(Material.DIRT, 5);
         server.addWorld(world);
 

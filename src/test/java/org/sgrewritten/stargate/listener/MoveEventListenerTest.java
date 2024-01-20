@@ -45,9 +45,8 @@ class MoveEventListenerTest {
     @BeforeEach
     void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
         System.setProperty("bstats.relocatecheck", "false");
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         plugin = MockBukkit.load(Stargate.class);
-        StargateTestHelper.setup();
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
         Location from = new Location(theEnd, 0, 0, 0);
@@ -64,7 +63,7 @@ class MoveEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -36,8 +36,7 @@ class InterServerMessageSenderTest {
 
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException {
-        this.server = MockBukkit.mock();
-        StargateTestHelper.setup();
+        this.server = StargateTestHelper.setup();
         this.pluginMessageInterface = new TestPluginMessageInterface();
         this.messageSender = new InterServerMessageSender(pluginMessageInterface);
         this.network = new StargateNetwork(NETWORK_ID, NetworkType.CUSTOM, StorageType.INTER_SERVER);
@@ -47,7 +46,7 @@ class InterServerMessageSenderTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

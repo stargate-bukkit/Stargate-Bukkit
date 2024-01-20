@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 class CommandTraceTest {
 
@@ -21,7 +22,7 @@ class CommandTraceTest {
 
     @BeforeEach
     void setUp() {
-        @NotNull ServerMock server = MockBukkit.mock();
+        @NotNull ServerMock server = StargateTestHelper.setup();
         sender = server.addPlayer();
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
@@ -31,7 +32,7 @@ class CommandTraceTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

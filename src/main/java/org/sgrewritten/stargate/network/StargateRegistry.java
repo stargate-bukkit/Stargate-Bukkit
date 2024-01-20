@@ -392,8 +392,8 @@ public class StargateRegistry implements RegistryAPI {
         int zMod = corner1Chunk.getZ() < corner2Chunk.getZ() ? 1 : -1;
 
         Set<Chunk> chunks = new HashSet<>();
-        for (int x = corner1Chunk.getX(); shouldStop(corner2Chunk.getX(), x, xMod); x += xMod) {
-            for (int z = corner1Chunk.getZ(); shouldStop(corner2Chunk.getZ(), z, zMod); z += zMod) {
+        for (int x = corner1Chunk.getX(); !shouldStop(corner2Chunk.getX(), x, xMod); x += xMod) {
+            for (int z = corner1Chunk.getZ(); !shouldStop(corner2Chunk.getZ(), z, zMod); z += zMod) {
                 chunks.add(world.getChunkAt(x, z));
             }
         }
@@ -402,9 +402,9 @@ public class StargateRegistry implements RegistryAPI {
 
     private boolean shouldStop(int target, int currentPosition, int modifier) {
         if (modifier > 0) {
-            return currentPosition >= target;
+            return currentPosition > target;
         } else {
-            return currentPosition <= target;
+            return currentPosition < target;
         }
     }
 

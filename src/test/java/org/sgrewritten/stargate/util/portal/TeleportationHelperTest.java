@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ class TeleportationHelperTest {
 
     @BeforeAll
     public static void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         world = server.addSimpleWorld("world");
         network = new StargateNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL);
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
@@ -51,7 +52,7 @@ class TeleportationHelperTest {
 
     @AfterAll
     public static void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

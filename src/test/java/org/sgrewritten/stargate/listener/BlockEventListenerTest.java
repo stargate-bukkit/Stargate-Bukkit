@@ -50,6 +50,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.HashSet;
@@ -73,14 +74,13 @@ class BlockEventListenerTest {
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = plugin;
         this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
@@ -94,7 +94,7 @@ class BlockEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

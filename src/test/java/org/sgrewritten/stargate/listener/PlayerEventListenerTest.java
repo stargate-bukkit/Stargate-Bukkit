@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.util.Objects;
@@ -38,7 +39,7 @@ class PlayerEventListenerTest {
 
     @BeforeEach
     void setUp() {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
@@ -49,7 +50,7 @@ class PlayerEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,7 @@ class PropertiesDatabaseTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        MockBukkit.mock();
+        StargateTestHelper.setup();
         MockPlugin plugin = MockBukkit.createMockPlugin();
         fileLocation = new File(plugin.getDataFolder(), "test.properties");
         propertiesDatabase = new PropertiesDatabase(fileLocation);
@@ -25,7 +26,7 @@ class PropertiesDatabaseTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

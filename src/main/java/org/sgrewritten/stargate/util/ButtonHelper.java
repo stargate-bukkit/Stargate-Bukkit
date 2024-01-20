@@ -65,11 +65,11 @@ public final class ButtonHelper {
     }
 
     private static Material getOverWaterButtonMaterial(){
-        return BUTTONS.get(RANDOM.nextInt(BUTTONS.size())-1);
+        return BUTTONS.get(RANDOM.nextInt(BUTTONS.size()));
     }
 
     private static Material getUnderWaterButtonMaterial(){
-        return CORAL_WALL_FANS.get(RANDOM.nextInt(CORAL_WALL_FANS.size())-1);
+        return CORAL_WALL_FANS.get(RANDOM.nextInt(CORAL_WALL_FANS.size()));
     }
 
     private static Stream<Material> getDeadWallCoralWallFans(){

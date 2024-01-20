@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ class DataMigration1014Test {
         database = new SQLiteDatabase(sqlDatabaseFile);
         this.stargateAPI = new StargateAPIMock();
 
-        @NotNull ServerMock server = MockBukkit.mock();
+        @NotNull ServerMock server = StargateTestHelper.setup();
         PlayerMock player = new PlayerMock(server, "player", UUID.fromString(UUID_STRING));
         server.addPlayer(player);
     }
@@ -47,7 +48,7 @@ class DataMigration1014Test {
     void tearDown() {
         Assertions.assertTrue(sqlDatabaseFile.delete());
         Assertions.assertTrue(oldSqlDatabaseFile.renameTo(sqlDatabaseFile));
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

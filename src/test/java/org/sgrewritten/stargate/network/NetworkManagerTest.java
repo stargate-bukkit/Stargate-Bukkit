@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -51,7 +52,7 @@ class NetworkManagerTest {
 
     @BeforeEach
     void setup() {
-        server = MockBukkit.mock();
+        server = StargateTestHelper.setup();
         player = new PlayerMock(server, PLAYER_NAME);
         plugin = MockBukkit.createMockPlugin();
         permissionManager = new StargatePermissionManager(player, new LanguageManagerMock());
@@ -64,7 +65,7 @@ class NetworkManagerTest {
 
     @AfterEach
     void teardown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

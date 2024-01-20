@@ -21,14 +21,13 @@ class GateFormatTest {
 
     @BeforeEach
     void setUp() {
-        MockBukkit.mock();
         StargateTestHelper.setup();
         this.gateFormat = GateFormatRegistry.getFormat("nether.gate");
     }
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

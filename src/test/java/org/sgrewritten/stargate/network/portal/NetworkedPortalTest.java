@@ -44,9 +44,8 @@ class NetworkedPortalTest {
 
     @BeforeEach
     void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        @NotNull ServerMock server = MockBukkit.mock();
+        @NotNull ServerMock server = StargateTestHelper.setup();
         plugin = MockBukkit.createMockPlugin("Stargate");
-        StargateTestHelper.setup();
         world = server.addSimpleWorld("world");
         this.stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
@@ -61,7 +60,7 @@ class NetworkedPortalTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

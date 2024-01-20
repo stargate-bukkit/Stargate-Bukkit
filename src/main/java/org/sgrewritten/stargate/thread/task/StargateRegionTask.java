@@ -21,6 +21,7 @@ public class StargateRegionTask extends StargateTask {
         this.plugin = Stargate.getInstance();
         this.bungee = bungee;
     }
+
     public StargateRegionTask(Location location, Runnable runnable) {
         this(location, runnable, false);
     }
@@ -41,19 +42,23 @@ public class StargateRegionTask extends StargateTask {
             ScheduledTask theTask = Bukkit.getServer().getRegionScheduler().runDelayed(plugin, location, super::runTask, delay);
             super.registerFoliaTask(theTask);
         } else {
-            super.registerBukkitTask(new StargateBukkitRunnable(this::runPopulatorTask )).runTaskLater(plugin,delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(this::runPopulatorTask)).runTaskLater(plugin, delay);
         }
     }
 
-    private void runPopulatorTask(){
+    private void runPopulatorTask() {
         populator.addAction(super::runTask, bungee);
         super.registerTask();
     }
 
-    public static void startPopulator(Plugin plugin){
-        if(USING_FOLIA){
+    public static void startPopulator(Plugin plugin) {
+        if (USING_FOLIA) {
             return;
         }
-        new StargateBukkitRunnable(populator).runTaskTimer(plugin,0,1);
+        new StargateBukkitRunnable(populator).runTaskTimer(plugin, 0, 1);
+    }
+
+    public static void clearPopulator() {
+        populator.clear();
     }
 }
