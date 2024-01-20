@@ -40,7 +40,8 @@ public class DataMigrator {
         // migration
         MIGRATIONS = new DataMigration[]{
                 new DataMigration6(server, storedProperties),
-                new DataMigration7()
+                new DataMigration7(),
+                new DataMigration9()
         };
 
         //Not StargateConfiguration, as we don't want to save comments

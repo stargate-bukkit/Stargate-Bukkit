@@ -405,7 +405,7 @@ public class SQLQueryGenerator {
         statement.setString(3, destinationName);
         Location topLeft = portal.getGate().getTopLeft();
         World signWorld = topLeft.getWorld();
-        statement.setString(4, signWorld != null ? signWorld.getName() : "");
+        statement.setString(4, signWorld != null ? signWorld.getUID().toString() : "");
         statement.setInt(5, topLeft.getBlockX());
         statement.setInt(6, topLeft.getBlockY());
         statement.setInt(7, topLeft.getBlockZ());

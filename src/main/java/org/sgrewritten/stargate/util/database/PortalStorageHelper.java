@@ -39,7 +39,7 @@ public class PortalStorageHelper {
             destination = "";
         }
 
-        World world = Bukkit.getWorld(resultSet.getString("world"));
+        World world = Bukkit.getWorld(UUID.fromString(resultSet.getString("world")));
         if (world == null) {
             return null;
         }

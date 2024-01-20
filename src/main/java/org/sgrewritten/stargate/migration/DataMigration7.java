@@ -50,7 +50,7 @@ public class DataMigration7 extends DataMigration {
                 && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE);
         TableNameConfiguration nameConfiguration = DatabaseHelper.getTableNameConfiguration(ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE));
         try {
-            new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", isInterServer).run();
+            new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/v-7", isInterServer).run();
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }

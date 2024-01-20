@@ -120,7 +120,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private static final String INTERNAL_FOLDER = ".internal";
     private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
     private static final String CONFIG_FILE = "config.yml";
-    private static final int CURRENT_CONFIG_VERSION = 7;
+    private static final int CURRENT_CONFIG_VERSION = 9;
 
     private static Level logLevel = Level.INFO;//setting before config loads
     private String gateFolder;
