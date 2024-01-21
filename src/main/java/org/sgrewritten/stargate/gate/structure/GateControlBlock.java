@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.gate.structure;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Waterlogged;
@@ -10,6 +11,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.util.ButtonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +49,10 @@ public class GateControlBlock extends GateStructure {
 
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
-        //TODO maybe add some fancy detection here
-        return true;
+        if(Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)){
+            return true;
+        }
+        return material.isAir() || material == Material.WATER;
     }
 
     public void generateStructure(VectorOperation converter, Location topLeft) {

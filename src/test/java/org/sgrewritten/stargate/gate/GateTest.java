@@ -40,7 +40,7 @@ class GateTest {
     void setUp() {
         ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
-        Location topLeft = new Location(world, 0, 6, 0);
+        Location topLeft = new Location(world, 0, 7, 0);
         BlockFace facing = BlockFace.SOUTH;
         this.gateFileName = "nether.gate";
         this.gateData = new GateData(GateFormatRegistry.getFormat(gateFileName), false, topLeft, facing);
