@@ -210,10 +210,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
                 Stargate.log(e);
             }
         }
-        long scheduledGateClearing = Long.parseLong(storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING));
-        if(scheduledGateClearing < System.currentTimeMillis()){
+        String scheduledGateClearingString = storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
+        if(scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) < System.currentTimeMillis()){
             try(InputStream inputStream = Stargate.class.getResourceAsStream("/messages/")){
-                Date date = new Date(scheduledGateClearing);
+                Date date = new Date(Long.parseLong(scheduledGateClearingString));
                 String dateString = date.toString();
                 String unformattedMessage = FileHelper.readStreamToString(inputStream);
                 String message = unformattedMessage.replace("%time%",dateString);

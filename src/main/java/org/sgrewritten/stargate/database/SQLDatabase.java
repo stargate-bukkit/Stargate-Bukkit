@@ -229,7 +229,8 @@ public class SQLDatabase implements StorageAPI {
             statement.close();
         }
         removeWorlds(worldsToRemove, portalType);
-        if (Long.parseLong(propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING)) > System.currentTimeMillis()) {
+        String scheduledGateFormatClearing = propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
+        if (scheduledGateFormatClearing != null && Long.parseLong(scheduledGateFormatClearing) > System.currentTimeMillis()) {
             removeGateFormats(gateFormatsToRemove, portalType);
         } else {
             invalidGateFormats.addAll(gateFormatsToRemove);
