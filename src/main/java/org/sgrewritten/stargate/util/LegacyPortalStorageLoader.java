@@ -68,8 +68,13 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), stargateAPI, defaultNetworkName));
-
+                World world = server.getWorld(worldName);
+                if(world == null){
+                    Stargate.log(Level.WARNING, "Could not load portal from world: " + worldName);
+                    Stargate.log(Level.WARNING, "Ignoring world...");
+                    continue;
+                }
+                portals.add(readPortal(line, world, stargateAPI, defaultNetworkName));
                 line = reader.readLine();
             }
             reader.close();

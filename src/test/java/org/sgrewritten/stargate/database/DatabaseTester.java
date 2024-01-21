@@ -14,7 +14,10 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
+import org.sgrewritten.stargate.database.property.PropertiesDatabase;
+import org.sgrewritten.stargate.database.property.PropertiesDatabaseMock;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -101,7 +104,7 @@ public class DatabaseTester {
         DatabaseTester.serverName = "aServerName";
         DatabaseTester.serverUUID = UUID.randomUUID();
         Stargate.setServerUUID(serverUUID);
-        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, nameConfig);
+        this.portalDatabaseAPI = new SQLDatabase(database, false, isMySQL, nameConfig, new PropertiesDatabaseMock());
 
         Network testNetwork = null;
         try {
@@ -335,7 +338,7 @@ public class DatabaseTester {
         Assertions.assertEquals(portals.size(), rows);
     }
 
-    private List<PortalData> getKnownPortalData(StorageType type) throws SQLException {
+    private List<PortalData> getKnownPortalData(StorageType type) throws SQLException, PortalLoadException {
         PreparedStatement statement = generator.generateGetAllPortalsStatement(connection, type);
 
         ResultSet set = statement.executeQuery();
@@ -346,7 +349,7 @@ public class DatabaseTester {
         return portals;
     }
 
-    void addAndRemovePortalFlags(StorageType type) throws SQLException {
+    void addAndRemovePortalFlags(StorageType type) throws SQLException, PortalLoadException {
         Map<String, RealPortal> portals = (type == StorageType.LOCAL) ? localPortals : interServerPortals;
         for (Portal portal : portals.values()) {
             PreparedStatement addFlagStatement = generator.generateAddPortalFlagRelationStatement(connection, type);

@@ -625,4 +625,29 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    public PreparedStatement generateDeleteWorldStatement(Connection connection, String world, StorageType storageType) throws SQLException {
+        if (storageType == StorageType.LOCAL) {
+            PreparedStatement statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_WORLD));
+            statement.setString(1, world);
+            return statement;
+        } else {
+            PreparedStatement statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_WORLD));
+            statement.setString(1, world);
+            statement.setString(2, Stargate.getServerUUID());
+            return statement;
+        }
+    }
+
+    public PreparedStatement generateRemoveGateStatement(Connection connection, String gateFormat, StorageType storageType) throws SQLException {
+        PreparedStatement statement;
+        if (storageType == StorageType.LOCAL) {
+            statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_GATE_FORMAT));
+            statement.setString(1, gateFormat);
+        } else {
+            statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_GATE_FORMAT));
+            statement.setString(1, gateFormat);
+            statement.setString(2, Stargate.getServerUUID());
+        }
+        return statement;
+    }
 }

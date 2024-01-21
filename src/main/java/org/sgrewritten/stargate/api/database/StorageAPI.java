@@ -14,6 +14,8 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
+import java.util.Set;
+
 /**
  * A generic API for Stargate's storage methods
  */
@@ -174,5 +176,8 @@ public interface StorageAPI {
 
     boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException;
 
-
+    /**
+     * @return <p>The gate formats of the portals scheduled to be cleared</p>
+     */
+    Set<String> getScheduledGatesClearing();
 }

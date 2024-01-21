@@ -53,6 +53,7 @@ import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -77,7 +78,6 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
@@ -93,9 +93,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -187,6 +189,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             ThreadHelper.setAsyncQueueEnabled(true);
             new StargateAsyncTask(ThreadHelper::cycleThroughAsyncQueue).run();
             registerCommands();
+            sendWarningMessages();
 
             //Register bStats metrics
             int pluginId = 13629;
@@ -199,12 +202,35 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    private void sendWarningMessages() {
+        if("true".equals(storedProperties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/parityMessage.txt")) {
+                Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        }
+        long scheduledGateClearing = Long.parseLong(storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING));
+        if(scheduledGateClearing < System.currentTimeMillis()){
+            try(InputStream inputStream = Stargate.class.getResourceAsStream("/messages/")){
+                Date date = new Date(scheduledGateClearing);
+                String dateString = date.toString();
+                String unformattedMessage = FileHelper.readStreamToString(inputStream);
+                String message = unformattedMessage.replace("%time%",dateString);
+                message = message.replace("%gateFormats%", this.storageAPI.getScheduledGatesClearing().toString());
+                Stargate.log(Level.WARNING, message);
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        }
+    }
+
     private void setupManagers() throws StargateInitializationException, SQLException, IOException {
         String LANGUAGE_FOLDER = "lang";
         languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
         economyManager = new VaultEconomyManager(languageManager);
         database = DatabaseHelper.loadDatabase(this);
-        storageAPI = new SQLDatabase(database);
+        storageAPI = new SQLDatabase(database, storedProperties);
         blockHandlerResolver = new BlockHandlerResolver(storageAPI);
         registry = new StargateRegistry(storageAPI, blockHandlerResolver);
         networkManager = new StargateNetworkManager(registry, storageAPI);

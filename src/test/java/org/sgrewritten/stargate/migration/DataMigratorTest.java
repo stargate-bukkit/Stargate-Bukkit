@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.migration;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.google.common.io.Files;
@@ -33,7 +32,7 @@ import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
-import org.sgrewritten.stargate.database.property.FakePropertiesDatabase;
+import org.sgrewritten.stargate.database.property.PropertiesDatabaseMock;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
@@ -90,7 +89,7 @@ public class DataMigratorTest {
         defaultConfigFile = new File("src/main/resources", "config.yml");
         sqlDatabaseFile = new File("src/test/resources", "migrate-test.db");
         sqlDatabase = new SQLiteDatabase(sqlDatabaseFile);
-        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false);
+        StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, new PropertiesDatabaseMock());
         registry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
         stargateAPI = new StargateAPIMock(storageAPI, registry);
         networkManager = stargateAPI.getNetworkManager();
@@ -191,7 +190,7 @@ public class DataMigratorTest {
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
                 throw new IOException("Unable to delete old config file");
             }
-            FakePropertiesDatabase properties = new FakePropertiesDatabase();
+            PropertiesDatabaseMock properties = new PropertiesDatabaseMock();
             DataMigrator dataMigrator = new DataMigrator(configFile, server, properties);
             if (!configFile.renameTo(oldConfigFile)) {
                 throw new IOException("Unable to rename existing config for backup");

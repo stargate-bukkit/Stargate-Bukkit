@@ -6,7 +6,7 @@ authors: [ Knarvik, Thorin, sgrewitten.org/credits ]
 website: https://sgrewitten.org
 api-version: 1.16
 folia-supported: true
-softdepend: [ Vault, StargateInterfaces, StargateCustomizations, StargateMechanics ]
+softdepend: [Vault, BKCommonLib]
 commands:
   stargate:
     description: Used to interact with the Stargate plugin at a system level.

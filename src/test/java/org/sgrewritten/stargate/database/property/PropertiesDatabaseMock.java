@@ -2,11 +2,11 @@ package org.sgrewritten.stargate.database.property;
 
 import java.util.Properties;
 
-public class FakePropertiesDatabase implements StoredPropertiesAPI {
+public class PropertiesDatabaseMock implements StoredPropertiesAPI {
 
     private final Properties properties;
 
-    public FakePropertiesDatabase() {
+    public PropertiesDatabaseMock() {
         properties = new Properties();
     }
 

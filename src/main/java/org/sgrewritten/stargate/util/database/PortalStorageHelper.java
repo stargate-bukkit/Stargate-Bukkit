@@ -5,6 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
@@ -12,6 +14,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
@@ -29,7 +32,7 @@ import java.util.logging.Level;
 public class PortalStorageHelper {
 
 
-    public static PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException {
+    public static @NotNull PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException, PortalLoadException {
         //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
         String name = resultSet.getString("name");
         String networkName = resultSet.getString("network");
@@ -41,7 +44,8 @@ public class PortalStorageHelper {
 
         World world = Bukkit.getWorld(UUID.fromString(resultSet.getString("world")));
         if (world == null) {
-            return null;
+            Stargate.log(Level.FINE, "World does not exist for portal: " + networkName + ":" + name);
+            throw new PortalLoadException(PortalLoadException.FailureType.WORLD);
         }
         Location topLeft = new Location(world, resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"));
 
@@ -66,7 +70,7 @@ public class PortalStorageHelper {
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
                     "log for more information", gateFileName));
-            throw new IllegalArgumentException("Could not find gate format");
+            throw new PortalLoadException(PortalLoadException.FailureType.GATE_FORMAT);
         }
         GateData gateData = new GateData(format, flipZ, topLeft, facing);
         return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, serverUUID, serverName, portalType, metadata);

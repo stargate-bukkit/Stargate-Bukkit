@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
@@ -300,7 +301,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(8)
-    void addAndRemovePortalFlagRelationTest() {
+    void addAndRemovePortalFlagRelationTest() throws PortalLoadException {
         try {
             tester.addAndRemovePortalFlags(StorageType.LOCAL);
         } catch (SQLException e) {
@@ -310,7 +311,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(8)
-    void addAndRemoveInterPortalFlagRelationTest() {
+    void addAndRemoveInterPortalFlagRelationTest() throws PortalLoadException {
         try {
             tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
         } catch (SQLException e) {

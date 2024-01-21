@@ -70,14 +70,14 @@ class TeleporterTest {
     }
 
     @Test
-    public void teleport() {
+    void teleport() {
         teleporter.teleport(horse);
         StargateTestHelper.runAllTasks();
         Assertions.assertTrue(horse.hasTeleported());
     }
 
     @Test
-    public void teleport_FurnaceMinecart() {
+    void teleport_FurnaceMinecart() {
         teleporter.teleport(furnaceMinecart);
         StargateTestHelper.runAllTasks();
         Assertions.assertTrue(furnaceMinecart.hasTeleported());

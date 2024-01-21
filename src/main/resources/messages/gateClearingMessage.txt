@@ -1,0 +1,5 @@
+You have portals with invalid gate formats.
+These portals will get cleared during the next
+restart after %time%. These following gate formats
+are invalid and have portals assigned to them:
+%gateFormats%

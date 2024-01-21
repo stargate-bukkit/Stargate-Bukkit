@@ -65,11 +65,6 @@ public class DataMigration6 extends DataMigration {
         if (oldConfig.get("debugging.permissionDebug") != null) {
             storedProperties.setProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE, true);
             this.versionFrom = "0.11.5.5";
-            try (InputStream inputStream = Stargate.class.getResourceAsStream("/migration/paritymessage.txt")) {
-                Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
-            } catch (IOException e) {
-                Stargate.log(e);
-            }
         } else {
             this.versionFrom = "~0.10.0.0";
         }
