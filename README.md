@@ -5,14 +5,14 @@
 `Supporting MC 1.18+ in the Bukkit Ecosystem`
 
 > [!WARNING]
-> THIS IS AN EXPERIMENTAL DEVELOPMENTAL BUILD SEPARATE FROM THE NIGHTLY CHANNEL!<br>
+> THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!<br>
 > <br>
-> **FOR**: Stargate core developers.<br>
-> **ENJOY**: Unstable WIP folia support.<br>
-> **EXPECT**: Crashes and corruption... if it even runs at all.<br>
+> **FOR**: Stargate developers and contributors.<br>
+> **ENJOY**: Access to cutting edge features still under active development.<br>
+> **EXPECT**: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br>
 >
-> **THIS BUILD IS NOT SUITABLE FOR USE BY ANYONE FOR ANY PURPOSE**<BR>
-> **Don't use it... even at your own risk or with backups.**
+> **THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT**<br>
+>  **Use at your own risk, and remember to make backups!**
 
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
