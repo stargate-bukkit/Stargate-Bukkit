@@ -1,1 +1,1 @@
-SELECT world FROM TABLE {InterPortal};
+SELECT world FROM {InterPortal};

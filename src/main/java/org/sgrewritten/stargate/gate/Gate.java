@@ -536,7 +536,7 @@ public class Gate implements GateAPI {
     @Override
     public void assignPortal(@NotNull RealPortal realPortal) {
         if (this.portal != null) {
-            throw new IllegalStateException("A portal position can only be assigned to a portal once.");
+            throw new IllegalStateException("A gate can only be assigned to a portal once.");
         }
         this.portal = Objects.requireNonNull(realPortal);
         for (PortalPosition portalPosition : this.portalPositions) {

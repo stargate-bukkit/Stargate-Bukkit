@@ -1,1 +1,1 @@
-SELECT world FROM TABLE {Portal};
+SELECT world FROM {Portal};

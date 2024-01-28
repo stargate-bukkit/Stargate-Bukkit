@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.thread.task;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 import java.util.LinkedList;
@@ -66,9 +67,15 @@ public abstract class StargateTask implements Runnable {
      */
     public static void forceRunAllTasks() {
         int counter = 0;
-        while(!tasks.isEmpty() && counter < MAXIMUM_SHUTDOWN_CYCLES) {
+        while (!tasks.isEmpty() && counter < MAXIMUM_SHUTDOWN_CYCLES) {
             Queue<Runnable> scheduledTasks = new LinkedList<>(tasks);
-            scheduledTasks.forEach(Runnable::run);
+            scheduledTasks.forEach(task -> {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    Stargate.log(e);
+                }
+            });
             tasks.removeAll(scheduledTasks);
             counter++;
         }
@@ -92,7 +99,7 @@ public abstract class StargateTask implements Runnable {
      * @param scheduledTask
      */
     protected void runTask(ScheduledTask scheduledTask) {
-        if(this.scheduledTask == null){
+        if (this.scheduledTask == null) {
             this.scheduledTask = scheduledTask;
         }
         this.runTask();

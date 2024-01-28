@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;
 
@@ -23,13 +24,18 @@ public class StargateTestHelper {
         return server;
     }
 
-    public static void tearDown(){
+    public static void tearDown() {
         runAllTasks();
         MockBukkit.unmock();
     }
 
-    public static void runAllTasks(){
-        StargateTask.forceRunAllTasks();
+    public static void runAllTasks() {
+        ThreadHelper.setAsyncQueueEnabled(false);
+        try {
+            StargateTask.forceRunAllTasks();
+        } catch (Exception e) {
+            Stargate.log(e);
+        }
         StargateRegionTask.clearPopulator();
     }
 

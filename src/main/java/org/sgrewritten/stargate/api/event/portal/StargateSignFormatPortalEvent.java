@@ -16,7 +16,7 @@ public class StargateSignFormatPortalEvent extends StargatePortalEvent {
     private final SignLine[] lines;
 
     public StargateSignFormatPortalEvent(@NotNull RealPortal portal, SignLine[] signLines, PortalPosition portalPosition, Location location) {
-        super(portal,false);
+        super(portal, false);
         this.lines = signLines;
         this.portalPosition = portalPosition;
         this.location = location;
