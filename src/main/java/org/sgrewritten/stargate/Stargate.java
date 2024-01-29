@@ -532,7 +532,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             if (storageAPI instanceof SQLDatabase sqlDatabase) {
                 sqlDatabase.load(DatabaseHelper.loadDatabase(this));
             }
-            registry.clear(this);
+            registry.clear();
             networkManager.loadPortals(this);
             economyManager.setupEconomy();
         } catch (StargateInitializationException | IOException | SQLException e) {
