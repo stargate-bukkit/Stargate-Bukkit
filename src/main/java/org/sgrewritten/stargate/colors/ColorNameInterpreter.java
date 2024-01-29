@@ -9,6 +9,10 @@ import java.util.Map;
 
 public class ColorNameInterpreter {
 
+    private ColorNameInterpreter(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static ChatColor getDefaultPointerColor(String defaultString) {
         try {
             DyeColor dyeColor = DyeColor.valueOf(defaultString.toUpperCase());

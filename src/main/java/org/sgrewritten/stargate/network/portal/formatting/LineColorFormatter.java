@@ -22,7 +22,6 @@ import java.util.logging.Level;
 public class LineColorFormatter implements LineFormatter {
     private static final ChatColor ERROR_COLOR = ChatColor.RED;
     private final DyeColor dyeColor;
-    private final Material signMaterial;
     private final ChatColor color;
     private final ChatColor pointerColor;
 
@@ -35,7 +34,6 @@ public class LineColorFormatter implements LineFormatter {
     public LineColorFormatter(DyeColor dyeColor, Material signMaterial) {
         Stargate.log(Level.FINER, "Instantiating a new LineColorFormatter with DyeColor " + dyeColor + " and sign Material " + signMaterial);
         this.dyeColor = dyeColor;
-        this.signMaterial = signMaterial;
 
         color = this.getColor();
         pointerColor = this.getPointerColor();
@@ -43,15 +41,15 @@ public class LineColorFormatter implements LineFormatter {
 
     @Override
     public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        ChatColor pointerColor = this.pointerColor;
+        ChatColor pointerColorTemp = this.pointerColor;
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && getFlagColor(portal) != null) {
-            pointerColor = getFlagColor(portal);
+            pointerColorTemp = getFlagColor(portal);
         }
         String portalName = (portal != null) ? portal.getName() : "null";
         return new ArrayList<>(List.of(
-                new StargateComponent(pointerColor + highlightingStyle.getPrefix()),
+                new StargateComponent(pointerColorTemp + highlightingStyle.getPrefix()),
                 new StargateComponent(color + portalName),
-                new StargateComponent(pointerColor + highlightingStyle.getSuffix())
+                new StargateComponent(pointerColorTemp + highlightingStyle.getSuffix())
         ));
     }
 

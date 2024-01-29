@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MaterialHandlerResolverTest {
+class MaterialHandlerResolverTest {
 
     private ServerMock server;
     private BlockHandlerResolver blockHandlerResolver;

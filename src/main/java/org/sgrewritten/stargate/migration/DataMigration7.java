@@ -38,7 +38,7 @@ import java.util.logging.Level;
  */
 public class DataMigration7 extends DataMigration {
 
-    private final Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
+    private static final Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
 
     public DataMigration7() {
         loadConfigConversions();

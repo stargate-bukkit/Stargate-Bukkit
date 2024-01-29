@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.gate;
 
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
@@ -15,19 +16,23 @@ import java.util.logging.Level;
  */
 public class GateFormatHandler {
 
+    private GateFormatHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Loads all gate formats from the gate folder
      *
      * @param dir <p>The folder to load gates from</p>
      * @return <p>A map between a control block material and the corresponding gate format</p>
      */
-    public static List<GateFormat> loadGateFormats(File dir) {
+    public static @NotNull List<GateFormat> loadGateFormats(File dir) {
         Stargate.log(Level.FINE, "Loading gates from " + dir.getAbsolutePath());
         List<GateFormat> gateFormatMap = new ArrayList<>();
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".gate")) : new File[0];
 
         if (files == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         for (File file : files) {
@@ -35,11 +40,9 @@ public class GateFormatHandler {
                 gateFormatMap.add(loadGateFormat(file));
             } catch (FileNotFoundException | ParsingErrorException exception) {
                 Stargate.log(Level.WARNING, "Could not load Gate " + file.getName() + " - " + exception.getMessage());
-                if (exception instanceof ParsingErrorException && file.exists()) {
-                    if (!file.renameTo(new File(dir, file.getName() + ".invalid"))) {
-                        Stargate.log(Level.WARNING, "Could not add .invalid to gate. Make sure file " +
-                                "permissions are set correctly.");
-                    }
+                if (exception instanceof ParsingErrorException && file.exists() && !file.renameTo(new File(dir, file.getName() + ".invalid"))) {
+                    Stargate.log(Level.WARNING, "Could not add .invalid to gate. Make sure file " +
+                            "permissions are set correctly.");
                 }
             }
         }

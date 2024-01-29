@@ -502,7 +502,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
         saveDefaultGates();
         List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()));
-        if (gateFormats == null) {
+        if (gateFormats.isEmpty()) {
             log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
             GateFormatRegistry.setFormats(new ArrayList<>());
         } else {

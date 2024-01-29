@@ -24,7 +24,7 @@ public class DataMigrator {
     private final File configFile;
     private Map<String, Object> configModifications;
     private final FileConfiguration fileConfig;
-    private final DataMigration[] MIGRATIONS;
+    private final DataMigration[] migrations;
 
     /**
      * Instantiates a new data migrator
@@ -38,18 +38,18 @@ public class DataMigrator {
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
-        MIGRATIONS = new DataMigration[]{
+        migrations = new DataMigration[]{
                 new DataMigration6(server, storedProperties),
                 new DataMigration7(),
                 new DataMigration9()
         };
 
         //Not StargateConfiguration, as we don't want to save comments
-        FileConfiguration fileConfig = new YamlConfiguration();
-        fileConfig.load(configurationFile);
-        this.fileConfig = fileConfig;
-        this.configModifications = fileConfig.getValues(true);
-        this.configVersion = fileConfig.getInt("configVersion", 0);
+        FileConfiguration configuration = new YamlConfiguration();
+        configuration.load(configurationFile);
+        this.fileConfig = configuration;
+        this.configModifications = configuration.getValues(true);
+        this.configVersion = configuration.getInt("configVersion", 0);
         this.configFile = configurationFile;
     }
 
@@ -59,7 +59,7 @@ public class DataMigrator {
      * @return <p>True if a migration is necessary</p>
      */
     public boolean isMigrationNecessary() {
-        for (DataMigration migration : MIGRATIONS) {
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 return true;
             }
@@ -75,7 +75,7 @@ public class DataMigrator {
      * @return <p>The update configuration values</p>
      */
     public Map<String, Object> getUpdatedConfig() {
-        for (DataMigration migration : MIGRATIONS) {
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 configModifications = migration.getUpdatedConfigValues(configModifications);
             }
@@ -87,7 +87,7 @@ public class DataMigrator {
      * Runs all relevant config migrations
      */
     public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
-        for (DataMigration migration : MIGRATIONS) {
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 Stargate.log(Level.INFO, String.format("Running database migration %s -> %s", migration.getVersionFrom(), migration.getVersionTo()));
                 migration.run(database, stargateAPI);
@@ -107,8 +107,8 @@ public class DataMigrator {
     public void updateFileConfiguration(FileConfiguration config, Map<String, Object> updatedConfig) throws IOException,
             InvalidConfigurationException {
         fileConfig.load(configFile);
-        for (String configKey : updatedConfig.keySet()) {
-            config.set(configKey, updatedConfig.get(configKey));
+        for (Map.Entry<String, Object> entry: updatedConfig.entrySet()) {
+            config.set(entry.getKey(), entry.getValue());
         }
         config.set("configVersion", Stargate.getCurrentConfigVersion());
         config.save(configFile);

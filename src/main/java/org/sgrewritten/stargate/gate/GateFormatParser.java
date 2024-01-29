@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.gate;
 
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
-import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 import org.sgrewritten.stargate.gate.structure.GateControlBlock;
@@ -98,12 +97,12 @@ public class GateFormatParser {
      * @param characterMaterialMap <p>The full map between characters and materials loaded from the gate file</p>
      */
     private void loadFrameAndControlMaterials(Map<Character, Set<Material>> characterMaterialMap) {
-        for (Character character : characterMaterialMap.keySet()) {
-            if (character == CONTROL) {
+        for (Map.Entry<Character, Set<Material>> entry : characterMaterialMap.entrySet()) {
+            if (entry.getKey() == CONTROL) {
                 controlMaterials = characterMaterialMap.get(CONTROL);
-                frameMaterials.put(character, characterMaterialMap.get(character));
-            } else if (character != NOTHING && character != EXIT && character != ENTRANCE) {
-                frameMaterials.put(character, characterMaterialMap.get(character));
+                frameMaterials.put(entry.getKey(), entry.getValue());
+            } else if (entry.getKey() != NOTHING && entry.getKey() != EXIT && entry.getKey() != ENTRANCE) {
+                frameMaterials.put(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -116,11 +115,11 @@ public class GateFormatParser {
      * @throws ParsingErrorException <p>If unable to parse one of the materials given in the options</p>
      */
     private void loadGateConfigValues(Map<String, String> config) throws ParsingErrorException {
-        for (String key : config.keySet()) {
-            String line = key + "=" + config.get(key);
-            switch (key) {
-                case "portal-open" -> irisOpen = GateFormatReader.parseMaterial(config.get(key), line);
-                case "portal-closed" -> irisClosed = GateFormatReader.parseMaterial(config.get(key), line);
+        for (Map.Entry<String,String> entry : config.entrySet()) {
+            String line = entry.getKey() + "=" + entry.getValue();
+            switch (entry.getKey()) {
+                case "portal-open" -> irisOpen = GateFormatReader.parseMaterial(entry.getValue(), line);
+                case "portal-closed" -> irisClosed = GateFormatReader.parseMaterial(entry.getValue(), line);
                 default -> {
                     //Any unknown config values are ignored
                 }

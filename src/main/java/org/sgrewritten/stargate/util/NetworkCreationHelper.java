@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util;
 
-import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
@@ -10,7 +9,6 @@ import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * A helper class for creating a new network
@@ -30,7 +28,6 @@ public final class NetworkCreationHelper {
     public static Set<String> getDefaultNamesTaken() {
         Set<String> output = new HashSet<>();
         output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase());
-        //output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase());
         return output;
     }
 

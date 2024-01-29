@@ -49,7 +49,6 @@ class StargateBungeeManagerTest {
     private StargateBungeeManager bungeeManager;
     private RealPortal realPortal;
     private RealPortal bungeePortal;
-    private static final File testGatesDir = new File("src/test/resources/gates");
 
     private static final String SERVER = "server";
     private static final String NETWORK = "network1";
@@ -63,8 +62,6 @@ class StargateBungeeManagerTest {
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException {
         server = StargateTestHelper.setup();
-        GateFormatRegistry.setFormats(
-                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         Stargate.setServerName(SERVER);
         registry = new RegistryMock();
         this.networkManager = new StargateNetworkManager(registry, new StorageMock());

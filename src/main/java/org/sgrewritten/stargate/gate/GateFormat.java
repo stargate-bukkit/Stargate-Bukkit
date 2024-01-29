@@ -89,10 +89,10 @@ public class GateFormat implements GateFormatAPI {
      * @return <p>True if the stargate matches this format</p>
      */
     public boolean matches(VectorOperation converter, Location topLeft) {
-        for (GateFormatStructureType structureType : portalParts.keySet()) {
-            Stargate.log(Level.FINER, "---Validating " + structureType);
-            if (!(portalParts.get(structureType).isValidState(converter, topLeft))) {
-                Stargate.log(Level.FINER, structureType + " returned negative");
+        for (Map.Entry<GateFormatStructureType, GateStructure> entry: portalParts.entrySet()) {
+            Stargate.log(Level.FINER, "---Validating " + entry.getKey());
+            if (!(entry.getValue().isValidState(converter, topLeft))) {
+                Stargate.log(Level.FINER, entry.getKey() + " returned negative");
                 return false;
             }
         }

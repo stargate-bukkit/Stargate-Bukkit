@@ -39,8 +39,6 @@ class BlockEventHelperTest {
     private static RealPortal portal;
     private static Block signBlock;
     private static PlayerMock player;
-
-    private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static StargateAPIMock stargateAPI;
 
     @BeforeAll
@@ -52,7 +50,6 @@ class BlockEventHelperTest {
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
 
         portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);

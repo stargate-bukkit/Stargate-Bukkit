@@ -100,7 +100,7 @@ public class NetworkedPortal extends AbstractPortal {
 
         boolean previouslyActivated = this.isActive;
         activate(actor);
-        if (destinations.size() < 1) {
+        if (destinations.isEmpty()) {
             String message = super.languageManager.getErrorMessage(TranslatableMessage.DESTINATION_EMPTY);
             MessageUtils.sendMessageFromPortal(this, event.getPlayer(), message, MessageType.DESTINATION_EMPTY);
 

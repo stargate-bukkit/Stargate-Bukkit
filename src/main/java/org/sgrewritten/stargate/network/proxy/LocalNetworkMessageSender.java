@@ -10,21 +10,21 @@ import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 public class LocalNetworkMessageSender implements PluginMessageSender {
     @Override
     public void sendCreatePortal(RealPortal realPortal) {
-
+        // Currently does not need to relay any information cross servers
     }
 
     @Override
     public void sendDeletePortal(RealPortal realPortal) {
-
+        // Currently does not need to relay any information cross servers
     }
 
     @Override
     public void sendRenameNetwork(String newId, String oldId) {
-
+        // Currently does not need to relay any information cross servers
     }
 
     @Override
     public void sendRenamePortal(String newName, String oldName, Network network) {
-
+        // Currently does not need to relay any information cross servers
     }
 }

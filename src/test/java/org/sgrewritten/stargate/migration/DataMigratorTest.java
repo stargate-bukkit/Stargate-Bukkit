@@ -67,12 +67,10 @@ public class DataMigratorTest {
     static private final Map<String, DataMigrator> migratorMap = new HashMap<>();
     static private final Map<String, StoredPropertiesAPI> propertiesMap = new HashMap<>();
     static private Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> configTestMap;
-    private static final File testGatesDir = new File("src/test/resources/gates");
 
     static private ServerMock server;
     private static StargateRegistry registry;
     private static StargateAPIMock stargateAPI;
-    private static NetworkManager networkManager;
 
     @BeforeAll
     public static void setUp() throws IOException, InvalidConfigurationException, SQLException {
@@ -92,7 +90,6 @@ public class DataMigratorTest {
         StorageAPI storageAPI = new SQLDatabase(sqlDatabase, false, false, new PropertiesDatabaseMock());
         registry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
         stargateAPI = new StargateAPIMock(storageAPI, registry);
-        networkManager = stargateAPI.getNetworkManager();
 
         defaultConfigFile = new File("src/main/resources", "config.yml");
         server = StargateTestHelper.setup();
@@ -101,8 +98,6 @@ public class DataMigratorTest {
         server.addSimpleWorld("pseudoknigth");
         server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
         Stargate.getFileConfiguration().load(defaultConfigFile);
-
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
     }
 
     private static Map<String, TwoTuple<Map<String, Object>, Map<String, String>>> getSettingTestMaps() {
@@ -184,7 +179,7 @@ public class DataMigratorTest {
 
     @Test
     @Order(1)
-    public void convertConfigCheck() throws IOException, InvalidConfigurationException {
+    void convertConfigCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             File oldConfigFile = new File(configFile.getAbsolutePath() + ".old");
             if (oldConfigFile.exists() && !oldConfigFile.delete()) {
@@ -224,7 +219,7 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void doOtherRefactorCheck(String key) {
+    void doOtherRefactorCheck(String key) {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
@@ -239,7 +234,7 @@ public class DataMigratorTest {
 
     @Test
     @Order(3)
-    public void configDoubleCheck() throws IOException, InvalidConfigurationException {
+    void configDoubleCheck() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
             Map<String, Object> testMap = configTestMap.get(configFile.getName()).getFirstValue();
             FileConfiguration config = new StargateYamlConfiguration();
@@ -253,7 +248,7 @@ public class DataMigratorTest {
 
     @Test
     @Order(3)
-    public void portalPrintCheck() throws SQLException {
+    void portalPrintCheck() throws SQLException {
         try (Connection conn = sqlDatabase.getConnection()) {
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM Portal;");
             ResultSet set = statement.executeQuery();
@@ -274,7 +269,7 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(2)
-    public void portalLoadCheck(String key) {
+    void portalLoadCheck(String key) {
         Map<String, String> testMap = configTestMap.get(key).getSecondValue();
         Stargate.log(Level.FINE, String.format("--------- Checking portal loaded from %s configuration%n", key));
         for (String portalName : testMap.keySet()) {
@@ -289,7 +284,7 @@ public class DataMigratorTest {
     @ParameterizedTest
     @MethodSource("getTestedConfigNames")
     @Order(3)
-    public void knarvikNagPropertySet(String key) {
+    void knarvikNagPropertySet(String key) {
         StoredPropertiesAPI properties = propertiesMap.get(key);
         if (key.contains("config-epicknarvik.yml")) {
             Assertions.assertEquals("true", properties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE));

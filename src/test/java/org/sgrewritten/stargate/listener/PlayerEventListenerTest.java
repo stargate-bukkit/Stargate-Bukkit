@@ -35,7 +35,6 @@ class PlayerEventListenerTest {
     private PlayerEventListener listener;
     private Block signBlock;
     private @NotNull PlayerMock player;
-    private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
     void setUp() {
@@ -43,7 +42,6 @@ class PlayerEventListenerTest {
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock(), new StargateNetworkManager(registry, new StorageMock())), new BlockLoggerMock(), new StorageMock());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
     }

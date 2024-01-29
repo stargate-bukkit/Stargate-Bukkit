@@ -1,8 +1,10 @@
 package org.sgrewritten.stargate.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,12 +73,12 @@ public final class ConfigurationHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<String> getStringList(ConfigurationOption configurationOption) {
+    public static @NotNull List<String> getStringList(ConfigurationOption configurationOption) {
         if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {
             return Stargate.getFileConfiguration().getStringList(configurationOption.getConfigNode());
         } else {
             if (configurationOption.getDefaultValue() == null) {
-                return null;
+                return new ArrayList<>();
             }
             return (List<String>) configurationOption.getDefaultValue();
         }

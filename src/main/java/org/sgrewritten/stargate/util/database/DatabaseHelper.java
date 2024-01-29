@@ -23,6 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper {
+
+    private DatabaseHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Executes and closes the given statement
      *
@@ -171,7 +176,7 @@ public class DatabaseHelper {
         }
     }
 
-    public static SQLQueryGenerator getSQLGenerator(Stargate stargate, boolean usingRemoteDatabase) {
+    public static SQLQueryGenerator getSQLGenerator(boolean usingRemoteDatabase) {
         TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         return new SQLQueryGenerator(config, databaseEnum);

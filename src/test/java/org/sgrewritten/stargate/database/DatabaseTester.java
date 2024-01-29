@@ -70,7 +70,6 @@ public class DatabaseTester {
     private static Portal testPortal;
     private static final String INTER_PORTAL_NAME = "iPortal";
     private static final String LOCAL_PORTAL_NAME = "portal";
-    private static final File testGatesDir = new File("src/test/resources/gates");
     private final Map<String, RealPortal> interServerPortals;
     private final Map<String, RealPortal> localPortals;
     private final StorageAPI portalDatabaseAPI;
@@ -113,7 +112,6 @@ public class DatabaseTester {
             Stargate.log(e);
             fail();
         }
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
         portalGenerator = new PortalFactory(LOCAL_PORTAL_NAME, INTER_PORTAL_NAME);
 
         this.interServerPortals = portalGenerator.generateFakePortals(world, testNetwork, true, interServerPortalTestLength);

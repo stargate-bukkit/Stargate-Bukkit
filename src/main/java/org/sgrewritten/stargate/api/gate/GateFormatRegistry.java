@@ -13,6 +13,10 @@ import java.util.Set;
 
 public class GateFormatRegistry {
 
+    private GateFormatRegistry(){
+        throw new IllegalStateException("Utility class");
+    }
+
     private static Map<Material, List<GateFormat>> controlMaterialToGateFormatsMap;
     private static Map<String, GateFormat> knownGateFormats;
 
@@ -70,11 +74,7 @@ public class GateFormatRegistry {
     private static void addGateFormat(Map<Material, List<GateFormat>> controlToGateMap, GateFormat format,
                                       Set<Material> controlMaterials) {
         for (Material controlMaterial : controlMaterials) {
-            //Add an empty list if the material has no entry
-            if (!(controlToGateMap.containsKey(controlMaterial))) {
-                List<GateFormat> gateFormatList = new ArrayList<>();
-                controlToGateMap.put(controlMaterial, gateFormatList);
-            }
+            controlToGateMap.putIfAbsent(controlMaterial, new ArrayList<>());
             controlToGateMap.get(controlMaterial).add(format);
         }
     }

@@ -6,7 +6,7 @@ public abstract class AbstractSignLine implements SignLine {
 
     private final List<StargateComponent> components;
 
-    public AbstractSignLine(List<StargateComponent> components) {
+    protected AbstractSignLine(List<StargateComponent> components) {
         this.components = components;
     }
 

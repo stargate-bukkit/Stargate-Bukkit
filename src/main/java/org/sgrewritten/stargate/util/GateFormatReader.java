@@ -19,8 +19,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * Helper class for reading gate files
@@ -51,7 +49,7 @@ public final class GateFormatReader {
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
     public static void readGateFile(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                   List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
+                                    List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         try {
             readGateFileContents(scanner, characterMaterialMap, design, config);
         } finally {
@@ -121,36 +119,24 @@ public final class GateFormatReader {
      * @throws ParsingErrorException <p>If the gate file cannot be parsed</p>
      */
     private static void readGateFileContents(Scanner scanner, Map<Character, Set<Material>> characterMaterialMap,
-                                            List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
+                                             List<List<Character>> design, Map<String, String> config) throws ParsingErrorException {
         String line;
         boolean designing = false;
-        int columns = 0;
 
         while (scanner.hasNextLine()) {
             line = scanner.nextLine();
-            if (designing) {
-                //If we have reached the gate's layout/design, read it
-                columns = readGateDesignLine(line, columns, design);
-                if (columns < 0) {
-                    return;
+            if (!designing) {
+                if(!line.contains("=")) {
+                    designing = true;
                 }
-            } else {
-                if (line.isEmpty() || line.startsWith("#")) {
+                else if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                } else {
+                    readGateConfigValue(line, characterMaterialMap, config);
                     continue;
                 }
-
-                if (!line.contains("=")) {
-                    designing = true;
-                    //If we have reached the gate's layout/design, read it
-                    columns = readGateDesignLine(line, columns, design);
-                    if (columns < 0) {
-                        return;
-                    }
-                } else {
-                    //Read a normal config value
-                    readGateConfigValue(line, characterMaterialMap, config);
-                }
             }
+            readGateDesignLine(line, design);
         }
     }
 
@@ -161,17 +147,10 @@ public final class GateFormatReader {
      * the max columns value contains the largest amount of columns (character) found in any of the design's lines.</p>
      *
      * @param line       <p>The line to read</p>
-     * @param maxColumns <p>The current max columns value of the design</p>
      * @param design     <p>The two-dimensional list to store the loaded design to</p>
-     * @return <p>The new max columns value of the design</p>
      */
-    private static int readGateDesignLine(String line, int maxColumns, List<List<Character>> design) {
+    private static void readGateDesignLine(String line, List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
-
-        //Update the max columns number if this line has more columns
-        if (line.length() > maxColumns) {
-            maxColumns = line.length();
-        }
 
         for (Character symbol : line.toCharArray()) {
             //Add the read character to the row
@@ -180,7 +159,6 @@ public final class GateFormatReader {
 
         //Add this row of the gate's design to the two-dimensional design list
         design.add(row);
-        return maxColumns;
     }
 
     /**
@@ -273,7 +251,7 @@ public final class GateFormatReader {
         Map<String, String> temp = new HashMap<>();
         FileHelper.readInternalFileToMap("/material/materialEdgeCases.properties", temp);
         for (Material material : Material.values()) {
-            for (Map.Entry<String,String> entry : temp.entrySet()) {
+            for (Map.Entry<String, String> entry : temp.entrySet()) {
                 String type = material.toString().replaceAll(entry.getKey(), "");
                 if (type.equals(material.toString())) {
                     continue;

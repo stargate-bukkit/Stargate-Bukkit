@@ -447,8 +447,7 @@ public class Gate implements GateAPI {
      * @return <p>True if there is a conflict</p>
      */
     private boolean hasGateControlConflict() {
-        List<PortalPosition> portalPositions = this.getPortalPositions();
-        for (PortalPosition portalPosition : portalPositions) {
+        for (PortalPosition portalPosition : this.getPortalPositions()) {
             Location location = getLocation(portalPosition.getRelativePositionLocation());
             PortalPosition conflictingPortalPosition = registry.getPortalPosition(location);
             if (conflictingPortalPosition != null) {

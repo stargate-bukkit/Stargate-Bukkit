@@ -60,7 +60,7 @@ public enum BlockEventType {
      */
     public boolean canDestroyPortal() {
         List<String> events = ConfigurationHelper.getStringList(ConfigurationOption.SPECIFIC_PROTECTION_OVERRIDE);
-        if (events == null) {
+        if (events.isEmpty()) {
             return false;
         }
         return events.contains(this.eventName);

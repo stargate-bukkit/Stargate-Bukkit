@@ -23,8 +23,8 @@ public class BlockLocation {
         x = location.getBlockX();
         y = location.getBlockY();
         z = location.getBlockZ();
-        World world = location.getWorld();
-        this.world = world == null ? "" : world.getName();
+        World worldObject = location.getWorld();
+        this.world = worldObject == null ? "" : worldObject.getName();
     }
 
     /**

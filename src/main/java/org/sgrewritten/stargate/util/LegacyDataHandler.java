@@ -14,6 +14,10 @@ import java.util.UUID;
 
 public class LegacyDataHandler {
 
+    private LegacyDataHandler(){
+        throw new IllegalStateException("Utility class");
+    }
+
 
     private static Map<PortalFlag, Integer> LEGACY_FLAG_INDICES;
 
@@ -96,10 +100,10 @@ public class LegacyDataHandler {
         }
 
         Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
-        for (PortalFlag flag : LEGACY_FLAG_INDICES.keySet()) {
-            int position = LEGACY_FLAG_INDICES.get(flag);
+        for(Map.Entry<PortalFlag,Integer> entry: LEGACY_FLAG_INDICES.entrySet()) {
+            int position = entry.getValue();
             if (splitLine.length > position && splitLine[position].equalsIgnoreCase("true")) {
-                flags.add(flag);
+                flags.add(entry.getKey());
             }
         }
 

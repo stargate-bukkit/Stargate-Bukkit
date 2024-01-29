@@ -100,7 +100,7 @@ public class SQLQueryHandler {
         final Map<String, String> queries = new HashMap<>();
         String fullFolder = "/database/" + folder;
         List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
-        if (walk == null) {
+        if (walk.isEmpty()) {
             return new HashMap<>();
         }
         walk.forEach(path -> {

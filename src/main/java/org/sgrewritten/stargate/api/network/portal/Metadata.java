@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.api.network.portal;
 
-import com.google.gson.JsonElement;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.MetadataHolder;
 

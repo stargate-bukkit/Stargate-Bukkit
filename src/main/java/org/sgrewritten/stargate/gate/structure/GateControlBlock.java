@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
@@ -49,7 +48,7 @@ public class GateControlBlock extends GateStructure {
 
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
-        if(Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)){
+        if (Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)) {
             return true;
         }
         return material.isAir() || material == Material.WATER;
@@ -59,9 +58,6 @@ public class GateControlBlock extends GateStructure {
         BlockVector signPosition = parts.get(0);
         Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(signPosition)).getBlock();
         BlockState state = signLocation.getState();
-        /*
-         * TODO: remove this hardcoded thing
-         */
         state.setType(Material.OAK_WALL_SIGN);
         WallSign signData = (WallSign) state.getBlockData();
         signData.setFacing(converter.getFacing());

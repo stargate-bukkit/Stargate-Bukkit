@@ -1,11 +1,15 @@
 package org.sgrewritten.stargate.util;
 
 public class ExceptionHelper {
+
+    private ExceptionHelper(){
+        throw new IllegalStateException("Utility class");
+    }
     public static <T extends Throwable> boolean doesThrow(Class<T> expectedType, Runnable runnable) {
         try {
             runnable.run();
             return false;
-        } catch (Throwable actualException) {
+        } catch (Exception actualException) {
             if (expectedType.isInstance(actualException)) {
                 return true;
             } else {
@@ -22,7 +26,7 @@ public class ExceptionHelper {
         try {
             runnable.run();
             return true;
-        } catch (Throwable exception) {
+        } catch (Exception exception) {
             return false;
         }
     }

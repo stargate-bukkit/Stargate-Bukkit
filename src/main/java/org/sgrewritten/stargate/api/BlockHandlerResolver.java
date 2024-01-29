@@ -16,6 +16,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BlockHandlerResolver {
-    private final Map<Material, List<BlockHandlerInterface>> blockHandlerMap = new HashMap<>();
+    private final Map<Material, List<BlockHandlerInterface>> blockHandlerMap = new EnumMap<>(Material.class);
     private final Map<BlockLocation, BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
     private final StorageAPI storageAPI;
     private final Set<Character> customFlags = new HashSet<>();
@@ -41,7 +42,7 @@ public class BlockHandlerResolver {
     public void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
         List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
         blockHandlerInterfaceList.add(blockHandlerInterface);
-        blockHandlerInterfaceList.sort(Comparator.comparingInt((ablockHandlerInterface) -> -ablockHandlerInterface.getPriority().getPriorityValue()));
+        blockHandlerInterfaceList.sort(Comparator.comparingInt(ablockHandlerInterface -> -ablockHandlerInterface.getPriority().getPriorityValue()));
     }
 
     /**
@@ -50,8 +51,7 @@ public class BlockHandlerResolver {
      * @param blockHandlerInterface listener for block placement next by a portal
      */
     public void removeBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
-        for (Material key : this.blockHandlerMap.keySet()) {
-            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
+        for (List<BlockHandlerInterface> blockHandlerInterfaceList : this.blockHandlerMap.values()) {
             if (blockHandlerInterfaceList.remove(blockHandlerInterface)) {
                 return;
             }
@@ -64,8 +64,7 @@ public class BlockHandlerResolver {
      * @param plugin The plugin to remove listeners from
      */
     public void removeBlockHandlerInterfaces(Plugin plugin) {
-        for (Material key : this.blockHandlerMap.keySet()) {
-            List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.get(key);
+        for (List<BlockHandlerInterface> blockHandlerInterfaceList : this.blockHandlerMap.values()) {
             blockHandlerInterfaceList.removeIf(blockHandlerInterface -> blockHandlerInterface.getPlugin() == plugin);
         }
     }

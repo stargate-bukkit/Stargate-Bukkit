@@ -61,9 +61,9 @@ public class GateFrame extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        for (BlockVector position : parts.keySet()) {
-            Location location = topLeft.clone().add(converter.performToRealSpaceOperation(position));
-            Set<Material> materialsAtPosition = parts.get(position);
+        for (Map.Entry<BlockVector,Set<Material>> entry : parts.entrySet()) {
+            Location location = topLeft.clone().add(converter.performToRealSpaceOperation(entry.getKey()));
+            Set<Material> materialsAtPosition = entry.getValue();
             Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];
             location.getBlock().setType(material);
         }

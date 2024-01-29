@@ -224,7 +224,7 @@ public class MoveEventListener implements Listener {
     private List<Location> getRelevantAdjacentLocations(Location toLocation, Vector velocity) {
         List<Location> relevantLocations = new ArrayList<>();
         Vector zeroVector = new Vector();
-        Vector targetVelocity = normalizeVelocity(velocity);
+        Vector targetVelocity = velocity.toBlockVector();
 
         //Calculate all relevant vectors that might point to end portal Stargates
         Set<Vector> relevantVectors = new HashSet<>();
@@ -245,17 +245,6 @@ public class MoveEventListener implements Listener {
             }
         });
         return relevantLocations;
-    }
-
-    /**
-     * Normalizes the input velocity to a vector of length 1 or 0 in any direction (though the max length of the entire vector is sqrt(2))
-     */
-    private Vector normalizeVelocity(Vector velocity) {
-        Vector normalizedVector = new Vector(0, 0, 0);
-        normalizedVector = normalizedVector.setX(velocity.getX() < 0 ? -1 : (velocity.getX() > 0 ? 1 : 0));
-        normalizedVector = normalizedVector.setZ(velocity.getZ() < 0 ? -1 : (velocity.getZ() > 0 ? 1 : 0));
-        normalizedVector = normalizedVector.setY(velocity.getY() < 0 ? -1 : (velocity.getY() > 0 ? 1 : 0));
-        return normalizedVector;
     }
 
 }
