@@ -76,6 +76,7 @@ import org.sgrewritten.stargate.migration.DataMigrator;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.ThreadHelper;
@@ -97,7 +98,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -203,7 +203,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     private void sendWarningMessages() {
-        if("true".equals(storedProperties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
+        if ("true".equals(storedProperties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
             try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/parityMessage.txt")) {
                 Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
             } catch (IOException e) {
@@ -211,12 +211,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
         }
         String scheduledGateClearingString = storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
-        if(scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) < System.currentTimeMillis()){
-            try(InputStream inputStream = Stargate.class.getResourceAsStream("/messages/")){
+        if (scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) < System.currentTimeMillis()) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/")) {
                 Date date = new Date(Long.parseLong(scheduledGateClearingString));
                 String dateString = date.toString();
                 String unformattedMessage = FileHelper.readStreamToString(inputStream);
-                String message = unformattedMessage.replace("%time%",dateString);
+                String message = unformattedMessage.replace("%time%", dateString);
                 message = message.replace("%gateFormats%", this.storageAPI.getScheduledGatesClearing().toString());
                 Stargate.log(Level.WARNING, message);
             } catch (IOException e) {
@@ -383,7 +383,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private void loadColors() {
         try {
-            if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
+            if (!NonLegacyClass.CHAT_COLOR.isImplemented()) {
                 logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
                 this.legacySignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
                 return;
@@ -406,13 +406,13 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
         pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager(), this.getStorageAPI()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager(), getBlockLoggerManager()), this);
-        if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
+        if (NonLegacyClass.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
         }
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             pluginManager.registerEvents(new EntityInsideBlockEventListener(getRegistry()), this);
         }
-        if (NonLegacyMethod.BK_COMMON_LIB.isImplemented()) {
+        if (NonLegacyClass.MULTI_BLOCK_CHANGE_EVENT.isImplemented()) {
             pluginManager.registerEvents(new BKCommonLibListener(getRegistry(), getNetworkManager()), this);
         }
     }
@@ -600,7 +600,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             messenger.unregisterIncomingPluginChannel(this);
         }
 
-        if (NonLegacyMethod.FOLIA.isImplemented()) {
+        if (NonLegacyClass.REGIONIZED_SERVER.isImplemented()) {
             getServer().getGlobalRegionScheduler().cancelTasks(this);
         } else {
             getServer().getScheduler().cancelTasks(this);

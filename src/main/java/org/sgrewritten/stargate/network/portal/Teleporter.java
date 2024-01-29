@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.thread.task.StargateEntityTask;
 import org.sgrewritten.stargate.util.MessageUtils;
@@ -360,7 +361,7 @@ public class Teleporter {
      * @param exitPoint <p>The exit location to teleport the entity to</p>
      */
     private void teleport(Entity target, Location exitPoint) {
-        if (NonLegacyMethod.FOLIA.isImplemented()) {
+        if (NonLegacyClass.REGIONIZED_SERVER.isImplemented()) {
             target.teleportAsync(exitPoint);
         } else {
             target.teleport(exitPoint);

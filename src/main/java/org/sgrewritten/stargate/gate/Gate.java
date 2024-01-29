@@ -38,6 +38,7 @@ import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ButtonHelper;
@@ -161,7 +162,7 @@ public class Gate implements GateAPI {
 
     private void setSignLines(Sign sign, SignLine[] signLines) {
         for (int i = 0; i < 4; i++) {
-            if (NonLegacyMethod.COMPONENT.isImplemented()) {
+            if (NonLegacyClass.COMPONENT.isImplemented()) {
                 Component line = StargateComponentDeserialiser.getComponent(signLines[i]);
                 sign.line(i, line);
             } else {

@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.thread.task;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class StargateTask implements Runnable {
-    protected static final boolean USING_FOLIA = NonLegacyMethod.FOLIA.isImplemented();
+    protected static final boolean USING_FOLIA = NonLegacyClass.REGIONIZED_SERVER.isImplemented();
     private static final int MAXIMUM_SHUTDOWN_CYCLES = 10;
     private final Runnable runnable;
     private volatile boolean cancelled;

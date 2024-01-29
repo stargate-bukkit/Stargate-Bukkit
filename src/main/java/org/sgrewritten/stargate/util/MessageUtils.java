@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePort
 import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 public class MessageUtils {
@@ -43,7 +44,7 @@ public class MessageUtils {
     }
 
     private static void sendMessageWithoutCheck(Entity target, StargateComponent message) {
-        if (NonLegacyMethod.COMPONENT.isImplemented()) {
+        if (NonLegacyClass.COMPONENT.isImplemented()) {
             target.sendMessage(message.getText());
         } else {
             target.sendMessage(message.getLegacyText());

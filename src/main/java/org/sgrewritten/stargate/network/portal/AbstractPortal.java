@@ -50,7 +50,7 @@ import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatt
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
@@ -432,7 +432,7 @@ public abstract class AbstractPortal implements RealPortal {
             }
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
             new StargateRegionTask(location, () ->
-                updateColorDrawer(location,changedColor, portalPosition)
+                    updateColorDrawer(location, changedColor, portalPosition)
             ).run();
         }
         // Has to be done one tick later to avoid a bukkit bug
@@ -455,7 +455,7 @@ public abstract class AbstractPortal implements RealPortal {
         }).runDelayed(2);
     }
 
-    private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition){
+    private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition) {
         if (!(location.getBlock().getState() instanceof Sign sign)) {
             Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
                             + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
@@ -471,7 +471,7 @@ public abstract class AbstractPortal implements RealPortal {
             color = changedColor;
         }
 
-        if (NonLegacyMethod.CHAT_COLOR.isImplemented()) {
+        if (NonLegacyClass.CHAT_COLOR.isImplemented()) {
             colorDrawer = new LineColorFormatter(color, sign.getType());
         } else {
             colorDrawer = new LegacyLineColorFormatter();

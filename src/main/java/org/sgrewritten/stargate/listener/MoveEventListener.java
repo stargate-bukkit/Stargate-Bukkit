@@ -20,7 +20,7 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.TeleportedEntityRelationDFS;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class MoveEventListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
         //The entity inside block event should already cancel this if necessary
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             return;
         }
         if (registry.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
@@ -67,7 +67,7 @@ public class MoveEventListener implements Listener {
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
         //The EntityInsideBlockEvent won't trigger for END_GATEWAY, so treat it as normal
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() &&
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() &&
                 cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
             return;
         }
@@ -122,7 +122,7 @@ public class MoveEventListener implements Listener {
         //The EntityInsideBlockEvent makes the end portal workaround unnecessary
         if (toLocation != null && toLocation.getWorld() != null
                 && toLocation.getWorld().getEnvironment() == World.Environment.THE_END
-                && !NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
+                && !NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
             portal = getAdjacentEndPortalStargate(fromLocation, toLocation);
         }
 
