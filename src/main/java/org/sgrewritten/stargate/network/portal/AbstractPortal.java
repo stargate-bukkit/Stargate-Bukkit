@@ -65,6 +65,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * An abstract implementation of a real portal
@@ -101,6 +102,7 @@ public abstract class AbstractPortal implements RealPortal {
     protected final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15 * 20; // ticks
+    private static final Pattern INTERNAL_FLAG = Pattern.compile("\\d");
     private @Nullable String metaData;
     private boolean savedToStorage = false;
 
@@ -282,8 +284,8 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void doTeleport(Entity target) {
-        Portal destination = getCurrentDestination();
-        if (destination == null) {
+        Portal currentDestination = getCurrentDestination();
+        if (currentDestination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), languageManager, economyManager);
             teleporter.teleport(target);
@@ -300,8 +302,8 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        destination.teleportHere(target, this);
-        destination.close(false);
+        currentDestination.teleportHere(target, this);
+        currentDestination.close(false);
         close(false);
     }
 
@@ -380,23 +382,23 @@ public abstract class AbstractPortal implements RealPortal {
             }
         }
 
-        Portal destination = getDestination();
+        Portal selectedDestination = getDestination();
         String message = null;
         MessageType messageType = null;
         boolean cancelled = false;
 
-        if (destination == null) {
+        if (selectedDestination == null) {
             message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
             messageType = MessageType.DESTINATION_EMPTY;
             cancelled = true;
         }
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
-        if (!permissionManager.hasOpenPermissions(this, destination)) {
+        if (!permissionManager.hasOpenPermissions(this, selectedDestination)) {
             message = permissionManager.getDenyMessage();
             messageType = MessageType.DENY;
             cancelled = true;
         }
-        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, destination, cancelled, false);
+        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, selectedDestination, cancelled, false);
         Bukkit.getPluginManager().callEvent(stargateOpenEvent);
 
         if (stargateOpenEvent.isCancelled()) {
@@ -553,7 +555,7 @@ public abstract class AbstractPortal implements RealPortal {
                 new TextLine(this.colorDrawer
                         .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY))),
                 new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
-                new TextLine(this.colorDrawer.formatLine(getAllFlagsString().replaceAll("\\d", "")))
+                new TextLine(this.colorDrawer.formatLine(INTERNAL_FLAG.matcher(getAllFlagsString()).replaceAll("")))
         };
         new StargateGlobalTask(() -> gate.drawControlMechanisms(lines, false)).run();
         activate(event.getPlayer());

@@ -19,6 +19,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Helper class for reading gate files
@@ -271,12 +273,12 @@ public final class GateFormatReader {
         Map<String, String> temp = new HashMap<>();
         FileHelper.readInternalFileToMap("/material/materialEdgeCases.properties", temp);
         for (Material material : Material.values()) {
-            for (String edgeCase : temp.keySet()) {
-                String type = material.toString().replaceAll(edgeCase, "");
+            for (Map.Entry<String,String> entry : temp.entrySet()) {
+                String type = material.toString().replaceAll(entry.getKey(), "");
                 if (type.equals(material.toString())) {
                     continue;
                 }
-                String replacement = temp.get(edgeCase).replaceAll("\\*", type);
+                String replacement = entry.getValue().replace("*", type);
                 materialEdgeCases.put(material, Material.valueOf(replacement));
                 materialEdgeCases.put(Material.valueOf(replacement), material);
             }

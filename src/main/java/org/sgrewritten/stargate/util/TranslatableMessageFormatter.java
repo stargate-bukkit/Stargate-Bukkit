@@ -123,11 +123,10 @@ public final class TranslatableMessageFormatter {
      */
     public static String formatUnimplementedConflictMessage(Network interServer, @Nullable Network local, LanguageManager languageManager) {
         String initialMessage = languageManager.getWarningMessage(TranslatableMessage.UNIMPLEMENTED_CONFLICT);
-        String localNetName = (local == null) ? interServer.getName() : local.getName();
         NetworkType localType = (local == null) ? interServer.getType() : local.getType();
 
         String localTypeString = languageManager.getString(localType.getTerminology());
         String interServerTypeString = languageManager.getString(interServer.getType().getTerminology()) + " " + languageManager.getString(TranslatableMessage.FANCY_INTERSERVER);
-        return initialMessage.replaceAll("%name%", interServer.getName()).replaceAll("%type1%", interServerTypeString.toLowerCase()).replaceAll("%type2%", localTypeString.toLowerCase());
+        return initialMessage.replace("%name%", interServer.getName()).replace("%type1%", interServerTypeString.toLowerCase()).replace("%type2%", localTypeString.toLowerCase());
     }
 }

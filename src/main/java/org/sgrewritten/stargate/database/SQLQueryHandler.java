@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
@@ -11,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A handler which keeps track of all queries and query variations
@@ -18,6 +21,7 @@ import java.util.Set;
 public class SQLQueryHandler {
 
     private static final Map<SQLQuery, Map<DatabaseDriver, String>> queries = new HashMap<>();
+    private static final Pattern SQL_FILE = Pattern.compile(".sql$");
 
     static {
         //Load all queries from the query files
@@ -92,20 +96,21 @@ public class SQLQueryHandler {
         return readQueryFiles;
     }
 
-    private static Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
+    private static @NotNull Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
         final Map<String, String> queries = new HashMap<>();
         String fullFolder = "/database/" + folder;
         List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
         if (walk == null) {
-            return null;
+            return new HashMap<>();
         }
-        walk.forEach((path) -> {
-            if (!path.toString().endsWith(".sql")) {
+        walk.forEach(path -> {
+            Matcher sqlFileMatcher = SQL_FILE.matcher(path.toString());
+            if (!sqlFileMatcher.matches()) {
                 return;
             }
             try {
                 String query = FileHelper.readStreamToString(FileHelper.getInputStreamForInternalFile(fullFolder + "/" + path.getFileName().toString()));
-                queries.put(path.getFileName().toString().replaceAll(".sql$", ""), query);
+                queries.put(sqlFileMatcher.replaceAll(""), query);
             } catch (IOException e) {
                 Stargate.log(e);
             }

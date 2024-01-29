@@ -118,7 +118,7 @@ public enum PortalFlag {
 
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;
-    private final static Map<Character, PortalFlag> map = new HashMap<>();
+    private static final Map<Character, PortalFlag> map = new HashMap<>();
     private final boolean isSelector;
 
     private static final Pattern NON_FLAG_STRING = Pattern.compile("(\\{.*?\\})");

@@ -18,19 +18,20 @@ import org.sgrewritten.stargate.util.LegacyPortalStorageLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * The specification for data migration from legacy to 1.0.0
  */
 public class DataMigration6 extends DataMigration {
 
-    private static Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
+    private static final Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
+    private static final Pattern STARGATE_FOLDER = Pattern.compile("^plugins/Stargate/");
     private final Server server;
     private final StoredPropertiesAPI storedProperties;
     private String versionFrom;
@@ -119,7 +120,7 @@ public class DataMigration6 extends DataMigration {
         }
 
         if (newKey.equals("gateFolder")) {
-            return new TwoTuple<>(newKey, oldPair.getSecondValue().toString().replaceAll("^plugins/Stargate/", ""));
+            return new TwoTuple<>(newKey, STARGATE_FOLDER.matcher(oldPair.getSecondValue().toString()).replaceAll(""));
         }
 
 
@@ -248,9 +249,12 @@ public class DataMigration6 extends DataMigration {
                 renameSuccessful = false;
             }
         }
-        if (renameSuccessful && !directory.delete()) {
-                Stargate.log(Level.WARNING, "Unable to remove folder " + directory.getPath() + ". " +
-                        "Make sure you have write permissions for the folder.");
+        if (renameSuccessful) {
+            try {
+                java.nio.file.Files.delete(directory.toPath());
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.util;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
@@ -27,11 +28,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * A helper tool for loading legacy portals from legacy storage
  */
 public final class LegacyPortalStorageLoader {
+
+    private static final Pattern DATABASE = Pattern.compile("\\.db$");
 
     private LegacyPortalStorageLoader() {
 
@@ -49,18 +53,18 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
      * @throws TranslatableException
      */
-    public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      String defaultNetworkName, StargateAPI stargateAPI)
+    public static @NotNull List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
+                                                               String defaultNetworkName, StargateAPI stargateAPI)
             throws IOException, InvalidStructureException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
         File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
         if (files == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         for (File file : files) {
-            String worldName = file.getName().replaceAll("\\.db$", "");
+            String worldName = DATABASE.matcher(file.getName()).replaceAll("");
 
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
