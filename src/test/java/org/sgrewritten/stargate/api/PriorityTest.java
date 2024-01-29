@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.api;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class PriorityTest {
+class PriorityTest {
 
     @Test
     void priorityOrderingTest() {

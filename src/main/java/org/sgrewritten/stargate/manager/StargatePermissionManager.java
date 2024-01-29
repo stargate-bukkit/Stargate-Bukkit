@@ -48,6 +48,8 @@ public class StargatePermissionManager implements PermissionManager {
     private static final String DESTROY_OWNED = "sg.destroy.owned";
     private static final String USE_OWNED = "sg.use.owned";
 
+
+    private static final String PLAYER_OWNS_PORTAL_MESSAGE = "The player owns the portal, therefore has permission";
     /**
      * Instantiates a new permission manager
      *
@@ -133,10 +135,8 @@ public class StargatePermissionManager implements PermissionManager {
         }
 
         //If the entity has the parent permission, allow unless explicitly defined
-        if (hasPermission(entity, parentPermission)) {
-            if (!entity.isPermissionSet(permission)) {
-                return true;
-            }
+        if (hasPermission(entity, parentPermission) && !entity.isPermissionSet(permission)) {
+            return true;
         }
         return hasGivenPermission;
     }
@@ -159,7 +159,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
@@ -181,7 +181,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
         if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, DESTROY_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
@@ -192,7 +192,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
         if (entrance.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
@@ -286,7 +286,7 @@ public class StargatePermissionManager implements PermissionManager {
      * @return <p> If the entity has the meta </p>
      */
     private boolean canFollow() {
-        if(!canProcessMetaData){
+        if (!canProcessMetaData) {
             return hasPermission(target, "sg.use.follow");
         }
         String metaString = "can-followthrough";

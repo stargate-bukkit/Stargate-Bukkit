@@ -9,6 +9,10 @@ import java.net.URL;
 
 public class WebHelper {
 
+    private WebHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void downloadFile(String link, File file) throws IOException {
         OutputStream os = null;
         URL url = new URL(link);

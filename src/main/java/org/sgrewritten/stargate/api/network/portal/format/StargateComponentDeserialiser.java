@@ -7,6 +7,10 @@ import java.util.List;
 
 public class StargateComponentDeserialiser {
 
+    private StargateComponentDeserialiser(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Convert from SignLine to {@link Component}
      *

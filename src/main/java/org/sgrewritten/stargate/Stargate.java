@@ -30,7 +30,6 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
@@ -77,7 +76,6 @@ import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyClass;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
@@ -157,7 +155,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private ChatColor defaultTextColor;
     private ChatColor defaultPointerColor;
     private DyeColor defaultDyeColor;
-    private BukkitTask asyncCycleThroughTask;
 
 
     @Override
@@ -532,9 +529,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         try {
             load();
             loadGateFormats();
-            if (storageAPI instanceof SQLDatabase) {
-                SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-                ((SQLDatabase) storageAPI).load(database);
+            if (storageAPI instanceof SQLDatabase sqlDatabase) {
+                sqlDatabase.load(DatabaseHelper.loadDatabase(this));
             }
             registry.clear(this);
             networkManager.loadPortals(this);

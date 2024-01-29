@@ -74,11 +74,11 @@ public class StargateNetwork implements Network {
             UnimplementedFlagException {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
-        setId(name, type);
+        setID(name, type);
         nameToPortalMap = new HashMap<>();
     }
 
-    private void setId(String name, NetworkType type) throws InvalidNameException, NameLengthException,
+    private void setID(String name, NetworkType type) throws InvalidNameException, NameLengthException,
             UnimplementedFlagException {
         switch (type) {
             case DEFAULT -> loadAsDefault(name);
@@ -240,7 +240,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        setId(newName, this.getType());
+        setID(newName, this.getType());
     }
 
     @Override

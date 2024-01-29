@@ -4,7 +4,6 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.property.NonLegacyClass;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 import java.util.LinkedList;
 import java.util.Queue;

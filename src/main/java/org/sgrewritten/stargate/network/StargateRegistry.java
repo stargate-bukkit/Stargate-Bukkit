@@ -235,17 +235,13 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
-        if (!portalFromStructureTypeMap.containsKey(structureType)) {
-            portalFromStructureTypeMap.put(structureType, new HashMap<>());
-        }
+        portalFromStructureTypeMap.putIfAbsent(structureType,new HashMap<>());
         portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
     }
 
     @Override
     public void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal) {
-        if (!portalFromStructureTypeMap.containsKey(structureType)) {
-            portalFromStructureTypeMap.put(structureType, new HashMap<>());
-        }
+        portalFromStructureTypeMap.putIfAbsent(structureType,new HashMap<>());
         portalFromStructureTypeMap.get(structureType).put(location, portal);
     }
 
@@ -259,7 +255,7 @@ public class StargateRegistry implements RegistryAPI {
         }
     }
 
-    public void clear(StargateAPI stargateAPI) {
+    public void clear() {
         portalFromStructureTypeMap.clear();
         portalPositionMap.clear();
         portalPositionPluginNameMap.clear();
@@ -363,8 +359,7 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
-        NetworkRegistry networkRegistry = getNetworkRegistry(storageType);
-        networkRegistry.renameNetwork(newId, oldId);
+        getNetworkRegistry(storageType).renameNetwork(newId, oldId);
     }
 
     @Override

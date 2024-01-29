@@ -31,6 +31,10 @@ import java.util.logging.Level;
 
 public class PortalStorageHelper {
 
+    private PortalStorageHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
 
     public static @NotNull PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException, PortalLoadException {
         //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)

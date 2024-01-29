@@ -47,7 +47,6 @@ public final class PortalCreationHelper {
                                           StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
 
-        RealPortal portal;
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
             Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL);
@@ -74,42 +73,6 @@ public final class PortalCreationHelper {
     public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,
                                           StargateAPI stargateAPI) throws TranslatableException {
         return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), portalData.unrecognisedFlags(), gate, portalData.ownerUUID(), stargateAPI, portalData.metaData());
-    }
-
-    /**
-     * Creates a new portal of the correct type from the given sing lines
-     *
-     * @param network   <p>The network the portal belongs to</p>
-     * @param lines     <p>The lines written on a stargate sign</p>
-     * @param flags     <p>The flags enabled for the portal</p>
-     * @param gate      <p>The gate belonging to the portal</p>
-     * @param ownerUUID <p>The UUID of the portal's owner</p>
-     * @return <p>A new portal</p>
-     * @throws TranslatableException <p>If the portal's name is invalid</p>
-     */
-    private static RealPortal createPortalFromSign(Network network, String[] lines, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, Gate gate,
-                                                   UUID ownerUUID, StargateAPI stargateAPI) throws TranslatableException {
-        return createPortal(network, lines[0], lines[1], lines[2], flags, unrecognisedFlags, gate, ownerUUID, stargateAPI, null);
-    }
-
-
-    /**
-     * Gets the owner of the new portal
-     *
-     * <p>For a personal network, the owner is defined as the network name, but normally the owner is defined as the
-     * portal creator.</p>
-     *
-     * @param network <p>The network of the new portal</p>
-     * @param player  <p>The player creating the new portal</p>
-     * @param flags   <p>The flags specified for the new portal</p>
-     * @return <p>The UUID of the new portal's owner</p>
-     */
-    private static UUID getOwnerUUID(Network network, Player player, Set<PortalFlag> flags) {
-        if (network != null && flags.contains(PortalFlag.PERSONAL_NETWORK)) {
-            return UUID.fromString(network.getId());
-        } else {
-            return player.getUniqueId();
-        }
     }
 
 

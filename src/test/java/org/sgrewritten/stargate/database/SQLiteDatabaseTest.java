@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.database;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -362,13 +363,13 @@ public class SQLiteDatabaseTest {
     @Test
     @Order(8)
     void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
-        tester.changeNames(StorageType.LOCAL);
+       Assertions.assertDoesNotThrow(() ->  tester.changeNames(StorageType.LOCAL));
     }
 
     @Test
     @Order(8)
     void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
-        tester.changeNames(StorageType.INTER_SERVER);
+        Assertions.assertDoesNotThrow(() -> tester.changeNames(StorageType.INTER_SERVER));
     }
 
     @Test

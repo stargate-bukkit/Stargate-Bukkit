@@ -122,7 +122,7 @@ public final class PortalPermissionHelper {
      * @return <p> A list with related permissions </p>
      */
     public static List<String> getTeleportPermissions(RealPortal entrance, Entity target) {
-        String identifier = "sg.use";
+        String identifier = SG_USE;
 
         List<String> permList;
         if (entrance.hasFlag(PortalFlag.ALWAYS_ON)) {

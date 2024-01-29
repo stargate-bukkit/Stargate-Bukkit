@@ -15,6 +15,7 @@ public class ThreadHelper {
             asyncQueue.put(runnable);
         } catch (InterruptedException e) {
             Stargate.log(e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -31,6 +32,7 @@ public class ThreadHelper {
                 }
             }
         } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
     }
 

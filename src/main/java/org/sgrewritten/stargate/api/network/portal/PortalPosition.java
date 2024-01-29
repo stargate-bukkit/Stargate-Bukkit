@@ -93,6 +93,11 @@ public class PortalPosition implements MetadataHolder {
     }
 
     @Override
+    public int hashCode(){
+        return relativePositionLocation.hashCode();
+    }
+
+    @Override
     public String toString() {
         return String.format("{x=%d,y=%d,z=%d,%s}", relativePositionLocation.getBlockX(), relativePositionLocation.getBlockY(), relativePositionLocation.getBlockZ(), positionType);
     }

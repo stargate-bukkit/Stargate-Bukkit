@@ -107,7 +107,7 @@ class StargateRegistryTest {
 
     @Test
     void removePortalPosition_doesNotExist() {
-        registry.removePortalPosition(new Location(world, 0, 0, 0));
+        Assertions.assertDoesNotThrow(() ->  registry.removePortalPosition(new Location(world, 0, 0, 0)));
     }
 
     @ParameterizedTest

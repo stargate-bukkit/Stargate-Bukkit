@@ -27,23 +27,23 @@ public enum Priority {
      */
     HIGHEST(4);
 
-    private final int priority;
+    private final int priorityLevel;
     private static final ArrayList<Priority> highToLowPriority = new ArrayList<>();
 
     static {
         highToLowPriority.addAll(Arrays.asList(Priority.values()));
-        highToLowPriority.sort(Comparator.comparingInt((aPriority) -> -aPriority.priority));
+        highToLowPriority.sort(Comparator.comparingInt(aPriority -> -aPriority.priorityLevel));
     }
 
-    Priority(int priority) {
-        this.priority = priority;
+    Priority(int priorityLevel) {
+        this.priorityLevel = priorityLevel;
     }
 
     /**
      * @return <p>the priority value of the priority</p>
      */
     public int getPriorityValue() {
-        return this.priority;
+        return this.priorityLevel;
     }
 
     /**

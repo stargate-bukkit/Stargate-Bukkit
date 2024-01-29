@@ -73,7 +73,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         Action action = event.getAction();
-        if ((action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking()) || this.clickIsBug(event)) {
+        if ((action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking()) || clickIsBug(event)) {
             return;
         }
 

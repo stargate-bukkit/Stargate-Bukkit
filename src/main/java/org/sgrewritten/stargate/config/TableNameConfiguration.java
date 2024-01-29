@@ -232,22 +232,22 @@ public class TableNameConfiguration {
      * @return <p>The map between table name placeholders and the correct prefixed table names</p>
      */
     private Map<String, String> getPrefixedTableNamesMap() {
-        Map<String, String> prefixedTableNames = new HashMap<>();
-        prefixedTableNames.put("Portal", this.getPortalTableName());
-        prefixedTableNames.put("PortalView", this.getPortalViewName());
-        prefixedTableNames.put("Flag", this.getFlagTableName());
-        prefixedTableNames.put("PortalFlagRelation", this.getFlagRelationTableName());
-        prefixedTableNames.put("InterPortal", this.getInterPortalTableName());
-        prefixedTableNames.put("InterPortalView", this.getInterPortalViewName());
-        prefixedTableNames.put("InterPortalFlagRelation", this.getInterFlagRelationTableName());
-        prefixedTableNames.put("LastKnownName", this.getLastKnownNameTableName());
-        prefixedTableNames.put("ServerInfo", this.getServerInfoTableName());
-        prefixedTableNames.put("PositionType", this.getPositionTypeTableName());
-        prefixedTableNames.put("PortalPosition", this.getPortalPositionTableName());
-        prefixedTableNames.put("InterPortalPosition", this.getInterPortalPositionTableName());
-        prefixedTableNames.put("PortalPositionIndex", this.getPortalPositionIndexTableName());
-        prefixedTableNames.put("InterPortalPositionIndex", this.getInterPortalPositionIndexTableName());
-        return prefixedTableNames;
+        Map<String, String> output = new HashMap<>();
+        output.put("Portal", this.getPortalTableName());
+        output.put("PortalView", this.getPortalViewName());
+        output.put("Flag", this.getFlagTableName());
+        output.put("PortalFlagRelation", this.getFlagRelationTableName());
+        output.put("InterPortal", this.getInterPortalTableName());
+        output.put("InterPortalView", this.getInterPortalViewName());
+        output.put("InterPortalFlagRelation", this.getInterFlagRelationTableName());
+        output.put("LastKnownName", this.getLastKnownNameTableName());
+        output.put("ServerInfo", this.getServerInfoTableName());
+        output.put("PositionType", this.getPositionTypeTableName());
+        output.put("PortalPosition", this.getPortalPositionTableName());
+        output.put("InterPortalPosition", this.getInterPortalPositionTableName());
+        output.put("PortalPositionIndex", this.getPortalPositionIndexTableName());
+        output.put("InterPortalPositionIndex", this.getInterPortalPositionIndexTableName());
+        return output;
     }
 
 }

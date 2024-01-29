@@ -78,6 +78,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void close(boolean force) {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -92,7 +93,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void overrideDestination(Portal destination) {
-        //TODO: Not implemented
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -102,6 +103,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void open(Player player) {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -121,16 +123,17 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void addFlag(Character flag) {
-
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
     public void removeFlag(Character flag) {
-
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
     public void doTeleport(Entity player) {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -155,6 +158,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void updateState() {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -237,7 +241,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void activate(Player player) {
-
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
