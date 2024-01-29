@@ -104,8 +104,8 @@ public class SQLQueryHandler {
             return new HashMap<>();
         }
         walk.forEach(path -> {
-            Matcher sqlFileMatcher = SQL_FILE.matcher(path.toString());
-            if (!sqlFileMatcher.matches()) {
+            Matcher sqlFileMatcher = SQL_FILE.matcher(path.getFileName().toString());
+            if (!sqlFileMatcher.find()) {
                 return;
             }
             try {

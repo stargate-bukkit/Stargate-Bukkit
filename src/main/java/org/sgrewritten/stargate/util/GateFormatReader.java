@@ -102,7 +102,7 @@ public final class GateFormatReader {
                 foundIDs.add(id);
             }
         }
-        if (foundIDs.size() == 0) {
+        if (foundIDs.isEmpty()) {
             throw new ParsingErrorException("Invalid field''" + materialString +
                     "'': Field must include at least one block");
         }
@@ -125,11 +125,14 @@ public final class GateFormatReader {
 
         while (scanner.hasNextLine()) {
             line = scanner.nextLine();
+            if(line.isEmpty()){
+                continue;
+            }
             if (!designing) {
                 if(!line.contains("=")) {
                     designing = true;
                 }
-                else if (line.isEmpty() || line.startsWith("#")) {
+                else if (line.startsWith("#")) {
                     continue;
                 } else {
                     readGateConfigValue(line, characterMaterialMap, config);

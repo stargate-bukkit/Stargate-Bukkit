@@ -47,7 +47,7 @@ public enum NonLegacyMethod {
     GET_FUEL(NonLegacyClass.POWERED_MINECART, "getFuel");
 
 
-    private String classToCheckFor;
+    private NonLegacyClass nonLegacyClass;
     private String methodInClassToCheckFor;
     private Class<?>[] parameters;
     private boolean isImplemented;
@@ -61,9 +61,9 @@ public enum NonLegacyMethod {
      */
     NonLegacyMethod(NonLegacyClass nonLegacyClass, String methodInClassToCheckFor, Class<?>... parameterTypes) {
         try {
-            Class<?> aClass = Class.forName(classToCheckFor);
+            Class<?> aClass = nonLegacyClass.getRelatedClass();
             aClass.getMethod(methodInClassToCheckFor, parameterTypes);
-            this.classToCheckFor = classToCheckFor;
+            this.nonLegacyClass = nonLegacyClass;
             this.methodInClassToCheckFor = methodInClassToCheckFor;
             this.parameters = parameterTypes;
             isImplemented = true;
@@ -91,7 +91,7 @@ public enum NonLegacyMethod {
     @SuppressWarnings("UnusedReturnValue")
     public Object invoke(Object object, Object... parameters) {
         try {
-            Class<?> aClass = Class.forName(classToCheckFor);
+            Class<?> aClass = nonLegacyClass.getRelatedClass();
             Method method = aClass.getMethod(methodInClassToCheckFor, this.parameters);
             return method.invoke(object, parameters);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |

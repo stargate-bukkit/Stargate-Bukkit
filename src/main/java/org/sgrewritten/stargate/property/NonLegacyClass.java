@@ -19,7 +19,7 @@ public enum NonLegacyClass {
     MULTI_BLOCK_CHANGE_EVENT("com.bergerkiller.bukkit.common.events.MultiBlockChangeEvent");
 
 
-    private Class<?> aClass;
+    private Class<?> aClass = null;
     private boolean isImplemented;
     NonLegacyClass(String classToCheckFor){
         try {
@@ -34,7 +34,10 @@ public enum NonLegacyClass {
         return isImplemented;
     }
 
-    public Class<?> getRelatedClass(){
+    public Class<?> getRelatedClass() throws ClassNotFoundException {
+        if(aClass == null){
+            throw new ClassNotFoundException();
+        }
         return aClass;
     }
 }
