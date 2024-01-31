@@ -18,10 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -43,7 +46,7 @@ class NetworkedPortalTest {
     private StargateAPIMock stargateAPI;
 
     @BeforeEach
-    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         ServerMock server = StargateTestHelper.setup();
         plugin = MockBukkit.createMockPlugin("Stargate");
         world = server.addSimpleWorld("world");
@@ -55,7 +58,9 @@ class NetworkedPortalTest {
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.NETWORKED);
         network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
-        portal = (NetworkedPortal) PortalFactory.generateFakePortal(sign, network, flags, "networked", stargateAPI);
+        PortalBuilder builder = new PortalBuilder(stargateAPI,player,"networked").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry));
+        builder.setNetwork(network).setFlags(flags);
+        portal = (NetworkedPortal) builder.build();
     }
 
     @AfterEach
@@ -97,18 +102,18 @@ class NetworkedPortalTest {
 
     @ParameterizedTest
     @EnumSource
-    void onSignClickAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void onSignClickAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
-        PortalFactory.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
+        new PortalBuilder(stargateAPI,player,"destination").setNetwork(network).setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry)).build();
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
     }
 
     @ParameterizedTest
     @EnumSource
-    void onSignClickSneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException {
+    void onSignClickSneakingAvailableDestination(Action type) throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
-        PortalFactory.generateFakePortal(sign, network, new HashSet<>(), "destination", stargateAPI);
+        new PortalBuilder(stargateAPI,player,"destination").setNetwork(network).setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry)).build();
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));

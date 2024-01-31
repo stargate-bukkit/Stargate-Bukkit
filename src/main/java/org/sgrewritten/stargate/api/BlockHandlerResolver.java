@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -13,6 +14,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
+import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.util.ExceptionHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,8 +41,13 @@ public class BlockHandlerResolver {
      * Add a listener for block placement next by a portal
      *
      * @param blockHandlerInterface A listener for block placement next by a portal
+     * @throws IllegalStateException <p>If the flag of the BlockHandlerInterface has not been registered</p>
      */
-    public void addBlockHandlerInterface(BlockHandlerInterface blockHandlerInterface) {
+    public void addBlockHandlerInterface(@NotNull BlockHandlerInterface blockHandlerInterface) {
+        Character flag = blockHandlerInterface.getFlag();
+        if(flag != null && !(customFlags.contains(flag) || ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)))){
+            throw new IllegalStateException("Unregistered flag: " + flag);
+        }
         List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
         blockHandlerInterfaceList.add(blockHandlerInterface);
         blockHandlerInterfaceList.sort(Comparator.comparingInt(ablockHandlerInterface -> -ablockHandlerInterface.getPriority().getPriorityValue()));

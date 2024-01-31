@@ -117,7 +117,7 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public boolean hasFlag(Character flag) {
+    public boolean hasFlag(char flag) {
         return unrecognisedFlags.contains(flag) || (ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)));
     }
 

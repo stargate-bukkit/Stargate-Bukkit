@@ -14,8 +14,11 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateBuilder;
+import org.sgrewritten.stargate.api.gate.GateFormatAPI;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -29,6 +32,7 @@ import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.manager.UnrestricedPermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
@@ -55,7 +59,7 @@ public class PortalBuilder {
     private String networkString = "";
     private @Nullable GateAPI gateAPI;
     private final OfflinePlayer owner;
-    private final String flagsString;
+    private String flagsString;
     private final String portalName;
     private @Nullable Network network;
     private @Nullable GateBuilder gateBuilder;
@@ -68,41 +72,19 @@ public class PortalBuilder {
     private @Nullable Player economyTarget;
     private boolean adaptiveGatePositionGeneration = false;
     private String metaData;
+    private Set<PortalFlag> flags;
 
     /**
      * Construct an instance of a PortalBuilder
      *
      * @param stargateAPI <p>The stargate api</p>
      * @param owner       <p>The owner of the portal</p>
-     * @param flagsString <p>The flags argument provided for the portal</p>
      * @param portalName  <p>The name of the portal</p>
-     * @param gateBuilder <p>A gate builder</p>
      */
-    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
-                         @Nullable GateBuilder gateBuilder) {
+    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String portalName) {
         this.stargateAPI = Objects.requireNonNull(stargateAPI);
-        this.flagsString = Objects.requireNonNull(flagsString);
         this.portalName = Objects.requireNonNull(portalName);
         this.owner = Objects.requireNonNull(owner);
-        this.gateBuilder = gateBuilder;
-    }
-
-    /**
-     * Construct an instance of a PortalBuilder
-     *
-     * @param stargateAPI <p>The stargate api</p>
-     * @param owner       <p>The owner of the portal</p>
-     * @param flagsString <p>The flags argument provided for the portal</p>
-     * @param portalName  <p>The name of the portal</p>
-     * @param gate        <p>A gate</p>
-     */
-    public PortalBuilder(StargateAPI stargateAPI, OfflinePlayer owner, String flagsString, String portalName,
-                         @Nullable GateAPI gate) {
-        this.stargateAPI = Objects.requireNonNull(stargateAPI);
-        this.flagsString = Objects.requireNonNull(flagsString);
-        this.portalName = Objects.requireNonNull(portalName);
-        this.owner = Objects.requireNonNull(owner);
-        this.gateAPI = gate;
     }
 
     /**
@@ -194,8 +176,8 @@ public class PortalBuilder {
      * @param network <p>the network this portal points to</p>
      * @return <p>This portal builder</p>
      */
-    public PortalBuilder setNetwork(Network network) {
-        this.network = network;
+    public PortalBuilder setNetwork(@NotNull Network network) {
+        this.network = Objects.requireNonNull(network);
         this.networkString = null;
         return this;
     }
@@ -204,9 +186,80 @@ public class PortalBuilder {
      * @param networkName <p>The network argument to select networks from</p>
      * @return <p>This portal builder</p>
      */
-    public PortalBuilder setNetwork(String networkName) {
+    public PortalBuilder setNetwork(@NotNull String networkName) {
         this.network = null;
-        this.networkString = networkName;
+        this.networkString = Objects.requireNonNull(networkName);
+        return this;
+    }
+
+    /**
+     * @param gateAPI <p>The gate to be used by this portal builder</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setGate(GateAPI gateAPI) {
+        this.gateAPI = Objects.requireNonNull(gateAPI);
+        this.gateBuilder = null;
+        return this;
+    }
+
+    /**
+     * Set the way the gate should be constructed, see {@link ExplicitGateBuilder} for more information
+     *
+     * @param topLeft       <p>Top left location</p>
+     * @param gateFormatAPI <p>The gate format to be used when making this gate</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setGateBuilder(@NotNull Location topLeft, @NotNull GateFormatAPI gateFormatAPI) {
+        this.gateBuilder = new ExplicitGateBuilder(stargateAPI.getRegistry(), topLeft, gateFormatAPI);
+        this.gateAPI = null;
+        return this;
+    }
+
+    /**
+     * Set the way the gate should be constructed, see {@link ExplicitGateBuilder} for more information
+     *
+     * @param topLeft        <p>Top left location</p>
+     * @param gateFormatName <p>The name of the gate format</p>
+     * @return <p>This portal builder</p>
+     * @throws IllegalArgumentException <p>If the gate format has not been registered</p>
+     */
+    public PortalBuilder setGateBuilder(@NotNull Location topLeft, @NotNull String gateFormatName) {
+        GateFormatAPI gateFormatAPI = GateFormatRegistry.getFormat(gateFormatName);
+        if (gateFormatAPI == null) {
+            throw new IllegalArgumentException("No such gate format: " + gateFormatName);
+        }
+        this.gateBuilder = new ExplicitGateBuilder(stargateAPI.getRegistry(), topLeft, gateFormatAPI);
+        this.gateAPI = null;
+        return this;
+    }
+
+    public PortalBuilder setGateBuilder(@NotNull GateBuilder gateBuilder) {
+        this.gateBuilder = Objects.requireNonNull(gateBuilder);
+        this.gateAPI = null;
+        return this;
+    }
+
+    /**
+     * Set the flags of the portal
+     *
+     * @param flagsString <p>A string of characters representing flags or flag arguments</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setFlags(@NotNull String flagsString) {
+        this.flagsString = flagsString;
+        this.flags = null;
+        return this;
+    }
+
+    /**
+     * Set the flags of the portal
+     *
+     * @param flags <p>The flags of the portal</p>
+     * @return <p>This portal builder</p>
+     */
+    public PortalBuilder setFlags(@NotNull Set<PortalFlag> flags) {
+        this.flags = Objects.requireNonNull(flags);
+        this.flagsString = null;
         return this;
     }
 
@@ -220,22 +273,28 @@ public class PortalBuilder {
      * @throws InvalidStructureException
      */
     public RealPortal build() throws TranslatableException, GateConflictException, NoFormatFoundException, InvalidStructureException {
-        Set<PortalFlag> flags = PortalFlag.parseFlags(flagsString);
+        if (gateBuilder == null && gateAPI == null) {
+            throw new IllegalStateException("Can not construct a portal without a valid gate or gate builder.");
+        }
+        if (this.flags == null) {
+            flags = PortalFlag.parseFlags(flagsString == null ? "" : flagsString);
+        }
         //Prevent the player from explicitly setting any internal flags
         flags.removeIf(PortalFlag::isInternalFlag);
-        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagsString);
+        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagsString == null ? "" : flagsString);
         if (destinationName == null || destinationName.isEmpty()) {
             flags.add(PortalFlag.NETWORKED);
         }
-        if (permissionManager != null) {
-            Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
-            if (!disallowedFlags.isEmpty() && messageTarget != null) {
-                String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-                messageTarget.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
-            }
-            flags.removeAll(disallowedFlags);
+        if (permissionManager == null) {
+            permissionManager = new UnrestricedPermissionManager();
         }
-        if (gateBuilder != null) {
+        Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
+        if (!disallowedFlags.isEmpty() && messageTarget != null) {
+            String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+            messageTarget.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
+        }
+        flags.removeAll(disallowedFlags);
+        if (gateAPI == null) {
             if (adaptiveGatePositionGeneration) {
                 gateBuilder.setGenerateButtonPositions(!flags.contains(PortalFlag.ALWAYS_ON));
             }
@@ -274,6 +333,9 @@ public class PortalBuilder {
     }
 
     private void finalChecks(RealPortal portal, Network network) {
+        if(messageTarget == null){
+            return;
+        }
         // Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
             messageTarget.sendMessage(stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));

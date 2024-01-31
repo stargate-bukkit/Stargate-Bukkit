@@ -24,6 +24,8 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
@@ -94,8 +96,10 @@ class StargateRegistryTest {
         Plugin plugin = MockBukkit.createMockPlugin("Stargate");
         PortalPosition portalPosition = registry.savePortalPosition(portal, location, type, plugin);
         registry.registerPortalPosition(portalPosition, location, portal);
+        StargateTestHelper.runAllTasks();
         Assertions.assertNotNull(storageMock.getNextAddedPortalPosition());
         registry.removePortalPosition(location);
+        StargateTestHelper.runAllTasks();
         Assertions.assertNotNull(storageMock.getNextRemovedPortalPosition());
     }
 

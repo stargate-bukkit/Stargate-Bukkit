@@ -10,6 +10,7 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -162,23 +163,6 @@ public class PortalFactory {
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON, "Stargate");
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN, "Stargate");
         return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock(), null);
-    }
-
-    public static RealPortal generateFakePortal(Block signBlock, Network network, Set<PortalFlag> flags, String name,
-                                                StargateAPI stargateAPI) throws NoFormatFoundException, GateConflictException, TranslatableException {
-        GateAPI gate = new ImplicitGateBuilder(signBlock.getLocation(), stargateAPI.getRegistry()).build();
-        flags.add(network.getType().getRelatedFlag());
-
-
-        RealPortal portal = PortalCreationHelper.createPortal(network, name, "destination", "server", flags, new HashSet<>(), gate, UUID.randomUUID(), stargateAPI, null);
-        stargateAPI.getNetworkManager().savePortal(portal, network);
-        return portal;
-    }
-
-    public static RealPortal generateFakePortal(Block signBlock, String networkName, Set<PortalFlag> flags, String name,
-                                                StargateAPI stargateAPI) throws TranslatableException, NoFormatFoundException, GateConflictException {
-        Network network = stargateAPI.getNetworkManager().createNetwork(networkName, NetworkType.CUSTOM, StorageType.LOCAL, false);
-        return generateFakePortal(signBlock, network, flags, name, stargateAPI);
     }
 
 }

@@ -119,7 +119,7 @@ public interface Portal {
      * @param flag <p>The portal flag to check for</p>
      * @return <p>True if this portal has the given portal flag enabled</p>
      */
-    boolean hasFlag(Character flag);
+    boolean hasFlag(char flag);
 
     /**
      * Temporary add a flag, does not save to storage

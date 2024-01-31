@@ -318,8 +318,8 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public boolean hasFlag(Character flag) {
-        return unrecognisedFlags.contains(flag) || (ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)));
+    public boolean hasFlag(char flag) {
+        return unrecognisedFlags.contains(Character.toUpperCase(flag)) || (ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)));
     }
 
     @Override

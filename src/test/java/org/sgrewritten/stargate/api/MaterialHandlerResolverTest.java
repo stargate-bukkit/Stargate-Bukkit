@@ -30,6 +30,7 @@ import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
@@ -69,7 +70,8 @@ class MaterialHandlerResolverTest {
     void registerPlacementUnregisterPlacement_matchingMaterial(Priority priority)
             throws TranslatableException, InvalidStructureException {
         Material testMaterial = Material.END_GATEWAY;
-        Character testFlag = 'c';
+        Character testFlag = 'C';
+        blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = new HashSet<>();
@@ -80,10 +82,12 @@ class MaterialHandlerResolverTest {
         BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
         blockHandlerResolver.registerPlacement(registry, location, List.of(portal), testMaterial, player);
+        StargateTestHelper.runAllTasks();
         Assertions.assertTrue(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertNotNull(registry.getNextRegisteredPortalPosition());
         Assertions.assertEquals(storage.getNextAddedPortalPosition().getThirdValue().getRelativePositionLocation(), positionVector);
         blockHandlerResolver.registerRemoval(registry, location, portal);
+        StargateTestHelper.runAllTasks();
         Assertions.assertFalse(blockHandler.blockIsRegistered(location, player, portal));
         Assertions.assertEquals(registry.getNextRemovedPortalPosition(), new BlockLocation(location));
         Assertions.assertEquals(storage.getNextRemovedPortalPosition().getThirdValue().getRelativePositionLocation(), positionVector);
@@ -95,7 +99,8 @@ class MaterialHandlerResolverTest {
             throws TranslatableException, InvalidStructureException {
         Material handlerMaterial = Material.END_GATEWAY;
         Material placedMaterial = Material.DIRT;
-        Character testFlag = 'c';
+        char testFlag = 'C';
+        blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = new HashSet<>();
@@ -114,7 +119,8 @@ class MaterialHandlerResolverTest {
     void registerPlacement_priorityCheck()
             throws TranslatableException, InvalidStructureException {
         Material placedMaterial = Material.END_GATEWAY;
-        Character testFlag = 'c';
+        char testFlag = 'C';
+        blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = new HashSet<>();
@@ -137,11 +143,12 @@ class MaterialHandlerResolverTest {
     void registerPlacement_wrongFlag(Priority priority)
             throws TranslatableException, InvalidStructureException {
         Material handlerMaterial = Material.END_GATEWAY;
-        Character testFlag = 'c';
+        char testFlag = 'C';
+        blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = new HashSet<>();
-        flags.add('d');
+        flags.add('D');
         RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
@@ -156,7 +163,8 @@ class MaterialHandlerResolverTest {
     @Test
     void registerPlacement_rejected() throws InvalidStructureException, NameLengthException {
         Material placedMaterial = Material.END_GATEWAY;
-        Character testFlag = 'c';
+        Character testFlag = 'C';
+        blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = new HashSet<>();
@@ -171,6 +179,7 @@ class MaterialHandlerResolverTest {
         blockHandlerResolver.addBlockHandlerInterface(lowPriority);
         highPriority.setRegisterPlacedBlock(false);
         blockHandlerResolver.registerPlacement(registry, location, List.of(portal), placedMaterial, player);
+        StargateTestHelper.runAllTasks();
         Assertions.assertFalse(highPriority.blockIsRegistered(location, player, portal));
         Assertions.assertTrue(lowPriority.blockIsRegistered(location, player, portal));
         Assertions.assertNotNull(registry.getNextRegisteredPortalPosition());

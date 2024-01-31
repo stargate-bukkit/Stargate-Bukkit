@@ -23,9 +23,7 @@ import org.sgrewritten.stargate.StargateLogger;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -35,7 +33,6 @@ import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.database.property.PropertiesDatabaseMock;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
@@ -51,7 +48,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -223,13 +219,9 @@ public class DataMigratorTest {
         Stargate.log(Level.FINE,
                 String.format("####### Performing misc. refactoring based on the config-file %s%n", key));
         DataMigrator dataMigrator = migratorMap.get(key);
-
-        ThreadHelper.setAsyncQueueEnabled(true);
-        // TODO: Fix passing null to this @NotNull method
-        BukkitTask task = server.getScheduler().runTaskAsynchronously(null, ThreadHelper::cycleThroughAsyncQueue);
-        Assertions.assertDoesNotThrow(()->dataMigrator.run(sqlDatabase, stargateAPI));
-        ThreadHelper.setAsyncQueueEnabled(false);
-        server.getScheduler().waitAsyncTasksFinished();
+        StargateTestHelper.runAllTasks();
+        Assertions.assertDoesNotThrow(() -> dataMigrator.run(sqlDatabase, stargateAPI));
+        StargateTestHelper.runAllTasks();
     }
 
     @Test

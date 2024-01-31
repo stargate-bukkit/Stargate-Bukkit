@@ -87,7 +87,7 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public boolean hasFlag(Character flag) {
+    public boolean hasFlag(char flag) {
         return false;
     }
 

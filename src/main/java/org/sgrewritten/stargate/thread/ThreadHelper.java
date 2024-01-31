@@ -6,8 +6,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadHelper {
+
+    private ThreadHelper(){
+        throw new IllegalStateException("Utility class");
+    }
     private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
-    private static boolean asyncQueueThreadIsEnabled;
+    private static volatile boolean asyncQueueThreadIsEnabled = false;
 
 
     public static void runAsyncTask(Runnable runnable) {
@@ -20,6 +24,9 @@ public class ThreadHelper {
     }
 
     public static void cycleThroughAsyncQueue() {
+        if(asyncQueueThreadIsEnabled){
+            return;
+        }
         try {
             while (asyncQueueThreadIsEnabled || !asyncQueue.isEmpty()) {
                 try {
@@ -37,11 +44,10 @@ public class ThreadHelper {
     }
 
     public static void setAsyncQueueEnabled(boolean enable) {
-        asyncQueueThreadIsEnabled = enable;
-        if (!enable) {
-            // escape the BlockedQueue#take() waiting thread
-            runAsyncTask(() -> {
-            });
-        }
+        runAsyncTask(() -> asyncQueueThreadIsEnabled = enable);
+    }
+
+    public static boolean getAsyncQueueEnabled() {
+        return asyncQueueThreadIsEnabled;
     }
 }

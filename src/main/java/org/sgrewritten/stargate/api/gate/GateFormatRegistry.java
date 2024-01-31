@@ -2,6 +2,8 @@ package org.sgrewritten.stargate.api.gate;
 
 import org.bukkit.Material;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.gate.GateFormat;
 
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class GateFormatRegistry {
@@ -45,8 +48,8 @@ public class GateFormatRegistry {
      * @param gateDesignName <p>The gate design name to get the format of</p>
      * @return <p>The gate format, or null if no such gate format</p>
      */
-    public static GateFormat getFormat(String gateDesignName) {
-        return knownGateFormats.get(gateDesignName);
+    public static @Nullable GateFormat getFormat(@NotNull String gateDesignName) {
+        return knownGateFormats.get(Objects.requireNonNull(gateDesignName));
     }
 
     /**

@@ -587,9 +587,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        StargateTask.forceRunAllTasks();
-
         ThreadHelper.setAsyncQueueEnabled(false);
+        StargateTask.forceRunAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.unregisterOutgoingPluginChannel(this);

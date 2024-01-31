@@ -22,7 +22,7 @@ class CommandTraceTest {
 
     @BeforeEach
     void setUp() {
-        @NotNull ServerMock server = StargateTestHelper.setup();
+        @NotNull ServerMock server = MockBukkit.mock();
         sender = server.addPlayer();
         System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);

@@ -171,16 +171,22 @@ public class BlockEventListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String line0 = event.getLine(0);
-        String line1 = event.getLine(1);
-        String line2 = event.getLine(2);
-        String line3 = event.getLine(3);
+        String portalName = event.getLine(0);
+        String destinationName = event.getLine(1);
+        String networkOrServerName = event.getLine(2);
+        String flagsString = event.getLine(3);
+        flagsString = flagsString == null ? "" : flagsString;
+
+        if(portalName == null || networkOrServerName == null){
+            return;
+        }
+
         try {
             GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
-            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, line3, line0, gateBuilder);
-            portalBuilder.setNetwork(line2);
+            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player,portalName).setGateBuilder(gateBuilder).setFlags(flagsString);
+            portalBuilder.setNetwork(networkOrServerName);
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
-            portalBuilder.setDestination(line1).setAdaptiveGatePositionGeneration(true).setDestinationServerName(line2);
+            portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
             portalBuilder.build();
         } catch (NoFormatFoundException noFormatFoundException) {
             Stargate.log(Level.FINER, "No Gate format matches");

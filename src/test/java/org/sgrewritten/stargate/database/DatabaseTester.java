@@ -441,6 +441,10 @@ public class DatabaseTester {
         Assertions.assertEquals(lastKnownName2, getLastKnownName(uuid));
     }
 
+    void addFlagsTwice(){
+
+    }
+
     /**
      * Gets the last known name from the database
      *

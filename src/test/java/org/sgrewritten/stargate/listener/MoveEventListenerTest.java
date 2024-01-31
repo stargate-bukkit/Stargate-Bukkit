@@ -21,8 +21,11 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
@@ -43,9 +46,8 @@ class MoveEventListenerTest {
     private @NotNull Stargate plugin;
 
     @BeforeEach
-    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        System.setProperty("bstats.relocatecheck", "false");
-        server = StargateTestHelper.setup();
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
+        server = StargateTestHelper.setup(false);
         plugin = MockBukkit.load(Stargate.class);
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
@@ -54,7 +56,7 @@ class MoveEventListenerTest {
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
         StargateAPI stargateAPI = new StargateAPIMock();
-        portal = PortalFactory.generateFakePortal(sign, "network", new HashSet<>(), "portal", stargateAPI);
+        portal = new PortalBuilder(stargateAPI,player,"portal").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(), stargateAPI.getRegistry())).setNetwork("network").build();
         listener = new MoveEventListener(stargateAPI.getRegistry());
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();

@@ -21,7 +21,7 @@ class TranslatableMessageFormatterTest {
 
     @BeforeEach
     void setUp() {
-        server = StargateTestHelper.setup();
+        server = StargateTestHelper.setup(false);
     }
 
     @AfterEach
