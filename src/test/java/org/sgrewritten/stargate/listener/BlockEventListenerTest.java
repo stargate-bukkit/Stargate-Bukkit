@@ -75,7 +75,6 @@ class BlockEventListenerTest {
     @BeforeEach
     void setUp() {
         server = StargateTestHelper.setup();
-        System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
@@ -191,7 +190,7 @@ class BlockEventListenerTest {
         Location location = new Location(world, 0, 5, 0);
         Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, StorageType.LOCAL, false);
         RealPortal portal = PortalFactory.generateFakePortal(location,
-                network, "test", true, new HashSet<>(), Set.of(flag),
+                network, "test", false, new HashSet<>(), Set.of(flag),
                 registry);
         network.addPortal(portal);
         Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");

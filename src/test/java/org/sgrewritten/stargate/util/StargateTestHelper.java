@@ -21,6 +21,7 @@ public class StargateTestHelper {
         ServerMock server = MockBukkit.mock();
         GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Stargate.setServerName(SERVER_NAME);
+        System.setProperty("bstats.relocatecheck", "false");
         return server;
     }
 

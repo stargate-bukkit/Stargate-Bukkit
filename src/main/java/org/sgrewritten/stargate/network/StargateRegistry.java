@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
-import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -28,6 +27,7 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
 
@@ -95,10 +95,10 @@ public class StargateRegistry implements RegistryAPI {
 
     private void unregisterPortalChunk(Chunk chunk, RealPortal realPortal) {
         Set<RealPortal> portals = chunkPortalMap.get(chunk);
-        if (portals == null){
+        if (portals == null) {
             return;
         }
-        if (portals.isEmpty()){
+        if (portals.isEmpty()) {
             chunkPortalMap.remove(chunk);
             return;
         }
@@ -124,7 +124,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     private void registerPortalChunk(Chunk chunk, RealPortal portal) {
-        chunkPortalMap.putIfAbsent(chunk,new HashSet<>());
+        chunkPortalMap.putIfAbsent(chunk, new HashSet<>());
         chunkPortalMap.get(chunk).add(portal);
     }
 
@@ -235,13 +235,13 @@ public class StargateRegistry implements RegistryAPI {
 
     @Override
     public void registerLocations(GateStructureType structureType, Map<BlockLocation, RealPortal> locationsMap) {
-        portalFromStructureTypeMap.putIfAbsent(structureType,new HashMap<>());
+        portalFromStructureTypeMap.putIfAbsent(structureType, new HashMap<>());
         portalFromStructureTypeMap.get(structureType).putAll(locationsMap);
     }
 
     @Override
     public void registerLocation(GateStructureType structureType, BlockLocation location, RealPortal portal) {
-        portalFromStructureTypeMap.putIfAbsent(structureType,new HashMap<>());
+        portalFromStructureTypeMap.putIfAbsent(structureType, new HashMap<>());
         portalFromStructureTypeMap.get(structureType).put(location, portal);
     }
 
@@ -309,11 +309,13 @@ public class StargateRegistry implements RegistryAPI {
     public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type, relativeVector, plugin.getName());
-        try {
-            storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        ThreadHelper.runAsyncTask(() -> {
+            try {
+                storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
+            } catch (StorageWriteException e) {
+                Stargate.log(e);
+            }
+        });
         return portalPosition;
     }
 
@@ -328,11 +330,13 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
         RealPortal portal = portalPosition.getPortal();
         portal.getGate().removePortalPosition(portalPosition);
-        try {
-            storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+        ThreadHelper.runAsyncTask(() -> {
+            try {
+                storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
+            } catch (StorageWriteException e) {
+                Stargate.log(e);
+            }
+        });
     }
 
     @Override
