@@ -446,7 +446,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
     private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this.getServer(), this.getStoredPropertiesAPI());
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             File debugDirectory = new File(this.getDataFolder(), "debug");

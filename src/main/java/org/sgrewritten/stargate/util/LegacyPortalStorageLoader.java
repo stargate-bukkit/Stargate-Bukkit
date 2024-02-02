@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -44,8 +45,7 @@ public final class LegacyPortalStorageLoader {
     /**
      * Loads legacy portals in .db files from the given folder
      *
-     * @param portalSaveLocation <p>The folder containing legacy portals</p>
-     * @param server             <p>The server this plugin is running on</p>
+     * @param dir <p>The folder containing legacy portals</p>
      * @param stargateAPI        <p>The stargate API</p>
      * @param defaultNetworkName <p> The default network name </p>
      * @return <p>The list of loaded and saved portals</p>
@@ -53,11 +53,10 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
      * @throws TranslatableException
      */
-    public static @NotNull List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
+    public static @NotNull List<Portal> loadPortalsFromStorage(File dir,
                                                                String defaultNetworkName, StargateAPI stargateAPI)
             throws IOException, InvalidStructureException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
-        File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
         if (files == null) {
             return new ArrayList<>();
@@ -72,7 +71,7 @@ public final class LegacyPortalStorageLoader {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                World world = server.getWorld(worldName);
+                World world = Bukkit.getWorld(worldName);
                 if(world == null){
                     Stargate.log(Level.WARNING, "Could not load portal from world: " + worldName);
                     Stargate.log(Level.WARNING, "Ignoring world...");

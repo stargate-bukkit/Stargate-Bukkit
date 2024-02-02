@@ -1,6 +1,6 @@
 # Stargate Configuration File  v. 0.10.1.0
 # Main Stargate config
-portal-folder: plugins/Stargate/portals/
+portal-folder: portals
 gate-folder: plugins/Stargate/gates/
 default-gate-network: central
 destroyexplosion: false

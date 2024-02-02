@@ -30,16 +30,16 @@ public class DataMigrator {
      * Instantiates a new data migrator
      *
      * @param configurationFile <p>The configuration file to migrate to a newer format</p>
-     * @param server            <p>A server object</p>
+     * @param pluginFolder            <p>A server object</p>
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
-    public DataMigrator(@NotNull File configurationFile, @NotNull Server server, StoredPropertiesAPI storedProperties)
+    public DataMigrator(@NotNull File configurationFile, File pluginFolder, StoredPropertiesAPI storedProperties)
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
         migrations = new DataMigration[]{
-                new DataMigration6(server, storedProperties),
+                new DataMigration6(pluginFolder, storedProperties),
                 new DataMigration7(),
                 new DataMigration9()
         };

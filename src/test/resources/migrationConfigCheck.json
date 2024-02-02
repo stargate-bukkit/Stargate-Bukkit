@@ -1,0 +1,65 @@
+[
+  {
+    "world": "epicknarvik",
+    "configLocation": "config-epicknarvik.yml",
+    "database" : "epicknarvik/epicknarvik.db",
+    "nagKnarvik" : true,
+    "configOptions": {
+      "defaultGateNetwork": "knarvik",
+      "handleVehicles": false
+    },
+    "portals": [
+      {
+        "name": "§6knarvik1",
+        "networkID": "<@default@>"
+      },
+      {
+        "name": "knarvik2",
+        "networkID": "<@default@>"
+      },
+      {
+        "name": "knarvik3",
+        "networkID": "<@default@>"
+      }
+    ]
+  },
+  {
+    "world": "lclo",
+    "configLocation": "config-lclo.yml",
+    "database" : "lclo/lclo.db",
+    "nagKnarvik" : false,
+    "configOptions": {
+      "defaultGateNetwork": "lclo"
+    },
+    "portals": [
+      {
+        "name": "§6lclo1",
+        "networkID": "d2b440c3-edde-4443-899e-6825c31d0919"
+      },
+      {
+        "name": "lclo2",
+        "networkID": "<@default@>"
+      }
+    ]
+  },
+  {
+    "world": "pseudoknight",
+    "configLocation": "config-pseudoknight.yml",
+    "database" : "pseudoknight/pseudoknight.db",
+    "nagKnarvik" : false,
+    "configOptions": {
+      "defaultGateNetwork": "pseudoknight",
+      "destroyOnExplosion": true
+    },
+    "portals": [
+      {
+        "name": "pseudo1",
+        "networkID": "pseudo"
+      },
+      {
+        "name": "pseudo2",
+        "networkID": "pseudo"
+      }
+    ]
+  }
+]

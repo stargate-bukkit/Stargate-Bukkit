@@ -35,7 +35,7 @@ enableBungee: false
 # 
 # Note that this primarily applies to users with the stargate.create.network node.
 # Generally, that node is given to staff (we recommend stargate.create.personal for users).
-default-gate-network: lclco
+default-gate-network: lclo
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                        Gate Behaviour                                        | #
@@ -147,7 +147,7 @@ destMemory: false
 # Where should that flatfile be stored?
 # 
 # This option is provided as a patch to allow data to be imported from some older forks.
-portal-folder: src/test/resources/oldsaves/lclo/
+portal-folder: portals
 
 # Currently, on startup, a folder is checked for gate layouts stored as ‘.gate’ files.
 # Where is that folder?

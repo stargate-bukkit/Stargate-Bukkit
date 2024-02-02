@@ -32,18 +32,19 @@ public class DataMigration6 extends DataMigration {
 
     private static final Map<String, String> CONFIG_CONVERSIONS = loadConfigConversions();
     private static final Pattern STARGATE_FOLDER = Pattern.compile("^plugins/Stargate/");
-    private final Server server;
     private final StoredPropertiesAPI storedProperties;
+    private final File pluginFolder;
     private String versionFrom;
     private Map<String, Object> oldConfig;
 
     /**
-     * Instantiates a new Ret-Com 1.0.0
+     * Instantiates a new migration
      *
-     * @param server <p>The server to use for loading legacy portals</p>
+     * @param pluginFolder <p>The folder of the plugin</p>
+     * @param storedProperties <p>Stored properties database</p>
      */
-    public DataMigration6(@NotNull Server server, StoredPropertiesAPI storedProperties) {
-        this.server = Objects.requireNonNull(server);
+    public DataMigration6(File pluginFolder, StoredPropertiesAPI storedProperties) {
+        this.pluginFolder = Objects.requireNonNull(pluginFolder);
         this.storedProperties = storedProperties;
     }
 
@@ -151,9 +152,9 @@ public class DataMigration6 extends DataMigration {
      * @throws TranslatableException     <p>If some use input was invalid</p>
      */
     private void migratePortals(String portalFolder, String defaultNetworkName, StargateAPI stargateAPI) throws InvalidStructureException, IOException, TranslatableException {
-        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(portalFolder, server, defaultNetworkName, stargateAPI);
-        if (portals == null) {
-            Stargate.log(Level.WARNING, "No portals migrated!");
+        List<Portal> portals = LegacyPortalStorageLoader.loadPortalsFromStorage(new File(pluginFolder, portalFolder), defaultNetworkName, stargateAPI);
+        if (portals.isEmpty()) {
+            Stargate.log(Level.INFO, "No portals migrated!");
         } else {
             Stargate.log(Level.INFO, "The following portals have been migrated:");
             for (Portal portal : portals) {
@@ -223,8 +224,8 @@ public class DataMigration6 extends DataMigration {
     private void moveLegacyData(String directoryString, Map<String, String> filesToMove) {
         Stargate.log(Level.FINE, String.format("Moving files in directory %s to %s", directoryString,
                 filesToMove.get(directoryString)));
-        File directory = new File(directoryString);
-        File targetDirectory = new File(filesToMove.get(directoryString));
+        File directory = new File(pluginFolder, directoryString);
+        File targetDirectory = new File(pluginFolder, filesToMove.get(directoryString));
         if (!directory.exists()) {
             return;
         }
