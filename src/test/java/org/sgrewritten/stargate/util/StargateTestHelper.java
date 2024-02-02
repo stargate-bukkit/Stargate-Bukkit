@@ -5,7 +5,6 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;

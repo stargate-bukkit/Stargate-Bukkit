@@ -67,6 +67,6 @@ public class StargateQueuedAsyncTask extends StargateTask {
             } catch (Exception e) {
                 Stargate.log(e);
             }
-        } while (asyncQueueThreadIsEnabled);
+        } while (asyncQueueThreadIsEnabled && !asyncQueue.isEmpty());
     }
 }

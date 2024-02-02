@@ -77,7 +77,6 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;

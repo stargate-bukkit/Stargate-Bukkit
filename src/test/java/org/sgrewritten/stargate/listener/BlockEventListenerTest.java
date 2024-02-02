@@ -198,6 +198,7 @@ class BlockEventListenerTest {
         builder.setGateBuilder(location, GateFormatRegistry.getAllGateFormatNames().iterator().next());
         builder.setFlags(String.valueOf(flag));
         RealPortal portal = builder.build();
+        StargateTestHelper.runAllTasks();
         network.addPortal(portal);
         Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");
 
