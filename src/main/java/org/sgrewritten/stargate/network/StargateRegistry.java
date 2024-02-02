@@ -27,7 +27,7 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
 
@@ -309,13 +309,13 @@ public class StargateRegistry implements RegistryAPI {
     public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type, relativeVector, plugin.getName());
-        ThreadHelper.runAsyncTask(() -> {
+        new StargateQueuedAsyncTask(() -> {
             try {
                 storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }
-        });
+        }).run();
         return portalPosition;
     }
 
@@ -330,13 +330,13 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
         RealPortal portal = portalPosition.getPortal();
         portal.getGate().removePortalPosition(portalPosition);
-        ThreadHelper.runAsyncTask(() -> {
+        new StargateQueuedAsyncTask(() -> {
             try {
                 storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }
-        });
+        }).run();
     }
 
     @Override

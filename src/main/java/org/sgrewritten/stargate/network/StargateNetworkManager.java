@@ -27,8 +27,8 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -161,13 +161,13 @@ public class StargateNetworkManager implements NetworkManager {
                 if (network != null && network.getType() != type) {
                     String newId = registry.getValidNewName(network);
                     registry.renameNetwork(newId, network.getId(), network.getStorageType());
-                    ThreadHelper.runAsyncTask(() -> {
+                    new StargateQueuedAsyncTask(() -> {
                         try {
                             storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
                         } catch (StorageWriteException e) {
                             Stargate.log(e);
                         }
-                    });
+                    }).run();
                 }
             }
             throw new NameConflictException("network of id '" + name + "' already exists", true);
@@ -231,13 +231,13 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void savePortal(RealPortal portal, Network network) throws NameConflictException {
         network.addPortal(portal);
-        ThreadHelper.runAsyncTask(() -> {
+        new StargateQueuedAsyncTask(() -> {
             try {
                 storageAPI.savePortalToStorage(portal);
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }
-        });
+        }).run();
         network.getPluginMessageSender().sendCreatePortal(portal);
         network.updatePortals();
     }
@@ -249,13 +249,13 @@ public class StargateNetworkManager implements NetworkManager {
         portal.destroy();
         registry.unregisterPortal(portal);
         network.updatePortals();
-        ThreadHelper.runAsyncTask(() -> {
+        new StargateQueuedAsyncTask(() -> {
             try {
                 storageAPI.removePortalFromStorage(portal);
             } catch (StorageWriteException e) {
                 Stargate.log(e);
             }
-        });
+        }).run();
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
     }
 

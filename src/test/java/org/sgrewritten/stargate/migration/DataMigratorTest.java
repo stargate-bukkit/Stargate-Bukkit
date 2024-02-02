@@ -36,7 +36,6 @@ import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;

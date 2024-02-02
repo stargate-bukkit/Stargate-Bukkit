@@ -78,7 +78,7 @@ class BlockEventListenerTest {
 
     @BeforeEach
     void setUp() {
-        server = StargateTestHelper.setup(false);
+        server = StargateTestHelper.setup();
         plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
@@ -195,7 +195,7 @@ class BlockEventListenerTest {
         Location location = new Location(world, 0, 5, 0);
         Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, StorageType.LOCAL, false);
         PortalBuilder builder = new PortalBuilder(stargateAPI,player,"test");
-        builder.setGateBuilder(location,GateFormatRegistry.getAllGateFormatNames().iterator().next());
+        builder.setGateBuilder(location, GateFormatRegistry.getAllGateFormatNames().iterator().next());
         builder.setFlags(String.valueOf(flag));
         RealPortal portal = builder.build();
         network.addPortal(portal);

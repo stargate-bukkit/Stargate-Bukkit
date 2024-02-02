@@ -53,7 +53,7 @@ class StargateTest {
 
     @BeforeEach
     void setup() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        server = StargateTestHelper.setup(false);
+        server = StargateTestHelper.setup();
         scheduler = server.getScheduler();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();

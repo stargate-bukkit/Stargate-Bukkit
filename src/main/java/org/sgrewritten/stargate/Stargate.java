@@ -77,8 +77,8 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateAsyncTask;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
@@ -183,8 +183,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
             registerListeners();
             StargateRegionTask.startPopulator(this);
-            ThreadHelper.setAsyncQueueEnabled(true);
-            new StargateAsyncTask(ThreadHelper::cycleThroughAsyncQueue).run();
+            StargateQueuedAsyncTask.enableAsyncQueue();
             registerCommands();
             sendWarningMessages();
 
@@ -208,8 +207,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
         }
         String scheduledGateClearingString = storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
-        if (scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) < System.currentTimeMillis()) {
-            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/")) {
+        if (scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) > System.currentTimeMillis()) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/gateClearingMessage.txt")) {
                 Date date = new Date(Long.parseLong(scheduledGateClearingString));
                 String dateString = date.toString();
                 String unformattedMessage = FileHelper.readStreamToString(inputStream);
@@ -587,7 +586,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        ThreadHelper.setAsyncQueueEnabled(false);
+        StargateQueuedAsyncTask.disableAsyncQueue();
         StargateTask.forceRunAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();

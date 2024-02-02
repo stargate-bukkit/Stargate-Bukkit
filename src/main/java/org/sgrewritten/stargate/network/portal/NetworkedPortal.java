@@ -29,8 +29,8 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.MetadataType;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
@@ -400,7 +400,7 @@ public class NetworkedPortal extends AbstractPortal {
                      * duplicate unnecessary calls
                      */
                     previousDestinationSelectionTime = -1;
-                    ThreadHelper.runAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name()));
+                    new StargateQueuedAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name())).run();
                 }
             }).runDelayed(20);
         }

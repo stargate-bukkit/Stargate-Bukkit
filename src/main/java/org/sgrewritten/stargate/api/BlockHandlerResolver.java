@@ -14,7 +14,6 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.thread.ThreadHelper;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 
 import java.util.ArrayList;

@@ -24,8 +24,6 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.thread.ThreadHelper;
-import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
@@ -111,7 +109,7 @@ class StargateRegistryTest {
 
     @Test
     void removePortalPosition_doesNotExist() {
-        Assertions.assertDoesNotThrow(() ->  registry.removePortalPosition(new Location(world, 0, 0, 0)));
+        Assertions.assertDoesNotThrow(() -> registry.removePortalPosition(new Location(world, 0, 0, 0)));
     }
 
     @ParameterizedTest
