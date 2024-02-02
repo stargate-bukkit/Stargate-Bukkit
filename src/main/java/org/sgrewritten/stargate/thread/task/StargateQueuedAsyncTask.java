@@ -44,8 +44,8 @@ public class StargateQueuedAsyncTask extends StargateTask {
         }
     }
 
-    public static void enableAsyncQueue()  {
-        if(isCyclingThroughQueue){
+    public static void enableAsyncQueue() {
+        if (isCyclingThroughQueue) {
             return;
         }
         isCyclingThroughQueue = true;
@@ -58,21 +58,15 @@ public class StargateQueuedAsyncTask extends StargateTask {
     }
 
     private static void cycleThroughAsyncQueue() {
-        try {
-            boolean startup = true;
-            while (asyncQueueThreadIsEnabled || startup) {
-                startup = false;
-                try {
-                    Runnable runnable = asyncQueue.take();
-                    runnable.run();
-                } catch (InterruptedException e) {
-                    throw e;
-                } catch (Exception e) {
-                    Stargate.log(e);
-                }
+        do {
+            try {
+                Runnable runnable = asyncQueue.take();
+                runnable.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                Stargate.log(e);
             }
-        } catch (InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        }
+        } while (asyncQueueThreadIsEnabled);
     }
 }
