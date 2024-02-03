@@ -4,8 +4,21 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.gate.GateFormat;
+import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.property.StargateConstant;
+import org.sgrewritten.stargate.util.FileHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -13,15 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GateFormatRegistry {
 
-    private GateFormatRegistry(){
+    private GateFormatRegistry() {
         throw new IllegalStateException("Utility class");
     }
 
     private static Map<Material, List<GateFormat>> controlMaterialToGateFormatsMap;
     private static Map<String, GateFormat> knownGateFormats;
+    private static final Pattern GATE_FILE = Pattern.compile(".gate$");
 
 
     /**
@@ -94,6 +111,43 @@ public class GateFormatRegistry {
             return new ArrayList<>();
         }
         return possibleGates;
+    }
+
+    /**
+     * Saves all the default gate designs to the gate folder
+     *
+     * @throws IOException <p>If unable to read or write the default gates</p>
+     */
+    private static void saveDefaultGates(File dataFolder, String gateFolder) throws IOException, URISyntaxException {
+        File targetDirectory = new File(dataFolder,gateFolder);
+        if(!targetDirectory.exists() && !targetDirectory.mkdirs()){
+            throw new IOException("Unable to create directory: " + targetDirectory);
+        }
+        String internalGatesDirectory = "/" + StargateConstant.INTERNAL_GATE_FOLDER;
+        List<Path> walk = FileHelper.listFilesOfInternalDirectory(internalGatesDirectory);
+        for (Path path : walk) {
+            Matcher gateFileMatcher = GATE_FILE.matcher(path.getFileName().toString());
+            if (!gateFileMatcher.find()) {
+                continue;
+            }
+            try (InputStream inputStream = Stargate.class.getResourceAsStream(internalGatesDirectory + "/" + path.getFileName().toString())) {
+                try (OutputStream outputStream = new FileOutputStream(new File(targetDirectory, path.getFileName().toString()))) {
+                    inputStream.transferTo(outputStream);
+                }
+            }
+        }
+
+    }
+
+    public static void loadGateFormats(File pluginDataFolder) throws IOException, URISyntaxException {
+        String gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
+        saveDefaultGates(pluginDataFolder, gateFolder);
+        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(pluginDataFolder,gateFolder));
+        if (gateFormats.isEmpty()) {
+            Stargate.log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
+
+        }
+        GateFormatRegistry.setFormats(gateFormats);
     }
 
 }

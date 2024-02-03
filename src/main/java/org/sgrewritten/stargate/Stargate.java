@@ -55,8 +55,6 @@ import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
-import org.sgrewritten.stargate.gate.GateFormat;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.listener.BKCommonLibListener;
 import org.sgrewritten.stargate.listener.BlockEventListener;
 import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
@@ -85,13 +83,11 @@ import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -175,7 +171,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-        } catch (StargateInitializationException | IOException | SQLException e) {
+        } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
@@ -208,7 +204,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
-    private void setupManagers() throws StargateInitializationException, SQLException, IOException {
+    private void setupManagers() throws StargateInitializationException, SQLException, IOException, URISyntaxException {
         String languageFolder = "lang";
         languageManager = new StargateLanguageManager(new File(dataFolder, languageFolder));
         economyManager = new VaultEconomyManager(languageManager);
@@ -219,7 +215,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         networkManager = new StargateNetworkManager(registry, storageAPI);
         bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager(), this.getNetworkManager());
         blockLogger = new CoreProtectManager();
-        loadGateFormats();
+        GateFormatRegistry.loadGateFormats(this.getDataFolder());
     }
 
     /**
@@ -248,15 +244,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     public String getAbsoluteDataFolder() {
         return dataFolder;
-    }
-
-    /**
-     * Gets the gate folder where all .gate files are stored
-     *
-     * @return <p>The gate folder</p>
-     */
-    public String getGateFolder() {
-        return gateFolder;
     }
 
     /**
@@ -333,38 +320,13 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     /**
-     * Saves all the default gate designs to the gate folder
-     *
-     * @throws IOException <p>If unable to read or write the default gates</p>
-     */
-    private void saveDefaultGates() throws IOException {
-        //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
-        String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
-        File directory = new File(this.getDataFolder(), this.getGateFolder());
-        if (!directory.exists() && !directory.mkdirs()) {
-            Stargate.log(Level.SEVERE, "Could not make gates directory");
-        }
-        for (String gateName : gateList) {
-            File fileToWrite = new File(directory, gateName);
-            if (!fileToWrite.exists()) {
-                InputStream stream = this.getResource(StargateConstant.INTERNAL_GATE_FOLDER + "/" + gateName);
-                if (stream == null) {
-                    Stargate.log(Level.WARNING, "Unable to read internal gate file " + gateName);
-                    continue;
-                }
-                stream.transferTo(new FileOutputStream(fileToWrite));
-            }
-        }
-    }
-
-    /**
      * Migrates data files and configuration files if necessary
      *
      * @throws IOException                   <p>If unable to load or save a configuration file</p>
      * @throws InvalidConfigurationException <p>If unable to save the new configuration</p>
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
-    private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
+    private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException, URISyntaxException {
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
@@ -378,7 +340,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             this.reloadConfig();
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
-            this.loadGateFormats();
+            GateFormatRegistry.loadGateFormats(this.getDataFolder());
             this.setupManagers();
             dataMigrator.run(database, this);
             return true;
@@ -413,18 +375,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
-    private void loadGateFormats() throws IOException {
-        this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
-        saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()));
-        if (gateFormats.isEmpty()) {
-            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
-            GateFormatRegistry.setFormats(new ArrayList<>());
-        } else {
-            GateFormatRegistry.setFormats(gateFormats);
-        }
-    }
-
     @Override
     public void setConfigurationOptionValue(ConfigurationOption configurationOption, Object newValue) {
         config.set(configurationOption.getConfigNode(), newValue);
@@ -446,14 +396,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
         try {
             load();
-            loadGateFormats();
+            GateFormatRegistry.loadGateFormats(this.getDataFolder());
             if (storageAPI instanceof SQLDatabase sqlDatabase) {
                 sqlDatabase.load(DatabaseHelper.loadDatabase(this));
             }
             registry.clear();
             networkManager.loadPortals(this);
             economyManager.setupEconomy();
-        } catch (StargateInitializationException | IOException | SQLException e) {
+        } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
@@ -534,19 +484,23 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (throwable == null) {
             return;
         }
-        Stargate.log(logLevel, throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-        Stargate.logError(logLevel, throwable);
+        StringBuilder exceptionBuilder = new StringBuilder(throwable.getClass().getName() + (throwable.getMessage() == null ? "" : ": " + throwable.getMessage()) + "\n");
+        exceptionBuilder.append(Stargate.getStackTrace(throwable));
         while (throwable.getCause() != null) {
             throwable = throwable.getCause();
-            Stargate.log(logLevel, "Caused by: " + throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-            logError(logLevel, throwable);
+            exceptionBuilder.append("Caused by: ").append(throwable.getClass().getName());
+            exceptionBuilder.append(throwable.getMessage() == null ? "" : ": " + throwable.getMessage()).append("\n");
+            exceptionBuilder.append(getStackTrace(throwable));
         }
+        Stargate.log(logLevel, exceptionBuilder.toString());
     }
 
-    private static void logError(Level logLevel, Throwable throwable) {
+    private static String getStackTrace(Throwable throwable) {
+        StringBuilder builder = new StringBuilder();
         for (StackTraceElement element : throwable.getStackTrace()) {
-            Stargate.log(logLevel, "\t at " + element.toString());
+            builder.append("\t at ").append(element.toString()).append("\n");
         }
+        return builder.toString();
     }
 
     public static void log(Level priorityLevel, String message) {

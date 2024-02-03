@@ -5,7 +5,9 @@ import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
@@ -184,7 +186,7 @@ public class DataMigration6 extends DataMigration {
         if (instance == null) {
             gateDirectory = new File("");
         } else {
-            gateDirectory = new File(instance.getDataFolder(), instance.getGateFolder());
+            gateDirectory = new File(instance.getDataFolder(), ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER));
         }
         if (!gateDirectory.exists()) {
             return;
