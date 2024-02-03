@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
@@ -119,7 +120,7 @@ public interface GateAPI {
      *
      * @param alwaysOn <p>Whether this gate is always on</p>
      */
-    void calculatePortalPositions(boolean alwaysOn);
+    void calculatePortalPositions(boolean alwaysOn) throws InvalidStructureException;
 
     /**
      * Gets this gate's top-left location

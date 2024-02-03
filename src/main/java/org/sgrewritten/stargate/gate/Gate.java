@@ -39,7 +39,6 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.property.NonLegacyClass;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
@@ -338,7 +337,11 @@ public class Gate implements GateAPI {
             // Clear all portal positions
             portalPositions.clear();
             //Calculate all relevant portal positions
-            calculatePortalPositions(alwaysOn);
+            try {
+                calculatePortalPositions(alwaysOn);
+            } catch (InvalidStructureException e) {
+                continue;
+            }
             if (isValid()) {
                 return true;
             }
@@ -363,9 +366,9 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void calculatePortalPositions(boolean alwaysOn) {
+    public void calculatePortalPositions(boolean alwaysOn) throws InvalidStructureException {
         //First find buttons and signs on the Stargate
-        List<BlockVector> registeredControls = getExistingControlPositions(alwaysOn);
+        List<BlockVector> registeredControls = findExistingPortalPositions(alwaysOn);
 
         //Return if no button is necessary
         if (alwaysOn) {
@@ -378,18 +381,19 @@ public class Gate implements GateAPI {
                 return;
             }
         }
-
         //Add a button to the first available control block
+        boolean hasRegisteredAButton = false;
         for (BlockVector buttonVector : getFormat().getControlBlocks()) {
-            if (registeredControls.contains(buttonVector)) {
-                continue;
+            if (!registeredControls.contains(buttonVector)) {
+                portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, Stargate.NAME));
+                hasRegisteredAButton = true;
+                break;
             }
-            portalPositions.add(new PortalPosition(PositionType.BUTTON, buttonVector, Stargate.NAME));
-            break;
         }
 
-        //GATE_CONTROLS_FAULT
-        //TODO: What to do if no available control block?
+        if(!hasRegisteredAButton){
+            throw new InvalidStructureException("Could not find a button position");
+        }
     }
 
     /**
@@ -397,7 +401,7 @@ public class Gate implements GateAPI {
      *
      * @return <p>The vectors found containing controls</p>
      */
-    private List<BlockVector> getExistingControlPositions(boolean alwaysOn) {
+    private List<BlockVector> findExistingPortalPositions(boolean alwaysOn) {
         List<BlockVector> foundVectors = new ArrayList<>();
         for (BlockVector blockVector : getFormat().getControlBlocks()) {
             Material material = getLocation(blockVector).getBlock().getType();

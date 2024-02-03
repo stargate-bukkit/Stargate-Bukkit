@@ -145,7 +145,6 @@ class StargateTest {
         server.getScheduler().performOneTick();
         Assertions.assertTrue(plugin.isEnabled());
         Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), StorageType.LOCAL);
-        plugin.getRegistry().getNetworkRegistry(StorageType.LOCAL).stream().forEach((aNetwork) -> Stargate.log(Level.INFO, aNetwork.getId()));
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }
