@@ -11,6 +11,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.colors.ColorConverter;
 import org.sgrewritten.stargate.colors.ColorRegistry;
+import org.sgrewritten.stargate.colors.ColorSelector;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
@@ -103,7 +104,7 @@ public class LineColorFormatter implements LineFormatter {
         if (shouldUseDyeColor()) {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
-        return Stargate.getDefaultTextColor();
+        return ColorRegistry.DEFAULT_COLORS.get(ColorSelector.TEXT);
     }
 
     /**
@@ -119,16 +120,16 @@ public class LineColorFormatter implements LineFormatter {
             return ColorConverter.getChatColorFromDyeColor(dyeColor);
         }
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 3) {
-            return Stargate.getDefaultPointerColor();
+            return ColorRegistry.DEFAULT_COLORS.get(ColorSelector.POINTER);
         }
-        return Stargate.getDefaultTextColor();
+        return ColorRegistry.DEFAULT_COLORS.get(ColorSelector.TEXT);
     }
 
     /**
      * @return <p> If the default color should not be applied </p>
      */
     private boolean shouldUseDyeColor() {
-        return (dyeColor != null && dyeColor != Stargate.getDefaultDyeColor());
+        return (dyeColor != null && dyeColor != ColorRegistry.DEFAULT_DYE_COLOR);
     }
 
     /**

@@ -31,6 +31,7 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -44,6 +45,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.colors.ColorConverter;
 import org.sgrewritten.stargate.colors.ColorNameInterpreter;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -122,7 +124,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private static final String CONFIG_FILE = "config.yml";
     private static final int CURRENT_CONFIG_VERSION = 9;
 
-    private static Level logLevel = Level.INFO;//setting before config loads
+    private static Level logLevel = Level.INFO; //setting before config loads
     private String gateFolder;
     private PluginManager pluginManager;
     private StorageAPI storageAPI;
@@ -137,8 +139,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private static UUID serverUUID;
 
-    private org.bukkit.ChatColor legacySignColor;
-
     private FileConfiguration config;
 
     private StargateRegistry registry;
@@ -151,15 +151,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
-    private ChatColor defaultTextColor;
-    private ChatColor defaultPointerColor;
-    private DyeColor defaultDyeColor;
 
 
     @Override
     public void onEnable() {
         try {
-            instance = this;
+            Stargate.setInstance(this);
             if (!new File(this.getDataFolder(), CONFIG_FILE).exists()) {
                 super.saveDefaultConfig();
             }
@@ -197,6 +194,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    private static void setInstance(@Nullable Stargate stargate) {
+        Stargate.instance = stargate;
+    }
+
     private void sendWarningMessages() {
         if ("true".equals(storedProperties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
             try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/parityMessage.txt")) {
@@ -221,8 +222,8 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     private void setupManagers() throws StargateInitializationException, SQLException, IOException {
-        String LANGUAGE_FOLDER = "lang";
-        languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
+        String languageFolder = "lang";
+        languageManager = new StargateLanguageManager(new File(DATA_FOLDER, languageFolder));
         economyManager = new VaultEconomyManager(languageManager);
         database = DatabaseHelper.loadDatabase(this);
         storageAPI = new SQLDatabase(database, storedProperties);
@@ -344,53 +345,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     public static void setServerUUID(UUID serverUUID) {
         Stargate.serverUUID = serverUUID;
-    }
-
-    /**
-     * Gets the default color used for light signs with legacy coloring
-     *
-     * @return <p>The default legacy color used for light signs</p>
-     */
-    public org.bukkit.ChatColor getLegacySignColor() {
-        return this.legacySignColor;
-    }
-
-    public static ChatColor getDefaultPointerColor() {
-        if (instance == null) {
-            return ChatColor.WHITE;
-        }
-        return instance.defaultPointerColor;
-    }
-
-    public static ChatColor getDefaultTextColor() {
-        if (instance == null) {
-            return ChatColor.BLACK;
-        }
-        return instance.defaultTextColor;
-    }
-
-    public static DyeColor getDefaultDyeColor() {
-        if (instance == null) {
-            return DyeColor.BLACK;
-        }
-        return instance.defaultDyeColor;
-    }
-
-    private void loadColors() {
-        try {
-            if (!NonLegacyClass.CHAT_COLOR.isImplemented()) {
-                logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
-                this.legacySignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
-                return;
-            }
-            String defaultColorString = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR);
-            this.defaultTextColor = ColorNameInterpreter.getDefaultTextColor(defaultColorString);
-            this.defaultPointerColor = ColorNameInterpreter.getDefaultPointerColor(defaultColorString);
-            this.defaultDyeColor = ColorConverter.getClosestDyeColor(defaultTextColor);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            Stargate.log(e);
-            Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
-        }
     }
 
     /**
@@ -540,7 +494,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     private void load() throws StargateInitializationException {
-        loadColors();
+        ColorRegistry.loadDefaultColorsFromConfig();
         fetchServerId();
         blockLogger.setUpLogging();
         String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
@@ -598,7 +552,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         } else {
             getServer().getScheduler().cancelTasks(this);
         }
-        instance = null;
+        setInstance(null);
 
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;

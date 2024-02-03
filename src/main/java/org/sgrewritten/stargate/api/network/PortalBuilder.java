@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -316,7 +317,7 @@ public class PortalBuilder {
         getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
-        portal.setSignColor(Stargate.getDefaultDyeColor());
+        portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR);
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

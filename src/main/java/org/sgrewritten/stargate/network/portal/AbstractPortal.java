@@ -37,6 +37,7 @@ import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.format.TextLine;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
@@ -442,7 +443,7 @@ public abstract class AbstractPortal implements RealPortal {
                 new StargateRegionTask(signBlock.getLocation(), () -> {
                     if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
                         Sign sign = (Sign) signBlock.getState();
-                        sign.setColor(Stargate.getDefaultDyeColor());
+                        sign.setColor(ColorRegistry.DEFAULT_DYE_COLOR);
                         sign.update();
                     }
                 }).run();

@@ -5,6 +5,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class LegacyLineColorFormatter implements LineFormatter {
     }
 
     private ChatColor getColor() {
-        return Stargate.getInstance().getLegacySignColor();
+        return ColorRegistry.LEGACY_SIGN_COLOR;
     }
 
     @Override
