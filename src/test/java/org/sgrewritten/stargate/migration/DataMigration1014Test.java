@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
@@ -56,7 +57,7 @@ class DataMigration1014Test {
         migration.run(database, stargateAPI);
         Assertions.assertTrue(portalHasFlag(PortalFlag.CUSTOM_NETWORK, "portal", "network"));
         Assertions.assertTrue(portalHasFlag(PortalFlag.PERSONAL_NETWORK, "portal1", UUID_STRING));
-        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", StargateNetwork.DEFAULT_NETWORK_ID));
+        Assertions.assertTrue(portalHasFlag(PortalFlag.DEFAULT_NETWORK, "portal2", StargateConstant.DEFAULT_NETWORK_ID));
     }
 
     private boolean portalHasFlag(PortalFlag flag, String portalName, String networkName) throws SQLException {

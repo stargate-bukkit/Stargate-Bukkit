@@ -9,6 +9,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class DataMigrator {
         for (Map.Entry<String, Object> entry: updatedConfig.entrySet()) {
             config.set(entry.getKey(), entry.getValue());
         }
-        config.set("configVersion", Stargate.getCurrentConfigVersion());
+        config.set("configVersion", StargateConstant.CURRENT_CONFIG_VERSION);
         config.save(configFile);
     }
 

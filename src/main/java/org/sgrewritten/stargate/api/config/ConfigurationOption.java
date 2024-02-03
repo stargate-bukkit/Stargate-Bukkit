@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.config;
 
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 /**
  * An enum containing all available settings/configuration options
@@ -115,7 +116,7 @@ public enum ConfigurationOption {
      * The version of the configuration. Use for updating the config file
      */
     CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file",
-            Stargate.getCurrentConfigVersion(), OptionDataType.INTEGER, false),
+            StargateConstant.CURRENT_CONFIG_VERSION, OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite

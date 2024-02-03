@@ -367,7 +367,7 @@ public class SQLDatabase implements StorageAPI {
         StorageType storageType = portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
         String targetNetwork = portalData.networkName();
         if (portalData.flags().contains(PortalFlag.BUNGEE)) {
-            targetNetwork = BungeePortal.getLegacyNetworkName();
+            targetNetwork = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
         }
         Stargate.log(Level.FINEST,
                 "Trying to add portal " + portalData.name() + ", on network " + targetNetwork + ",storageType = " + storageType);

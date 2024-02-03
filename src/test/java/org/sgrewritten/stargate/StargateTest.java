@@ -19,6 +19,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.database.TestCredential;
 import org.sgrewritten.stargate.database.TestCredentialsManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -27,7 +28,6 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
@@ -73,11 +73,6 @@ class StargateTest {
     @Test
     void getEconomyManager() {
         assertNotNull(plugin.getEconomyManager());
-    }
-
-    @Test
-    void getCurrentConfigVersion() {
-        Assertions.assertNotEquals(0, Stargate.getCurrentConfigVersion());
     }
 
     @Test
@@ -144,13 +139,13 @@ class StargateTest {
         server.getPluginManager().enablePlugin(plugin);
         server.getScheduler().performOneTick();
         Assertions.assertTrue(plugin.isEnabled());
-        Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), StorageType.LOCAL);
+        Network network = plugin.getRegistry().getNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), StorageType.LOCAL);
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }
 
     @Test
-    void restartInterServer() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+    void restartInterServer() {
         setInterServerEnabled();
         StargateTestHelper.runAllTasks();
         server.getPluginManager().disablePlugin(plugin);

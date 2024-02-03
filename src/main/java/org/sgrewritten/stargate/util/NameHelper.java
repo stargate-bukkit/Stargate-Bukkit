@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.util.regex.Pattern;
 
@@ -56,7 +57,7 @@ public final class NameHelper {
      * @return <p> If the name has a valid length </p>
      */
     public static boolean isInvalidName(String name) {
-        return name == null || name.isEmpty() || name.length() >= Stargate.getMaxTextLength();
+        return name == null || name.isEmpty() || name.length() >= StargateConstant.MAX_TEXT_LENGTH;
     }
 
 }

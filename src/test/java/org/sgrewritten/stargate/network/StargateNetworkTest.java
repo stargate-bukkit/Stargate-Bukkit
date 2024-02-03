@@ -12,6 +12,7 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.UUID;
@@ -54,7 +55,7 @@ public class StargateNetworkTest {
         return switch (type) {
             case CUSTOM -> NET_NAME;
             case PERSONAL -> UUID.randomUUID().toString();
-            case DEFAULT -> StargateNetwork.DEFAULT_NETWORK_ID;
+            case DEFAULT -> StargateConstant.DEFAULT_NETWORK_ID;
             default -> null;
         };
     }

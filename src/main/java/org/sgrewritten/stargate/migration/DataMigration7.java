@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
@@ -101,7 +102,7 @@ public class DataMigration7 extends DataMigration {
             String queryString = nameConfiguration.replaceKnownTableNames(SQLQueryHandler.getQuery(query,
                     database.getDriver()));
             try (PreparedStatement statement = connection.prepareStatement(queryString)) {
-                statement.setString(1, StargateNetwork.DEFAULT_NETWORK_ID);
+                statement.setString(1, StargateConstant.DEFAULT_NETWORK_ID);
                 statement.setString(2, ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK));
                 statement.execute();
             }

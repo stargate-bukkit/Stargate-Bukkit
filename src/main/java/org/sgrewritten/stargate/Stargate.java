@@ -17,10 +17,8 @@
  */
 package org.sgrewritten.stargate;
 
-import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -43,8 +41,6 @@ import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
-import org.sgrewritten.stargate.colors.ColorConverter;
-import org.sgrewritten.stargate.colors.ColorNameInterpreter;
 import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
@@ -79,6 +75,7 @@ import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.PluginChannel;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.thread.task.StargateTask;
@@ -115,23 +112,13 @@ import java.util.logging.Level;
 public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAPI {
 
     private static Stargate instance;
-
-    public static final String NAME = "Stargate";
-    private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
-    private static final String INTERNAL_GATE_FOLDER = "gates";
-    private static final String INTERNAL_FOLDER = ".internal";
-    private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
-    private static final String CONFIG_FILE = "config.yml";
-    private static final int CURRENT_CONFIG_VERSION = 9;
-
-    private static Level logLevel = Level.INFO; //setting before config loads
+    private final String dataFolder = this.getDataFolder().getAbsolutePath();
+    private static Level logLevel = StargateConstant.PRE_STARTUP_LOG_LEVEL; //setting before config loads
     private String gateFolder;
     private PluginManager pluginManager;
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
-    private static final int MAX_TEXT_LENGTH = 13;
-
     private StargateEconomyAPI economyManager;
     private ServicesManager servicesManager;
     private static String serverName;
@@ -147,7 +134,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private PropertiesDatabase storedProperties;
 
-    private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
+    private static final FileConfiguration EMPTY_CONFIG = new StargateYamlConfiguration();
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
@@ -157,11 +144,11 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     public void onEnable() {
         try {
             Stargate.setInstance(this);
-            if (!new File(this.getDataFolder(), CONFIG_FILE).exists()) {
+            if (!new File(this.getDataFolder(), StargateConstant.CONFIG_FILE).exists()) {
                 super.saveDefaultConfig();
             }
             fetchServerId();
-            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
+            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(dataFolder, StargateConstant.INTERNAL_FOLDER, StargateConstant.INTERNAL_PROPERTIES_FILE));
             this.setupManagers();
             boolean hasMigrated = false;
             try {
@@ -223,7 +210,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private void setupManagers() throws StargateInitializationException, SQLException, IOException {
         String languageFolder = "lang";
-        languageManager = new StargateLanguageManager(new File(DATA_FOLDER, languageFolder));
+        languageManager = new StargateLanguageManager(new File(dataFolder, languageFolder));
         economyManager = new VaultEconomyManager(languageManager);
         database = DatabaseHelper.loadDatabase(this);
         storageAPI = new SQLDatabase(database, storedProperties);
@@ -255,21 +242,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     /**
-     * Gets the current version of the Stargate configuration
-     *
-     * @return <p>The current version of the Stargate configuration</p>
-     */
-    public static int getCurrentConfigVersion() {
-        return CURRENT_CONFIG_VERSION;
-    }
-
-    /**
      * Gets the absolute path to Stargate's data folder
      *
      * @return <p>The absolute path to the data folder</p>
      */
     public String getAbsoluteDataFolder() {
-        return DATA_FOLDER;
+        return dataFolder;
     }
 
     /**
@@ -279,18 +257,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     public String getGateFolder() {
         return gateFolder;
-    }
-
-
-    /**
-     * Gets the max text length which will fit on a sign
-     *
-     * <p>The string length of a name consisting of only 'i'. This will fill a sign (including {@literal <>})</p>
-     *
-     * @return <p>The max text length which will fit on a sign</p>
-     */
-    public static int getMaxTextLength() {
-        return MAX_TEXT_LENGTH;
     }
 
     /**
@@ -381,7 +347,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         for (String gateName : gateList) {
             File fileToWrite = new File(directory, gateName);
             if (!fileToWrite.exists()) {
-                InputStream stream = this.getResource(INTERNAL_GATE_FOLDER + "/" + gateName);
+                InputStream stream = this.getResource(StargateConstant.INTERNAL_GATE_FOLDER + "/" + gateName);
                 if (stream == null) {
                     Stargate.log(Level.WARNING, "Unable to read internal gate file " + gateName);
                     continue;
@@ -399,16 +365,16 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
     private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             File debugDirectory = new File(this.getDataFolder(), "debug");
             if (!debugDirectory.isDirectory() && !debugDirectory.mkdir()) {
                 throw new IOException("Could not create directory: " + debugDirectory);
             }
-            FileUtils.copyFile(new File(this.getDataFolder(), CONFIG_FILE), new File(debugDirectory, CONFIG_FILE + ".old"));
+            FileUtils.copyFile(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), new File(debugDirectory, StargateConstant.CONFIG_FILE + ".old"));
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
-            this.saveResource(CONFIG_FILE, true);
+            this.saveResource(StargateConstant.CONFIG_FILE, true);
             this.reloadConfig();
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
@@ -432,7 +398,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     public void reloadConfig() {
         config = new StargateYamlConfiguration();
         try {
-            config.load(new File(this.getDataFolder(), CONFIG_FILE));
+            config.load(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE));
         } catch (IOException | InvalidConfigurationException e) {
             Stargate.log(e);
         }
@@ -441,7 +407,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     @Override
     public void saveConfig() {
         try {
-            config.save(new File(this.getDataFolder(), CONFIG_FILE));
+            config.save(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE));
         } catch (IOException e) {
             Stargate.log(e);
         }
@@ -498,7 +464,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         fetchServerId();
         blockLogger.setUpLogging();
         String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        if (defaultNetwork.length() >= Stargate.MAX_TEXT_LENGTH) {
+        if (defaultNetwork.length() >= StargateConstant.MAX_TEXT_LENGTH) {
             throw new StargateInitializationException("Invalid configuration name for default network, '" + defaultNetwork + "' name too long");
         }
         if (defaultNetwork.isBlank()) {
@@ -520,7 +486,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private void fetchServerId() {
 
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
+            BungeeHelper.getServerId(dataFolder, StargateConstant.INTERNAL_FOLDER);
         }
     }
 
@@ -627,7 +593,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (instance != null) {
             return instance.getConfig();
         } else {
-            return staticConfig;
+            return EMPTY_CONFIG;
         }
     }
 

@@ -89,15 +89,6 @@ public class BungeePortal extends AbstractPortal {
         bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
     }
 
-    /**
-     * Gets the name of the legacy network used for all legacy BungeeCord portals
-     *
-     * @return <p>The name of the legacy network</p>
-     */
-    public static String getLegacyNetworkName() {
-        return ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
-    }
-
     @Override
     public SignLine[] getDrawnControlLines() {
         Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);

@@ -52,6 +52,7 @@ import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.NonLegacyClass;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
@@ -131,7 +132,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         name = NameHelper.getTrimmedName(name);
         if (NameHelper.isInvalidName(name)) {
-            throw new NameLengthException("Invalid length of name '" + name + "' , name length must be above 0 and under " + Stargate.getMaxTextLength());
+            throw new NameLengthException("Invalid length of name '" + name + "' , name length must be above 0 and under " + StargateConstant.MAX_TEXT_LENGTH);
         }
 
         colorDrawer = new NoLineColorFormatter();

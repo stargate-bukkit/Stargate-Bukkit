@@ -19,6 +19,7 @@ import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.sql.PreparedStatement;
@@ -114,7 +115,7 @@ public class PortalStorageHelper {
      */
     public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         String name = portalProperties[0];
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : StargateNetwork.DEFAULT_NETWORK_ID;
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", name, networkName));
@@ -141,7 +142,7 @@ public class PortalStorageHelper {
 
         if (portalProperties.length <= 9 || networkName.equalsIgnoreCase(defaultNetworkName)) {
             flags.add(PortalFlag.DEFAULT_NETWORK);
-            networkName = StargateNetwork.DEFAULT_NETWORK_ID;
+            networkName = StargateConstant.DEFAULT_NETWORK_ID;
         } else if (!ownerString.isEmpty()) {
             String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
             if (playerName != null && playerName.equals(networkName)) {

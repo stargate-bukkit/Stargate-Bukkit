@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
@@ -277,7 +278,7 @@ public class StargateRegistry implements RegistryAPI {
                 newName = network.getId() + i;
                 i++;
             }
-            if (newName.length() < Stargate.getMaxTextLength()) {
+            if (newName.length() < StargateConstant.MAX_TEXT_LENGTH) {
                 return newName;
             }
             String annoyinglyOverThoughtName = network.getId();

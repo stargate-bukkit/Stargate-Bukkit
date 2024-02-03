@@ -27,6 +27,7 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.NameHelper;
@@ -50,7 +51,7 @@ public class StargateNetworkManager implements NetworkManager {
     public @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
 
         if(flags.contains(PortalFlag.BUNGEE)){
-            return selectNetwork(BungeePortal.getLegacyNetworkName(),NetworkType.CUSTOM, StorageType.LOCAL);
+            return selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK),NetworkType.CUSTOM, StorageType.LOCAL);
         }
 
         Stargate.log(Level.FINER, "....Choosing network name....");
@@ -85,7 +86,7 @@ public class StargateNetworkManager implements NetworkManager {
         }
         if (type == NetworkType.DEFAULT
                 && finalNetworkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            finalNetworkName = StargateNetwork.DEFAULT_NETWORK_ID;
+            finalNetworkName = StargateConstant.DEFAULT_NETWORK_ID;
         }
         Stargate.log(Level.FINE, "Ended up with: " + type + ", " + finalNetworkName);
 
@@ -129,7 +130,7 @@ public class StargateNetworkManager implements NetworkManager {
     private TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
                                                                             PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
-            return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, StargateConstant.DEFAULT_NETWORK_ID);
         }
         return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }
@@ -140,7 +141,7 @@ public class StargateNetworkManager implements NetworkManager {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         if (name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, StargateConstant.DEFAULT_NETWORK_ID);
         }
         Network possibleNetwork = registry.getNetwork(name, storageType);
         if (possibleNetwork != null) {

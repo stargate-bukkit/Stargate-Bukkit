@@ -54,6 +54,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
@@ -112,7 +113,7 @@ class BlockEventListenerTest {
 
 
         String netId = switch (networkName) {
-            case "" -> StargateNetwork.DEFAULT_NETWORK_ID;
+            case "" -> StargateConstant.DEFAULT_NETWORK_ID;
             case CUSTOM_NETNAME -> CUSTOM_NETNAME;
             case PLAYER_NAME -> player.getUniqueId().toString();
             default -> null;

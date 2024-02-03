@@ -2,10 +2,12 @@ package org.sgrewritten.stargate.util.portal;
 
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -49,7 +51,7 @@ public final class PortalCreationHelper {
 
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL);
+            Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
             return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
         } else if (flags.contains(PortalFlag.RANDOM)) {
             return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);

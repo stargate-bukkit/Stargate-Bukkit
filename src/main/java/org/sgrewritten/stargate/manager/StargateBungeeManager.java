@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
@@ -14,6 +15,7 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -159,7 +161,7 @@ public class StargateBungeeManager implements BungeeManager {
 
     @Override
     public void legacyPlayerConnect(String message) {
-        String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
+        String bungeeNetworkName = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
 
         String[] parts = message.split("#@#");
 

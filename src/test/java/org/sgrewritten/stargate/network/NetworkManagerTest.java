@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.StargateTestHelper;
@@ -83,7 +84,7 @@ class NetworkManagerTest {
             Network defaultNetwork = this.networkManager.selectNetwork(emptyName, permissionManager, player, new HashSet<>());
             Assertions.assertEquals(NetworkType.DEFAULT, defaultNetwork.getType());
             Assertions.assertEquals(CENTRAL, defaultNetwork.getName());
-            Assertions.assertTrue(registry.networkExists(StargateNetwork.DEFAULT_NETWORK_ID, StorageType.LOCAL));
+            Assertions.assertTrue(registry.networkExists(StargateConstant.DEFAULT_NETWORK_ID, StorageType.LOCAL));
         }
     }
 

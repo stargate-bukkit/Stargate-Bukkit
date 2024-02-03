@@ -20,6 +20,7 @@ import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -206,7 +207,7 @@ public final class BStatsHelper {
                 Stream<String> hardDepend = plugin.getDescription().getDepend().stream();
                 Stream<String> softDepend = plugin.getDescription().getSoftDepend().stream();
                 Stream<String> dependStream = Stream.concat(hardDepend,softDepend);
-                dependStream.filter(depend -> depend.equalsIgnoreCase(Stargate.NAME)).forEach((depend)-> addonsList.put(plugin.getName(),1));
+                dependStream.filter(depend -> depend.equalsIgnoreCase(StargateConstant.STARGATE_NAME)).forEach((depend)-> addonsList.put(plugin.getName(),1));
             }
             return addonsList;
         }));

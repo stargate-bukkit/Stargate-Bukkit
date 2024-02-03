@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -37,8 +38,6 @@ import java.util.logging.Level;
  * A network of portals
  */
 public class StargateNetwork implements Network {
-
-    public static final String DEFAULT_NETWORK_ID = "<@default@>";
     private final PluginMessageSender messageSender;
     private final StorageType storageType;
 
@@ -91,18 +90,18 @@ public class StargateNetwork implements Network {
 
     private void loadAsDefault(String name) throws InvalidNameException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        if (!DEFAULT_NETWORK_ID.equals(name)) {
+        if (!StargateConstant.DEFAULT_NETWORK_ID.equals(name)) {
             throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" +
-                    DEFAULT_NETWORK_ID + "'");
+                    StargateConstant.DEFAULT_NETWORK_ID + "'");
         }
-        id = DEFAULT_NETWORK_ID;
+        id = StargateConstant.DEFAULT_NETWORK_ID;
     }
 
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (NameHelper.isInvalidName(networkName)) {
             throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 " +
-                    "and under " + Stargate.getMaxTextLength());
+                    "and under " + StargateConstant.MAX_TEXT_LENGTH);
         }
         this.name = networkName.trim();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
