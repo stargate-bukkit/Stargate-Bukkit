@@ -91,6 +91,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A plugin that allows for instant-teleportation between large distances and across servers.
@@ -110,7 +111,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private static Stargate instance;
     private final String dataFolder = this.getDataFolder().getAbsolutePath();
     private static Level logLevel = StargateConstant.PRE_STARTUP_LOG_LEVEL; //setting before config loads
-    private String gateFolder;
     private PluginManager pluginManager;
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
@@ -510,7 +510,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
         } else {
-            System.out.println("[" + priorityLevel + "]: " + message);
+            Logger.getLogger(Stargate.class.getName()).log(priorityLevel, message);
         }
     }
 
