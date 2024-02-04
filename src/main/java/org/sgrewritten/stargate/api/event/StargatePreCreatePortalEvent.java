@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * <p>Is triggered before the {@link org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent}.</p>
  */
-public class StargatePortalBuilderEvent extends Event {
+public class StargatePreCreatePortalEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     private final PortalBuilder portalBuilder;
     private final GateBuilder gateBuilder;
@@ -28,7 +28,7 @@ public class StargatePortalBuilderEvent extends Event {
      * @param args <p>The sign arguments, has to have an length of aat least 4</p>
      * @param player <p>The player that initiated the event</p>
      */
-    public StargatePortalBuilderEvent(@NotNull PortalBuilder portalBuilder, @NotNull GateBuilder gateBuilder, @NotNull String[] args, @Nullable Player player) {
+    public StargatePreCreatePortalEvent(@NotNull PortalBuilder portalBuilder, @NotNull GateBuilder gateBuilder, @NotNull String[] args, @Nullable Player player) {
         this.portalBuilder = Objects.requireNonNull(portalBuilder);
         this.gateBuilder = Objects.requireNonNull(gateBuilder);
         if (args.length < 4) {

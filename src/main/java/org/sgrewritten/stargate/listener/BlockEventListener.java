@@ -37,7 +37,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.StargatePortalBuilderEvent;
+import org.sgrewritten.stargate.api.event.StargatePreCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
@@ -187,7 +187,7 @@ public class BlockEventListener implements Listener {
             portalBuilder.setNetwork(networkOrServerName).setGateBuilder(gateBuilder);
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
-            StargatePortalBuilderEvent builderEvent = new StargatePortalBuilderEvent(portalBuilder, gateBuilder, event.getLines(), player);
+            StargatePreCreatePortalEvent builderEvent = new StargatePreCreatePortalEvent(portalBuilder, gateBuilder, event.getLines(), player);
             builderEvent.callEvent();
             portalBuilder.build();
         } catch (NoFormatFoundException noFormatFoundException) {
