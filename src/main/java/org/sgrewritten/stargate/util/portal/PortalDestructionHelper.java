@@ -40,7 +40,7 @@ public final class PortalDestructionHelper {
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
         StargatePlayerDestroyPortalEvent portalDestroyEvent = new StargatePlayerDestroyPortalEvent(portal, player, !hasPermission,
-                permissionManager.getDenyMessage(), cost, BlockEventType.BLOCK_BREAK);
+                permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(portalDestroyEvent);
 
         // Inform the player why the destruction was denied
