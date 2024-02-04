@@ -7,7 +7,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -17,9 +17,9 @@ import java.util.Map;
  */
 public class SimpleVectorOperation implements VectorOperation {
 
-    private static final Map<BlockFace, Double> rotationAngles = new HashMap<>();
-    private static final Map<BlockFace, Vector> rotationAxes = new HashMap<>();
-    private static final Map<BlockFace, Axis> irisNormalAxes = new HashMap<>();
+    private static final Map<BlockFace, Double> rotationAngles = new EnumMap<>(BlockFace.class);
+    private static final Map<BlockFace, Vector> rotationAxes = new EnumMap<>(BlockFace.class);
+    private static final Map<BlockFace, Axis> irisNormalAxes = new EnumMap<>(BlockFace.class);
     private static final BlockFace defaultDirection = BlockFace.EAST;
     private static final Axis defaultVerticalAxis = Axis.Y;
 
@@ -93,7 +93,7 @@ public class SimpleVectorOperation implements VectorOperation {
      * Initializes the operations used for rotating to each block-face
      */
     private static void initializeOperations() {
-        Map<Axis, Vector> axisVectors = new HashMap<>();
+        Map<Axis, Vector> axisVectors = new EnumMap<>(Axis.class);
         axisVectors.put(Axis.Y, new Vector(0, 1, 0));
         axisVectors.put(Axis.X, new Vector(1, 0, 0));
         axisVectors.put(Axis.Z, new Vector(0, 0, 1));

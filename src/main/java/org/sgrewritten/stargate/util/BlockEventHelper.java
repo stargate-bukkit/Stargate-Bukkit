@@ -6,7 +6,10 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.Cancellable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.property.BlockEventType;
 
 import java.util.ArrayList;
@@ -35,11 +38,13 @@ public class BlockEventHelper {
             return false;
         }
         if (type.canDestroyPortal()) {
-            stargateAPI.getNetworkManager().destroyPortal(portal);
-            return true;
-        } else {
-            event.setCancelled(true);
+            StargateDestroyPortalEvent stargateDestroyPortalEvent = new StargateDestroyPortalEvent(portal, type);
+            if(stargateDestroyPortalEvent.callEvent()) {
+                stargateAPI.getNetworkManager().destroyPortal(portal);
+                return true;
+            }
         }
+        event.setCancelled(true);
         return false;
     }
 
@@ -60,24 +65,16 @@ public class BlockEventHelper {
     /**
      * Does event handling for any event that changes multiple block
      *
-     * @param event  <p> The event to possibly cancel </p>
-     * @param type   <p> The type of event </p>
-     * @param blocks <p> The blocks affected </p>
-     */
-    public static void onAnyMultiBlockChangeEvent(Cancellable event, BlockEventType type, List<Block> blocks, StargateAPI stargateAPI) {
-        onAnyMultiBlockChangeEvent(event, type.canDestroyPortal(), blocks, stargateAPI);
-    }
-
-    /**
-     * Does event handling for any event that changes multiple block
-     *
      * @param event      <p>The event to possibly cancel</p>
-     * @param canDestroy <p>If the event could destroy a portal</p>
+     * @param type       <p>The type of event</p>
      * @param blocks     <p>The blocks affected</p>
      */
-    public static void onAnyMultiBlockChangeEvent(Cancellable event, boolean canDestroy, List<Block> blocks, StargateAPI stargateAPI) {
+    public static void onAnyMultiBlockChangeEvent(Cancellable event, BlockEventType type, List<Block> blocks, StargateAPI stargateAPI) {
         Set<RealPortal> affectedPortals = new HashSet<>();
-
+        boolean canDestroy = type.canDestroyPortal();
+        if(type == BlockEventType.BLOCK_EXPLODE || type == BlockEventType.ENTITY_EXPLODE){
+            canDestroy = ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION);
+        }
         for (Block block : blocks) {
             RealPortal portal = stargateAPI.getRegistry().getPortal(block.getLocation());
             if (portal != null) {

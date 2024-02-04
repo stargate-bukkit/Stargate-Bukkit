@@ -220,8 +220,8 @@ public class TableNameConfiguration {
      * @return <p>The query string with keys replaced</p>
      */
     public String replaceKnownTableNames(String query) {
-        for (String key : prefixedTableNames.keySet()) {
-            query = query.replace("{" + key + "}", prefixedTableNames.get(key));
+        for (Map.Entry<String,String> entry : prefixedTableNames.entrySet()) {
+            query = query.replace("{" + entry.getKey() + "}", entry.getValue());
         }
         return query;
     }

@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.migration;
 
 import com.google.common.io.Files;
-import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
@@ -42,7 +41,7 @@ public class DataMigration6 extends DataMigration {
     /**
      * Instantiates a new migration
      *
-     * @param pluginFolder <p>The folder of the plugin</p>
+     * @param pluginFolder     <p>The folder of the plugin</p>
      * @param storedProperties <p>Stored properties database</p>
      */
     public DataMigration6(File pluginFolder, StoredPropertiesAPI storedProperties) {

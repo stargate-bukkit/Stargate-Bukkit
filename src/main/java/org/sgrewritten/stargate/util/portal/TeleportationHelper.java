@@ -20,6 +20,10 @@ import java.util.Set;
  */
 public class TeleportationHelper {
 
+    private TeleportationHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final int CONE_LENGTH = 7;
     private static final int MAXIMUM_CONE_EXTENSION = 4;
 

@@ -31,7 +31,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.AbstractPortal;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
@@ -293,7 +292,7 @@ public class SQLDatabase implements StorageAPI {
         new StargateRegionTask(portalData.gateData().topLeft(), () -> {
             try {
                 registerPortalGate(portalData, network, stargateAPI, portalPositions);
-            } catch (TranslatableException | GateConflictException e) {
+            } catch (TranslatableException e) {
                 Stargate.log(e);
             } catch (InvalidStructureException e) {
                 Stargate.log(Level.WARNING, String.format(
@@ -312,11 +311,10 @@ public class SQLDatabase implements StorageAPI {
      * @param stargateAPI <p>The portal stargate API</p>
      * @throws SQLException              <p>If unable to interact with the database</p>
      * @throws InvalidStructureException <p>If the portal's gate is invalid</p>
-     * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
      * @throws TranslatableException     <p>If some input is invalid</p>
      */
     private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI, List<PortalPosition> portalPositions) throws
-            InvalidStructureException, GateConflictException, TranslatableException {
+            InvalidStructureException, TranslatableException {
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
 
         gate.addPortalPositions(portalPositions);

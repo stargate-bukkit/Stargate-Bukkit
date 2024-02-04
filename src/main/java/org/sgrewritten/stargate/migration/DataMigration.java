@@ -3,7 +3,6 @@ package org.sgrewritten.stargate.migration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 
@@ -25,7 +24,7 @@ public abstract class DataMigration {
      */
     public Map<String, Object> getUpdatedConfigValues(Map<String, Object> oldConfig) {
         Map<String, Object> updatedConfig = new HashMap<>();
-        for (Map.Entry<String,Object> entry: oldConfig.entrySet()) {
+        for (Map.Entry<String, Object> entry : oldConfig.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof ConfigurationSection) {
                 continue;

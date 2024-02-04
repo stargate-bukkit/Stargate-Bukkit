@@ -19,7 +19,7 @@ public class LegacyDataHandler {
     }
 
 
-    private static Map<PortalFlag, Integer> LEGACY_FLAG_INDICES;
+    private static final Map<PortalFlag, Integer> LEGACY_FLAG_INDICES = loadFlagIndices();
 
     /**
      * Gets the facing direction from the given x and z values
@@ -95,10 +95,6 @@ public class LegacyDataHandler {
      * @return <p>The parsed flags</p>
      */
     public static Set<PortalFlag> parseFlags(String[] splitLine) {
-        if (LEGACY_FLAG_INDICES == null) {
-            loadFlagIndices();
-        }
-
         Set<PortalFlag> flags = EnumSet.noneOf(PortalFlag.class);
         for(Map.Entry<PortalFlag,Integer> entry: LEGACY_FLAG_INDICES.entrySet()) {
             int position = entry.getValue();
@@ -113,19 +109,20 @@ public class LegacyDataHandler {
     /**
      * Loads the map containing all known legacy flag indices
      */
-    private static void loadFlagIndices() {
-        LEGACY_FLAG_INDICES = new EnumMap<>(PortalFlag.class);
-        LEGACY_FLAG_INDICES.put(PortalFlag.HIDDEN, 11);
-        LEGACY_FLAG_INDICES.put(PortalFlag.ALWAYS_ON, 12);
-        LEGACY_FLAG_INDICES.put(PortalFlag.PRIVATE, 13);
-        LEGACY_FLAG_INDICES.put(PortalFlag.FREE, 15);
-        LEGACY_FLAG_INDICES.put(PortalFlag.BACKWARDS, 16);
-        LEGACY_FLAG_INDICES.put(PortalFlag.FORCE_SHOW, 17);
-        LEGACY_FLAG_INDICES.put(PortalFlag.HIDE_NETWORK, 18);
-        LEGACY_FLAG_INDICES.put(PortalFlag.RANDOM, 19);
-        LEGACY_FLAG_INDICES.put(PortalFlag.BUNGEE, 20);
-        LEGACY_FLAG_INDICES.put(PortalFlag.SILENT, 21);
-        LEGACY_FLAG_INDICES.put(PortalFlag.NO_SIGN, 22);
+    private static Map<PortalFlag, Integer> loadFlagIndices() {
+        Map<PortalFlag, Integer> output = new EnumMap<>(PortalFlag.class);
+        output.put(PortalFlag.HIDDEN, 11);
+        output.put(PortalFlag.ALWAYS_ON, 12);
+        output.put(PortalFlag.PRIVATE, 13);
+        output.put(PortalFlag.FREE, 15);
+        output.put(PortalFlag.BACKWARDS, 16);
+        output.put(PortalFlag.FORCE_SHOW, 17);
+        output.put(PortalFlag.HIDE_NETWORK, 18);
+        output.put(PortalFlag.RANDOM, 19);
+        output.put(PortalFlag.BUNGEE, 20);
+        output.put(PortalFlag.SILENT, 21);
+        output.put(PortalFlag.NO_SIGN, 22);
+        return output;
     }
 
 

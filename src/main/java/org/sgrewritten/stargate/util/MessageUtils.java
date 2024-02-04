@@ -11,7 +11,6 @@ import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessage
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
 import org.sgrewritten.stargate.property.NonLegacyClass;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
 
 public class MessageUtils {
     private MessageUtils() {

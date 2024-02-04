@@ -274,21 +274,8 @@ public class PortalBuilder {
      * @throws InvalidStructureException
      */
     public RealPortal build() throws TranslatableException, GateConflictException, NoFormatFoundException, InvalidStructureException {
-        if (gateBuilder == null && gateAPI == null) {
-            throw new IllegalStateException("Can not construct a portal without a valid gate or gate builder.");
-        }
-        if (this.flags == null) {
-            flags = PortalFlag.parseFlags(flagsString == null ? "" : flagsString);
-        }
-        //Prevent the player from explicitly setting any internal flags
-        flags.removeIf(PortalFlag::isInternalFlag);
+        setup();
         Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagsString == null ? "" : flagsString);
-        if (destinationName == null || destinationName.isEmpty()) {
-            flags.add(PortalFlag.NETWORKED);
-        }
-        if (permissionManager == null) {
-            permissionManager = new UnrestricedPermissionManager();
-        }
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
         if (!disallowedFlags.isEmpty() && messageTarget != null) {
             String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
@@ -333,6 +320,23 @@ public class PortalBuilder {
         return portal;
     }
 
+    private void setup(){
+        if (gateBuilder == null && gateAPI == null) {
+            throw new IllegalStateException("Can not construct a portal without a valid gate or gate builder.");
+        }
+        if (this.flags == null) {
+            flags = PortalFlag.parseFlags(flagsString == null ? "" : flagsString);
+        }
+        //Prevent the player from explicitly setting any internal flags
+        flags.removeIf(PortalFlag::isInternalFlag);
+        if (destinationName == null || destinationName.isEmpty()) {
+            flags.add(PortalFlag.NETWORKED);
+        }
+        if (permissionManager == null) {
+            permissionManager = new UnrestricedPermissionManager();
+        }
+    }
+
     private void finalChecks(RealPortal portal, Network network) {
         if(messageTarget == null){
             return;
@@ -341,7 +345,7 @@ public class PortalBuilder {
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
             messageTarget.sendMessage(stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-        if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER) && messageTarget != null) {
+        if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER)) {
             Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
             messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
                     inflictingNetwork, stargateAPI.getLanguageManager()));

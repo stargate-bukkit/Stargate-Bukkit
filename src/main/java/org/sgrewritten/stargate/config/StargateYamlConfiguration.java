@@ -22,8 +22,8 @@ import java.util.List;
 public class StargateYamlConfiguration extends YamlConfiguration {
 
     public static final String START_OF_COMMENT_LINE = "[HASHTAG]";
-    static public final String END_OF_COMMENT = "_endOfComment_";
-    static public final String START_OF_COMMENT = "comment_";
+    public static final String END_OF_COMMENT = "_endOfComment_";
+    public static final String START_OF_COMMENT = "comment_";
 
     @Override
     @SuppressWarnings("deprecation")

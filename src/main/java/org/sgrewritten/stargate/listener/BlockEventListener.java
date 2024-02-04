@@ -144,8 +144,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
-                stargateAPI)) {
+        if (BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(), stargateAPI)) {
             event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY));
         }
         if (!addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
@@ -166,7 +165,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
-        if(registry.getPortal(event.getBlock().getLocation()) != null){
+        if (registry.getPortal(event.getBlock().getLocation()) != null) {
             event.setCancelled(true);
             return;
         }
@@ -177,13 +176,13 @@ public class BlockEventListener implements Listener {
         String flagsString = event.getLine(3);
         flagsString = flagsString == null ? "" : flagsString;
 
-        if(portalName == null || networkOrServerName == null){
+        if (portalName == null || networkOrServerName == null) {
             return;
         }
 
         try {
             GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
-            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player,portalName).setGateBuilder(gateBuilder).setFlags(flagsString);
+            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, portalName).setGateBuilder(gateBuilder).setFlags(flagsString);
             portalBuilder.setNetwork(networkOrServerName);
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
@@ -200,7 +199,8 @@ public class BlockEventListener implements Listener {
             }
         } catch (TranslatableException e) {
             event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
-        } catch (InvalidStructureException ignored) {}
+        } catch (InvalidStructureException ignored) {
+        }
     }
 
     /**
@@ -230,8 +230,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.ENTITY_EXPLODE, event.blockList(), stargateAPI);
     }
 
     /**
@@ -241,8 +240,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_EXPLODE, event.blockList(), stargateAPI);
     }
 
     /**
@@ -254,8 +252,7 @@ public class BlockEventListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block toBlock = event.getToBlock();
         Block fromBlock = event.getBlock();
-        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
-                || (registry.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
+        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null) || (registry.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
             event.setCancelled(true);
             return;
         }
@@ -294,8 +291,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (!BlockEventType.BLOCK_BURN.canDestroyPortal()
-                && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
+        if (!BlockEventType.BLOCK_BURN.canDestroyPortal() && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
             event.setCancelled(true);
         }
     }
@@ -312,8 +308,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE,
-                BlockEventHelper.getBlockList(event.getReplacedBlockStates()), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE, BlockEventHelper.getBlockList(event.getReplacedBlockStates()), stargateAPI);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -365,8 +360,8 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_DISPENSE, dispensedLocation, stargateAPI);
     }
 
-    @EventHandler(priority =  EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onTNTPrime(TNTPrimeEvent tntPrimeEvent){
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTNTPrime(TNTPrimeEvent tntPrimeEvent) {
         BlockEventHelper.onAnyBlockChangeEvent(tntPrimeEvent, BlockEventType.TNT_PRIME, tntPrimeEvent.getBlock().getLocation(), stargateAPI);
     }
 }

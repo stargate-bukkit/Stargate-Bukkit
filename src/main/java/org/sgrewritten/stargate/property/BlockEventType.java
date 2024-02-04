@@ -46,7 +46,10 @@ public enum BlockEventType {
 
     BLOCK_BREAK("BlockBreakEvent"),
 
-    TNT_PRIME("TNTPrimeEvent");
+    TNT_PRIME("TNTPrimeEvent"),
+
+    ENTITY_EXPLODE("EntityExplodeEvent"),
+    BLOCK_EXPLODE("BlockExplodeEvent");
 
 
     private final String eventName;

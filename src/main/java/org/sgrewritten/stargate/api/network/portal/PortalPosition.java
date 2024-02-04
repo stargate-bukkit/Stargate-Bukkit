@@ -1,8 +1,5 @@
 package org.sgrewritten.stargate.api.network.portal;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +90,7 @@ public class PortalPosition implements MetadataHolder {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return relativePositionLocation.hashCode();
     }
 
@@ -142,7 +139,7 @@ public class PortalPosition implements MetadataHolder {
         }
     }
 
-    public RealPortal getPortal(){
+    public RealPortal getPortal() {
         return this.portal;
     }
 }

@@ -25,7 +25,6 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
@@ -50,8 +49,8 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
 
-        if(flags.contains(PortalFlag.BUNGEE)){
-            return selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK),NetworkType.CUSTOM, StorageType.LOCAL);
+        if (flags.contains(PortalFlag.BUNGEE)) {
+            return selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
         }
 
         Stargate.log(Level.FINER, "....Choosing network name....");
@@ -176,7 +175,7 @@ public class StargateNetworkManager implements NetworkManager {
         Network network = storageAPI.createNetwork(name, type, storageType);
         registry.registerNetwork(network);
         Stargate.log(
-                Level.FINEST, String.format("Adding network id %s to interServer = %b", network.getId(), storageType));
+                Level.FINEST, String.format("Adding network id %s to interServer = %s", network.getId(), storageType));
         return network;
     }
 

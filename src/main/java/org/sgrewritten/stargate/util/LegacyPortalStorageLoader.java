@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
@@ -45,7 +44,7 @@ public final class LegacyPortalStorageLoader {
     /**
      * Loads legacy portals in .db files from the given folder
      *
-     * @param dir <p>The folder containing legacy portals</p>
+     * @param dir                <p>The folder containing legacy portals</p>
      * @param stargateAPI        <p>The stargate API</p>
      * @param defaultNetworkName <p> The default network name </p>
      * @return <p>The list of loaded and saved portals</p>
@@ -72,7 +71,7 @@ public final class LegacyPortalStorageLoader {
                     continue;
                 }
                 World world = Bukkit.getWorld(worldName);
-                if(world == null){
+                if (world == null) {
                     Stargate.log(Level.WARNING, "Could not load portal from world: " + worldName);
                     Stargate.log(Level.WARNING, "Ignoring world...");
                     continue;

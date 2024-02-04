@@ -7,6 +7,7 @@ import org.sgrewritten.stargate.util.FileHelper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,11 @@ import java.util.regex.Pattern;
  */
 public class SQLQueryHandler {
 
-    private static final Map<SQLQuery, Map<DatabaseDriver, String>> queries = new HashMap<>();
+    private SQLQueryHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static final Map<SQLQuery, Map<DatabaseDriver, String>> queries = new EnumMap<>(SQLQuery.class);
     private static final Pattern SQL_FILE = Pattern.compile(".sql$");
 
     static {
@@ -132,12 +137,10 @@ public class SQLQueryHandler {
                 continue;
             }
             Map<String, String> readQueries = readQueryFiles.get(databaseDriver.getQueryFolder());
-            for (String query : readQueries.keySet()) {
-                SQLQuery sqlQuery = SQLQuery.valueOf(query);
-                String queryString = readQueries.get(query);
-                if (!queries.containsKey(sqlQuery)) {
-                    queries.put(sqlQuery, new HashMap<>());
-                }
+            for (Map.Entry<String, String> entry : readQueries.entrySet()) {
+                SQLQuery sqlQuery = SQLQuery.valueOf(entry.getKey());
+                String queryString = entry.getValue();
+                queries.putIfAbsent(sqlQuery, new EnumMap<>(DatabaseDriver.class));
                 queries.get(sqlQuery).put(databaseDriver, queryString);
             }
         }

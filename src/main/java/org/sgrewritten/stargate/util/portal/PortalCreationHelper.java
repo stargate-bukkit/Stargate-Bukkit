@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util.portal;
 
-import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.GateAPI;

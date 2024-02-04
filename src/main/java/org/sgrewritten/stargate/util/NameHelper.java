@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.util;
 
 import net.md_5.bungee.api.ChatColor;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.property.StargateConstant;

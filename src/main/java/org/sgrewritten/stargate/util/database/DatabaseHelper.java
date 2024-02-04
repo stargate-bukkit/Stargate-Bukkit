@@ -183,9 +183,9 @@ public class DatabaseHelper {
     }
 
     public static TableNameConfiguration getTableNameConfiguration(boolean usingRemoteDatabase) {
-        String PREFIX = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
+        String prefix = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
                 : "";
         String serverPrefix = usingRemoteDatabase ? Stargate.getServerUUID() : "";
-        return new TableNameConfiguration(PREFIX, serverPrefix.replace("-", ""));
+        return new TableNameConfiguration(prefix, serverPrefix.replace("-", ""));
     }
 }

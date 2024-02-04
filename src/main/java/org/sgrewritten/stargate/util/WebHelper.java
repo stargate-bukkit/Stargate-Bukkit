@@ -14,7 +14,6 @@ public class WebHelper {
     }
 
     public static void downloadFile(String link, File file) throws IOException {
-        OutputStream os = null;
         URL url = new URL(link);
         try (InputStream inputStream = url.openStream()) {
             try (OutputStream outputStream = new FileOutputStream(file)) {

@@ -56,6 +56,7 @@ public class Teleporter {
     private List<LivingEntity> nearbyLeashed;
     private final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
+    private List<Player> playersToRefund = new ArrayList<>();
 
     /**
      * Instantiate a manager for advanced teleportation between a portal and a location
@@ -96,25 +97,7 @@ public class Teleporter {
 
         nearbyLeashed = getNearbyLeashedEntities(baseEntity);
 
-        List<Player> playersToRefund = new ArrayList<>();
-
-        TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS((anyEntity) -> {
-            StargatePermissionManager permissionManager = new StargatePermissionManager(anyEntity, languageManager);
-            if (!hasPermission(anyEntity, permissionManager)) {
-                teleportMessage = permissionManager.getDenyMessage();
-                return false;
-            }
-
-            if (anyEntity instanceof Player) {
-                if (economyManager.chargePlayer((Player) anyEntity, origin, this.cost)) {
-                    playersToRefund.add((Player) anyEntity);
-                } else {
-                    teleportMessage = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
-                    return false;
-                }
-            }
-            return true;
-        }, nearbyLeashed);
+        TeleportedEntityRelationDFS dfs = new TeleportedEntityRelationDFS(this::hasPermissionAndBalance, nearbyLeashed);
 
 
         hasPermission = dfs.depthFirstSearch(baseEntity);
@@ -125,7 +108,7 @@ public class Teleporter {
                 return;
             }
         }
-        entitiesToTeleport.forEach((entity) -> {
+        entitiesToTeleport.forEach(entity -> {
             if (entity instanceof Boat) {
                 boatsTeleporting.add(entity);
             }
@@ -148,7 +131,7 @@ public class Teleporter {
         World world = exit.getWorld();
         if (world != null && !world.getWorldBorder().isInside(exit)) {
             String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLD_BORDER);
-            entitiesToTeleport.forEach((entity) -> entity.sendMessage(worldBorderInterfereMessage));
+            entitiesToTeleport.forEach(entity -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
         new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation)).run();
@@ -165,6 +148,24 @@ public class Teleporter {
                 Stargate.log(Level.WARNING, "Unable to refund player " + player + " " + this.cost);
             }
         }
+    }
+
+    private boolean hasPermissionAndBalance(Entity entity) {
+        StargatePermissionManager permissionManager = new StargatePermissionManager(entity, languageManager);
+        if (!hasPermission(entity, permissionManager)) {
+            teleportMessage = permissionManager.getDenyMessage();
+            return false;
+        }
+
+        if (entity instanceof Player player) {
+            if (economyManager.chargePlayer(player, origin, this.cost)) {
+                this.playersToRefund.add(player);
+            } else {
+                teleportMessage = languageManager.getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+                return false;
+            }
+        }
+        return true;
     }
 
     private Vector getOffset(Entity baseEntity) {
@@ -189,8 +190,8 @@ public class Teleporter {
                 LOOK_FOR_LEASHED_RADIUS);
         List<LivingEntity> surroundingLeashedEntities = new ArrayList<>();
         for (Entity entity : surroundingEntities) {
-            if (entity instanceof LivingEntity && ((LivingEntity) entity).isLeashed()) {
-                surroundingLeashedEntities.add((LivingEntity) entity);
+            if (entity instanceof LivingEntity livingEntity && livingEntity.isLeashed()) {
+                surroundingLeashedEntities.add(livingEntity);
             }
         }
         return surroundingLeashedEntities;
@@ -286,7 +287,7 @@ public class Teleporter {
      */
     private void teleport(Entity target, Location location, double rotation) {
         Vector direction = target.getLocation().getDirection();
-        Location exit = location.setDirection(direction.rotateAroundY(rotation));
+        Location exitPoint = location.setDirection(direction.rotateAroundY(rotation));
 
         Vector velocity = target.getVelocity();
         Vector targetVelocity = velocity.rotateAroundY(rotation).multiply(ConfigurationHelper.getDouble(
@@ -303,10 +304,10 @@ public class Teleporter {
             Stargate.log(Level.FINE, msg);
         }
 
-        if (target instanceof PoweredMinecart) {
-            teleportPoweredMinecart((PoweredMinecart) target, targetVelocity, location);
+        if (target instanceof PoweredMinecart poweredMinecart) {
+            teleportPoweredMinecart(poweredMinecart, targetVelocity, location);
         } else {
-            teleport(target, exit);
+            teleport(target, exitPoint);
             target.setVelocity(targetVelocity);
         }
     }
@@ -385,10 +386,10 @@ public class Teleporter {
             // TODO origin == null means inter-server teleportation. Make a permission check for this or something?
             return true;
         }
-        boolean hasPermission = permissionManager.hasTeleportPermissions(origin);
+        boolean permission = permissionManager.hasTeleportPermissions(origin);
         StargateTeleportPortalEvent event = new StargateTeleportPortalEvent(target, origin, destination, exit);
         Bukkit.getPluginManager().callEvent(event);
-        return hasPermission;
+        return permission;
     }
 
 

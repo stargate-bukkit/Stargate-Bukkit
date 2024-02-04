@@ -7,6 +7,11 @@ import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 public class VectorUtils {
+
+    private VectorUtils(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get all relative blockvectors that represent a position that represent a block adjacent to (0 0 0)
      *

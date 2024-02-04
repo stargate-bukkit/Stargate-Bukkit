@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargatePlayerDestroyPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
@@ -38,8 +39,8 @@ public final class PortalDestructionHelper {
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
-        StargateDestroyPortalEvent portalDestroyEvent = new StargateDestroyPortalEvent(portal, player, !hasPermission,
-                permissionManager.getDenyMessage(), cost);
+        StargatePlayerDestroyPortalEvent portalDestroyEvent = new StargatePlayerDestroyPortalEvent(portal, player, !hasPermission,
+                permissionManager.getDenyMessage(), cost, BlockEventType.BLOCK_BREAK);
         Bukkit.getPluginManager().callEvent(portalDestroyEvent);
 
         // Inform the player why the destruction was denied

@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.migration;
 
-import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,7 +30,7 @@ public class DataMigrator {
      * Instantiates a new data migrator
      *
      * @param configurationFile <p>The configuration file to migrate to a newer format</p>
-     * @param pluginFolder            <p>A server object</p>
+     * @param pluginFolder      <p>A server object</p>
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
@@ -108,7 +107,7 @@ public class DataMigrator {
     public void updateFileConfiguration(FileConfiguration config, Map<String, Object> updatedConfig) throws IOException,
             InvalidConfigurationException {
         fileConfig.load(configFile);
-        for (Map.Entry<String, Object> entry: updatedConfig.entrySet()) {
+        for (Map.Entry<String, Object> entry : updatedConfig.entrySet()) {
             config.set(entry.getKey(), entry.getValue());
         }
         config.set("configVersion", StargateConstant.CURRENT_CONFIG_VERSION);
