@@ -13,6 +13,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.StargateChunk;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -261,5 +262,5 @@ public interface RegistryAPI {
      * @param chunk <p>The chunk to retrieve portals from</p>
      * @return <p>The portals in the chunk</p>
      */
-    @NotNull Set<RealPortal> getPortalsInChunk(Chunk chunk);
+    @NotNull Set<RealPortal> getPortalsInChunk(StargateChunk chunk);
 }

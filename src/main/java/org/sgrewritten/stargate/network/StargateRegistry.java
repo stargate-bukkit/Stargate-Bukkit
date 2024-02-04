@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.StargateChunk;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -56,7 +57,7 @@ public class StargateRegistry implements RegistryAPI {
     private final Map<GateStructureType, Map<BlockLocation, RealPortal>> portalFromStructureTypeMap = new EnumMap<>(GateStructureType.class);
     private final Map<BlockLocation, PortalPosition> portalPositionMap = new HashMap<>();
     private final Map<String, Map<BlockLocation, PortalPosition>> portalPositionPluginNameMap = new HashMap<>();
-    private final Map<Chunk, Set<RealPortal>> chunkPortalMap = new HashMap<>();
+    private final Map<StargateChunk, Set<RealPortal>> chunkPortalMap = new HashMap<>();
 
     /**
      * Instantiates a new Stargate registry
@@ -90,11 +91,11 @@ public class StargateRegistry implements RegistryAPI {
             Stargate.log(Level.FINEST, "Unregistering portal position on location " + location.toString());
             this.removePortalPosition(location);
         }
-        Set<Chunk> chunks = getPortalChunks(realPortal);
+        Set<StargateChunk> chunks = getPortalChunks(realPortal);
         chunks.forEach(chunk -> this.unregisterPortalChunk(chunk, realPortal));
     }
 
-    private void unregisterPortalChunk(Chunk chunk, RealPortal realPortal) {
+    private void unregisterPortalChunk(StargateChunk chunk, RealPortal realPortal) {
         Set<RealPortal> portals = chunkPortalMap.get(chunk);
         if (portals == null) {
             return;
@@ -120,11 +121,11 @@ public class StargateRegistry implements RegistryAPI {
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
             this.registerPortalPosition(portalPosition, location, portal);
         }
-        Set<Chunk> chunks = getPortalChunks(portal);
+        Set<StargateChunk> chunks = getPortalChunks(portal);
         chunks.forEach(chunk -> registerPortalChunk(chunk, portal));
     }
 
-    private void registerPortalChunk(Chunk chunk, RealPortal portal) {
+    private void registerPortalChunk(StargateChunk chunk, RealPortal portal) {
         chunkPortalMap.putIfAbsent(chunk, new HashSet<>());
         chunkPortalMap.get(chunk).add(portal);
     }
@@ -368,7 +369,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public @NotNull Set<RealPortal> getPortalsInChunk(Chunk chunk) {
+    public @NotNull Set<RealPortal> getPortalsInChunk(StargateChunk chunk) {
         Set<RealPortal> output = chunkPortalMap.get(chunk);
         if (output == null) {
             return new HashSet<>();
@@ -376,7 +377,7 @@ public class StargateRegistry implements RegistryAPI {
         return output;
     }
 
-    private @NotNull Set<Chunk> getPortalChunks(RealPortal portal) {
+    private @NotNull Set<StargateChunk> getPortalChunks(RealPortal portal) {
         GateAPI gate = portal.getGate();
         BoundingBox boundingBox = gate.getFormat().getBoundingBox();
         BlockVector corner1 = new BlockVector(boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
@@ -391,10 +392,10 @@ public class StargateRegistry implements RegistryAPI {
         int xMod = corner1Chunk.getX() < corner2Chunk.getX() ? 1 : -1;
         int zMod = corner1Chunk.getZ() < corner2Chunk.getZ() ? 1 : -1;
 
-        Set<Chunk> chunks = new HashSet<>();
+        Set<StargateChunk> chunks = new HashSet<>();
         for (int x = corner1Chunk.getX(); !shouldStop(corner2Chunk.getX(), x, xMod); x += xMod) {
             for (int z = corner1Chunk.getZ(); !shouldStop(corner2Chunk.getZ(), z, zMod); z += zMod) {
-                chunks.add(world.getChunkAt(x, z));
+                chunks.add(new StargateChunk(x, z, world));
             }
         }
         return chunks;
