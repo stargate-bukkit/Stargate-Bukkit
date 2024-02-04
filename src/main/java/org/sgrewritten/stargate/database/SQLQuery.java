@@ -171,7 +171,6 @@ public enum SQLQuery {
     DELETE_PORTAL_FLAG_RELATIONS,
 
 
-    //TODO Better naming
     /**
      * The query for deleting an inter-portal flag relation
      */

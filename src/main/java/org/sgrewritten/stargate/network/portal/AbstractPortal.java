@@ -244,12 +244,10 @@ public abstract class AbstractPortal implements RealPortal {
             throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()), false);
         }
         this.network = targetNetwork;
-        //TODO: update network in database
         this.getDrawnControlLines();
     }
 
     @Override
-    //TODO: Finish implementation (modify database).
     public void setOwner(UUID targetPlayer) {
         this.ownerUUID = targetPlayer;
     }

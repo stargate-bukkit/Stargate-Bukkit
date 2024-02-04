@@ -43,8 +43,8 @@ class PluginEventListenerTest {
 
     @Test
     void onPluginDisableVault() {
-        //TODO Find out a way to detect the disable message is sent
         Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(economy)));
+
     }
 
     @Test

@@ -101,6 +101,8 @@ public interface Portal {
     /**
      * Changes the player this portal belongs to
      *
+     * <p>DOES NOT SAVE TO DATABASE</p>
+     *
      * @param targetPlayer <p>The new player this portal should belong to</p>
      */
     void setOwner(UUID targetPlayer);

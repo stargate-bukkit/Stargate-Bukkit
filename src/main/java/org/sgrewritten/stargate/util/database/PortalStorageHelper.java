@@ -36,7 +36,6 @@ public class PortalStorageHelper {
 
 
     public static @NotNull PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException, PortalLoadException {
-        //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
         String name = resultSet.getString("name");
         String networkName = resultSet.getString("network");
         String destination = resultSet.getString("destination");

@@ -383,7 +383,6 @@ public class Teleporter {
      */
     private boolean hasPermission(Entity target, StargatePermissionManager permissionManager) {
         if (origin == null) {
-            // TODO origin == null means inter-server teleportation. Make a permission check for this or something?
             return true;
         }
         boolean permission = permissionManager.hasTeleportPermissions(origin);
