@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -44,7 +43,7 @@ public class BlockHandlerResolver {
      */
     public void addBlockHandlerInterface(@NotNull BlockHandlerInterface blockHandlerInterface) {
         Character flag = blockHandlerInterface.getFlag();
-        if(flag != null && !(customFlags.contains(flag) || ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)))){
+        if (flag != null && !(customFlags.contains(flag) || ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)))) {
             throw new IllegalStateException("Unregistered flag: " + flag);
         }
         List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());

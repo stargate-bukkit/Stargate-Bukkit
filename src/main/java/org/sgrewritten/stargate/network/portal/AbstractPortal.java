@@ -85,7 +85,7 @@ public abstract class AbstractPortal implements RealPortal {
      */
     public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
 
-    protected final int openDelay = 20 * 20; // ticks
+    private static final int OPEN_DELAY = 20 * 20; // ticks
     protected Network network;
     protected String name;
     protected UUID openFor;
@@ -199,7 +199,7 @@ public abstract class AbstractPortal implements RealPortal {
         final long openTimeForAction = System.currentTimeMillis();
         this.openTime = openTimeForAction;
 
-        new StargateGlobalTask(() -> close(openTimeForAction)).runDelayed(openDelay);
+        new StargateGlobalTask(() -> close(openTimeForAction)).runDelayed(OPEN_DELAY);
     }
 
     @Override

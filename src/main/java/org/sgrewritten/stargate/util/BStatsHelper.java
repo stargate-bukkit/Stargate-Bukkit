@@ -175,16 +175,11 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
             int largest = 0;
             int count;
-            Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
-            while (localNetworkIterator.hasNext()) {
-                count = localNetworkIterator.next().size();
-                if (largest <= count) {
-                    largest = count;
-                }
-            }
-            Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
-            while (localNetworkIterator.hasNext()) {
-                count = localNetworkIterator.next().size();
+
+            Stream<Network> stream = Stream.concat(registry.getNetworkRegistry(StorageType.LOCAL).stream(), registry.getNetworkRegistry(StorageType.INTER_SERVER).stream());
+            Iterator<Network> iterator = stream.iterator();
+            while (iterator.hasNext()) {
+                count = iterator.next().size();
                 if (largest <= count) {
                     largest = count;
                 }
