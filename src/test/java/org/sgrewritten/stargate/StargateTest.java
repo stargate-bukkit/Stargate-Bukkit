@@ -53,7 +53,7 @@ class StargateTest {
 
     @BeforeEach
     void setup() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        server = StargateTestHelper.setup();
+        server = StargateTestHelper.pluginSetup();
         scheduler = server.getScheduler();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
@@ -129,8 +129,10 @@ class StargateTest {
     void restart() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
         createBungeePortal();
+        server.getScheduler().performOneTick();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
+        server.getScheduler().waitAsyncTasksFinished();
         server.getPluginManager().enablePlugin(plugin);
         server.getScheduler().performOneTick();
         Assertions.assertTrue(plugin.isEnabled());

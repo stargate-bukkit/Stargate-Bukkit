@@ -8,7 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class StargateQueuedAsyncTask extends StargateTask {
     private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
     private static boolean asyncQueueThreadIsEnabled = false;
-    private static boolean isCyclingThroughQueue = false;
 
     public StargateQueuedAsyncTask(Runnable runnable) {
         super(runnable);
@@ -22,9 +21,6 @@ public class StargateQueuedAsyncTask extends StargateTask {
     @Override
     public void run() {
         try {
-            if (!asyncQueueThreadIsEnabled) {
-                enableAsyncQueue();
-            }
             super.registerTask();
             asyncQueue.put(super::runTask);
         } catch (InterruptedException e) {
@@ -35,22 +31,15 @@ public class StargateQueuedAsyncTask extends StargateTask {
 
     public static void disableAsyncQueue() {
         try {
-            asyncQueue.put(() -> {
-                asyncQueueThreadIsEnabled = false;
-                isCyclingThroughQueue = false;
-            });
+            asyncQueue.put(new DisableQueueTask());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     public static void enableAsyncQueue() {
-        if (isCyclingThroughQueue) {
-            return;
-        }
-        isCyclingThroughQueue = true;
         try {
-            asyncQueue.put(() -> asyncQueueThreadIsEnabled = true);
+            asyncQueue.put(new EnableQueueTask());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -67,6 +56,21 @@ public class StargateQueuedAsyncTask extends StargateTask {
             } catch (Exception e) {
                 Stargate.log(e);
             }
-        } while (asyncQueueThreadIsEnabled && !asyncQueue.isEmpty());
+        } while (asyncQueueThreadIsEnabled || !asyncQueue.isEmpty());
+    }
+
+    private static class DisableQueueTask implements Runnable {
+        @Override
+        public void run() {
+            asyncQueueThreadIsEnabled = false;
+        }
+    }
+
+    private static class EnableQueueTask implements Runnable {
+
+        @Override
+        public void run() {
+            asyncQueueThreadIsEnabled = true;
+        }
     }
 }

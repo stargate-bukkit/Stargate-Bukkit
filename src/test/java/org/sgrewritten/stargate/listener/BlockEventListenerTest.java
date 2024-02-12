@@ -79,7 +79,7 @@ class BlockEventListenerTest {
 
     @BeforeEach
     void setUp() {
-        server = StargateTestHelper.setup();
+        server = StargateTestHelper.pluginSetup();
         plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 

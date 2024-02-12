@@ -22,9 +22,8 @@ class CommandTraceTest {
 
     @BeforeEach
     void setUp() {
-        @NotNull ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.pluginSetup();
         sender = server.addPlayer();
-        System.setProperty("bstats.relocatecheck", "false");
         plugin = MockBukkit.load(Stargate.class);
         traceCommand = new CommandTrace(plugin);
         sender.addAttachment(plugin, "sg.admin.trace", true);

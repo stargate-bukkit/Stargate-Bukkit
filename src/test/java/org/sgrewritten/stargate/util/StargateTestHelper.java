@@ -18,10 +18,8 @@ public class StargateTestHelper {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     public static ServerMock setup() {
-        ServerMock server = MockBukkit.mock();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
-        Stargate.setServerName(SERVER_NAME);
-        System.setProperty("bstats.relocatecheck", "false");
+        ServerMock server = pluginSetup();
+        StargateQueuedAsyncTask.enableAsyncQueue();
         return server;
     }
 
@@ -41,4 +39,11 @@ public class StargateTestHelper {
         StargateRegionTask.clearPopulator();
     }
 
+    public static ServerMock pluginSetup() {
+        ServerMock server = MockBukkit.mock();
+        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
+        Stargate.setServerName(SERVER_NAME);
+        System.setProperty("bstats.relocatecheck", "false");
+        return server;
+    }
 }

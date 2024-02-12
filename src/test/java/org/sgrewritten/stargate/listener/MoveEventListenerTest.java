@@ -47,7 +47,7 @@ class MoveEventListenerTest {
 
     @BeforeEach
     void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        server = StargateTestHelper.setup();
+        server = StargateTestHelper.pluginSetup();
         plugin = MockBukkit.load(Stargate.class);
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);

@@ -108,7 +108,7 @@ public class StargateRegistry implements RegistryAPI {
     }
 
     @Override
-    public void registerPortal(RealPortal portal) {
+    public void registerPortal(@NotNull RealPortal portal) {
         GateAPI gate = portal.getGate();
         for (GateStructureType key : GateStructureType.values()) {
             List<BlockLocation> locations = gate.getLocations(key);
