@@ -79,13 +79,13 @@ class TeleportationHelperTest {
 
     @Test
     void isViableSpawnLocationTest_Viable() {
-        Location center = new Location(world, 0, 1, 0);
+        Location center = new Location(world, 0, 5, 0);
         Assertions.assertTrue(TeleportationHelper.isViableSpawnLocation(2, 2, center));
     }
 
     @Test
     void isViableSpawnLocationTest_Floating() {
-        Location center = new Location(world, 0, 3, 0);
+        Location center = new Location(world, 0, 10, 0);
         Assertions.assertFalse(TeleportationHelper.isViableSpawnLocation(2, 2, center));
     }
 
@@ -97,18 +97,18 @@ class TeleportationHelperTest {
 
     @Test
     void isViableSpawnLocationTest_XZBlocked() {
-        Location center = new Location(world, 10, 1, 10);
+        Location center = new Location(world, 10, 5, 10);
         center.getBlock().setType(Material.OAK_PLANKS);
         Assertions.assertFalse(TeleportationHelper.isViableSpawnLocation(2, 2, center));
     }
 
     @Test
     void isViableSpawnLocationTest_ViableHole() {
-        Location center = new Location(world, -9.5, 1, -9.5);
-        new Location(world, -8, 1, -9).getBlock().setType(Material.OAK_PLANKS);
-        new Location(world, -10, 1, -9).getBlock().setType(Material.OAK_PLANKS);
-        new Location(world, -9, 1, -8).getBlock().setType(Material.OAK_PLANKS);
-        new Location(world, -9, 1, -10).getBlock().setType(Material.OAK_PLANKS);
+        Location center = new Location(world, 0.5, 5, 0.5);
+        new Location(world, 1, 5, 0).getBlock().setType(Material.OAK_PLANKS);
+        new Location(world, 0, 5, 1).getBlock().setType(Material.OAK_PLANKS);
+        new Location(world, -1, 5, 0).getBlock().setType(Material.OAK_PLANKS);
+        new Location(world, 0, 5, -1).getBlock().setType(Material.OAK_PLANKS);
         Assertions.assertTrue(TeleportationHelper.isViableSpawnLocation(1, 1, center));
     }
 

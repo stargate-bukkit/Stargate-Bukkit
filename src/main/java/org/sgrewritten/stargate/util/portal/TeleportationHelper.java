@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -131,7 +132,8 @@ public class TeleportationHelper {
 
         //If a single solid block is found, the entity would be crushed to death
         for (Location occupiedLocation : getOccupiedLocations(width, height, corner)) {
-            if (occupiedLocation.getBlock().getType().isSolid()) {
+            Block block = occupiedLocation.getBlock();
+            if (block.getType().isSolid()) {
                 return false;
             }
         }
