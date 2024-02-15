@@ -17,6 +17,7 @@
  */
 package org.sgrewritten.stargate;
 
+import dev.thorinwasher.blockutil.api.BlockUtilAPI;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -24,6 +25,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,6 +67,7 @@ import org.sgrewritten.stargate.listener.PluginEventListener;
 import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.CoreProtectManager;
+import org.sgrewritten.stargate.manager.StargateBlockDropManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;
@@ -171,6 +174,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
+            RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
+            StargateBlockDropManager.setProvider(blockUtilProvider);
+
         } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);

@@ -10,6 +10,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.StargateBlockDropManager;
 import org.sgrewritten.stargate.util.ButtonHelper;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class GateControlBlock extends GateStructure {
 
     final List<BlockVector> parts;
     private final BoundingBox boundingBox;
+    private static final Material SIGN_MATERIAL = Material.OAK_WALL_SIGN;
 
     /**
      * Instantiates a new gate control block container
@@ -55,14 +57,18 @@ public class GateControlBlock extends GateStructure {
     }
 
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        BlockVector signPosition = parts.get(0);
-        Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(signPosition)).getBlock();
+        if (parts.stream().map(position -> topLeft.clone().add(converter.performToRealSpaceOperation(position)).getBlock().getType())
+                .anyMatch(Tag.WALL_SIGNS::isTagged)) {
+            return;
+        }
+        Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(parts.get(0))).getBlock();
         BlockState state = signLocation.getState();
         state.setType(Material.OAK_WALL_SIGN);
         WallSign signData = (WallSign) state.getBlockData();
         signData.setFacing(converter.getFacing());
         state.setBlockData(signData);
         state.update(true);
+        StargateBlockDropManager.disableBlockDrops(signLocation);
     }
 
     @Override

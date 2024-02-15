@@ -9,6 +9,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.StargateBlockDropManager;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.VectorUtils;
 
@@ -82,13 +83,18 @@ public class GateIris extends GateStructure {
             Location location = VectorUtils.getLocation(topLeft,converter,blockVector);
             new StargateRegionTask(location, () -> {
                 Block block = location.getBlock();
+                if(chosenType == block.getType()){
+                    return;
+                }
                 BlockData blockData = chosenType.createBlockData();
                 // Over-engineering :)
                 if(blockData instanceof Orientable orientable){
                     orientable.setAxis(converter.getIrisNormal());
                 }
                 block.setBlockData(blockData);
+                StargateBlockDropManager.disableBlockDrops(block);
             }).run();
+
         }
     }
 

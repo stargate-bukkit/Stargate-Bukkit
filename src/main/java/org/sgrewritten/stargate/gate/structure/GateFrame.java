@@ -2,11 +2,13 @@ package org.sgrewritten.stargate.gate.structure;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.StargateBlockDropManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +67,12 @@ public class GateFrame extends GateStructure {
             Location location = topLeft.clone().add(converter.performToRealSpaceOperation(entry.getKey()));
             Set<Material> materialsAtPosition = entry.getValue();
             Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];
-            location.getBlock().setType(material);
+            Block block = location.getBlock();
+            if(material == block.getType()){
+                continue;
+            }
+            block.setType(material);
+            StargateBlockDropManager.disableBlockDrops(block);
         }
     }
 
