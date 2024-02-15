@@ -10,7 +10,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
-import org.sgrewritten.stargate.manager.StargateBlockDropManager;
+import org.sgrewritten.stargate.manager.BlockDropManager;
 import org.sgrewritten.stargate.util.ButtonHelper;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class GateControlBlock extends GateStructure {
         signData.setFacing(converter.getFacing());
         state.setBlockData(signData);
         state.update(true);
-        StargateBlockDropManager.disableBlockDrops(signLocation);
+        BlockDropManager.disableBlockDrops(signLocation);
     }
 
     @Override

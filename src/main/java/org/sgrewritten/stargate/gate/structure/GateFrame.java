@@ -8,7 +8,7 @@ import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
-import org.sgrewritten.stargate.manager.StargateBlockDropManager;
+import org.sgrewritten.stargate.manager.BlockDropManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class GateFrame extends GateStructure {
                 continue;
             }
             block.setType(material);
-            StargateBlockDropManager.disableBlockDrops(block);
+            BlockDropManager.disableBlockDrops(block);
         }
     }
 

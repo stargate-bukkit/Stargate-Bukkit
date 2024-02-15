@@ -37,6 +37,7 @@ import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.manager.BlockDropManager;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.StargateConstant;
@@ -189,6 +190,7 @@ public class Gate implements GateAPI {
                 buttonData.setFacing(facing);
 
                 buttonLocation.getBlock().setBlockData(buttonData);
+                BlockDropManager.disableBlockDrops(buttonLocation.getBlock());
             }).run();
 
         }

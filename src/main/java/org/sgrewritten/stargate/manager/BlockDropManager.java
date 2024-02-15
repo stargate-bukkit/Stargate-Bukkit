@@ -4,11 +4,11 @@ import dev.thorinwasher.blockutil.api.BlockUtilAPI;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-public class StargateBlockDropManager {
-    private static StargateBlockDropManager manager;
+public class BlockDropManager {
+    private static BlockDropManager manager;
     private final BlockUtilAPI provider;
 
-    private StargateBlockDropManager(RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider) {
+    private BlockDropManager(RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider) {
         if(blockUtilProvider == null){
             this.provider = null;
         } else {
@@ -17,7 +17,7 @@ public class StargateBlockDropManager {
     }
 
     public static void setProvider(RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider) {
-        manager = new StargateBlockDropManager(blockUtilProvider);
+        manager = new BlockDropManager(blockUtilProvider);
     }
 
     public static void disableBlockDrops(Block block){

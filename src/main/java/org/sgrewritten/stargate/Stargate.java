@@ -67,7 +67,7 @@ import org.sgrewritten.stargate.listener.PluginEventListener;
 import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.CoreProtectManager;
-import org.sgrewritten.stargate.manager.StargateBlockDropManager;
+import org.sgrewritten.stargate.manager.BlockDropManager;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.migration.DataMigrator;
@@ -175,7 +175,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
             RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
-            StargateBlockDropManager.setProvider(blockUtilProvider);
+            BlockDropManager.setProvider(blockUtilProvider);
 
         } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
