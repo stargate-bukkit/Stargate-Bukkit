@@ -41,7 +41,6 @@ public final class TeleportHelper {
                 return false;
             }
         }
-        //TODO: Improve this to account for any players sitting on any of the lead creatures
 
         //If it's enabled, there is no problem
         if (Stargate.getGateConfig().handleLeashedCreatures()) {
