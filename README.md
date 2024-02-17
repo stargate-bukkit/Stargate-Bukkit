@@ -521,13 +521,16 @@ portalInfoServer=Server: %server%
 > currently support your language, please submit a translation [here](https://sgrewritten.org/translate)!
 
 # Changes
+
 #### \[Version 0.11.5.6] Unified Legacy Fork
+
 - Fixed a potential stack trace experienced when disabling Dynmap
 - Fixed some problems related to negative economy transactions.
 - Fixed an exception occuring when negative yaw values are encountered.
 - Updated the about command and added a debug command.
 
 #### \[Version 0.11.5.5] Unified Legacy Fork
+
 - Hotfix for a compatibility issue preventing the plugin from working on most pre-1.20 server jars.
 
 #### \[Version 0.11.5.4] Unified Legacy Fork

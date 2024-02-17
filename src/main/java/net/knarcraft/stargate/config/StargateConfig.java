@@ -106,7 +106,7 @@ public final class StargateConfig {
 
         //Set up vault economy if vault has been loaded
         setupVaultEconomy();
-        
+
         //Set up dynmap
         DynmapAPI dynmapAPI = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
         if (dynmapAPI != null) {
