@@ -68,4 +68,8 @@ public abstract class DataMigration {
     public abstract String getVersionFrom();
 
     public abstract String getVersionTo();
+
+    public boolean willPopulateRegistry() {
+        return false;
+    }
 }

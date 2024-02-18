@@ -269,4 +269,9 @@ public class DataMigration6 extends DataMigration {
         return output;
     }
 
+    @Override
+    public boolean willPopulateRegistry(){
+        return true;
+    }
+
 }

@@ -330,6 +330,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     /**
      * Migrates data files and configuration files if necessary
      *
+     * @return <p>Whether the database does not need to be loaded</p>
      * @throws IOException                   <p>If unable to load or save a configuration file</p>
      * @throws InvalidConfigurationException <p>If unable to save the new configuration</p>
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
@@ -350,8 +351,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             this.reloadConfig();
             GateFormatRegistry.loadGateFormats(this.getDataFolder());
             this.setupManagers();
-            dataMigrator.run(database, this);
-            return true;
+            return !dataMigrator.run(database, this);
         }
         return false;
     }

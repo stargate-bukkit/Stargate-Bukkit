@@ -23,7 +23,7 @@ public class StargateSignFormatPortalEvent extends StargatePortalEvent {
     }
 
     /**
-     * @return <p> The that will be formatted</p>
+     * @return <p> The sign lines to format</p>
      */
     public SignLine[] getLines() {
         return this.lines;

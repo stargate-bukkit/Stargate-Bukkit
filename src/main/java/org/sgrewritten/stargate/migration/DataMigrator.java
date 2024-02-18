@@ -85,15 +85,23 @@ public class DataMigrator {
 
     /**
      * Runs all relevant config migrations
+     * @param database <p>The stargate database</p>
+     * @param stargateAPI <p>The stargate API</p>
+     * @return <p>Whether data needs to be loaded from the database after migration</p>
      */
-    public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
+    public boolean run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
+        boolean shouldReloadFromDatabase = true;
         for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 Stargate.log(Level.INFO, String.format("Running database migration %s -> %s", migration.getVersionFrom(), migration.getVersionTo()));
                 migration.run(database, stargateAPI);
                 configVersion = migration.getConfigVersion();
+                if (migration.willPopulateRegistry()) {
+                    shouldReloadFromDatabase = false;
+                }
             }
         }
+        return shouldReloadFromDatabase;
     }
 
     /**
