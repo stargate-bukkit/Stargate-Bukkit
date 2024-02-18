@@ -13,6 +13,7 @@ public abstract class StargateTask implements Runnable {
     protected static final boolean USING_FOLIA = NonLegacyClass.REGIONIZED_SERVER.isImplemented();
     private static final int MAXIMUM_SHUTDOWN_CYCLES = 10;
     private final Runnable runnable;
+    private boolean taskIsRegistered;
     private volatile boolean cancelled;
     private volatile boolean running;
     private ScheduledTask scheduledTask;
@@ -31,6 +32,10 @@ public abstract class StargateTask implements Runnable {
     }
 
     protected void registerTask() {
+        if(taskIsRegistered){
+            return;
+        }
+        taskIsRegistered = true;
         tasks.add(runnable);
     }
 
