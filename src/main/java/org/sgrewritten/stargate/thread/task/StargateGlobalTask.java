@@ -13,7 +13,7 @@ public class StargateGlobalTask extends StargateTask {
 
     public void run(boolean bungee) {
         // if no players are online, then no bungee messages can be sent (wait 10 second until a player joins)
-        if(bungee && !Bukkit.getServer().getOnlinePlayers().isEmpty()){
+        if(bungee && Bukkit.getServer().getOnlinePlayers().isEmpty()){
             runDelayed(200, () -> run(true));
             return;
         }

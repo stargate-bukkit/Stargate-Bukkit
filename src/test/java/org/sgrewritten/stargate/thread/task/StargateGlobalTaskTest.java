@@ -38,10 +38,11 @@ class StargateGlobalTaskTest {
         StargateGlobalTask task = new StargateGlobalTask(runnable);
         task.run(true);
         serverMock.getScheduler().performTicks(1000);
+        Assertions.assertFalse(runnable.hasRunBefore);
+        // Necessary to add a player here to avoid recursion loop
         serverMock.addPlayer();
-        serverMock.getScheduler().performTicks(201);
+        MockBukkit.unmock();
         Assertions.assertTrue(runnable.hasRunBefore);
-        StargateTask.forceRunAllTasks();
     }
 
     @Test
