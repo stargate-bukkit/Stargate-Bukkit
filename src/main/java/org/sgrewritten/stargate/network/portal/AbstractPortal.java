@@ -189,6 +189,9 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void open(Player actor) {
+        if(hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination() == null){
+            return;
+        }
         getGate().open();
         if (actor != null) {
             this.openFor = actor.getUniqueId();
