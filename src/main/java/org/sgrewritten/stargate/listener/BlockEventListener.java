@@ -2,8 +2,10 @@ package org.sgrewritten.stargate.listener;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -213,7 +215,9 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlocks(), stargateAPI);
+        onPistonEvent(event.getBlocks(), event.getDirection(), BlockEventType.BLOCK_PISTON_EXTEND, event);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlock()
+                .getRelative(event.getDirection()).getLocation(), stargateAPI);
     }
 
     /**
@@ -223,7 +227,16 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_RETRACT, event.getBlocks(), stargateAPI);
+        onPistonEvent(event.getBlocks(), event.getDirection(), BlockEventType.BLOCK_PISTON_RETRACT, event);
+    }
+
+    private void onPistonEvent(List<Block> blocks, BlockFace blockFace, BlockEventType type, Cancellable event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, type, blocks, stargateAPI);
+        if (event.isCancelled()) {
+            return;
+        }
+        List<Block> movedBlocks = blocks.stream().map(block -> block.getRelative(blockFace)).toList();
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, type, movedBlocks, stargateAPI);
     }
 
     /**
