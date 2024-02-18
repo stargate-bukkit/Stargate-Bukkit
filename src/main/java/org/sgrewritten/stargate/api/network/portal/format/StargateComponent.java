@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 
 /**
@@ -16,11 +17,11 @@ public class StargateComponent {
     private String legacyText;
     private Component text;
 
-    public StargateComponent(String legacyText) {
+    public StargateComponent(@Nullable String legacyText) {
         this.legacyText = legacyText;
     }
 
-    public StargateComponent(Component text) {
+    public StargateComponent(@Nullable Component text) {
         this.text = text;
     }
 
@@ -28,20 +29,26 @@ public class StargateComponent {
      * @return <p>The text text</p>
      */
     public Component getText() {
-        if (text == null) {
+        if(legacyText != null){
             return LegacyComponentSerializer.legacySection().deserialize(legacyText);
         }
-        return text;
+        else if (text != null) {
+            return text;
+        }
+        return Component.empty();
     }
 
     /**
      * @return <p>The text as legacy format</p>
      */
     public String getLegacyText() {
-        if (legacyText == null) {
+        if(text != null){
             return LegacyComponentSerializer.legacySection().serialize(text);
         }
-        return legacyText;
+        if (legacyText != null) {
+            return legacyText;
+        }
+        return "";
     }
 
     /**
@@ -49,7 +56,7 @@ public class StargateComponent {
      *
      * @param text <p>The text to set</p>
      */
-    public void setText(Component text) {
+    public void setText(@Nullable Component text) {
         if (legacyText != null) {
             legacyText = null;
         }
@@ -61,7 +68,7 @@ public class StargateComponent {
      *
      * @param legacyText <p>The legacy text to set</p>
      */
-    public void setLegacyText(String legacyText) {
+    public void setLegacyText(@Nullable String legacyText) {
         if (text != null) {
             text = null;
         }
