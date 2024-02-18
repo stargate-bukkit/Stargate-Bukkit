@@ -327,7 +327,7 @@ public class SQLDatabase implements StorageAPI {
         }
         gate.assignPortal(portal);
         network.addPortal(portal);
-        Stargate.log(Level.FINEST, "Added as normal portal");
+        Stargate.log(Level.FINEST, "Added as normal portal: " + network.getId() + ":" + portal.getName());
     }
 
     /**

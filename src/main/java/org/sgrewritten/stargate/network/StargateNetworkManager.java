@@ -206,7 +206,14 @@ public class StargateNetworkManager implements NetworkManager {
             Stargate.log(e);
             return;
         }
-        new StargateGlobalTask(registry::updateAllPortals).run();
+        /*
+         * Note one why we need to have this delay: it's because the loaded portals will be registered one tick after
+         * startup, or even later than that if we're using the StargatePopulator, as there's lag on startup.
+         * This is because of Folia compatibility, there's portal validation tasks that needs to be done using the
+         * region scheduler. Temporary solution right now is to just have a large delay here.
+         * TODO: come up with a general solution
+         */
+        new StargateGlobalTask(registry::updateAllPortals).runDelayed(20);
     }
 
     @Override
