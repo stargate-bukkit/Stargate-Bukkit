@@ -16,7 +16,9 @@ public enum NonLegacyClass {
     /**
      * Check for bkcommonlib compatibility
      */
-    MULTI_BLOCK_CHANGE_EVENT("com.bergerkiller.bukkit.common.events.MultiBlockChangeEvent");
+    MULTI_BLOCK_CHANGE_EVENT("com.bergerkiller.bukkit.common.events.MultiBlockChangeEvent"),
+
+    BLOCK_UTIL("dev.thorinwasher.blockutil.BlockUtil");
 
 
     private Class<?> aClass = null;

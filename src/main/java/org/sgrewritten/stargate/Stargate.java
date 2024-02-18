@@ -174,8 +174,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-            RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
-            BlockDropManager.setProvider(blockUtilProvider);
+            if(NonLegacyClass.BLOCK_UTIL.isImplemented()) {
+                RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
+                BlockDropManager.setProvider(blockUtilProvider);
+            }
 
         } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
