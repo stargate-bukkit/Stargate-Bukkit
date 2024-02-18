@@ -1,7 +1,11 @@
 package org.sgrewritten.stargate.api.network.portal.format;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 
 /**
  * A wrapper class to be able to store both legacy text and {@link Component} text without causing failures when adventure
@@ -62,5 +66,13 @@ public class StargateComponent {
             text = null;
         }
         this.legacyText = legacyText;
+    }
+
+    @Override
+    public String toString(){
+        if(this.legacyText == null){
+            return MiniMessage.miniMessage().serialize(text);
+        }
+        return ChatColor.stripColor(legacyText);
     }
 }
