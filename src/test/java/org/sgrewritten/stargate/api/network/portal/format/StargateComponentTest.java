@@ -1,60 +1,67 @@
 package org.sgrewritten.stargate.api.network.portal.format;
 
 import net.kyori.adventure.text.Component;
-import org.junit.jupiter.api.AfterEach;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class StargateComponentTest {
 
-    private static final String HELLO_1 = "Hello 1";
-    private static final String HELLO_2 = "Hello 2";
-    private StargateComponent stargateComponent;
-    private StargateComponent stargateComponentLegacy;
-    private StargateComponent stargateComponentNull;
+    private static final String HELLO_WORLD = "Hello world!";
+    private static final Component HELLO_WORLD_COMPONENT = Component.text(HELLO_WORLD);
+    private static final String COLORED_TEXT = ChatColor.RED + "I'm red!";
+    private static final Component COLORED_TEXT_COMPONENT = LegacyComponentSerializer.legacySection().deserialize(COLORED_TEXT);
 
-
-    @BeforeEach
-    void setUp() {
-        this.stargateComponent = new StargateComponent(Component.text(HELLO_1));
-        this.stargateComponentLegacy = new StargateComponent(HELLO_2);
-        this.stargateComponentNull = new StargateComponent((String) null);
+    @ParameterizedTest
+    @MethodSource("getLegacyToComponent")
+    void getText_fromLegacy(String legacy, Component component) {
+        StargateComponent stargateComponent = new StargateComponent(legacy);
+        Assertions.assertEquals(component, stargateComponent.getText());
+        Assertions.assertEquals(legacy == null ? "" : legacy, stargateComponent.getLegacyText());
     }
 
-    @Test
-    void getText() {
-        Assertions.assertEquals(Component.text(HELLO_1), stargateComponent.getText());
-        Assertions.assertEquals(Component.text(HELLO_2), stargateComponentLegacy.getText());
-        Assertions.assertEquals(Component.empty(), stargateComponentNull.getText());
+    @ParameterizedTest
+    @MethodSource("getComponentToLegacy")
+    void getText_fromComponent(Component component, String legacy){
+        StargateComponent stargateComponent = new StargateComponent(component);
+        Assertions.assertEquals(legacy, stargateComponent.getLegacyText());
+        Assertions.assertEquals(component == null ? Component.empty() : component, stargateComponent.getText());
     }
 
-    private static Stream<Arguments> getTextTestArguments(){
-        
+    @ParameterizedTest
+    @MethodSource("getComponentToLegacy")
+    void setText(Component component, String legacy) {
+        StargateComponent stargateComponent = new StargateComponent((Component) null);
+        stargateComponent.setText(component);
+        Assertions.assertEquals(legacy, stargateComponent.getLegacyText());
+        Assertions.assertEquals(component == null ? Component.empty() : component, stargateComponent.getText());
     }
 
-    @Test
-    void getLegacyText() {
-        Assertions.assertEquals(HELLO_1, stargateComponent.getLegacyText());
-        Assertions.assertEquals(HELLO_2, stargateComponentLegacy.getLegacyText());
-        Assertions.assertEquals("", stargateComponentNull.getLegacyText());
+    @ParameterizedTest
+    @MethodSource("getLegacyToComponent")
+    void setLegacyText(String legacy, Component component) {
+        StargateComponent stargateComponent = new StargateComponent((String) null);
+        stargateComponent.setLegacyText(legacy);
+        Assertions.assertEquals(legacy == null ? "" : legacy, stargateComponent.getLegacyText());
+        Assertions.assertEquals(component, stargateComponent.getText());
     }
 
-    @Test
-    void setText() {
-
+    private static Stream<Arguments> getLegacyToComponent() {
+        return Stream.of(Arguments.of(HELLO_WORLD, HELLO_WORLD_COMPONENT),
+                Arguments.of(COLORED_TEXT, COLORED_TEXT_COMPONENT),
+                Arguments.of(null, Component.empty()));
     }
 
-    @Test
-    void setLegacyText() {
-    }
-
-    @Test
-    void testToString() {
+    private static Stream<Arguments> getComponentToLegacy() {
+        return Stream.of(Arguments.of(HELLO_WORLD_COMPONENT,HELLO_WORLD),
+                Arguments.of(COLORED_TEXT_COMPONENT,COLORED_TEXT),
+                Arguments.of(null,""));
     }
 }
