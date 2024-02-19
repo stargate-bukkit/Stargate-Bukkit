@@ -136,7 +136,7 @@ public final class GateReader {
                     return;
                 }
             } else {
-                Material material = Material.getMaterial(value);
+                Material material = Material.matchMaterial(value);
                 if (material != null) {
                     //Register the map between the read symbol and the corresponding material
                     characterMaterialMap.put(symbol, material);
@@ -183,7 +183,7 @@ public final class GateReader {
     public static Material readGateConfig(Map<String, String> config, String fileName, String key,
                                           Material defaultMaterial) {
         if (config.containsKey(key)) {
-            Material material = Material.getMaterial(config.get(key));
+            Material material = Material.matchMaterial(config.get(key));
             if (material != null) {
                 return material;
             } else {
