@@ -53,13 +53,31 @@ public final class PermissionHelper {
             return;
         }
 
+        // Check if the player is able to open the portal
+        if (canNotOpen(player, portal, destination)) {
+            return;
+        }
+
+        //Open the portal
+        portal.getPortalOpener().openPortal(player, false);
+    }
+
+    /**
+     * Checks whether something prevents the player from opening the given portal to the given destination
+     *
+     * @param player      <p>The player trying to open the portal</p>
+     * @param portal      <p>The portal to open</p>
+     * @param destination <p>The destination the player is attempting to open</p>
+     * @return <p>True if the player cannot open the portal</p>
+     */
+    private static boolean canNotOpen(Player player, Portal portal, Portal destination) {
         //Deny access if another player has activated the portal, and it's still in use
         if (!portal.getOptions().isFixed() && portal.getPortalActivator().isActive() &&
                 portal.getActivePlayer() != player) {
             if (!portal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.ACCESS_DENIED));
             }
-            return;
+            return true;
         }
 
         //Check if the player can use the private gate
@@ -67,7 +85,7 @@ public final class PermissionHelper {
             if (!portal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.ACCESS_DENIED));
             }
-            return;
+            return true;
         }
 
         //Destination is currently in use by another player, blocking teleportation
@@ -75,11 +93,10 @@ public final class PermissionHelper {
             if (!portal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.DESTINATION_BLOCKED));
             }
-            return;
+            return true;
         }
 
-        //Open the portal
-        portal.getPortalOpener().openPortal(player, false);
+        return false;
     }
 
     /**
@@ -109,26 +126,27 @@ public final class PermissionHelper {
     public static boolean cannotAccessPortal(@NotNull Player player, @NotNull Portal entrancePortal,
                                              @Nullable Portal destination) {
         boolean deny = false;
+        String route = "PermissionHelper::cannotAccessPortal";
 
         if (entrancePortal.getOptions().isBungee()) {
             if (!PermissionHelper.canAccessServer(player, entrancePortal.getCleanNetwork())) {
                 //If the portal is a bungee portal, and the player cannot access the server, deny
-                Stargate.debug("cannotAccessPortal", "Cannot access server");
+                Stargate.debug(route, "Cannot access server");
                 deny = true;
             }
         } else if (PermissionHelper.cannotAccessNetwork(player, entrancePortal.getCleanNetwork())) {
             //If the player does not have access to the network, deny
-            Stargate.debug("cannotAccessPortal", "Cannot access network");
+            Stargate.debug(route, "Cannot access network");
             deny = true;
         } else {
             if (destination == null) {
                 //If there is no destination, deny
-                Stargate.debug("cannotAccessPortal", "Portal has no destination");
+                Stargate.debug(route, "Portal has no destination");
                 deny = true;
             } else if (destination.getWorld() != null &&
                     PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
                 //If the player does not have access to the portal's world, deny
-                Stargate.debug("cannotAccessPortal", "Cannot access world");
+                Stargate.debug(route, "Cannot access world");
                 deny = true;
             }
         }

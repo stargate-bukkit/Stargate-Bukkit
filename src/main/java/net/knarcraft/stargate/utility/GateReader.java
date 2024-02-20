@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.material.BukkitMaterialSpecifier;
 import net.knarcraft.stargate.config.material.MaterialSpecifier;
 import org.bukkit.Material;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -108,11 +109,11 @@ public final class GateReader {
      * @param line                 <p>The line to read</p>
      * @param characterMaterialMap <p>The character to material map to store to</p>
      * @param config               <p>The config value map to store to</p>
-     * @throws Exception <p>If an invalid material is encountered</p>
+     * @throws InvalidConfigurationException <p>If an invalid material is encountered</p>
      */
     private static void readGateConfigValue(@NotNull String line,
                                             @NotNull Map<Character, List<MaterialSpecifier>> characterMaterialMap,
-                                            @NotNull Map<String, String> config) throws Exception {
+                                            @NotNull Map<String, String> config) throws InvalidConfigurationException {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -125,7 +126,7 @@ public final class GateReader {
             if (!materials.isEmpty()) {
                 characterMaterialMap.put(symbol, materials);
             } else {
-                throw new Exception("Invalid material in line: " + line);
+                throw new InvalidConfigurationException("Invalid material in line: " + line);
             }
         } else {
             //Read a normal config value

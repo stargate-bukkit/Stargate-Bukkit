@@ -59,14 +59,14 @@ public final class PortalFileHelper {
                 if (portal.getWorld() == null) {
                     Stargate.logSevere(String.format("Could not save portal %s because its world is null",
                             portal.getName()));
-                    continue;
+                } else {
+                    String worldName = portal.getWorld().getName();
+                    if (!worldName.equalsIgnoreCase(world.getName())) {
+                        continue;
+                    }
+                    //Save the portal
+                    savePortal(bufferedWriter, portal);
                 }
-                String worldName = portal.getWorld().getName();
-                if (!worldName.equalsIgnoreCase(world.getName())) {
-                    continue;
-                }
-                //Save the portal
-                savePortal(bufferedWriter, portal);
             }
 
             bufferedWriter.close();

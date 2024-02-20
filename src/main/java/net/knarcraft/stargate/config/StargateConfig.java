@@ -434,12 +434,15 @@ public final class StargateConfig {
         } else {
             portalFolder = replacePluginFolderPath(portalFolder);
         }
+        Stargate.debug("StargateConfig::loadConfig", "Portal folder is " + portalFolder);
+
         gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
         if (gateFolder.isEmpty()) {
             gateFolder = dataFolderPath + "/gates/";
         } else {
             gateFolder = replacePluginFolderPath(gateFolder);
         }
+        Stargate.debug("StargateConfig::loadConfig", "Gate folder is " + gateFolder);
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
@@ -466,7 +469,7 @@ public final class StargateConfig {
     private String replacePluginFolderPath(@NotNull String input) {
         Pattern pattern = Pattern.compile("(?i)^plugins[\\\\\\/]Stargate");
         Matcher matcher = pattern.matcher(input);
-        if (matcher.matches()) {
+        if (matcher.find()) {
             return dataFolderPath + matcher.replaceAll("");
         } else {
             return input;
