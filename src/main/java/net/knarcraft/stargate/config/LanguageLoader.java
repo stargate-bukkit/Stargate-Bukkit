@@ -11,9 +11,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This class is responsible for loading all strings which are translated into several languages
@@ -153,11 +152,14 @@ public final class LanguageLoader {
 
         //If a key is not found in the language file, add the one in the internal file. Must update the external file
         if (!internalLanguageValues.keySet().equals(currentLanguageValues.keySet())) {
-            Map<Message, String> newLanguageValues = new HashMap<>();
+            Map<Message, String> newLanguageValues = new EnumMap<>(Message.class);
             boolean updateNecessary = false;
-            for (Message key : internalLanguageValues.keySet()) {
+            for (Map.Entry<Message, String> entry : internalLanguageValues.entrySet()) {
+                Message key = entry.getKey();
+                String value = entry.getValue();
+
                 if (currentLanguageValues.get(key) == null) {
-                    newLanguageValues.put(key, internalLanguageValues.get(key));
+                    newLanguageValues.put(key, value);
                     //Found at least one value in the internal file not in the external file. Need to update
                     updateNecessary = true;
                 } else {
@@ -186,15 +188,15 @@ public final class LanguageLoader {
         BufferedWriter bufferedWriter = FileHelper.getBufferedWriterFromString(languageFolder + language + ".txt");
 
         //Output normal Language data
-        for (Message key : languageStrings.keySet()) {
-            bufferedWriter.write(key + "=" + languageStrings.get(key));
+        for (Map.Entry<Message, String> entry : languageStrings.entrySet()) {
+            bufferedWriter.write(entry.getKey() + "=" + entry.getValue());
             bufferedWriter.newLine();
         }
         bufferedWriter.newLine();
         //Output any custom language strings the user had
         if (customLanguageStrings != null) {
-            for (Message key : customLanguageStrings.keySet()) {
-                bufferedWriter.write(key + "=" + customLanguageStrings.get(key));
+            for (Map.Entry<Message, String> entry : customLanguageStrings.entrySet()) {
+                bufferedWriter.write(entry.getKey() + "=" + entry.getValue());
                 bufferedWriter.newLine();
             }
         }
@@ -240,25 +242,24 @@ public final class LanguageLoader {
      */
     public void debug() {
         if (loadedStringTranslations != null) {
-            Set<Message> keys = loadedStringTranslations.keySet();
-            for (Message key : keys) {
-                Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " +
-                        loadedStringTranslations.get(key));
+            for (Map.Entry<Message, String> entry : loadedStringTranslations.entrySet()) {
+                Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", entry.getKey() +
+                        " => " + entry.getValue());
             }
         }
         if (loadedBackupStrings == null) {
             return;
         }
-        Set<Message> keys = loadedBackupStrings.keySet();
-        for (Message key : keys) {
-            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " +
-                    loadedBackupStrings.get(key));
+
+        for (Map.Entry<Message, String> entry : loadedBackupStrings.entrySet()) {
+            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", entry.getKey() + " => " +
+                    entry.getValue());
         }
     }
 
     @NotNull
     private Map<Message, String> fromStringMap(@NotNull Map<String, String> configurationStrings) {
-        Map<Message, String> output = new HashMap<>();
+        Map<Message, String> output = new EnumMap<>(Message.class);
         for (Map.Entry<String, String> entry : configurationStrings.entrySet()) {
             Message message = Message.getFromKey(entry.getKey());
             if (message == null) {

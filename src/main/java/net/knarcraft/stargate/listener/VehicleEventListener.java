@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -92,48 +93,27 @@ public class VehicleEventListener implements Listener {
             rootEntity = rootEntity.getVehicle();
         }
         List<Player> players = TeleportHelper.getPlayers(rootEntity.getPassengers());
-        Portal destinationPortal = null;
-
-        for (Player player : players) {
-            //The entrance portal must be open for one player for the teleportation to happen
-            if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
-                continue;
-            }
-
-            //Check if any of the players has selected the destination
-            Portal possibleDestinationPortal = entrancePortal.getPortalActivator().getDestination(player);
-            if (possibleDestinationPortal != null) {
-                destinationPortal = possibleDestinationPortal;
-                break;
-            }
-        }
+        Portal destinationPortal = getDestinationPortal(players, entrancePortal);
 
         //Cancel the teleport if no players activated the portal, or if any players are denied access
-        boolean cancelTeleport = false;
+        boolean cancelTeleportation = false;
         for (Player player : players) {
             if (destinationPortal == null) {
-                cancelTeleport = true;
+                cancelTeleportation = true;
                 if (!entrancePortal.getOptions().isSilent()) {
                     Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.INVALID_DESTINATION));
                 }
             } else if (!TeleportHelper.playerCanTeleport(player, entrancePortal, destinationPortal)) {
-                cancelTeleport = true;
+                cancelTeleportation = true;
             }
         }
-        if (cancelTeleport || destinationPortal == null) {
+        if (cancelTeleportation || destinationPortal == null) {
             return;
         }
 
         //Take payment from all players
-        for (Player player : players) {
-            //To prevent the case where the first passenger pays and then the second passenger is denied, this has to be
-            // run after it has been confirmed that all passengers are able to pay
-            int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
-            if (cost > 0) {
-                if (EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost)) {
-                    return;
-                }
-            }
+        if (!takePayment(players, entrancePortal, destinationPortal)) {
+            return;
         }
 
         //Teleport the vehicle and inform the user if the vehicle was teleported
@@ -146,6 +126,56 @@ public class VehicleEventListener implements Listener {
             }
             entrancePortal.getPortalOpener().closePortal(false);
         }
+    }
+
+    /**
+     * Tries to get the destination portal selected by one of the players included in the teleportation
+     *
+     * @param players        <p>The players to be teleported</p>
+     * @param entrancePortal <p>The portal the players are entering</p>
+     * @return <p>The destination portal, or null if not found</p>
+     */
+    @Nullable
+    private static Portal getDestinationPortal(@NotNull List<Player> players, @NotNull Portal entrancePortal) {
+        for (Player player : players) {
+            //The entrance portal must be open for one player for the teleportation to happen
+            if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
+                continue;
+            }
+
+            //Check if any of the players has selected the destination
+            Portal possibleDestinationPortal = entrancePortal.getPortalActivator().getDestination(player);
+            if (possibleDestinationPortal != null) {
+                return possibleDestinationPortal;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Takes payment for the given players
+     *
+     * @param players           <p>The players to take payment from</p>
+     * @param entrancePortal    <p>The portal the players are travelling from</p>
+     * @param destinationPortal <p>The portal the players are travelling to</p>
+     * @return <p>True if payment was successfully taken, false otherwise</p>
+     */
+    private static boolean takePayment(@NotNull List<Player> players, @NotNull Portal entrancePortal,
+                                       @NotNull Portal destinationPortal) {
+        for (Player player : players) {
+            //To prevent the case where the first passenger pays and then the second passenger is denied, this has to be
+            // run after it has been confirmed that all passengers are able to pay. Also note that some players might 
+            // not have to pay, and thus the cost check has to be in the loop,
+            int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
+            if (cost > 0) {
+                if (EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }

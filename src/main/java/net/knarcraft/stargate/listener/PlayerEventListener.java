@@ -254,18 +254,8 @@ public class PlayerEventListener implements Listener {
         }
 
         //Allow players with permissions to apply dye to signs
-        EquipmentSlot hand = event.getHand();
-        if (hand != null && (PermissionHelper.hasPermission(player, "stargate.admin.dye") ||
-                portal.isOwner(player))) {
-            ItemStack item = player.getInventory().getItem(hand);
-            if (item != null) {
-                String itemName = item.getType().toString();
-                if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
-                    event.setUseInteractedBlock(Event.Result.ALLOW);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), portal::drawSign, 1);
-                    return;
-                }
-            }
+        if (dyeSign(event, player, portal)) {
+            return;
         }
 
         event.setUseInteractedBlock(Event.Result.DENY);
@@ -292,6 +282,39 @@ public class PlayerEventListener implements Listener {
             } else {
                 destinations.cycleDestination(player);
             }
+        }
+    }
+
+    /**
+     * Tries to take care of a sign dye interaction
+     *
+     * @param event  <p>The triggered player interaction event</p>
+     * @param player <p>The involved player</p>
+     * @param portal <p>The involved portal</p>
+     * @return <p>True if a sign was dyed</p>
+     */
+    private boolean dyeSign(@NotNull PlayerInteractEvent event, @NotNull Player player, @NotNull Portal portal) {
+        EquipmentSlot hand = event.getHand();
+        // Check if the player is allowed to dye the sign
+        if (hand == null || (!PermissionHelper.hasPermission(player, "stargate.admin.dye") &&
+                !portal.isOwner(player))) {
+            return false;
+        }
+
+        // Check if the player is holding an item
+        ItemStack item = player.getInventory().getItem(hand);
+        if (item == null) {
+            return false;
+        }
+
+        String itemName = item.getType().toString();
+        // Check if the player's item can be used to dye the sign
+        if (itemName.endsWith("DYE") || itemName.endsWith("INK_SAC")) {
+            event.setUseInteractedBlock(Event.Result.ALLOW);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(), portal::drawSign, 1);
+            return true;
+        } else {
+            return false;
         }
     }
 

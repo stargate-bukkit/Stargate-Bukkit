@@ -30,6 +30,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The stargate config is responsible for keeping track of all configuration values
@@ -429,10 +431,14 @@ public final class StargateConfig {
         portalFolder = (String) configOptions.get(ConfigOption.PORTAL_FOLDER);
         if (portalFolder.isEmpty()) {
             portalFolder = dataFolderPath + "/portals/";
+        } else {
+            portalFolder = replacePluginFolderPath(portalFolder);
         }
         gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
         if (gateFolder.isEmpty()) {
             gateFolder = dataFolderPath + "/gates/";
+        } else {
+            gateFolder = replacePluginFolderPath(gateFolder);
         }
 
         //If users have an outdated config, assume they also need to update their default gates
@@ -448,6 +454,23 @@ public final class StargateConfig {
         economyConfig = new EconomyConfig(configOptions);
 
         Stargate.getInstance().saveConfig();
+    }
+
+    /**
+     * Replaces "plugins/Stargate" in a folder path, and replaces it with the full path relative to the data folder
+     *
+     * @param input <p>The input string to replace in</p>
+     * @return <p>The replaced path, or the input if not applicable</p>
+     */
+    @NotNull
+    private String replacePluginFolderPath(@NotNull String input) {
+        Pattern pattern = Pattern.compile("(?i)^plugins/Stargate");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            return dataFolderPath + matcher.replaceAll("");
+        } else {
+            return input;
+        }
     }
 
     /**

@@ -116,13 +116,13 @@ public class ConfigTabCompleter implements TabCompleter {
      * @param args           <p>The arguments given by the user</p>
      * @return <p>Some or all of the valid values for the option</p>
      */
-    @Nullable
+    @NotNull
     private List<String> getPossibleStringListOptionValues(@NotNull ConfigOption selectedOption,
                                                            @NotNull String[] args) {
         if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
             return getPerSignColorCompletion(args);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
