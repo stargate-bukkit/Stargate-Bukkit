@@ -115,11 +115,15 @@ public class GateHandler {
     @Nullable
     private static Gate loadGate(@NotNull File file) {
         try (Scanner scanner = new Scanner(file)) {
-            return loadGate(file.getName(), file.getParent(), scanner);
+            Gate gate = loadGate(file.getName(), file.getParent(), scanner);
+            if (gate != null) {
+                return gate;
+            }
         } catch (Exception exception) {
             Stargate.logSevere(String.format("Could not load Gate %s - %s", file.getName(), exception.getMessage()));
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -184,10 +188,11 @@ public class GateHandler {
         int destroyCost = readGateConfig(config, fileName, "destroycost");
         boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) :
                 Stargate.getEconomyConfig().sendPaymentToOwner());
+        GateCosts gateCosts = new GateCosts(useCost, createCost, destroyCost, toOwner);
 
         //Create the new gate
-        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock,
-                portalClosedBlock, portalButton, useCost, createCost, destroyCost, toOwner);
+        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock, portalClosedBlock,
+                portalButton, gateCosts);
 
         if (!validateGate(gate, fileName)) {
             return null;

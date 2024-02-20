@@ -80,38 +80,52 @@ public class PortalHandler {
             if (portal == null) {
                 continue;
             }
-            //Check if destination is a random portal
-            if (portal.getOptions().isRandom()) {
-                continue;
-            }
-            //Check if destination is always open (Don't show if so)
-            if (portal.getOptions().isAlwaysOn() && !portal.getOptions().isShown()) {
-                continue;
-            }
-            //Check if destination is this portal
-            if (destination.equals(entrancePortal.getCleanName())) {
-                continue;
-            }
-            //Check if destination is a fixed portal not pointing to this portal
-            if (portal.getOptions().isFixed() &&
-                    !Portal.cleanString(portal.getDestinationName()).equals(entrancePortal.getCleanName())) {
-                continue;
-            }
-            //Allow random use by non-players (Minecarts)
-            if (player == null) {
-                destinations.add(portal.getName());
-                continue;
-            }
-            //Check if this player can access the destination world
-            if (portal.getWorld() != null && PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
-                continue;
-            }
-            //The portal is visible to the player
-            if (PermissionHelper.canSeePortal(player, portal)) {
+
+            if (isDestinationAvailable(entrancePortal, portal, player)) {
                 destinations.add(portal.getName());
             }
         }
         return destinations;
+    }
+
+    /**
+     * Checks whether the given destination is available to the given player
+     *
+     * @param entrancePortal    <p>The portal the player has activated</p>
+     * @param destinationPortal <p>The destination portal to check if is valid</p>
+     * @param player            <p>The player trying to attempt the destination</p>
+     * @return <p>True if the destination is available</p>
+     */
+    private static boolean isDestinationAvailable(@NotNull Portal entrancePortal, @NotNull Portal destinationPortal,
+                                                  @Nullable Player player) {
+        //Check if destination is a random portal
+        if (destinationPortal.getOptions().isRandom()) {
+            return false;
+        }
+        //Check if destination is always open (Don't show if so)
+        if (destinationPortal.getOptions().isAlwaysOn() && !destinationPortal.getOptions().isShown()) {
+            return false;
+        }
+        //Check if destination is this portal
+        if (destinationPortal.equals(entrancePortal)) {
+            return false;
+        }
+        //Check if destination is a fixed portal not pointing to this portal
+        if (destinationPortal.getOptions().isFixed() &&
+                !Portal.cleanString(destinationPortal.getDestinationName()).equals(entrancePortal.getCleanName())) {
+            return false;
+        }
+        //Allow random use by non-players (Minecarts)
+        if (player == null) {
+            return true;
+        }
+        //Check if this player can access the destination world
+        if (destinationPortal.getWorld() != null && PermissionHelper.cannotAccessWorld(player,
+                destinationPortal.getWorld().getName())) {
+            return false;
+        }
+        //The portal is visible to the player
+        return PermissionHelper.canSeePortal(player, destinationPortal);
     }
 
     /**

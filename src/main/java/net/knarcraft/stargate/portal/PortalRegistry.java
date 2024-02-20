@@ -178,30 +178,7 @@ public class PortalRegistry {
         String portalName = portal.getCleanName();
         String networkName = portal.getCleanNetwork();
 
-        //Remove portal from lookup blocks
-        for (BlockLocation block : portal.getStructure().getFrame()) {
-            lookupBlocks.remove(block);
-        }
-
-        //Remove registered info about the lookup controls and blocks
-        lookupBlocks.remove(portal.getSignLocation());
-        lookupControls.remove(portal.getSignLocation());
-
-        BlockLocation button = portal.getStructure().getButton();
-        if (button != null) {
-            lookupBlocks.remove(button);
-            lookupControls.remove(button);
-        }
-
-        //Remove entrances
-        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            lookupEntrances.remove(entrance);
-        }
-
-        //Remove the portal from the list of all portals
-        if (removeAll) {
-            allPortals.remove(portal);
-        }
+        clearLookupMaps(portal, removeAll);
 
         if (portal.getOptions().isBungee()) {
             //Remove the bungee listing
@@ -237,6 +214,39 @@ public class PortalRegistry {
         }
         portal.setRegistered(false);
         DynmapManager.removePortalMarker(portal);
+    }
+
+    /**
+     * Clears the given portal's presence from lookup maps
+     *
+     * @param portal    <p>The portal to clear</p>
+     * @param removeAll <p>Whether to remove the portal from the list of all portals</p>
+     */
+    private static void clearLookupMaps(@NotNull Portal portal, boolean removeAll) {
+        //Remove portal from lookup blocks
+        for (BlockLocation block : portal.getStructure().getFrame()) {
+            lookupBlocks.remove(block);
+        }
+
+        //Remove registered info about the lookup controls and blocks
+        lookupBlocks.remove(portal.getSignLocation());
+        lookupControls.remove(portal.getSignLocation());
+
+        BlockLocation button = portal.getStructure().getButton();
+        if (button != null) {
+            lookupBlocks.remove(button);
+            lookupControls.remove(button);
+        }
+
+        //Remove entrances
+        for (BlockLocation entrance : portal.getStructure().getEntrances()) {
+            lookupEntrances.remove(entrance);
+        }
+
+        //Remove the portal from the list of all portals
+        if (removeAll) {
+            allPortals.remove(portal);
+        }
     }
 
     /**

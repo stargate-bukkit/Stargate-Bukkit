@@ -467,7 +467,7 @@ public final class StargateConfig {
      */
     @NotNull
     private String replacePluginFolderPath(@NotNull String input) {
-        Pattern pattern = Pattern.compile("(?i)^plugins[\\\\\\/]Stargate");
+        Pattern pattern = Pattern.compile("(?i)^plugins[\\\\/]Stargate");
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
             return dataFolderPath + matcher.replaceAll("");

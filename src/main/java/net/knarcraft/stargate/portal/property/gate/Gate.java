@@ -49,27 +49,23 @@ public class Gate {
      * @param portalOpenMaterials   <p>The material to set the opening to when the portal is open</p>
      * @param portalClosedMaterials <p>The material to set the opening to when the portal is closed</p>
      * @param portalButtonMaterials <p>The material to use for the portal button</p>
-     * @param useCost               <p>The cost of using a portal with this gate layout (-1 to disable)</p>
-     * @param createCost            <p>The cost of creating a portal with this gate layout (-1 to disable)</p>
-     * @param destroyCost           <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
-     * @param toOwner               <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
+     * @param gateCosts             <p>The costs and other economy information for the gate</p>
      */
     public Gate(@NotNull String filename, @NotNull GateLayout layout,
                 @NotNull Map<Character, List<MaterialSpecifier>> characterMaterialsMap,
                 @NotNull List<MaterialSpecifier> portalOpenMaterials,
                 @NotNull List<MaterialSpecifier> portalClosedMaterials,
-                @NotNull List<MaterialSpecifier> portalButtonMaterials, int useCost, int createCost, int destroyCost,
-                boolean toOwner) {
+                @NotNull List<MaterialSpecifier> portalButtonMaterials, @NotNull GateCosts gateCosts) {
         this.filename = filename;
         this.layout = layout;
         this.characterMaterialMap = characterMaterialsMap;
         this.portalOpenMaterials = portalOpenMaterials;
         this.portalClosedMaterials = portalClosedMaterials;
         this.portalButtonMaterials = portalButtonMaterials;
-        this.useCost = useCost;
-        this.createCost = createCost;
-        this.destroyCost = destroyCost;
-        this.toOwner = toOwner;
+        this.useCost = gateCosts.useCost();
+        this.createCost = gateCosts.createCost();
+        this.destroyCost = gateCosts.destroyCost();
+        this.toOwner = gateCosts.toOwner();
     }
 
     /**
@@ -226,7 +222,6 @@ public class Gate {
      * @return <p>True if all border blocks of the gate match the layout</p>
      */
     private boolean verifyGateBorderMatches(@NotNull BlockLocation topLeft, double yaw) {
-        Map<Character, List<MaterialSpecifier>> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
             int rowIndex = borderVector.right();
             int lineIndex = borderVector.down();
@@ -246,7 +241,7 @@ public class Gate {
                  * recognized, but still allowed in previous checks, verify the gate as long as all such instances of
                  * the character correspond to the same material in the physical gate. All subsequent gates will also
                  * need to match the first verified gate. */
-                characterMaterialMap.put(key, List.of(new BukkitMaterialSpecifier(materialAtLocation)));
+                this.characterMaterialMap.put(key, List.of(new BukkitMaterialSpecifier(materialAtLocation)));
                 Stargate.debug("Gate::Matches", String.format("Missing layout material in %s. Using %s from the" +
                         " physical portal.", getFilename(), materialAtLocation));
             }

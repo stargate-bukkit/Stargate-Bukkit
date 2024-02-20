@@ -57,7 +57,7 @@ public abstract class Teleporter {
      * @param portal           <p>The portal which is the target of the teleportation</p>
      * @param teleportedEntity <p>The entity teleported by this teleporter</p>
      */
-    public Teleporter(@NotNull Portal portal, @NotNull Entity teleportedEntity) {
+    protected Teleporter(@NotNull Portal portal, @NotNull Entity teleportedEntity) {
         this.portal = portal;
         this.scheduler = Stargate.getInstance().getServer().getScheduler();
         this.teleportedEntity = teleportedEntity;

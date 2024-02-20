@@ -79,6 +79,8 @@ public class PortalCreator {
         String network = PortalHandler.filterName(event.getLine(2));
         String options = PortalHandler.filterName(event.getLine(3)).toLowerCase();
 
+        PortalStrings portalStrings = new PortalStrings(portalName, network, destinationName);
+
         //Get portal options available to the player creating the portal
         Map<PortalOption, Boolean> portalOptions = PortalHandler.getPortalOptions(player, destinationName, options);
 
@@ -94,6 +96,12 @@ public class PortalCreator {
 
         Stargate.debug("createPortal", "Finished getting all portal info");
 
+        return createPortal(portalStrings, portalOptions, yaw, portalLocation);
+    }
+
+    @Nullable
+    private Portal createPortal(@NotNull PortalStrings portalStrings, @NotNull Map<PortalOption, Boolean> portalOptions,
+                                float yaw, @NotNull PortalLocation portalLocation) {
         //Try and find a gate matching the new portal
         Gate gate = PortalHandler.findMatchingGate(portalLocation, player.getWorld());
         if ((gate == null) || (portalLocation.getButtonVector() == null)) {
@@ -102,7 +110,8 @@ public class PortalCreator {
         }
 
         //If the portal is a bungee portal and invalid, abort here
-        if (!PortalHandler.isValidBungeePortal(portalOptions, player, destinationName, network)) {
+        if (!PortalHandler.isValidBungeePortal(portalOptions, player, portalStrings.destination(),
+                portalStrings.network())) {
             Stargate.debug("createPortal", "Portal is an invalid bungee portal");
             return null;
         }
@@ -114,51 +123,27 @@ public class PortalCreator {
         }
         Stargate.debug("createPortal", builder.toString());
 
-        //Use default network if a proper alternative is not set
-        if (!portalOptions.get(PortalOption.BUNGEE) && (network.length() < 1 || network.length() >
-                getMaxNameNetworkLength())) {
-            network = Stargate.getDefaultNetwork();
-        }
-
         boolean deny = false;
         String denyMessage = "";
 
-        //Check if the player can create portals on this network. If not, create a personal portal
-        if (!portalOptions.get(PortalOption.BUNGEE) && !PermissionHelper.canCreateNetworkGate(player, network)) {
-            Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
-            if (PermissionHelper.canCreatePersonalPortal(player)) {
-                network = player.getName();
-                if (network.length() > getMaxNameNetworkLength()) {
-                    network = network.substring(0, getMaxNameNetworkLength());
-                }
-                Stargate.debug("createPortal", "Creating personal portal");
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_PERSONAL));
-            } else {
-                Stargate.debug("createPortal", "Player does not have access to network");
+        if (!portalOptions.get(PortalOption.BUNGEE)) {
+            String networkName = getNetworkName(portalStrings);
+            if (networkName == null) {
                 deny = true;
                 denyMessage = Stargate.getString(Message.CREATION_NETWORK_DENIED);
+            } else {
+                portalStrings = new PortalStrings(portalStrings.name(), networkName, portalStrings.destination());
             }
         }
 
-        //Check if the player can create this gate layout
-        String gateName = gate.getFilename();
-        gateName = gateName.substring(0, gateName.indexOf('.'));
-        if (!deny && !PermissionHelper.canCreatePortal(player, gateName)) {
-            Stargate.debug("createPortal", "Player does not have access to gate layout");
-            deny = true;
-            denyMessage = Stargate.getString(Message.CREATION_GATE_DENIED);
-        }
-
-        //Check if the user can create portals to this world.
-        if (!portalOptions.get(PortalOption.BUNGEE) && !deny && destinationName.length() > 0) {
-            Portal portal = PortalHandler.getByName(destinationName, network);
-            if (portal != null && portal.getWorld() != null) {
-                String world = portal.getWorld().getName();
-                if (PermissionHelper.cannotAccessWorld(player, world)) {
-                    Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
-                    deny = true;
-                    denyMessage = Stargate.getString(Message.CREATION_WORLD_DENIED);
-                }
+        // Check whether the player can create a portal with the specified gate in the specified world
+        if (!deny) {
+            denyMessage = canCreatePortal(portalOptions.get(PortalOption.BUNGEE), portalStrings.network(), gate,
+                    portalStrings.destination());
+            if (denyMessage != null) {
+                deny = true;
+            } else {
+                denyMessage = "";
             }
         }
 
@@ -168,9 +153,69 @@ public class PortalCreator {
         }
 
         PortalOwner owner = new PortalOwner(player);
-        PortalStrings portalStrings = new PortalStrings(portalName, network, destinationName);
         this.portal = new Portal(portalLocation, null, portalStrings, gate, owner, portalOptions);
         return validatePortal(denyMessage, event.getLines(), deny);
+    }
+
+    /**
+     * Gets the network name to use for the new portal
+     *
+     * @param portalStrings <p>The string values for the new portal</p>
+     * @return <p>The new network name, or null if the player does not have the necessary permission for any networks</p>
+     */
+    @Nullable
+    private String getNetworkName(@NotNull PortalStrings portalStrings) {
+        String network = portalStrings.network();
+
+        //Use default network if a proper alternative is not set
+        if (portalStrings.network().length() < 1 || portalStrings.network().length() > getMaxNameNetworkLength()) {
+            network = Stargate.getDefaultNetwork();
+        }
+
+        //Check if the player can create portals on this network. If not, create a personal portal
+        if (!PermissionHelper.canCreateNetworkGate(player, network)) {
+            Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
+            if (PermissionHelper.canCreatePersonalPortal(player)) {
+                network = player.getName();
+                if (network.length() > getMaxNameNetworkLength()) {
+                    network = network.substring(0, getMaxNameNetworkLength());
+                }
+                Stargate.debug("createPortal", "Creating personal portal");
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_PERSONAL));
+                return network;
+            } else {
+                Stargate.debug("createPortal", "Player does not have access to network");
+                return null;
+            }
+        }
+
+        return network;
+    }
+
+    @Nullable
+    private String canCreatePortal(boolean bungee, @NotNull String network,
+                                   @NotNull Gate gate, @NotNull String destinationName) {
+        //Check if the player can create this gate layout
+        String gateName = gate.getFilename();
+        gateName = gateName.substring(0, gateName.indexOf('.'));
+        if (!PermissionHelper.canCreatePortal(player, gateName)) {
+            Stargate.debug("createPortal", "Player does not have access to gate layout");
+            return Stargate.getString(Message.CREATION_GATE_DENIED);
+        }
+
+        //Check if the user can create portals to this world.
+        if (!bungee && destinationName.length() > 0) {
+            Portal portal = PortalHandler.getByName(destinationName, network);
+            if (portal != null && portal.getWorld() != null) {
+                String world = portal.getWorld().getName();
+                if (PermissionHelper.cannotAccessWorld(player, world)) {
+                    Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
+                    return Stargate.getString(Message.CREATION_WORLD_DENIED);
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
