@@ -27,6 +27,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import static net.knarcraft.stargate.portal.PortalSignDrawer.markPortalWithInvalidGate;
@@ -399,9 +400,15 @@ public final class PortalFileHelper {
             return;
         }
 
-        Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
-        buttonData.setFacing(buttonFacing);
-        button.getBlock().setBlockData(buttonData);
+        if (!MaterialHelper.isButtonCompatible(button.getType())) {
+            @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                    portal.getGate().getPortalButtonMaterials()).stream().toList();
+            Material buttonType = ListHelper.getRandom(possibleMaterials);
+
+            Directional buttonData = (Directional) Bukkit.createBlockData(buttonType);
+            buttonData.setFacing(buttonFacing);
+            button.getBlock().setBlockData(buttonData);
+        }
         portal.getStructure().setButton(button);
     }
 

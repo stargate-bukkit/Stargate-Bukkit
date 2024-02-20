@@ -6,12 +6,16 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
 import net.knarcraft.stargate.portal.property.PortalOptions;
+import net.knarcraft.stargate.utility.ListHelper;
+import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * The portal opener is responsible for opening and closing a portal
@@ -87,7 +91,10 @@ public class PortalOpener {
         }
 
         //Get the material to change the opening to
-        Material openType = portal.getGate().getPortalOpenBlock();
+        @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                portal.getGate().getPortalOpenMaterials()).stream().toList();
+        Material openType = ListHelper.getRandom(possibleMaterials);
+
         //Adjust orientation if applicable
         Axis axis = (openType.createBlockData() instanceof Orientable) ? portal.getLocation().getRotationAxis() : null;
 
@@ -168,9 +175,15 @@ public class PortalOpener {
         }
 
         //Close the portal by requesting the opening blocks to change
-        Material closedType = portal.getGate().getPortalClosedBlock();
+        @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                portal.getGate().getPortalClosedMaterials()).stream().toList();
+        Material closedType = ListHelper.getRandom(possibleMaterials);
+
+        //Adjust orientation if applicable
+        Axis axis = (closedType.createBlockData() instanceof Orientable) ? portal.getLocation().getRotationAxis() : null;
+
         for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, null));
+            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, axis));
         }
 
         //Update the portal state to make it actually closed

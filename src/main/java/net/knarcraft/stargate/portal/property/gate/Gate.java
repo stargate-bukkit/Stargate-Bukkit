@@ -1,10 +1,12 @@
 package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.material.BukkitMaterialSpecifier;
+import net.knarcraft.stargate.config.material.MaterialSpecifier;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,13 +27,12 @@ public class Gate {
 
     private final String filename;
     private final GateLayout layout;
-    private final Map<Character, Material> characterMaterialMap;
-    private final Map<Character, Tag<Material>> characterTagMap;
+    private final Map<Character, List<MaterialSpecifier>> characterMaterialMap;
 
     //Gate materials
-    private final Material portalOpenBlock;
-    private final Material portalClosedBlock;
-    private final Material portalButton;
+    private final List<MaterialSpecifier> portalOpenMaterials;
+    private final List<MaterialSpecifier> portalClosedMaterials;
+    private final List<MaterialSpecifier> portalButtonMaterials;
 
     //Economy information
     private final int useCost;
@@ -41,34 +43,33 @@ public class Gate {
     /**
      * Instantiates a new gate
      *
-     * @param filename             <p>The name of the gate file, including extension</p>
-     * @param layout               <p>The gate layout defined in the gate file</p>
-     * @param characterMaterialMap <p>The material types the different layout characters represent</p>
-     * @param characterTagMap      <p>The material tag types the different layout characters represent</p>
-     * @param portalOpenBlock      <p>The material to set the opening to when the portal is open</p>
-     * @param portalClosedBlock    <p>The material to set the opening to when the portal is closed</p>
-     * @param portalButton         <p>The material to use for the portal button</p>
-     * @param useCost              <p>The cost of using a portal with this gate layout (-1 to disable)</p>
-     * @param createCost           <p>The cost of creating a portal with this gate layout (-1 to disable)</p>
-     * @param destroyCost          <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
-     * @param toOwner              <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
+     * @param filename              <p>The name of the gate file, including extension</p>
+     * @param layout                <p>The gate layout defined in the gate file</p>
+     * @param characterMaterialsMap <p>The material types the different layout characters represent</p>
+     * @param portalOpenMaterials   <p>The material to set the opening to when the portal is open</p>
+     * @param portalClosedMaterials <p>The material to set the opening to when the portal is closed</p>
+     * @param portalButtonMaterials <p>The material to use for the portal button</p>
+     * @param useCost               <p>The cost of using a portal with this gate layout (-1 to disable)</p>
+     * @param createCost            <p>The cost of creating a portal with this gate layout (-1 to disable)</p>
+     * @param destroyCost           <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
+     * @param toOwner               <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
      */
     public Gate(@NotNull String filename, @NotNull GateLayout layout,
-                @NotNull Map<Character, Material> characterMaterialMap,
-                @NotNull Map<Character, Tag<Material>> characterTagMap, @NotNull Material portalOpenBlock,
-                @NotNull Material portalClosedBlock, @NotNull Material portalButton, int useCost, int createCost,
-                int destroyCost, boolean toOwner) {
+                @NotNull Map<Character, List<MaterialSpecifier>> characterMaterialsMap,
+                @NotNull List<MaterialSpecifier> portalOpenMaterials,
+                @NotNull List<MaterialSpecifier> portalClosedMaterials,
+                @NotNull List<MaterialSpecifier> portalButtonMaterials, int useCost, int createCost, int destroyCost,
+                boolean toOwner) {
         this.filename = filename;
         this.layout = layout;
-        this.characterMaterialMap = characterMaterialMap;
-        this.portalOpenBlock = portalOpenBlock;
-        this.portalClosedBlock = portalClosedBlock;
-        this.portalButton = portalButton;
+        this.characterMaterialMap = characterMaterialsMap;
+        this.portalOpenMaterials = portalOpenMaterials;
+        this.portalClosedMaterials = portalClosedMaterials;
+        this.portalButtonMaterials = portalButtonMaterials;
         this.useCost = useCost;
         this.createCost = createCost;
         this.destroyCost = destroyCost;
         this.toOwner = toOwner;
-        this.characterTagMap = characterTagMap;
     }
 
     /**
@@ -87,7 +88,7 @@ public class Gate {
      * @return <p>The character to material map</p>
      */
     @NotNull
-    public Map<Character, Material> getCharacterMaterialMap() {
+    public Map<Character, List<MaterialSpecifier>> getCharacterMaterialMap() {
         return new HashMap<>(characterMaterialMap);
     }
 
@@ -98,18 +99,7 @@ public class Gate {
      * @return <p>True if the material is valid for control blocks</p>
      */
     public boolean isValidControlBlock(@NotNull Material material) {
-        return (getControlBlock() != null) ? getControlBlock().equals(material) :
-                getControlBlockTag().isTagged(material);
-    }
-
-    /**
-     * Gets the material tag used for this gate's control blocks
-     *
-     * @return <p>The material tag type used for control blocks</p>
-     */
-    @NotNull
-    public Tag<Material> getControlBlockTag() {
-        return characterTagMap.get(GateHandler.getControlBlockCharacter());
+        return getControlBlockMaterials().contains(new BukkitMaterialSpecifier(material));
     }
 
     /**
@@ -117,8 +107,8 @@ public class Gate {
      *
      * @return <p>The material type used for control blocks</p>
      */
-    @Nullable
-    public Material getControlBlock() {
+    @NotNull
+    public List<MaterialSpecifier> getControlBlockMaterials() {
         return characterMaterialMap.get(GateHandler.getControlBlockCharacter());
     }
 
@@ -138,8 +128,8 @@ public class Gate {
      * @return <p>The block type to use for the opening when open</p>
      */
     @NotNull
-    public Material getPortalOpenBlock() {
-        return portalOpenBlock;
+    public List<MaterialSpecifier> getPortalOpenMaterials() {
+        return portalOpenMaterials;
     }
 
     /**
@@ -148,8 +138,8 @@ public class Gate {
      * @return <p>The block type to use for the opening when closed</p>
      */
     @NotNull
-    public Material getPortalClosedBlock() {
-        return portalClosedBlock;
+    public List<MaterialSpecifier> getPortalClosedMaterials() {
+        return portalClosedMaterials;
     }
 
     /**
@@ -158,8 +148,8 @@ public class Gate {
      * @return <p>The material to use for a portal's button if using this gate type</p>
      */
     @NotNull
-    public Material getPortalButton() {
-        return portalButton;
+    public List<MaterialSpecifier> getPortalButtonMaterials() {
+        return portalButtonMaterials;
     }
 
     /**
@@ -236,27 +226,19 @@ public class Gate {
      * @return <p>True if all border blocks of the gate match the layout</p>
      */
     private boolean verifyGateBorderMatches(@NotNull BlockLocation topLeft, double yaw) {
-        Map<Character, Material> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
-        Map<Character, Tag<Material>> characterTagMap = new HashMap<>(this.characterTagMap);
+        Map<Character, List<MaterialSpecifier>> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
             int rowIndex = borderVector.right();
             int lineIndex = borderVector.down();
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
-            Material materialInLayout = characterMaterialMap.get(key);
-            Tag<Material> tagInLayout = characterTagMap.get(key);
+            List<MaterialSpecifier> materialInLayout = characterMaterialMap.get(key);
             Material materialAtLocation = topLeft.getRelativeLocation(borderVector, yaw).getType();
 
             if (materialInLayout != null) {
-                if (materialAtLocation != materialInLayout) {
+                if (!MaterialHelper.specifiersToMaterials(materialInLayout).contains(materialAtLocation)) {
                     Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
                             materialAtLocation, materialInLayout));
-                    return false;
-                }
-            } else if (tagInLayout != null) {
-                if (!tagInLayout.isTagged(materialAtLocation)) {
-                    Stargate.debug("Gate::Matches", String.format("Block Type Mismatch: %s != %s",
-                            materialAtLocation, tagInLayout));
                     return false;
                 }
             } else {
@@ -264,7 +246,7 @@ public class Gate {
                  * recognized, but still allowed in previous checks, verify the gate as long as all such instances of
                  * the character correspond to the same material in the physical gate. All subsequent gates will also
                  * need to match the first verified gate. */
-                characterMaterialMap.put(key, materialAtLocation);
+                characterMaterialMap.put(key, List.of(new BukkitMaterialSpecifier(materialAtLocation)));
                 Stargate.debug("Gate::Matches", String.format("Missing layout material in %s. Using %s from the" +
                         " physical portal.", getFilename(), materialAtLocation));
             }
@@ -291,7 +273,8 @@ public class Gate {
                 continue;
             }
 
-            if (type != portalClosedBlock && type != portalOpenBlock) {
+            if (!MaterialHelper.specifiersToMaterials(portalClosedMaterials).contains(type) &&
+                    !MaterialHelper.specifiersToMaterials(portalOpenMaterials).contains(type)) {
                 Stargate.debug("Gate::Matches", "Entrance/Exit Material Mismatch: " + type);
                 return false;
             }
@@ -311,9 +294,9 @@ public class Gate {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(gateFolder, filename)));
 
             //Save main material names
-            writeConfig(bufferedWriter, "portal-open", portalOpenBlock.name());
-            writeConfig(bufferedWriter, "portal-closed", portalClosedBlock.name());
-            writeConfig(bufferedWriter, "button", portalButton.name());
+            writeConfig(bufferedWriter, "portal-open", MaterialHelper.specifiersToString(portalOpenMaterials));
+            writeConfig(bufferedWriter, "portal-closed", MaterialHelper.specifiersToString(portalClosedMaterials));
+            writeConfig(bufferedWriter, "button", MaterialHelper.specifiersToString(portalButtonMaterials));
 
             //Save the values necessary for economy
             saveEconomyValues(bufferedWriter);
@@ -361,7 +344,7 @@ public class Gate {
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
     private void saveFrameBlockType(@NotNull BufferedWriter bufferedWriter) throws IOException {
-        for (Map.Entry<Character, Material> entry : this.characterMaterialMap.entrySet()) {
+        for (Map.Entry<Character, List<MaterialSpecifier>> entry : this.characterMaterialMap.entrySet()) {
             Character key = entry.getKey();
             //Skip characters not part of the frame
             if (key.equals(GateHandler.getAnythingCharacter()) ||
@@ -369,11 +352,7 @@ public class Gate {
                     key.equals(GateHandler.getExitCharacter())) {
                 continue;
             }
-            saveFrameBlockType(key, entry.getValue().toString(), bufferedWriter);
-        }
-        for (Map.Entry<Character, Tag<Material>> entry : this.characterTagMap.entrySet()) {
-            saveFrameBlockType(entry.getKey(), "#" + entry.getValue().getKey().toString().replaceFirst(
-                    "minecraft:", ""), bufferedWriter);
+            saveFrameBlockType(key, MaterialHelper.specifiersToString(entry.getValue()), bufferedWriter);
         }
     }
 

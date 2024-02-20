@@ -12,8 +12,11 @@ import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.utility.DirectionHelper;
 import net.knarcraft.stargate.utility.EconomyHelper;
+import net.knarcraft.stargate.utility.ListHelper;
+import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import net.knarcraft.stargate.utility.PortalFileHelper;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -303,8 +306,12 @@ public class PortalCreator {
         } else {
             //Update the block type for the portal's opening to the closed block as the closed block can be anything,
             // not just air or water
+            @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                    portal.getGate().getPortalClosedMaterials()).stream().toList();
+            Material closedType = ListHelper.getRandom(possibleMaterials);
+
             for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-                entrance.setType(portal.getGate().getPortalClosedBlock());
+                entrance.setType(closedType);
             }
         }
     }

@@ -8,6 +8,7 @@ import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalStructure;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
+import net.knarcraft.stargate.utility.MaterialHelper;
 import net.knarcraft.stargate.utility.PermissionHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -445,8 +446,9 @@ public class PortalHandler {
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             Block block = portal.getBlockAt(control).getBlock();
             //Log control blocks not matching the gate layout
-            if (!block.getType().equals(portal.getGate().getControlBlock())) {
-                Stargate.debug("PortalHandler::destroyInvalidPortal", "Control Block Type == " +
+            if (!MaterialHelper.specifiersToMaterials(portal.getGate().getControlBlockMaterials()).contains(
+                    block.getType())) {
+                Stargate.debug("PortalHandler::unregisterInvalidPortal", "Control Block Type == " +
                         block.getType().name());
             }
         }

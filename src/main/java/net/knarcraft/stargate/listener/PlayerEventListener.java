@@ -181,7 +181,8 @@ public class PlayerEventListener implements Listener {
             //Check an additional block away for BungeeCord portals using END_PORTAL as its material
             entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
             if (entrancePortal == null || !entrancePortal.getOptions().isBungee() ||
-                    entrancePortal.getGate().getPortalOpenBlock() != Material.END_PORTAL) {
+                    !MaterialHelper.specifiersToMaterials(
+                            entrancePortal.getGate().getPortalOpenMaterials()).contains(Material.END_PORTAL)) {
                 return false;
             }
         }

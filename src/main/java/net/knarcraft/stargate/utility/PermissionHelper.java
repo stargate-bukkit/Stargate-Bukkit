@@ -409,11 +409,13 @@ public final class PermissionHelper {
         }
 
         //Player cannot access portal
-        if (!PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
+        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
             if (!entrancePortal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             }
             new PlayerTeleporter(entrancePortal, player).teleportPlayer(entrancePortal, event);
+            Stargate.debug("PermissionHelper::playerCannotTeleport", "Closed portal because player is " +
+                    "missing necessary permissions");
             entrancePortal.getPortalOpener().closePortal(false);
             return true;
         }

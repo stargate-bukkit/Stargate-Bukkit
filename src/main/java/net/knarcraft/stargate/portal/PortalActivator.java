@@ -3,6 +3,7 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
+import net.knarcraft.stargate.utility.ListHelper;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * The portal activator activates/de-activates portals and keeps track of a portal's destinations
@@ -77,7 +77,7 @@ public class PortalActivator {
                 return null;
             }
             //Get one random destination
-            String destination = destinations.get((new Random()).nextInt(destinations.size()));
+            String destination = ListHelper.getRandom(destinations);
             return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
         } else {
             //Just return the normal fixed destination

@@ -2,6 +2,7 @@ package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockChangeRequest;
+import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalCreator;
@@ -138,6 +139,13 @@ public class BlockEventListener implements Listener {
 
         boolean deny = false;
         String denyMessage = "";
+
+        // Block breaking the button from breaking the entire Stargate
+        if (portal.getStructure().getButton() != null && portal.getStructure().getButton().equals(
+                new BlockLocation(event.getBlock()))) {
+            event.setCancelled(true);
+            return;
+        }
 
         //Decide if the user can destroy the portal
         if (!PermissionHelper.canDestroyPortal(player, portal)) {

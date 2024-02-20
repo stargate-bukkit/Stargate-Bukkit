@@ -1,7 +1,8 @@
 package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.GateReader;
+import net.knarcraft.stargate.config.material.BukkitMaterialSpecifier;
+import net.knarcraft.stargate.config.material.MaterialSpecifier;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import static net.knarcraft.stargate.utility.GateReader.generateLayoutMatrix;
 import static net.knarcraft.stargate.utility.GateReader.readGateConfig;
@@ -94,20 +97,13 @@ public class GateHandler {
     private static void registerGate(@NotNull Gate gate) {
         gates.put(gate.getFilename(), gate);
 
-        Material blockId = gate.getControlBlock();
-        if (blockId != null) {
-            if (!controlBlocks.containsKey(blockId)) {
-                controlBlocks.put(blockId, new ArrayList<>());
+        Set<Material> blockTypes = MaterialHelper.specifiersToMaterials(gate.getControlBlockMaterials());
+        for (Material material : blockTypes) {
+            if (!controlBlocks.containsKey(material)) {
+                controlBlocks.put(material, new ArrayList<>());
             }
-            controlBlocks.get(blockId).add(gate);
-            return;
+            controlBlocks.get(material).add(gate);
         }
-
-        Tag<Material> materialTag = gate.getControlBlockTag();
-        if (!controlBlockTags.containsKey(materialTag.getKey().toString())) {
-            controlBlockTags.put(materialTag.getKey().toString(), new ArrayList<>());
-        }
-        controlBlockTags.get(materialTag.getKey().toString()).add(gate);
     }
 
     /**
@@ -138,24 +134,23 @@ public class GateHandler {
     private static Gate loadGate(@NotNull String fileName, @NotNull String parentFolder,
                                  @NotNull Scanner scanner) {
         List<List<Character>> design = new ArrayList<>();
-        Map<Character, Material> characterMaterialMap = new HashMap<>();
-        Map<Character, Tag<Material>> characterTagMap = new HashMap<>();
+        Map<Character, List<MaterialSpecifier>> characterMaterialMap = new HashMap<>();
         Map<String, String> config = new HashMap<>();
 
         //Initialize character to material map
-        characterMaterialMap.put(ENTRANCE, Material.AIR);
-        characterMaterialMap.put(EXIT, Material.AIR);
-        characterMaterialMap.put(ANYTHING, Material.AIR);
+        characterMaterialMap.put(ENTRANCE, List.of(new BukkitMaterialSpecifier(Material.AIR)));
+        characterMaterialMap.put(EXIT, List.of(new BukkitMaterialSpecifier(Material.AIR)));
+        characterMaterialMap.put(ANYTHING, List.of(new BukkitMaterialSpecifier(Material.AIR)));
 
         //Read the file into appropriate lists and maps
-        int columns = readGateFile(scanner, characterMaterialMap, characterTagMap, fileName, design, config);
+        int columns = readGateFile(scanner, characterMaterialMap, fileName, design, config);
         if (columns < 0) {
             return null;
         }
         Character[][] layout = generateLayoutMatrix(design, columns);
 
         //Create and validate the new gate
-        Gate gate = createGate(config, fileName, layout, characterMaterialMap, characterTagMap);
+        Gate gate = createGate(config, fileName, layout, characterMaterialMap);
         if (gate == null) {
             return null;
         }
@@ -172,28 +167,26 @@ public class GateHandler {
      * @param fileName             <p>The name of the saved gate config file</p>
      * @param layout               <p>The layout matrix of the new gate</p>
      * @param characterMaterialMap <p>A map between layout characters and the material to use</p>
-     * @param materialTagMap       <p>A map between layout characters and the material tags to use</p>
      * @return <p>A new gate, or null if the config is invalid</p>
      */
     @Nullable
     private static Gate createGate(@NotNull Map<String, String> config, @NotNull String fileName,
                                    @NotNull Character[][] layout,
-                                   @NotNull Map<Character, Material> characterMaterialMap,
-                                   @NotNull Map<Character, Tag<Material>> materialTagMap) {
+                                   @NotNull Map<Character, List<MaterialSpecifier>> characterMaterialMap) {
         //Read relevant material types
-        Material portalOpenBlock = readGateConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
-        Material portalClosedBlock = readGateConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
-        Material portalButton = readGateConfig(config, fileName, "button", defaultButton);
+        List<MaterialSpecifier> portalOpenBlock = readGateConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
+        List<MaterialSpecifier> portalClosedBlock = readGateConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
+        List<MaterialSpecifier> portalButton = readGateConfig(config, fileName, "button", defaultButton);
 
         //Read economy values
-        int useCost = GateReader.readGateConfig(config, fileName, "usecost");
-        int createCost = GateReader.readGateConfig(config, fileName, "createcost");
-        int destroyCost = GateReader.readGateConfig(config, fileName, "destroycost");
+        int useCost = readGateConfig(config, fileName, "usecost");
+        int createCost = readGateConfig(config, fileName, "createcost");
+        int destroyCost = readGateConfig(config, fileName, "destroycost");
         boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) :
                 Stargate.getEconomyConfig().sendPaymentToOwner());
 
         //Create the new gate
-        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, materialTagMap, portalOpenBlock,
+        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock,
                 portalClosedBlock, portalButton, useCost, createCost, destroyCost, toOwner);
 
         if (!validateGate(gate, fileName)) {
@@ -217,29 +210,48 @@ public class GateHandler {
             return false;
         }
 
-        if (!MaterialHelper.isButtonCompatible(gate.getPortalButton())) {
+        if (checkMaterialPredicateFail(gate.getPortalButtonMaterials(), MaterialHelper::isButtonCompatible)) {
             Stargate.logSevere(String.format(failString, "Gate button must be a type of button."));
             return false;
         }
 
-        if (!gate.getPortalOpenBlock().isBlock()) {
+        if (checkMaterialPredicateFail(gate.getPortalOpenMaterials(), Material::isBlock)) {
             Stargate.logSevere(String.format(failString, "Gate open block must be a type of block."));
             return false;
         }
 
-        if (!gate.getPortalClosedBlock().isBlock()) {
+        if (checkMaterialPredicateFail(gate.getPortalClosedMaterials(), Material::isBlock)) {
             Stargate.logSevere(String.format(failString, "Gate closed block must be a type of block."));
             return false;
         }
 
-        for (Material material : gate.getCharacterMaterialMap().values()) {
-            if (!material.isBlock()) {
+        for (List<MaterialSpecifier> materialSpecifiers : gate.getCharacterMaterialMap().values()) {
+            if (checkMaterialPredicateFail(materialSpecifiers, Material::isBlock)) {
                 Stargate.logSevere(String.format(failString, "Every gate border block must be a type of block."));
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Checks whether a predicate is true for a list of material specifiers
+     *
+     * @param materialSpecifiers <p>The material specifiers to test</p>
+     * @param predicate          <p>The predicate to test</p>
+     * @return <p>True if the predicate failed for any specified materials</p>
+     */
+    private static boolean checkMaterialPredicateFail(@NotNull List<MaterialSpecifier> materialSpecifiers,
+                                                      @NotNull Predicate<Material> predicate) {
+        Set<Material> closedMaterials = MaterialHelper.specifiersToMaterials(materialSpecifiers);
+        for (Material material : closedMaterials) {
+            if (!predicate.test(material)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
