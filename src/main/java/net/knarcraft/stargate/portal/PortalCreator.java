@@ -58,18 +58,19 @@ public class PortalCreator {
      */
     @Nullable
     public Portal createPortal() {
+        String route = "PortalCreator::createPortal";
         BlockLocation signLocation = new BlockLocation(event.getBlock());
         Block signControlBlock = signLocation.getParent();
 
         //Return early if the sign is not placed on a block, or the block is not a control block
         if (signControlBlock == null || GateHandler.getGatesByControlBlock(signControlBlock).isEmpty()) {
-            Stargate.debug("createPortal", "Control block not registered");
+            Stargate.debug(route, "Control block not registered");
             return null;
         }
 
         //The control block is already part of another portal
         if (PortalHandler.getByBlock(signControlBlock) != null) {
-            Stargate.debug("createPortal", "idParent belongs to existing stargate");
+            Stargate.debug(route, "idParent belongs to existing stargate");
             return null;
         }
 
@@ -94,7 +95,7 @@ public class PortalCreator {
         PortalLocation portalLocation = new PortalLocation();
         portalLocation.setButtonFacing(buttonFacing).setYaw(yaw).setSignLocation(signLocation);
 
-        Stargate.debug("createPortal", "Finished getting all portal info");
+        Stargate.debug(route, "Finished getting all portal info");
 
         return createPortal(portalStrings, portalOptions, yaw, portalLocation);
     }
@@ -102,17 +103,18 @@ public class PortalCreator {
     @Nullable
     private Portal createPortal(@NotNull PortalStrings portalStrings, @NotNull Map<PortalOption, Boolean> portalOptions,
                                 float yaw, @NotNull PortalLocation portalLocation) {
+        String route = "PortalCreator::createPortal";
         //Try and find a gate matching the new portal
         Gate gate = PortalHandler.findMatchingGate(portalLocation, player.getWorld());
         if ((gate == null) || (portalLocation.getButtonVector() == null)) {
-            Stargate.debug("createPortal", "Could not find matching gate layout");
+            Stargate.debug(route, "Could not find matching gate layout");
             return null;
         }
 
         //If the portal is a bungee portal and invalid, abort here
         if (!PortalHandler.isValidBungeePortal(portalOptions, player, portalStrings.destination(),
                 portalStrings.network())) {
-            Stargate.debug("createPortal", "Portal is an invalid bungee portal");
+            Stargate.debug(route, "Portal is an invalid bungee portal");
             return null;
         }
 
@@ -121,12 +123,12 @@ public class PortalCreator {
         for (PortalOption option : portalOptions.keySet()) {
             builder.append(option.getCharacterRepresentation()).append(" = ").append(portalOptions.get(option)).append(" ");
         }
-        Stargate.debug("createPortal", builder.toString());
+        Stargate.debug(route, builder.toString());
 
         boolean deny = false;
         String denyMessage = "";
 
-        if (!portalOptions.get(PortalOption.BUNGEE)) {
+        if (!(boolean) portalOptions.get(PortalOption.BUNGEE)) {
             String networkName = getNetworkName(portalStrings);
             if (networkName == null) {
                 deny = true;
@@ -166,6 +168,7 @@ public class PortalCreator {
     @Nullable
     private String getNetworkName(@NotNull PortalStrings portalStrings) {
         String network = portalStrings.network();
+        String route = "PortalCreator::getNetworkName";
 
         //Use default network if a proper alternative is not set
         if (portalStrings.network().length() < 1 || portalStrings.network().length() > getMaxNameNetworkLength()) {
@@ -174,17 +177,17 @@ public class PortalCreator {
 
         //Check if the player can create portals on this network. If not, create a personal portal
         if (!PermissionHelper.canCreateNetworkGate(player, network)) {
-            Stargate.debug("createPortal", "Player doesn't have create permissions on network. Trying personal");
+            Stargate.debug(route, "Player doesn't have create permissions on network. Trying personal");
             if (PermissionHelper.canCreatePersonalPortal(player)) {
                 network = player.getName();
                 if (network.length() > getMaxNameNetworkLength()) {
                     network = network.substring(0, getMaxNameNetworkLength());
                 }
-                Stargate.debug("createPortal", "Creating personal portal");
+                Stargate.debug(route, "Creating personal portal");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_PERSONAL));
                 return network;
             } else {
-                Stargate.debug("createPortal", "Player does not have access to network");
+                Stargate.debug(route, "Player does not have access to network");
                 return null;
             }
         }
@@ -199,17 +202,17 @@ public class PortalCreator {
         String gateName = gate.getFilename();
         gateName = gateName.substring(0, gateName.indexOf('.'));
         if (!PermissionHelper.canCreatePortal(player, gateName)) {
-            Stargate.debug("createPortal", "Player does not have access to gate layout");
+            Stargate.debug("PortalCreator::canCreatePortal", "Player does not have access to gate layout");
             return Stargate.getString(Message.CREATION_GATE_DENIED);
         }
 
         //Check if the user can create portals to this world.
         if (!bungee && destinationName.length() > 0) {
-            Portal portal = PortalHandler.getByName(destinationName, network);
-            if (portal != null && portal.getWorld() != null) {
-                String world = portal.getWorld().getName();
+            Portal destinationPortal = PortalHandler.getByName(destinationName, network);
+            if (destinationPortal != null && destinationPortal.getWorld() != null) {
+                String world = destinationPortal.getWorld().getName();
                 if (PermissionHelper.cannotAccessWorld(player, world)) {
-                    Stargate.debug("canCreateNetworkGate", "Player does not have access to destination world");
+                    Stargate.debug("PortalCreator::canCreatePortal", "Player does not have access to destination world");
                     return Stargate.getString(Message.CREATION_WORLD_DENIED);
                 }
             }
@@ -288,9 +291,11 @@ public class PortalCreator {
      * @return <p>True if the portal is completely valid</p>
      */
     private boolean checkIfNewPortalIsValid(int cost, @NotNull String portalName) {
+        String route = "PortalCreator::checkIfNewPortalIsValid";
+
         //Check if the portal name can fit on the sign with padding (>name<)
         if (portal.getCleanName().length() < 1 || portal.getCleanName().length() > getMaxNameNetworkLength()) {
-            Stargate.debug("createPortal", String.format("Name length error. %s is too long.",
+            Stargate.debug(route, String.format("Name length error. %s is too long.",
                     portal.getCleanName()));
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NAME_LENGTH));
             return false;
@@ -299,14 +304,14 @@ public class PortalCreator {
         if (portal.getOptions().isBungee()) {
             //Check if the bungee portal's name has been duplicated
             if (PortalHandler.getBungeePortals().get(portal.getCleanName()) != null) {
-                Stargate.debug("createPortal::Bungee", "Gate name duplicate");
+                Stargate.debug(route, "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NAME_COLLISION));
                 return false;
             }
         } else {
             //Check if the portal name has been duplicated on the network
             if (PortalHandler.getByName(portal.getCleanName(), portal.getCleanNetwork()) != null) {
-                Stargate.debug("createPortal", "Gate name duplicate");
+                Stargate.debug(route, "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NAME_COLLISION));
                 return false;
             }
@@ -324,7 +329,7 @@ public class PortalCreator {
             //Deduct the required fee from the player
             if (!EconomyHelper.chargePlayerIfNecessary(player, cost)) {
                 EconomyHelper.sendInsufficientFundsMessage(portalName, player, cost);
-                Stargate.debug("createPortal", "Insufficient Funds");
+                Stargate.debug(route, "Insufficient Funds");
                 return false;
             } else {
                 EconomyHelper.sendDeductMessage(portalName, player, cost);
@@ -377,7 +382,8 @@ public class PortalCreator {
         for (RelativeBlockVector borderVector : gate.getLayout().getBorder()) {
             BlockLocation borderBlockLocation = topLeft.getRelativeLocation(borderVector, yaw);
             if (PortalHandler.getByBlock(borderBlockLocation.getBlock()) != null) {
-                Stargate.debug("createPortal", "Gate conflicts with existing gate");
+                Stargate.debug("PortalCreator::conflictsWithExistingPortal",
+                        "Gate conflicts with existing gate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_CONFLICT));
                 return true;
             }

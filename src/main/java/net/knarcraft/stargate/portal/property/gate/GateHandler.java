@@ -115,15 +115,11 @@ public class GateHandler {
     @Nullable
     private static Gate loadGate(@NotNull File file) {
         try (Scanner scanner = new Scanner(file)) {
-            Gate gate = loadGate(file.getName(), file.getParent(), scanner);
-            if (gate != null) {
-                return gate;
-            }
+            return loadGate(file.getName(), file.getParent(), scanner);
         } catch (Exception exception) {
             Stargate.logSevere(String.format("Could not load Gate %s - %s", file.getName(), exception.getMessage()));
+            return null;
         }
-
-        return null;
     }
 
     /**
