@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.portal.property.PortalLocation;
@@ -135,13 +136,13 @@ public class PortalHandler {
                                               @NotNull String destinationName, String network) {
         if (portalOptions.get(PortalOption.BUNGEE)) {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDeny"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_CREATION_DENIED));
                 return false;
             } else if (!Stargate.getGateConfig().enableBungee()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_DISABLED));
                 return false;
             } else if (destinationName.isEmpty() || network.isEmpty()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeEmpty"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_MISSING_INFO));
                 return false;
             }
         }

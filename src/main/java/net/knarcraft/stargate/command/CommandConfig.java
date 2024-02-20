@@ -4,6 +4,7 @@ import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.ConfigOption;
 import net.knarcraft.stargate.config.ConfigTag;
 import net.knarcraft.stargate.config.DynmapManager;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.config.OptionDataType;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
@@ -418,7 +419,7 @@ public class CommandConfig implements CommandExecutor {
      * @param sender <p>The command sender to display the config list to</p>
      */
     private void displayConfigValues(@NotNull CommandSender sender) {
-        sender.sendMessage(ChatColor.GREEN + Stargate.getBackupString("prefix") + ChatColor.GOLD +
+        sender.sendMessage(ChatColor.GREEN + Stargate.getBackupString(Message.PREFIX) + ChatColor.GOLD +
                 "Config values:");
         for (ConfigOption option : ConfigOption.values()) {
             sender.sendMessage(getOptionDescription(option));

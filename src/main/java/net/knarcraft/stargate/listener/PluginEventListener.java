@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -38,7 +39,7 @@ public class PluginEventListener implements Listener {
             Plugin vault = Stargate.getEconomyConfig().getVault();
             if (vault != null) {
                 String vaultVersion = vault.getDescription().getVersion();
-                Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString("vaultLoaded"), "%version%",
+                Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString(Message.VAULT_LOADED), "%version%",
                         vaultVersion));
             }
         }

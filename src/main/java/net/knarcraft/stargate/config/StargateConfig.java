@@ -244,7 +244,7 @@ public final class StargateConfig {
         //Reload portal markers
         DynmapManager.addAllPortalMarkers();
 
-        messageSender.sendErrorMessage(sender, languageLoader.getString("reloaded"));
+        messageSender.sendErrorMessage(sender, languageLoader.getString(Message.RELOADED));
     }
 
     /**
@@ -541,7 +541,7 @@ public final class StargateConfig {
         if (economyConfig.setupEconomy(Stargate.getPluginManager()) && economyConfig.getEconomy() != null &&
                 economyConfig.getVault() != null) {
             String vaultVersion = economyConfig.getVault().getDescription().getVersion();
-            Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString(Message.VAULT_LOADED), "%version%", vaultVersion));
         }
     }
 

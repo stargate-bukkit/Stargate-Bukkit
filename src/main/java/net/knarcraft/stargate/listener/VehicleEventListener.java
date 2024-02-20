@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
@@ -113,7 +114,7 @@ public class VehicleEventListener implements Listener {
             if (destinationPortal == null) {
                 cancelTeleport = true;
                 if (!entrancePortal.getOptions().isSilent()) {
-                    Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("invalidMsg"));
+                    Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.INVALID_DESTINATION));
                 }
             } else if (!TeleportHelper.playerCanTeleport(player, entrancePortal, destinationPortal)) {
                 cancelTeleport = true;
@@ -140,7 +141,7 @@ public class VehicleEventListener implements Listener {
         if (teleported) {
             if (!entrancePortal.getOptions().isSilent()) {
                 for (Player player : players) {
-                    Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
+                    Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.TELEPORTED));
                 }
             }
             entrancePortal.getPortalOpener().closePortal(false);

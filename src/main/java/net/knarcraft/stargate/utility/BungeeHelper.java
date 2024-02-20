@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
@@ -186,7 +187,7 @@ public final class BungeeHelper {
         //Check if bungee is actually enabled
         if (!Stargate.getGateConfig().enableBungee()) {
             if (!entrancePortal.getOptions().isSilent()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_DISABLED));
             }
             entrancePortal.getPortalOpener().closePortal(false);
             return false;

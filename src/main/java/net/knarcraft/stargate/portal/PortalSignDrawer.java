@@ -3,6 +3,7 @@ package net.knarcraft.stargate.portal;
 import net.knarcraft.knarlib.property.ColorConversion;
 import net.knarcraft.knarlib.util.ColorHelper;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.container.SignData;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.utility.PermissionHelper;
@@ -296,7 +297,7 @@ public class PortalSignDrawer {
     private void drawBungeeSign(@NotNull SignData signData) {
         ChatColor highlightColor = signData.getHighlightSignColor();
         ChatColor mainColor = signData.getMainSignColor();
-        setLine(signData, 1, Stargate.getString("bungeeSign"));
+        setLine(signData, 1, Stargate.getString(Message.BUNGEE_SIGN));
         setLine(signData, 2, highlightColor + ">" + mainColor +
                 translateAllColorCodes(portal.getDestinationName()) + highlightColor + "<");
         setLine(signData, 3, highlightColor + "[" + mainColor + translateAllColorCodes(portal.getNetwork()) +
@@ -313,8 +314,8 @@ public class PortalSignDrawer {
     private void drawInactiveSign(@NotNull SignData signData) {
         ChatColor highlightColor = signData.getHighlightSignColor();
         ChatColor mainColor = signData.getMainSignColor();
-        setLine(signData, 1, Stargate.getString("signRightClick"));
-        setLine(signData, 2, Stargate.getString("signToUse"));
+        setLine(signData, 1, Stargate.getString(Message.SIGN_RIGHT_CLICK));
+        setLine(signData, 2, Stargate.getString(Message.SIGN_TO_USE));
         if (!portal.getOptions().isNoNetwork()) {
             setLine(signData, 3, highlightColor + "(" + mainColor + translateAllColorCodes(portal.getNetwork()) +
                     highlightColor + ")");
@@ -333,7 +334,7 @@ public class PortalSignDrawer {
         ChatColor mainColor = signData.getMainSignColor();
         Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getCleanNetwork());
-        String destinationName = portal.getOptions().isRandom() ? Stargate.getString("signRandom") :
+        String destinationName = portal.getOptions().isRandom() ? Stargate.getString(Message.SIGN_RANDOM) :
                 (destinationPortal != null ? destinationPortal.getName() : portal.getDestinationName());
         setLine(signData, 1, highlightColor + ">" + mainColor + translateAllColorCodes(destinationName) +
                 highlightColor + "<");
@@ -347,7 +348,7 @@ public class PortalSignDrawer {
         Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
                 portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
-            setLine(signData, 3, errorColor + Stargate.getString("signDisconnected"));
+            setLine(signData, 3, errorColor + Stargate.getString(Message.SIGN_DISCONNECTED));
         } else {
             setLine(signData, 3, "");
         }
@@ -366,7 +367,7 @@ public class PortalSignDrawer {
         if (!(blockState instanceof Sign sign)) {
             return;
         }
-        SignHelper.setSignLine(sign, 3, errorColor + Stargate.getString("signInvalidGate"));
+        SignHelper.setSignLine(sign, 3, errorColor + Stargate.getString(Message.SIGN_INVALID));
         sign.update();
 
         Stargate.logInfo(String.format("Gate layout on line %d does not exist [%s]", lineIndex, gateName));

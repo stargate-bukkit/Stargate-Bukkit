@@ -53,9 +53,9 @@ public final class MessageSender {
         }
         message = ChatColor.translateAlternateColorCodes('&', message);
         if (error) {
-            sender.sendMessage(ChatColor.RED + languageLoader.getString("prefix") + ChatColor.WHITE + message);
+            sender.sendMessage(ChatColor.RED + languageLoader.getString(Message.PREFIX) + ChatColor.WHITE + message);
         } else {
-            sender.sendMessage(ChatColor.GREEN + languageLoader.getString("prefix") + ChatColor.WHITE + message);
+            sender.sendMessage(ChatColor.GREEN + languageLoader.getString(Message.PREFIX) + ChatColor.WHITE + message);
         }
     }
 

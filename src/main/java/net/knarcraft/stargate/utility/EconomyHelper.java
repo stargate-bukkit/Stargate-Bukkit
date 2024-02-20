@@ -3,6 +3,7 @@ package net.knarcraft.stargate.utility;
 import net.knarcraft.knarlib.formatting.StringFormatter;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.EconomyConfig;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.milkbowl.vault.economy.Economy;
@@ -81,7 +82,7 @@ public final class EconomyHelper {
      * @param earnings    <p>The amount the owner earned</p>
      */
     public static void sendObtainMessage(@NotNull String portalName, @NotNull Player portalOwner, int earnings) {
-        String obtainedMsg = Stargate.getString("ecoObtain");
+        String obtainedMsg = Stargate.getString(Message.ECONOMY_OBTAINED);
         obtainedMsg = replacePlaceholders(obtainedMsg, portalName, earnings);
         Stargate.getMessageSender().sendSuccessMessage(portalOwner, obtainedMsg);
     }
@@ -94,7 +95,7 @@ public final class EconomyHelper {
      * @param cost       <p>The cost of the interaction</p>
      */
     public static void sendDeductMessage(@NotNull String portalName, @NotNull Player player, int cost) {
-        String deductMsg = Stargate.getString("ecoDeduct");
+        String deductMsg = Stargate.getString(Message.ECONOMY_DEDUCTED);
         deductMsg = replacePlaceholders(deductMsg, portalName, cost);
         Stargate.getMessageSender().sendSuccessMessage(player, deductMsg);
     }
@@ -107,7 +108,7 @@ public final class EconomyHelper {
      * @param cost       <p>The cost of the interaction</p>
      */
     public static void sendInsufficientFundsMessage(@NotNull String portalName, @NotNull Player player, int cost) {
-        String inFundMsg = Stargate.getString("ecoInFunds");
+        String inFundMsg = Stargate.getString(Message.ECONOMY_INSUFFICIENT);
         inFundMsg = replacePlaceholders(inFundMsg, portalName, cost);
         Stargate.getMessageSender().sendErrorMessage(player, inFundMsg);
     }
@@ -120,7 +121,7 @@ public final class EconomyHelper {
      * @param cost       <p>The amount the user has to pay for destroying the portal. (expects a negative value)</p>
      */
     public static void sendRefundMessage(@NotNull String portalName, @NotNull Player player, int cost) {
-        String refundMsg = Stargate.getString("ecoRefund");
+        String refundMsg = Stargate.getString(Message.ECONOMY_REFUNDED);
         refundMsg = replacePlaceholders(refundMsg, portalName, -cost);
         Stargate.getMessageSender().sendSuccessMessage(player, refundMsg);
     }

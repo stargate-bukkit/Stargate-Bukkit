@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.event.StargateDestroyEvent;
@@ -93,7 +94,7 @@ public class BlockEventListener implements Listener {
             Stargate.addBlockChangeRequest(request);
         }
 
-        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("createMsg"));
+        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.CREATED));
         Stargate.debug("onSignChange", "Initialized stargate: " + portal.getName());
         Stargate.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Stargate.getInstance(),
                 portal::drawSign, 1);
@@ -149,7 +150,7 @@ public class BlockEventListener implements Listener {
 
         //Decide if the user can destroy the portal
         if (!PermissionHelper.canDestroyPortal(player, portal)) {
-            denyMessage = Stargate.getString("denyMsg");
+            denyMessage = Stargate.getString(Message.ACCESS_DENIED);
             deny = true;
             Stargate.logInfo(String.format("%s tried to destroy gate", player.getName()));
         }
@@ -179,7 +180,7 @@ public class BlockEventListener implements Listener {
         }
 
         PortalRegistry.unregisterPortal(portal, true);
-        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("destroyMsg"));
+        Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.DESTROYED));
     }
 
     /**

@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.teleporter.EntityTeleporter;
 import org.bukkit.Bukkit;
@@ -229,7 +230,7 @@ public final class TeleportHelper {
         //Make sure the user can access the portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
             if (!entrancePortal.getOptions().isSilent()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.ACCESS_DENIED));
             }
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
@@ -240,7 +241,7 @@ public final class TeleportHelper {
         boolean canAffordFee = cost <= 0 || Stargate.getEconomyConfig().canAffordFee(player, cost);
         if (!canAffordFee) {
             if (!entrancePortal.getOptions().isSilent()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("ecoInFunds"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.ECONOMY_INSUFFICIENT));
             }
             return false;
         }

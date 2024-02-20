@@ -4,6 +4,7 @@ import net.knarcraft.knarlib.util.UpdateChecker;
 import net.knarcraft.stargate.command.CommandStarGate;
 import net.knarcraft.stargate.command.StarGateTabCompleter;
 import net.knarcraft.stargate.config.EconomyConfig;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.config.MessageSender;
 import net.knarcraft.stargate.config.StargateConfig;
 import net.knarcraft.stargate.config.StargateGateConfig;
@@ -298,26 +299,22 @@ public class Stargate extends JavaPlugin {
     }
 
     /**
-     * Gets a translated string given its string key
-     *
-     * <p>The name/key is the string before the equals sign in the language files</p>
+     * Gets a translated string given its message key
      *
      * @param name <p>The name/key of the string to get</p>
      * @return <p>The full translated string</p>
      */
-    public static @NotNull String getString(@NotNull String name) {
+    public static @NotNull String getString(@NotNull Message name) {
         return stargateConfig.getLanguageLoader().getString(name);
     }
 
     /**
-     * Gets a backup string given its string key
-     *
-     * <p>The name/key is the string before the equals sign in the language files</p>
+     * Gets a backup string given its message key
      *
      * @param name <p>The name/key of the string to get</p>
      * @return <p>The full string in the backup language (English)</p>
      */
-    public static @NotNull String getBackupString(@NotNull String name) {
+    public static @NotNull String getBackupString(@NotNull Message name) {
         return stargateConfig.getLanguageLoader().getBackupString(name);
     }
 
