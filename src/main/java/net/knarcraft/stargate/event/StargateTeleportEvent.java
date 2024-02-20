@@ -2,6 +2,7 @@ package net.knarcraft.stargate.event;
 
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A generic teleportation event
@@ -13,6 +14,7 @@ public interface StargateTeleportEvent extends Cancellable {
      *
      * @return <p>Location of the exit point</p>
      */
+    @NotNull
     Location getExit();
 
 }

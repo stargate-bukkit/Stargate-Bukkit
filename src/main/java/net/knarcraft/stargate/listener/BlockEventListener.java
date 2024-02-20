@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler
-    public void onBlockFormedByEntity(EntityBlockFormEvent event) {
+    public void onBlockFormedByEntity(@NotNull EntityBlockFormEvent event) {
         if (event.isCancelled() || (!Stargate.getGateConfig().protectEntrance() &&
                 !Stargate.getGateConfig().verifyPortals())) {
             return;
@@ -67,7 +68,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler
-    public void onSignChange(SignChangeEvent event) {
+    public void onSignChange(@NotNull SignChangeEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -98,7 +99,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockPlace(@NotNull BlockPlaceEvent event) {
         if (event.isCancelled() || !Stargate.getGateConfig().protectEntrance()) {
             return;
         }
@@ -119,7 +120,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockBreak(@NotNull BlockBreakEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -182,8 +183,8 @@ public class BlockEventListener implements Listener {
      * @param event        <p>The break event</p>
      * @return <p>True if the payment was successful. False if the event was cancelled</p>
      */
-    private boolean handleEconomyPayment(StargateDestroyEvent destroyEvent, Player player, Portal portal,
-                                         BlockBreakEvent event) {
+    private boolean handleEconomyPayment(@NotNull StargateDestroyEvent destroyEvent, @NotNull Player player,
+                                         @NotNull Portal portal, @NotNull BlockBreakEvent event) {
         int cost = destroyEvent.getCost();
         if (cost != 0) {
             String portalName = portal.getName();
@@ -210,7 +211,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler
-    public void onBlockPhysics(BlockPhysicsEvent event) {
+    public void onBlockPhysics(@NotNull BlockPhysicsEvent event) {
         Block block = event.getBlock();
         Portal portal = null;
 
@@ -230,7 +231,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler
-    public void onBlockFromTo(BlockFromToEvent event) {
+    public void onBlockFromTo(@NotNull BlockFromToEvent event) {
         Portal portal = PortalHandler.getByEntrance(event.getBlock());
 
         if (portal != null) {
@@ -244,7 +245,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler
-    public void onPistonExtend(BlockPistonExtendEvent event) {
+    public void onPistonExtend(@NotNull BlockPistonExtendEvent event) {
         cancelPistonEvent(event, event.getBlocks());
     }
 
@@ -254,7 +255,7 @@ public class BlockEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler
-    public void onPistonRetract(BlockPistonRetractEvent event) {
+    public void onPistonRetract(@NotNull BlockPistonRetractEvent event) {
         if (!event.isSticky()) {
             return;
         }
@@ -267,7 +268,7 @@ public class BlockEventListener implements Listener {
      * @param event  <p>The event to cancel</p>
      * @param blocks <p>The blocks included in the event</p>
      */
-    private void cancelPistonEvent(BlockPistonEvent event, List<Block> blocks) {
+    private void cancelPistonEvent(@NotNull BlockPistonEvent event, @NotNull List<Block> blocks) {
         for (Block block : blocks) {
             Portal portal = PortalHandler.getByBlock(block);
             if (portal != null) {

@@ -13,6 +13,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class VehicleEventListener implements Listener {
      * @param event <p>The triggered move event</p>
      */
     @EventHandler
-    public void onVehicleMove(VehicleMoveEvent event) {
+    public void onVehicleMove(@NotNull VehicleMoveEvent event) {
         if (!Stargate.getGateConfig().handleVehicles()) {
             return;
         }
@@ -58,7 +59,8 @@ public class VehicleEventListener implements Listener {
      * @param entrancePortal <p>The portal the vehicle is entering</p>
      * @param vehicle        <p>The vehicle passing through</p>
      */
-    private static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
+    private static void teleportVehicle(@NotNull List<Entity> passengers, @NotNull Portal entrancePortal,
+                                        @NotNull Vehicle vehicle) {
         String route = "VehicleEventListener::teleportVehicle";
 
         if (!passengers.isEmpty() && TeleportHelper.containsPlayer(passengers)) {
@@ -83,7 +85,7 @@ public class VehicleEventListener implements Listener {
      * @param entrancePortal <p>The portal the minecart entered</p>
      * @param vehicle        <p>The vehicle to teleport</p>
      */
-    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle) {
+    private static void teleportPlayerAndVehicle(@NotNull Portal entrancePortal, @NotNull Vehicle vehicle) {
         Entity rootEntity = vehicle;
         while (rootEntity.getVehicle() != null) {
             rootEntity = rootEntity.getVehicle();
@@ -101,6 +103,7 @@ public class VehicleEventListener implements Listener {
             Portal possibleDestinationPortal = entrancePortal.getPortalActivator().getDestination(player);
             if (possibleDestinationPortal != null) {
                 destinationPortal = possibleDestinationPortal;
+                break;
             }
         }
 
@@ -116,7 +119,7 @@ public class VehicleEventListener implements Listener {
                 cancelTeleport = true;
             }
         }
-        if (cancelTeleport) {
+        if (cancelTeleport || destinationPortal == null) {
             return;
         }
 

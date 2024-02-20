@@ -26,9 +26,11 @@ public class CommandAbout implements CommandExecutor {
         ChatColor highlightColor = ChatColor.GREEN;
 
         try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/about.md")) {
-            String aboutMessageString = FileHelper.readStreamToString(inputStream);
-            BaseComponent[] component = MineDown.parse(aboutMessageString);
-            commandSender.spigot().sendMessage(component);
+            if (inputStream != null) {
+                String aboutMessageString = FileHelper.readStreamToString(inputStream);
+                BaseComponent[] component = MineDown.parse(aboutMessageString);
+                commandSender.spigot().sendMessage(component);
+            }
         } catch (IOException ioException) {
             commandSender.sendMessage("Internal error");
         }

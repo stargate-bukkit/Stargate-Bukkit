@@ -2,6 +2,8 @@ package net.knarcraft.stargate.container;
 
 import org.bukkit.Axis;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a request for changing a block into another material
@@ -19,7 +21,7 @@ public class BlockChangeRequest {
      * @param material      <p>The new material to change the block to</p>
      * @param axis          <p>The new axis to orient the block along</p>
      */
-    public BlockChangeRequest(BlockLocation blockLocation, Material material, Axis axis) {
+    public BlockChangeRequest(@NotNull BlockLocation blockLocation, @NotNull Material material, @Nullable Axis axis) {
         this.blockLocation = blockLocation;
         newMaterial = material;
         newAxis = axis;
@@ -30,6 +32,7 @@ public class BlockChangeRequest {
      *
      * @return <p>The location of the block</p>
      */
+    @NotNull
     public BlockLocation getBlockLocation() {
         return blockLocation;
     }
@@ -39,6 +42,7 @@ public class BlockChangeRequest {
      *
      * @return <p>The material to change the block into</p>
      */
+    @NotNull
     public Material getMaterial() {
         return newMaterial;
     }
@@ -48,6 +52,7 @@ public class BlockChangeRequest {
      *
      * @return <p>The axis to orient the block along</p>
      */
+    @Nullable
     public Axis getAxis() {
         return newAxis;
     }

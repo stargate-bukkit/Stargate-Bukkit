@@ -1,6 +1,8 @@
 package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,7 +30,7 @@ public class GateLayout {
      *
      * @param layout <p>A character matrix describing the layout</p>
      */
-    public GateLayout(Character[][] layout) {
+    public GateLayout(@NotNull Character[][] layout) {
         this.layout = layout;
         readLayout();
     }
@@ -38,6 +40,7 @@ public class GateLayout {
      *
      * @return <p>The character array describing this layout</p>
      */
+    @NotNull
     public Character[][] getLayout() {
         return this.layout;
     }
@@ -49,6 +52,7 @@ public class GateLayout {
      *
      * @return <p>The locations of entrances for this gate</p>
      */
+    @NotNull
     public RelativeBlockVector[] getEntrances() {
         return entrances;
     }
@@ -61,6 +65,7 @@ public class GateLayout {
      *
      * @return <p>The locations of border blocks for this gate</p>
      */
+    @NotNull
     public RelativeBlockVector[] getBorder() {
         return border;
     }
@@ -70,6 +75,7 @@ public class GateLayout {
      *
      * @return <p>The exit block defined in the layout</p>
      */
+    @Nullable
     public RelativeBlockVector getExit() {
         return exitBlock;
     }
@@ -82,6 +88,7 @@ public class GateLayout {
      *
      * @return <p>All possible exits</p>
      */
+    @NotNull
     public List<RelativeBlockVector> getExits() {
         return exits;
     }
@@ -94,6 +101,7 @@ public class GateLayout {
      *
      * @return <p>The locations of the control blocks for this gate</p>
      */
+    @NotNull
     public RelativeBlockVector[] getControls() {
         return controls;
     }
@@ -104,7 +112,7 @@ public class GateLayout {
      * @param bufferedWriter <p>The buffered writer to write to</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    public void saveLayout(BufferedWriter bufferedWriter) throws IOException {
+    public void saveLayout(@NotNull BufferedWriter bufferedWriter) throws IOException {
         for (Character[] line : this.layout) {
             for (Character character : line) {
                 bufferedWriter.append(character);
@@ -137,8 +145,9 @@ public class GateLayout {
      * @param entranceList <p>The list of entrances to save to</p>
      * @param borderList   <p>The list of border blocks to save to</p>
      */
-    private void readLayout(List<RelativeBlockVector> controlList, List<RelativeBlockVector> entranceList,
-                            List<RelativeBlockVector> borderList) {
+    private void readLayout(@NotNull List<RelativeBlockVector> controlList,
+                            @NotNull List<RelativeBlockVector> entranceList,
+                            @NotNull List<RelativeBlockVector> borderList) {
         //Store the lowest opening for each column
         int[] exitDepths = new int[layout[0].length];
 
@@ -173,9 +182,10 @@ public class GateLayout {
      * @param entranceList <p>The list of entrances to save to</p>
      * @param borderList   <p>The list of border blocks to save to</p>
      */
-    private void parseLayoutCharacter(Character key, int columnIndex, int rowIndex, int[] exitDepths,
-                                      List<RelativeBlockVector> controlList, List<RelativeBlockVector> entranceList,
-                                      List<RelativeBlockVector> borderList) {
+    private void parseLayoutCharacter(@NotNull Character key, int columnIndex, int rowIndex, int[] exitDepths,
+                                      @NotNull List<RelativeBlockVector> controlList,
+                                      @NotNull List<RelativeBlockVector> entranceList,
+                                      @NotNull List<RelativeBlockVector> borderList) {
         //Add control blocks to the control block list
         if (key.equals(GateHandler.getControlBlockCharacter())) {
             controlList.add(new RelativeBlockVector(columnIndex, rowIndex, 0));
@@ -202,7 +212,7 @@ public class GateLayout {
      * @param character <p>The character to check</p>
      * @return <p>True if the character represents an opening</p>
      */
-    private boolean isOpening(Character character) {
+    private boolean isOpening(@NotNull Character character) {
         return character.equals(GateHandler.getEntranceCharacter()) || character.equals(GateHandler.getExitCharacter());
     }
 

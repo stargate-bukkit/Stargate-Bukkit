@@ -10,6 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class PlayerTeleporter extends Teleporter {
      * @param targetPortal <p>The portal which is the target of the teleportation</p>
      * @param player       <p>The teleporting player</p>
      */
-    public PlayerTeleporter(Portal targetPortal, Player player) {
+    public PlayerTeleporter(@NotNull Portal targetPortal, @NotNull Player player) {
         super(targetPortal, player);
         this.player = player;
     }
@@ -37,7 +39,7 @@ public class PlayerTeleporter extends Teleporter {
      * @param origin <p>The portal the player teleports from</p>
      * @param event  <p>The player move event triggering the event</p>
      */
-    public void teleportPlayer(Portal origin, PlayerMoveEvent event) {
+    public void teleportPlayer(@NotNull Portal origin, @Nullable PlayerMoveEvent event) {
         double velocity = player.getVelocity().length();
         List<Entity> passengers = player.getPassengers();
 

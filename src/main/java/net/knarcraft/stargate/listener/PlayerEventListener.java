@@ -35,6 +35,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class PlayerEventListener implements Listener {
      * @param event <p>The event to check for a teleporting player</p>
      */
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
         //Migrate player name to UUID if necessary
         UUIDMigrationHelper.migrateUUID(player);
@@ -91,7 +93,7 @@ public class PlayerEventListener implements Listener {
      * @param event <p>The player move event which was triggered</p>
      */
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(@NotNull PlayerMoveEvent event) {
         if (event.isCancelled() || event.getTo() == null) {
             return;
         }
@@ -108,9 +110,16 @@ public class PlayerEventListener implements Listener {
         //Check an additional block away in case the portal is a bungee portal using END_PORTAL
         if (entrancePortal == null) {
             entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
+            // This should never realistically be null
+            if (entrancePortal == null) {
+                return;
+            }
         }
 
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
+        if (destination == null) {
+            return;
+        }
 
         Entity playerVehicle = player.getVehicle();
         //If the player is in a vehicle, but vehicle handling is disabled, just ignore the player
@@ -129,8 +138,8 @@ public class PlayerEventListener implements Listener {
      * @param destination    <p>The destination of the entrance portal</p>
      * @param event          <p>The move event causing the teleportation to trigger</p>
      */
-    private void teleportPlayer(Entity playerVehicle, Player player, Portal entrancePortal, Portal destination,
-                                PlayerMoveEvent event) {
+    private void teleportPlayer(@Nullable Entity playerVehicle, @NotNull Player player, @NotNull Portal entrancePortal,
+                                @NotNull Portal destination, @NotNull PlayerMoveEvent event) {
         if (playerVehicle instanceof LivingEntity) {
             //Make sure any horses are properly tamed
             if (playerVehicle instanceof AbstractHorse horse && !horse.isTamed()) {
@@ -159,8 +168,8 @@ public class PlayerEventListener implements Listener {
      * @param toLocation   <p>The location the player is moving to</p>
      * @return <p>True if the event is relevant</p>
      */
-    private boolean isRelevantMoveEvent(PlayerMoveEvent event, Player player, BlockLocation fromLocation,
-                                        BlockLocation toLocation) {
+    private boolean isRelevantMoveEvent(@NotNull PlayerMoveEvent event, Player player,
+                                        @NotNull BlockLocation fromLocation, @NotNull BlockLocation toLocation) {
         //Check to see if the player moved to another block
         if (fromLocation.equals(toLocation)) {
             return false;
@@ -207,7 +216,7 @@ public class PlayerEventListener implements Listener {
      * @param event <p>The player interact event which was triggered</p>
      */
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(@NotNull PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 
@@ -216,6 +225,10 @@ public class PlayerEventListener implements Listener {
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (event.getHand() == null) {
+                return;
+            }
+            // Handle right-click of a sign, button or other
             handleRightClickBlock(event, player, block, event.getHand());
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && block.getBlockData() instanceof WallSign) {
             //Handle left click of a wall sign
@@ -231,7 +244,8 @@ public class PlayerEventListener implements Listener {
      * @param block     <p>The block that was clicked</p>
      * @param leftClick <p>Whether the player performed a left click as opposed to a right click</p>
      */
-    private void handleSignClick(PlayerInteractEvent event, Player player, Block block, boolean leftClick) {
+    private void handleSignClick(@NotNull PlayerInteractEvent event, @NotNull Player player, @NotNull Block block,
+                                 boolean leftClick) {
         Portal portal = PortalHandler.getByBlock(block);
         if (portal == null) {
             return;
@@ -286,7 +300,7 @@ public class PlayerEventListener implements Listener {
      * @param portal <p>The portal the player is trying to use</p>
      * @return <p>True if the player should be denied</p>
      */
-    private boolean cannotAccessPortal(Player player, Portal portal) {
+    private boolean cannotAccessPortal(@NotNull Player player, @NotNull Portal portal) {
         boolean deny = PermissionHelper.cannotAccessNetwork(player, portal.getCleanNetwork());
 
         if (PermissionHelper.portalAccessDenied(player, portal, deny)) {
@@ -306,7 +320,8 @@ public class PlayerEventListener implements Listener {
      * @param block  <p>The block the player clicked</p>
      * @param hand   <p>The hand the player used to interact with the stargate</p>
      */
-    private void handleRightClickBlock(PlayerInteractEvent event, Player player, Block block, EquipmentSlot hand) {
+    private void handleRightClickBlock(@NotNull PlayerInteractEvent event, @NotNull Player player, @NotNull Block block,
+                                       @NotNull EquipmentSlot hand) {
         if (block.getBlockData() instanceof WallSign) {
             handleSignClick(event, player, block, false);
             return;
@@ -353,7 +368,7 @@ public class PlayerEventListener implements Listener {
      * @param block  <p>The clicked block</p>
      * @param player <p>The player that clicked the block</p>
      */
-    private void displayPortalInfo(Block block, Player player) {
+    private void displayPortalInfo(@NotNull Block block, @NotNull Player player) {
         Portal portal = PortalHandler.getByBlock(block);
         if (portal == null) {
             return;
@@ -363,15 +378,15 @@ public class PlayerEventListener implements Listener {
         if (portal.getOptions().hasNoSign() && (!portal.getOptions().isSilent() || player.isSneaking())) {
             MessageSender sender = Stargate.getMessageSender();
             sender.sendSuccessMessage(player, ChatColor.GOLD + Stargate.getString("portalInfoTitle"));
-            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoName"),
+            sender.sendSuccessMessage(player, Stargate.replacePlaceholders(Stargate.getString("portalInfoName"),
                     "%name%", portal.getName()));
-            sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoDestination"),
+            sender.sendSuccessMessage(player, Stargate.replacePlaceholders(Stargate.getString("portalInfoDestination"),
                     "%destination%", portal.getDestinationName()));
             if (portal.getOptions().isBungee()) {
-                sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoServer"),
+                sender.sendSuccessMessage(player, Stargate.replacePlaceholders(Stargate.getString("portalInfoServer"),
                         "%server%", portal.getNetwork()));
             } else {
-                sender.sendSuccessMessage(player, Stargate.replaceVars(Stargate.getString("portalInfoNetwork"),
+                sender.sendSuccessMessage(player, Stargate.replacePlaceholders(Stargate.getString("portalInfoNetwork"),
                         "%network%", portal.getNetwork()));
             }
         }
@@ -388,7 +403,7 @@ public class PlayerEventListener implements Listener {
      * @param block  <p>The block to check</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
-    private boolean clickIsBug(Player player, Block block) {
+    private boolean clickIsBug(@NotNull Player player, @NotNull Block block) {
         Long previousEventTime = previousEventTimes.get(player);
         if (previousEventTime != null && previousEventTime + 50 > System.currentTimeMillis()) {
             previousEventTimes.put(player, null);

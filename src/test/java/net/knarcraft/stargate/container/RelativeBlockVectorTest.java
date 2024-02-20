@@ -15,13 +15,13 @@ public class RelativeBlockVectorTest {
 
         for (int i = 0; i < 1000; i++) {
             int randomValue = getRandomNumber();
-            RelativeBlockVector newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.RIGHT, randomValue);
+            RelativeBlockVector newVector = relativeBlockVector.addRight(randomValue);
             Assertions.assertEquals(new RelativeBlockVector(right + randomValue, down, out), newVector);
 
-            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.OUT, randomValue);
+            newVector = relativeBlockVector.addOut(randomValue);
             Assertions.assertEquals(new RelativeBlockVector(right, down, out + randomValue), newVector);
 
-            newVector = relativeBlockVector.addToVector(RelativeBlockVector.Property.DOWN, randomValue);
+            newVector = relativeBlockVector.addDown(randomValue);
             Assertions.assertEquals(new RelativeBlockVector(right, down + randomValue, out), newVector);
         }
     }

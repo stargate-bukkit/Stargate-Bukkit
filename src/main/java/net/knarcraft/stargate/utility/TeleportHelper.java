@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public final class TeleportHelper {
      * @param player <p>The player trying to teleport</p>
      * @return <p>False if the player has leashed any creatures that cannot go through the portal</p>
      */
-    public static boolean noLeashedCreaturesPreventTeleportation(Player player) {
+    public static boolean noLeashedCreaturesPreventTeleportation(@NotNull Player player) {
         //Find any nearby leashed entities to teleport with the player
         List<Creature> nearbyCreatures = getLeashedCreatures(player);
 
@@ -56,7 +57,8 @@ public final class TeleportHelper {
      * @param player <p>The player to check</p>
      * @return <p>A list of all creatures the player is holding in a leash (lead)</p>
      */
-    public static List<Creature> getLeashedCreatures(Player player) {
+    @NotNull
+    public static List<Creature> getLeashedCreatures(@NotNull Player player) {
         List<Creature> leashedCreatures = new ArrayList<>();
         //Find any nearby leashed entities to teleport with the player
         List<Entity> nearbyEntities = player.getNearbyEntities(15, 15, 15);
@@ -80,8 +82,8 @@ public final class TeleportHelper {
      * @param exitDirection <p>The direction of any passengers exiting the stargate</p>
      * @param newVelocity   <p>The new velocity of the teleported passenger</p>
      */
-    public static void teleportAndAddPassenger(Entity targetVehicle, Entity passenger, Vector exitDirection,
-                                               Vector newVelocity) {
+    public static void teleportAndAddPassenger(@NotNull Entity targetVehicle, @NotNull Entity passenger,
+                                               @NotNull Vector exitDirection, @NotNull Vector newVelocity) {
         Location passengerExit = targetVehicle.getLocation().clone().setDirection(exitDirection);
         if (!passenger.teleport(passengerExit)) {
             Stargate.debug("TeleportHelper::handleVehiclePassengers", "Failed to teleport passenger" +
@@ -112,8 +114,9 @@ public final class TeleportHelper {
      * @param exitRotation <p>The rotation of any passengers exiting the stargate</p>
      * @param newVelocity  <p>The new velocity of the teleported passengers</p>
      */
-    public static void handleEntityPassengers(List<Entity> passengers, Entity entity, Portal origin, Portal target,
-                                              Vector exitRotation, Vector newVelocity) {
+    public static void handleEntityPassengers(@NotNull List<Entity> passengers, @NotNull Entity entity,
+                                              @NotNull Portal origin, @NotNull Portal target,
+                                              @NotNull Vector exitRotation, @NotNull Vector newVelocity) {
         for (Entity passenger : passengers) {
             List<Entity> passengerPassengers = passenger.getPassengers();
             if (!passengerPassengers.isEmpty()) {
@@ -144,7 +147,7 @@ public final class TeleportHelper {
      * @param origin <p>The portal the player is teleporting from</p>
      * @param target <p>The portal the player is teleporting to</p>
      */
-    public static void teleportLeashedCreatures(Player player, Portal origin, Portal target) {
+    public static void teleportLeashedCreatures(@NotNull Player player, @NotNull Portal origin, @NotNull Portal target) {
         //If this feature is disabled, just return
         if (!Stargate.getGateConfig().handleLeashedCreatures()) {
             return;
@@ -171,7 +174,7 @@ public final class TeleportHelper {
      * @param entities <p>The list of entities to check</p>
      * @return <p>True if at least one entity is not a player</p>
      */
-    public static boolean containsNonPlayer(List<Entity> entities) {
+    public static boolean containsNonPlayer(@NotNull List<Entity> entities) {
         for (Entity entity : entities) {
             if (!(entity instanceof Player) || containsNonPlayer(entity.getPassengers())) {
                 return true;
@@ -186,7 +189,7 @@ public final class TeleportHelper {
      * @param entities <p>The list of entities to check</p>
      * @return <p>True if at least one player is present among the passengers</p>
      */
-    public static boolean containsPlayer(List<Entity> entities) {
+    public static boolean containsPlayer(@NotNull List<Entity> entities) {
         for (Entity entity : entities) {
             if (entity instanceof Player || containsPlayer(entity.getPassengers())) {
                 return true;
@@ -201,7 +204,8 @@ public final class TeleportHelper {
      * @param entities <p>The entities to check for players</p>
      * @return <p>The found players</p>
      */
-    public static List<Player> getPlayers(List<Entity> entities) {
+    @NotNull
+    public static List<Player> getPlayers(@NotNull List<Entity> entities) {
         List<Player> players = new ArrayList<>(5);
         for (Entity entity : entities) {
             if (entity instanceof Player) {
@@ -220,7 +224,8 @@ public final class TeleportHelper {
      * @param destinationPortal <p>The portal the player is to exit from</p>
      * @return <p>True if the player is allowed to teleport and is able to pay necessary fees</p>
      */
-    public static boolean playerCanTeleport(Player player, Portal entrancePortal, Portal destinationPortal) {
+    public static boolean playerCanTeleport(@NotNull Player player, @NotNull Portal entrancePortal,
+                                            @NotNull Portal destinationPortal) {
         //Make sure the user can access the portal
         if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destinationPortal)) {
             if (!entrancePortal.getOptions().isSilent()) {

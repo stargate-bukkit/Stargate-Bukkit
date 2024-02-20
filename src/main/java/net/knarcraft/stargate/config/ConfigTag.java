@@ -1,25 +1,38 @@
 package net.knarcraft.stargate.config;
 
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 /**
  * A config tag groups config values by a property
  */
 public enum ConfigTag {
 
-    COLOR(new ConfigOption[]{ConfigOption.FREE_GATES_COLOR, ConfigOption.MAIN_SIGN_COLOR,
-            ConfigOption.HIGHLIGHT_SIGN_COLOR, ConfigOption.PER_SIGN_COLORS}),
-    FOLDER(new ConfigOption[]{ConfigOption.GATE_FOLDER, ConfigOption.PORTAL_FOLDER}),
-    DYNMAP(new ConfigOption[]{ConfigOption.ENABLE_DYNMAP, ConfigOption.DYNMAP_ICONS_DEFAULT_HIDDEN});
+    /**
+     * Color-related configuration options
+     */
+    COLOR(Set.of(ConfigOption.FREE_GATES_COLOR, ConfigOption.MAIN_SIGN_COLOR, ConfigOption.HIGHLIGHT_SIGN_COLOR,
+            ConfigOption.PER_SIGN_COLORS)),
 
-    private final ConfigOption[] taggedOptions;
+    /**
+     * Folder-altering configuration options
+     */
+    FOLDER(Set.of(ConfigOption.GATE_FOLDER, ConfigOption.PORTAL_FOLDER)),
+
+    /**
+     * Dynmap-related configuration options
+     */
+    DYNMAP(Set.of(ConfigOption.ENABLE_DYNMAP, ConfigOption.DYNMAP_ICONS_DEFAULT_HIDDEN));
+
+    private final Set<ConfigOption> taggedOptions;
 
     /**
      * Instantiates a new config tag
      *
      * @param taggedOptions <p>The config options included in this tag</p>
      */
-    ConfigTag(ConfigOption[] taggedOptions) {
+    ConfigTag(@NotNull Set<ConfigOption> taggedOptions) {
         this.taggedOptions = taggedOptions;
     }
 
@@ -29,8 +42,8 @@ public enum ConfigTag {
      * @param option <p>The config option to check</p>
      * @return <p>True of the config option is tagged</p>
      */
-    public boolean isTagged(ConfigOption option) {
-        return Arrays.stream(taggedOptions).anyMatch((item) -> item == option);
+    public boolean isTagged(@NotNull ConfigOption option) {
+        return taggedOptions.contains(option);
     }
 
     /**
@@ -39,7 +52,7 @@ public enum ConfigTag {
      * @param configOption <p>The config option to check</p>
      * @return <p>True if changing the config option requires a "reload of colors" to take effect</p>
      */
-    public static boolean requiresColorReload(ConfigOption configOption) {
+    public static boolean requiresColorReload(@NotNull ConfigOption configOption) {
         return (COLOR.isTagged(configOption) && configOption != ConfigOption.FREE_GATES_COLOR);
     }
 
@@ -49,7 +62,7 @@ public enum ConfigTag {
      * @param option <p>The config option to check</p>
      * @return <p>True if changing the config option requires a full reload to take effect</p>
      */
-    public static boolean requiresFullReload(ConfigOption option) {
+    public static boolean requiresFullReload(@NotNull ConfigOption option) {
         return FOLDER.isTagged(option);
     }
 
@@ -59,7 +72,7 @@ public enum ConfigTag {
      * @param configOption <p>The config option to check</p>
      * @return <p>True if changing the config option requires a reload of all dynmap markers</p>
      */
-    public static boolean requiresDynmapReload(ConfigOption configOption) {
+    public static boolean requiresDynmapReload(@NotNull ConfigOption configOption) {
         return DYNMAP.isTagged(configOption);
     }
 
@@ -69,7 +82,7 @@ public enum ConfigTag {
      * @param option <p>The config option to check</p>
      * @return <p>True if changing the config option requires a portal reload to take effect</p>
      */
-    public static boolean requiresPortalReload(ConfigOption option) {
+    public static boolean requiresPortalReload(@NotNull ConfigOption option) {
         return COLOR.isTagged(option) || FOLDER.isTagged(option) || option == ConfigOption.VERIFY_PORTALS;
     }
 
@@ -79,7 +92,7 @@ public enum ConfigTag {
      * @param option <p>The config option to check</p>
      * @return <p>True if the language loader requires a reload</p>
      */
-    public static boolean requiresLanguageReload(ConfigOption option) {
+    public static boolean requiresLanguageReload(@NotNull ConfigOption option) {
         return option == ConfigOption.LANGUAGE;
     }
 
@@ -89,7 +102,7 @@ public enum ConfigTag {
      * @param option <p>The config option to check</p>
      * @return <p>True if economy requires a reload</p>
      */
-    public static boolean requiresEconomyReload(ConfigOption option) {
+    public static boolean requiresEconomyReload(@NotNull ConfigOption option) {
         return option == ConfigOption.USE_ECONOMY;
     }
 

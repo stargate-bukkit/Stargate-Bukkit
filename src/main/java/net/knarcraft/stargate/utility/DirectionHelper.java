@@ -3,6 +3,7 @@ package net.knarcraft.stargate.utility;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class helps with direction-related calculations
@@ -24,7 +25,7 @@ public final class DirectionHelper {
      * @param location2 <p>The second location, which the yaw will point towards</p>
      * @return <p>The yaw pointing from the first location to the second location</p>
      */
-    public static float getYawFromLocationDifference(Location location1, Location location2) {
+    public static float getYawFromLocationDifference(@NotNull Location location1, @NotNull Location location2) {
         Location difference = location1.clone().subtract(location2.clone());
         if (difference.getX() > 0) {
             return 90;
@@ -45,8 +46,10 @@ public final class DirectionHelper {
      *
      * @param yaw <p>The yaw value to convert</p>
      * @return <p>The block face the yaw corresponds to</p>
+     * @throws IllegalArgumentException <p>If a yaw not divisible by 90 us given</p>
      */
-    public static BlockFace getBlockFaceFromYaw(double yaw) {
+    @NotNull
+    public static BlockFace getBlockFaceFromYaw(double yaw) throws IllegalArgumentException {
         //Make sure the yaw is between 0 and 360
         yaw = normalizeYaw(yaw);
 
@@ -68,8 +71,10 @@ public final class DirectionHelper {
      *
      * @param yaw <p>The yaw to convert to a direction vector</p>
      * @return <p>The direction vector pointing in the same direction as the yaw</p>
+     * @throws IllegalArgumentException <p>If a yaw not divisible by 90 is given</p>
      */
-    public static Vector getDirectionVectorFromYaw(double yaw) {
+    @NotNull
+    public static Vector getDirectionVectorFromYaw(double yaw) throws IllegalArgumentException {
         //Make sure the yaw is between 0 and 360
         yaw = normalizeYaw(yaw);
 
@@ -99,7 +104,8 @@ public final class DirectionHelper {
      * @param yaw      <p>The yaw when looking directly outwards from a portal</p>
      * @return <p>A location relative to the given location</p>
      */
-    public static Location moveLocation(Location location, double right, double down, double out, double yaw) {
+    @NotNull
+    public static Location moveLocation(@NotNull Location location, double right, double down, double out, double yaw) {
         return location.add(getCoordinateVectorFromRelativeVector(right, down, out, yaw));
     }
 
@@ -111,8 +117,11 @@ public final class DirectionHelper {
      * @param out   <p>The distance outward from the top-left origin</p>
      * @param yaw   <p>The yaw when looking directly outwards from a portal</p>
      * @return <p>A normal vector</p>
+     * @throws IllegalArgumentException <p>If a yaw not divisible by 90 is given</p>
      */
-    public static Vector getCoordinateVectorFromRelativeVector(double right, double down, double out, double yaw) {
+    @NotNull
+    public static Vector getCoordinateVectorFromRelativeVector(double right, double down, double out,
+                                                               double yaw) throws IllegalArgumentException {
         //Make sure the yaw is between 0 and 360
         yaw = normalizeYaw(yaw);
 

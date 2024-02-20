@@ -29,7 +29,8 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      * @param denyReason <p>The reason stargate creation was denied</p>
      * @param cost       <p>The cost of creating the new star gate</p>
      */
-    public StargateCreateEvent(Player player, Portal portal, String[] lines, boolean deny, String denyReason, int cost) {
+    public StargateCreateEvent(@NotNull Player player, @NotNull Portal portal, @NotNull String[] lines, boolean deny,
+                               @NotNull String denyReason, int cost) {
         super(portal, player);
         this.lines = lines;
         this.deny = deny;
@@ -44,6 +45,7 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      * @return <p>The text on the given line</p>
      * @throws IndexOutOfBoundsException <p>If given a line index less than zero or above three</p>
      */
+    @NotNull
     public String getLine(int index) throws IndexOutOfBoundsException {
         return lines[index];
     }
@@ -71,6 +73,7 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      *
      * @return <p>The reason the stargate creation was denied</p>
      */
+    @NotNull
     public String getDenyReason() {
         return denyReason;
     }
@@ -80,7 +83,7 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      *
      * @param denyReason <p>The new reason why the stargate creation was denied</p>
      */
-    public void setDenyReason(String denyReason) {
+    public void setDenyReason(@NotNull String denyReason) {
         this.denyReason = denyReason;
     }
 
@@ -107,6 +110,7 @@ public class StargateCreateEvent extends StargatePlayerEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

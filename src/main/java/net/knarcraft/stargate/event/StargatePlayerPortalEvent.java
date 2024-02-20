@@ -26,7 +26,8 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent implements St
      * @param destination <p>The destination the player should exit from</p>
      * @param exit        <p>The exit location of the destination portal the user will be teleported to</p>
      */
-    public StargatePlayerPortalEvent(Player player, Portal portal, Portal destination, Location exit) {
+    public StargatePlayerPortalEvent(@NotNull Player player, @NotNull Portal portal, @NotNull Portal destination,
+                                     @NotNull Location exit) {
         super(portal, player);
 
         this.destination = destination;
@@ -38,6 +39,7 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent implements St
      *
      * @return <p>The destination portal</p>
      */
+    @NotNull
     public Portal getDestination() {
         return destination;
     }
@@ -48,6 +50,7 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent implements St
      * @return <p>Location of the exit point</p>
      */
     @Override
+    @NotNull
     public Location getExit() {
         return exit;
     }
@@ -57,7 +60,7 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent implements St
      *
      * @param location <p>The new location of the player's exit point</p>
      */
-    public void setExit(Location location) {
+    public void setExit(@NotNull Location location) {
         this.exit = location;
     }
 
@@ -66,6 +69,7 @@ public class StargatePlayerPortalEvent extends StargatePlayerEvent implements St
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

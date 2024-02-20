@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,8 @@ public class CommandConfig implements CommandExecutor {
      * @param commandSender  <p>The command sender that changed the value</p>
      * @param value          <p>The new value of the config option</p>
      */
-    private void updateConfigValue(ConfigOption selectedOption, CommandSender commandSender, String value) {
+    private void updateConfigValue(@NotNull ConfigOption selectedOption, @NotNull CommandSender commandSender,
+                                   @NotNull String value) {
         FileConfiguration configuration = Stargate.getInstance().getConfiguration();
 
         //Validate any sign colors
@@ -119,7 +121,8 @@ public class CommandConfig implements CommandExecutor {
      * @param value          <p>The new value of the config option</p>
      * @param configuration  <p>The configuration file to save to</p>
      */
-    private void updateBooleanConfigValue(ConfigOption selectedOption, String value, FileConfiguration configuration) {
+    private void updateBooleanConfigValue(@NotNull ConfigOption selectedOption, @NotNull String value,
+                                          @NotNull FileConfiguration configuration) {
         boolean newValue = Boolean.parseBoolean(value);
         if (selectedOption == ConfigOption.ENABLE_BUNGEE && newValue != Stargate.getGateConfig().enableBungee()) {
             Stargate.getStargateConfig().startStopBungeeListener(newValue);
@@ -135,7 +138,8 @@ public class CommandConfig implements CommandExecutor {
      * @param commandSender  <p>The command sender that changed the value</p>
      * @param value          <p>The new value of the config option</p>
      */
-    private void updateStringConfigValue(ConfigOption selectedOption, CommandSender commandSender, String value) {
+    private void updateStringConfigValue(@NotNull ConfigOption selectedOption, @NotNull CommandSender commandSender,
+                                         @NotNull String value) {
         if (selectedOption == ConfigOption.GATE_FOLDER || selectedOption == ConfigOption.PORTAL_FOLDER ||
                 selectedOption == ConfigOption.DEFAULT_GATE_NETWORK) {
             if (value.contains("../") || value.contains("..\\")) {
@@ -161,7 +165,8 @@ public class CommandConfig implements CommandExecutor {
      * @param commandSender  <p>The command sender that changed the value</p>
      * @param arguments      <p>The arguments for the new config option</p>
      */
-    private void updateListConfigValue(ConfigOption selectedOption, CommandSender commandSender, String[] arguments) {
+    private void updateListConfigValue(@NotNull ConfigOption selectedOption, @NotNull CommandSender commandSender,
+                                       @NotNull String[] arguments) {
         FileConfiguration configuration = Stargate.getInstance().getConfiguration();
 
         if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
@@ -190,7 +195,8 @@ public class CommandConfig implements CommandExecutor {
      * @param arguments     <p>The arguments given by the user</p>
      * @return <p>The per-sign color string to update with, or null if the input was invalid</p>
      */
-    private String parsePerSignColorInput(CommandSender commandSender, String[] arguments) {
+    @Nullable
+    private String parsePerSignColorInput(@NotNull CommandSender commandSender, @NotNull String[] arguments) {
         //Make sure the sign type is an actual sign
         if (Material.matchMaterial(arguments[1] + "_SIGN") == null) {
             Stargate.getMessageSender().sendErrorMessage(commandSender, "The given sign type is invalid");
@@ -199,7 +205,8 @@ public class CommandConfig implements CommandExecutor {
         String colorString = arguments[1] + ":";
 
         //Validate the colors given by the user
-        String[] errorMessage = new String[]{"The given main sign color is invalid!", "The given highlight sign color is invalid!"};
+        String[] errorMessage = new String[]{"The given main sign color is invalid!", "The given highlight sign color " +
+                "is invalid!"};
         String[] newColors = new String[2];
         for (int i = 0; i < 2; i++) {
             if (validatePerSignColor(arguments[i + 2])) {
@@ -220,9 +227,11 @@ public class CommandConfig implements CommandExecutor {
      * @param colorString   <p>The new color string to replace any previous value with</p>
      * @param configuration <p>The file configuration to update with the new per-sign colors</p>
      */
-    private void updatePerSignColors(String signType, String colorString, FileConfiguration configuration) {
+    private void updatePerSignColors(@NotNull String signType, @NotNull String colorString,
+                                     @NotNull FileConfiguration configuration) {
         List<String> newColorStrings = new ArrayList<>();
-        List<?> oldColors = (List<?>) Stargate.getStargateConfig().getConfigOptionsReference().get(ConfigOption.PER_SIGN_COLORS);
+        List<?> oldColors = (List<?>) Stargate.getStargateConfig().getConfigOptionsReference().get(
+                ConfigOption.PER_SIGN_COLORS);
         for (Object object : oldColors) {
             newColorStrings.add(String.valueOf(object));
         }
@@ -239,7 +248,7 @@ public class CommandConfig implements CommandExecutor {
      * @param color <p>The color chosen by the user</p>
      * @return <p>True if the given color is valid</p>
      */
-    private boolean validatePerSignColor(String color) {
+    private boolean validatePerSignColor(@NotNull String color) {
         ChatColor newHighlightColor = parseColor(color);
         return newHighlightColor != null || color.equalsIgnoreCase("default") ||
                 color.equalsIgnoreCase("inverted");
@@ -251,7 +260,7 @@ public class CommandConfig implements CommandExecutor {
      * @param selectedOption <p>The config option that was changed</p>
      * @param commandSender  <p>The command sender that executed the config command</p>
      */
-    private void saveAndReload(ConfigOption selectedOption, CommandSender commandSender) {
+    private void saveAndReload(@NotNull ConfigOption selectedOption, @NotNull CommandSender commandSender) {
         //Save the config file and reload if necessary
         Stargate.getInstance().saveConfig();
 
@@ -268,7 +277,8 @@ public class CommandConfig implements CommandExecutor {
      * @param commandSender  <p>The command sender to alert if the color is invalid</p>
      * @param value          <p>The new option value</p>
      */
-    private boolean registerColor(ConfigOption selectedOption, String value, CommandSender commandSender) {
+    private boolean registerColor(@NotNull ConfigOption selectedOption, @NotNull String value,
+                                  @NotNull CommandSender commandSender) {
         ChatColor parsedColor = parseColor(value);
         if (parsedColor == null) {
             commandSender.sendMessage(ChatColor.RED + "Invalid color given");
@@ -291,7 +301,8 @@ public class CommandConfig implements CommandExecutor {
      * @param value <p>The value to parse</p>
      * @return <p>The parsed color or null</p>
      */
-    private ChatColor parseColor(String value) {
+    @Nullable
+    private ChatColor parseColor(@NotNull String value) {
         try {
             return ChatColor.of(value.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException ignored) {
@@ -307,7 +318,9 @@ public class CommandConfig implements CommandExecutor {
      * @param value          <p>The value given</p>
      * @return <p>An integer, or null if it was invalid</p>
      */
-    private Integer getInteger(CommandSender commandSender, ConfigOption selectedOption, String value) {
+    @Nullable
+    private Integer getInteger(@NotNull CommandSender commandSender, @NotNull ConfigOption selectedOption,
+                               @NotNull String value) {
         try {
             int intValue = Integer.parseInt(value);
 
@@ -331,7 +344,9 @@ public class CommandConfig implements CommandExecutor {
      * @param value          <p>The value given</p>
      * @return <p>A double, or null if it was invalid</p>
      */
-    private Double getDouble(CommandSender commandSender, ConfigOption selectedOption, String value) {
+    @Nullable
+    private Double getDouble(@NotNull CommandSender commandSender, @NotNull ConfigOption selectedOption,
+                             @NotNull String value) {
         try {
             double doubleValue = Double.parseDouble(value);
 
@@ -353,7 +368,7 @@ public class CommandConfig implements CommandExecutor {
      * @param commandSender <p>The command sender initiating the reload</p>
      * @param configOption  <p>The changed config option</p>
      */
-    private void reloadIfNecessary(CommandSender commandSender, ConfigOption configOption) {
+    private void reloadIfNecessary(@NotNull CommandSender commandSender, @NotNull ConfigOption configOption) {
         if (ConfigTag.requiresFullReload(configOption)) {
             //Reload everything
             Stargate.getStargateConfig().reload(commandSender);
@@ -391,7 +406,7 @@ public class CommandConfig implements CommandExecutor {
      * @param sender <p>The command sender that sent the command</p>
      * @param option <p>The config option to print information about</p>
      */
-    private void printConfigOptionValue(CommandSender sender, ConfigOption option) {
+    private void printConfigOptionValue(@NotNull CommandSender sender, @NotNull ConfigOption option) {
         Object value = Stargate.getStargateConfig().getConfigOptions().get(option);
         sender.sendMessage(getOptionDescription(option));
         sender.sendMessage(ChatColor.GREEN + "Current value: " + ChatColor.GOLD + value);
@@ -402,7 +417,7 @@ public class CommandConfig implements CommandExecutor {
      *
      * @param sender <p>The command sender to display the config list to</p>
      */
-    private void displayConfigValues(CommandSender sender) {
+    private void displayConfigValues(@NotNull CommandSender sender) {
         sender.sendMessage(ChatColor.GREEN + Stargate.getBackupString("prefix") + ChatColor.GOLD +
                 "Config values:");
         for (ConfigOption option : ConfigOption.values()) {
@@ -416,7 +431,8 @@ public class CommandConfig implements CommandExecutor {
      * @param option <p>The option to describe</p>
      * @return <p>A string describing the config option</p>
      */
-    private String getOptionDescription(ConfigOption option) {
+    @NotNull
+    private String getOptionDescription(@NotNull ConfigOption option) {
         Object defaultValue = option.getDefaultValue();
         String stringValue = String.valueOf(defaultValue);
         if (option.getDataType() == OptionDataType.STRING_LIST) {

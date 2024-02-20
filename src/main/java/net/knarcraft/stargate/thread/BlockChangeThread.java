@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.EndGateway;
 import org.bukkit.block.data.Orientable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This thread changes gate blocks to display a gate as open or closed
@@ -58,7 +59,7 @@ public class BlockChangeThread implements Runnable {
      *
      * @param block <p>The block to fix</p>
      */
-    private static void fixEndGatewayGate(Block block) {
+    private static void fixEndGatewayGate(@NotNull Block block) {
         EndGateway gateway = (EndGateway) block.getState();
         gateway.setAge(Long.MIN_VALUE);
         if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
@@ -74,7 +75,7 @@ public class BlockChangeThread implements Runnable {
      * @param block <p>The block to orient</p>
      * @param axis  <p>The axis to use for orienting the block</p>
      */
-    private static void orientBlock(Block block, Axis axis) {
+    private static void orientBlock(@NotNull Block block, @NotNull Axis axis) {
         Orientable orientable = (Orientable) block.getBlockData();
         orientable.setAxis(axis);
         block.setBlockData(orientable);

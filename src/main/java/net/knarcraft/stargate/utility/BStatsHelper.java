@@ -8,6 +8,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public final class BStatsHelper {
      *
      * @param plugin <p>The plugin to initialize BStats for</p>
      */
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(@NotNull JavaPlugin plugin) {
         if (hasBeenInitialized) {
             throw new IllegalArgumentException("BStats initialized twice");
         } else {

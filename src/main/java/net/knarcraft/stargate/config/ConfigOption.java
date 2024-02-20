@@ -1,5 +1,8 @@
 package net.knarcraft.stargate.config;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A ConfigOption represents one of the available config options
  */
@@ -209,7 +212,7 @@ public enum ConfigOption {
      * @param description  <p>The description of what this config option does</p>
      * @param defaultValue <p>The default value of this config option</p>
      */
-    ConfigOption(String configNode, String description, Object defaultValue) {
+    ConfigOption(@NotNull String configNode, @NotNull String description, @NotNull Object defaultValue) {
         this.configNode = configNode;
         this.description = description;
         this.defaultValue = defaultValue;
@@ -235,7 +238,7 @@ public enum ConfigOption {
      * @param name <p>The name of the config option to get</p>
      * @return <p>The corresponding config option, or null if the name is invalid</p>
      */
-    public static ConfigOption getByName(String name) {
+    public static @Nullable ConfigOption getByName(@NotNull String name) {
         for (ConfigOption option : ConfigOption.values()) {
             if (option.getName().equalsIgnoreCase(name)) {
                 return option;
@@ -249,7 +252,7 @@ public enum ConfigOption {
      *
      * @return <p>The name of this config option</p>
      */
-    public String getName() {
+    public @NotNull String getName() {
         if (!this.configNode.contains(".")) {
             return this.configNode;
         }
@@ -262,7 +265,7 @@ public enum ConfigOption {
      *
      * @return <p>The data type used</p>
      */
-    public OptionDataType getDataType() {
+    public @NotNull OptionDataType getDataType() {
         return this.dataType;
     }
 
@@ -271,7 +274,7 @@ public enum ConfigOption {
      *
      * @return <p>This config option's config node</p>
      */
-    public String getConfigNode() {
+    public @NotNull String getConfigNode() {
         return this.configNode;
     }
 
@@ -280,7 +283,7 @@ public enum ConfigOption {
      *
      * @return <p>The description of this config option</p>
      */
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return this.description;
     }
 
@@ -289,7 +292,7 @@ public enum ConfigOption {
      *
      * @return <p>This config option's default value</p>
      */
-    public Object getDefaultValue() {
+    public @NotNull Object getDefaultValue() {
         return this.defaultValue;
     }
 

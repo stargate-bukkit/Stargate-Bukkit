@@ -5,6 +5,8 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,10 +26,12 @@ public class Gate {
     private final GateLayout layout;
     private final Map<Character, Material> characterMaterialMap;
     private final Map<Character, Tag<Material>> characterTagMap;
+
     //Gate materials
     private final Material portalOpenBlock;
     private final Material portalClosedBlock;
     private final Material portalButton;
+
     //Economy information
     private final int useCost;
     private final int createCost;
@@ -49,10 +53,11 @@ public class Gate {
      * @param destroyCost          <p>The cost of destroying a portal with this gate layout (-1 to disable)</p>
      * @param toOwner              <p>Whether any payment should go to the owner of the gate, as opposed to just disappearing</p>
      */
-    public Gate(String filename, GateLayout layout, Map<Character, Material> characterMaterialMap,
-                Map<Character, Tag<Material>> characterTagMap, Material portalOpenBlock,
-                Material portalClosedBlock, Material portalButton, int useCost, int createCost, int destroyCost,
-                boolean toOwner) {
+    public Gate(@NotNull String filename, @NotNull GateLayout layout,
+                @NotNull Map<Character, Material> characterMaterialMap,
+                @NotNull Map<Character, Tag<Material>> characterTagMap, @NotNull Material portalOpenBlock,
+                @NotNull Material portalClosedBlock, @NotNull Material portalButton, int useCost, int createCost,
+                int destroyCost, boolean toOwner) {
         this.filename = filename;
         this.layout = layout;
         this.characterMaterialMap = characterMaterialMap;
@@ -71,6 +76,7 @@ public class Gate {
      *
      * @return <p>This gate's layout</p>
      */
+    @NotNull
     public GateLayout getLayout() {
         return layout;
     }
@@ -80,6 +86,7 @@ public class Gate {
      *
      * @return <p>The character to material map</p>
      */
+    @NotNull
     public Map<Character, Material> getCharacterMaterialMap() {
         return new HashMap<>(characterMaterialMap);
     }
@@ -90,8 +97,9 @@ public class Gate {
      * @param material <p>The material to check</p>
      * @return <p>True if the material is valid for control blocks</p>
      */
-    public boolean isValidControlBlock(Material material) {
-        return (getControlBlock() != null) ? getControlBlock().equals(material) : getControlBlockTag().isTagged(material);
+    public boolean isValidControlBlock(@NotNull Material material) {
+        return (getControlBlock() != null) ? getControlBlock().equals(material) :
+                getControlBlockTag().isTagged(material);
     }
 
     /**
@@ -99,6 +107,7 @@ public class Gate {
      *
      * @return <p>The material tag type used for control blocks</p>
      */
+    @NotNull
     public Tag<Material> getControlBlockTag() {
         return characterTagMap.get(GateHandler.getControlBlockCharacter());
     }
@@ -108,6 +117,7 @@ public class Gate {
      *
      * @return <p>The material type used for control blocks</p>
      */
+    @Nullable
     public Material getControlBlock() {
         return characterMaterialMap.get(GateHandler.getControlBlockCharacter());
     }
@@ -117,6 +127,7 @@ public class Gate {
      *
      * @return <p>The filename of this gate's file</p>
      */
+    @NotNull
     public String getFilename() {
         return filename;
     }
@@ -126,6 +137,7 @@ public class Gate {
      *
      * @return <p>The block type to use for the opening when open</p>
      */
+    @NotNull
     public Material getPortalOpenBlock() {
         return portalOpenBlock;
     }
@@ -135,6 +147,7 @@ public class Gate {
      *
      * @return <p>The block type to use for the opening when closed</p>
      */
+    @NotNull
     public Material getPortalClosedBlock() {
         return portalClosedBlock;
     }
@@ -144,6 +157,7 @@ public class Gate {
      *
      * @return <p>The material to use for a portal's button if using this gate type</p>
      */
+    @NotNull
     public Material getPortalButton() {
         return portalButton;
     }
@@ -162,6 +176,7 @@ public class Gate {
      *
      * @return <p>The cost of creating a portal with this gate</p>
      */
+    @NotNull
     public Integer getCreateCost() {
         return createCost < 0 ? Stargate.getEconomyConfig().getDefaultCreateCost() : createCost;
     }
@@ -171,6 +186,7 @@ public class Gate {
      *
      * @return <p>The cost of destroying a portal with this gate</p>
      */
+    @NotNull
     public Integer getDestroyCost() {
         return destroyCost < 0 ? Stargate.getEconomyConfig().getDefaultDestroyCost() : destroyCost;
     }
@@ -180,6 +196,7 @@ public class Gate {
      *
      * @return <p>Whether portal payments go to the owner</p>
      */
+    @NotNull
     public Boolean getToOwner() {
         return toOwner;
     }
@@ -191,7 +208,7 @@ public class Gate {
      * @param yaw     <p>The yaw when looking directly outwards</p>
      * @return <p>True if this gate matches the portal</p>
      */
-    public boolean matches(BlockLocation topLeft, double yaw) {
+    public boolean matches(@NotNull BlockLocation topLeft, double yaw) {
         return matches(topLeft, yaw, false);
     }
 
@@ -207,7 +224,7 @@ public class Gate {
      * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
      * @return <p>True if this gate matches the portal</p>
      */
-    public boolean matches(BlockLocation topLeft, double yaw, boolean onCreate) {
+    public boolean matches(@NotNull BlockLocation topLeft, double yaw, boolean onCreate) {
         return verifyGateEntrancesMatch(topLeft, yaw, onCreate) && verifyGateBorderMatches(topLeft, yaw);
     }
 
@@ -218,12 +235,12 @@ public class Gate {
      * @param yaw     <p>The yaw when looking directly outwards from the portal</p>
      * @return <p>True if all border blocks of the gate match the layout</p>
      */
-    private boolean verifyGateBorderMatches(BlockLocation topLeft, double yaw) {
+    private boolean verifyGateBorderMatches(@NotNull BlockLocation topLeft, double yaw) {
         Map<Character, Material> characterMaterialMap = new HashMap<>(this.characterMaterialMap);
         Map<Character, Tag<Material>> characterTagMap = new HashMap<>(this.characterTagMap);
         for (RelativeBlockVector borderVector : layout.getBorder()) {
-            int rowIndex = borderVector.getRight();
-            int lineIndex = borderVector.getDown();
+            int rowIndex = borderVector.right();
+            int lineIndex = borderVector.down();
             Character key = layout.getLayout()[lineIndex][rowIndex];
 
             Material materialInLayout = characterMaterialMap.get(key);
@@ -263,7 +280,7 @@ public class Gate {
      * @param onCreate <p>Whether this is used in the context of creating a new gate</p>
      * @return <p>Whether this is used in the context of creating a new gate</p>
      */
-    private boolean verifyGateEntrancesMatch(BlockLocation topLeft, double yaw, boolean onCreate) {
+    private boolean verifyGateEntrancesMatch(@NotNull BlockLocation topLeft, double yaw, boolean onCreate) {
         Stargate.debug("verifyGateEntrancesMatch", String.valueOf(topLeft));
         for (RelativeBlockVector entranceVector : layout.getEntrances()) {
             Stargate.debug("verifyGateEntrancesMatch", String.valueOf(entranceVector));
@@ -289,7 +306,7 @@ public class Gate {
      *
      * @param gateFolder <p>The folder to save the gate file in</p>
      */
-    public void save(String gateFolder) {
+    public void save(@NotNull String gateFolder) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(gateFolder, filename)));
 
@@ -321,7 +338,7 @@ public class Gate {
      * @param bufferedWriter <p>The buffered writer to write to</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private void saveEconomyValues(BufferedWriter bufferedWriter) throws IOException {
+    private void saveEconomyValues(@NotNull BufferedWriter bufferedWriter) throws IOException {
         //Write use cost if not disabled
         if (useCost != -1) {
             writeConfig(bufferedWriter, "usecost", useCost);
@@ -343,7 +360,7 @@ public class Gate {
      * @param bufferedWriter <p>The buffered writer to write to</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private void saveFrameBlockType(BufferedWriter bufferedWriter) throws IOException {
+    private void saveFrameBlockType(@NotNull BufferedWriter bufferedWriter) throws IOException {
         for (Map.Entry<Character, Material> entry : this.characterMaterialMap.entrySet()) {
             Character key = entry.getKey();
             //Skip characters not part of the frame
@@ -368,7 +385,8 @@ public class Gate {
      * @param bufferedWriter <p>The buffered writer to write to</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private void saveFrameBlockType(Character key, String value, BufferedWriter bufferedWriter) throws IOException {
+    private void saveFrameBlockType(@NotNull Character key, @Nullable String value,
+                                    @NotNull BufferedWriter bufferedWriter) throws IOException {
         bufferedWriter.append(key.toString());
         bufferedWriter.append('=');
         if (value != null) {
@@ -385,7 +403,8 @@ public class Gate {
      * @param value          <p>The config value to save</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private void writeConfig(BufferedWriter bufferedWriter, String key, Object value) throws IOException {
+    private void writeConfig(@NotNull BufferedWriter bufferedWriter, @NotNull String key,
+                             @NotNull Object value) throws IOException {
         //Figure out the correct formatting to use
         String format = "%s=";
         if (value instanceof Boolean) {

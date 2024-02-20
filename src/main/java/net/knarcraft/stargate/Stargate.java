@@ -35,6 +35,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -112,7 +114,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param version <p>The version of the new update available</p>
      */
-    public static void setUpdateAvailable(String version) {
+    public static void setUpdateAvailable(@NotNull String version) {
         updateAvailable = version;
     }
 
@@ -121,6 +123,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The version number if an update is available. Null otherwise</p>
      */
+    @Nullable
     public static String getUpdateAvailable() {
         return updateAvailable;
     }
@@ -130,6 +133,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>An instance of this plugin, or null if not instantiated</p>
      */
+    @NotNull
     public static Stargate getInstance() {
         return stargate;
     }
@@ -139,7 +143,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param request <p>The request to add</p>
      */
-    public static void addBlockChangeRequest(BlockChangeRequest request) {
+    public static void addBlockChangeRequest(@Nullable BlockChangeRequest request) {
         if (request != null) {
             blockChangeRequestQueue.add(request);
         }
@@ -150,6 +154,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>A block change request queue</p>
      */
+    @NotNull
     public static Queue<BlockChangeRequest> getBlockChangeRequestQueue() {
         return blockChangeRequestQueue;
     }
@@ -159,6 +164,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The sender for sending messages to players</p>
      */
+    @NotNull
     public static MessageSender getMessageSender() {
         return stargateConfig.getMessageSender();
     }
@@ -168,6 +174,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The object containing gate configuration values</p>
      */
+    @NotNull
     public static StargateGateConfig getGateConfig() {
         return stargateConfig.getStargateGateConfig();
     }
@@ -177,6 +184,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>This plugin's version</p>
      */
+    @NotNull
     public static String getPluginVersion() {
         return pluginVersion;
     }
@@ -186,6 +194,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The logger</p>
      */
+    @NotNull
     public static Logger getConsoleLogger() {
         return logger;
     }
@@ -206,7 +215,7 @@ public class Stargate extends JavaPlugin {
      * @param route   <p>The class name/route where something happened</p>
      * @param message <p>A message describing what happened</p>
      */
-    public static void debug(String route, String message) {
+    public static void debug(@NotNull String route, @NotNull String message) {
         if (stargateConfig == null || stargateConfig.isNotLoaded() || stargateConfig.isDebuggingEnabled()) {
             logger.info("[Stargate::" + route + "] " + message);
         } else {
@@ -219,7 +228,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param message <p>The message to log</p>
      */
-    public static void logInfo(String message) {
+    public static void logInfo(@NotNull String message) {
         log(Level.INFO, message);
     }
 
@@ -228,7 +237,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param message <p>The message to log</p>
      */
-    public static void logSevere(String message) {
+    public static void logSevere(@NotNull String message) {
         log(Level.SEVERE, message);
     }
 
@@ -237,7 +246,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param message <p>The message to log</p>
      */
-    public static void logWarning(String message) {
+    public static void logWarning(@NotNull String message) {
         log(Level.WARNING, message);
     }
 
@@ -247,7 +256,7 @@ public class Stargate extends JavaPlugin {
      * @param severity <p>The severity of the event triggering the message</p>
      * @param message  <p>The message to log</p>
      */
-    private static void log(Level severity, String message) {
+    private static void log(@NotNull Level severity, @NotNull String message) {
         if (logger == null) {
             logger = Bukkit.getLogger();
         }
@@ -261,6 +270,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The folder for storing the portal database</p>
      */
+    @NotNull
     public static String getPortalFolder() {
         return stargateConfig.getPortalFolder();
     }
@@ -272,6 +282,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The folder storing gate files</p>
      */
+    @NotNull
     public static String getGateFolder() {
         return stargateConfig.getGateFolder();
     }
@@ -281,6 +292,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The default network</p>
      */
+    @NotNull
     public static String getDefaultNetwork() {
         return stargateConfig.getStargateGateConfig().getDefaultPortalNetwork();
     }
@@ -293,7 +305,7 @@ public class Stargate extends JavaPlugin {
      * @param name <p>The name/key of the string to get</p>
      * @return <p>The full translated string</p>
      */
-    public static String getString(String name) {
+    public static @NotNull String getString(@NotNull String name) {
         return stargateConfig.getLanguageLoader().getString(name);
     }
 
@@ -305,7 +317,7 @@ public class Stargate extends JavaPlugin {
      * @param name <p>The name/key of the string to get</p>
      * @return <p>The full string in the backup language (English)</p>
      */
-    public static String getBackupString(String name) {
+    public static @NotNull String getBackupString(@NotNull String name) {
         return stargateConfig.getLanguageLoader().getBackupString(name);
     }
 
@@ -317,7 +329,8 @@ public class Stargate extends JavaPlugin {
      * @param value  <p>The replacement value</p>
      * @return <p>The input string with the search replaced with value</p>
      */
-    public static String replaceVars(String input, String search, String value) {
+    @NotNull
+    public static String replacePlaceholders(@NotNull String input, @NotNull String search, @NotNull String value) {
         return input.replace(search, value);
     }
 
@@ -326,6 +339,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>A plugin manager</p>
      */
+    @NotNull
     public static PluginManager getPluginManager() {
         return pluginManager;
     }
@@ -335,6 +349,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The object containing economy config values</p>
      */
+    @NotNull
     public static EconomyConfig getEconomyConfig() {
         return stargateConfig.getEconomyConfig();
     }
@@ -344,6 +359,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The raw configuration</p>
      */
+    @NotNull
     public FileConfiguration getConfiguration() {
         return this.configuration;
     }
@@ -354,8 +370,8 @@ public class Stargate extends JavaPlugin {
         this.configuration = new StargateYamlConfiguration();
         try {
             this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
-        } catch (IOException | InvalidConfigurationException e) {
-            logSevere("Unable to load the configuration! Message: " + e.getMessage());
+        } catch (IOException | InvalidConfigurationException exception) {
+            logSevere("Unable to load the configuration! Message: " + exception.getMessage());
         }
     }
 
@@ -364,8 +380,8 @@ public class Stargate extends JavaPlugin {
         super.saveConfig();
         try {
             this.configuration.save(new File(getDataFolder(), CONFIG_FILE_NAME));
-        } catch (IOException e) {
-            logSevere("Unable to save the configuration! Message: " + e.getMessage());
+        } catch (IOException exception) {
+            logSevere("Unable to save the configuration! Message: " + exception.getMessage());
         }
     }
 
@@ -390,8 +406,8 @@ public class Stargate extends JavaPlugin {
         this.configuration = new StargateYamlConfiguration();
         try {
             this.configuration.load(new File(getDataFolder(), CONFIG_FILE_NAME));
-        } catch (IOException | InvalidConfigurationException e) {
-            getLogger().log(Level.SEVERE, e.getMessage());
+        } catch (IOException | InvalidConfigurationException exception) {
+            getLogger().log(Level.SEVERE, exception.getMessage());
         }
         this.configuration.options().copyDefaults(true);
 
@@ -470,6 +486,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The chunk unload queue</p>
      */
+    @NotNull
     public static Queue<ChunkUnloadRequest> getChunkUnloadQueue() {
         return chunkUnloadQueue;
     }
@@ -479,7 +496,7 @@ public class Stargate extends JavaPlugin {
      *
      * @param request <p>The new chunk unload request to add</p>
      */
-    public static void addChunkUnloadRequest(ChunkUnloadRequest request) {
+    public static void addChunkUnloadRequest(@NotNull ChunkUnloadRequest request) {
         chunkUnloadQueue.removeIf((item) -> item.getChunkToUnload().equals(request.getChunkToUnload()));
         chunkUnloadQueue.add(request);
     }
@@ -489,6 +506,7 @@ public class Stargate extends JavaPlugin {
      *
      * @return <p>The stargate configuration</p>
      */
+    @NotNull
     public static StargateConfig getStargateConfig() {
         return stargateConfig;
     }

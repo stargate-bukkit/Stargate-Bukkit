@@ -10,6 +10,8 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class represents a block location
@@ -30,7 +32,7 @@ public class BlockLocation extends Location {
      * @param y     <p>The y coordinate of the block</p>
      * @param z     <p>The z coordinate of the block</p>
      */
-    public BlockLocation(World world, int x, int y, int z) {
+    public BlockLocation(@NotNull World world, int x, int y, int z) {
         super(world, x, y, z);
     }
 
@@ -39,7 +41,7 @@ public class BlockLocation extends Location {
      *
      * @param block <p>The block to get the location of</p>
      */
-    public BlockLocation(Block block) {
+    public BlockLocation(@NotNull Block block) {
         super(block.getWorld(), block.getX(), block.getY(), block.getZ());
     }
 
@@ -49,7 +51,7 @@ public class BlockLocation extends Location {
      * @param world  <p>The world the block exists in</p>
      * @param string <p>A comma separated list of x, y and z coordinates as integers</p>
      */
-    public BlockLocation(World world, String string) {
+    public BlockLocation(@NotNull World world, @NotNull String string) {
         super(world, Integer.parseInt(string.split(",")[0]), Integer.parseInt(string.split(",")[1]),
                 Integer.parseInt(string.split(",")[2]));
     }
@@ -62,6 +64,7 @@ public class BlockLocation extends Location {
      * @param z <p>The number of blocks to move in the z-direction</p>
      * @return <p>A new block location</p>
      */
+    @NotNull
     public BlockLocation makeRelativeBlockLocation(int x, int y, int z) {
         return (BlockLocation) this.clone().add(x, y, z);
     }
@@ -75,6 +78,7 @@ public class BlockLocation extends Location {
      * @param yaw <p>The number of blocks to move in the z-direction</p>
      * @return <p>A new location</p>
      */
+    @NotNull
     public Location makeRelativeLocation(double x, double y, double z, float yaw) {
         Location newLocation = this.clone();
         newLocation.setYaw(yaw);
@@ -89,9 +93,10 @@ public class BlockLocation extends Location {
      * @param yaw            <p>The yaw pointing outwards from a portal (in the relative vector's out direction)</p>
      * @return <p>A location relative to this location</p>
      */
-    public BlockLocation getRelativeLocation(RelativeBlockVector relativeVector, double yaw) {
-        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(relativeVector.getRight(),
-                relativeVector.getDown(), relativeVector.getOut(), yaw);
+    @NotNull
+    public BlockLocation getRelativeLocation(@NotNull RelativeBlockVector relativeVector, double yaw) {
+        Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(relativeVector.right(),
+                relativeVector.down(), relativeVector.out(), yaw);
         return makeRelativeBlockLocation(realVector.getBlockX(), realVector.getBlockY(), realVector.getBlockZ());
     }
 
@@ -107,6 +112,7 @@ public class BlockLocation extends Location {
      * @param portalYaw <p>The yaw when looking out from the portal</p>
      * @return A new location relative to this block location
      */
+    @NotNull
     public Location getRelativeLocation(double right, double down, double out, float portalYaw) {
         Vector realVector = DirectionHelper.getCoordinateVectorFromRelativeVector(right, down, out, portalYaw);
         return makeRelativeLocation(0.5 + realVector.getBlockX(), realVector.getBlockY(),
@@ -118,6 +124,7 @@ public class BlockLocation extends Location {
      *
      * @return <p>The block's material type</p>
      */
+    @NotNull
     public Material getType() {
         return this.getBlock().getType();
     }
@@ -127,7 +134,7 @@ public class BlockLocation extends Location {
      *
      * @param type <p>The block's new material type</p>
      */
-    public void setType(Material type) {
+    public void setType(@NotNull Material type) {
         this.getBlock().setType(type);
     }
 
@@ -136,6 +143,7 @@ public class BlockLocation extends Location {
      *
      * @return <p>The location representing this block location</p>
      */
+    @NotNull
     public Location getLocation() {
         return this.clone();
     }
@@ -148,6 +156,7 @@ public class BlockLocation extends Location {
      *
      * @return <p>This block location's parent block</p>
      */
+    @Nullable
     public Block getParent() {
         if (parent == null) {
             findParent();
@@ -184,6 +193,7 @@ public class BlockLocation extends Location {
     }
 
     @Override
+    @NotNull
     public String toString() {
         return String.valueOf(this.getBlockX()) + ',' + this.getBlockY() + ',' + this.getBlockZ();
     }
@@ -203,7 +213,7 @@ public class BlockLocation extends Location {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
         if (this == object) {
             return true;
         }

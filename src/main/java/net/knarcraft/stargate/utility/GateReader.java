@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +32,12 @@ public final class GateReader {
      * @param config               <p>The map of config values to store to</p>
      * @return <p>The column count/width of the loaded gate</p>
      */
-    public static int readGateFile(Scanner scanner, Map<Character, Material> characterMaterialMap,
-                                   Map<Character, Tag<Material>> materialTagMap, String fileName,
-                                   List<List<Character>> design, Map<String, String> config) {
+    public static int readGateFile(@NotNull Scanner scanner, @NotNull Map<Character, Material> characterMaterialMap,
+                                   @NotNull Map<Character, Tag<Material>> materialTagMap, @NotNull String fileName,
+                                   @NotNull List<List<Character>> design, Map<String, String> config) {
         boolean designing = false;
         int columns = 0;
-        try {
+        try (scanner) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
@@ -59,10 +60,6 @@ public final class GateReader {
         } catch (Exception exception) {
             Stargate.logSevere(String.format("Could not load Gate %s - %s", fileName, exception.getMessage()));
             return -1;
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
         }
         return columns;
     }
@@ -81,9 +78,10 @@ public final class GateReader {
      * @param design               <p>The two-dimensional list to store the loaded design to</p>
      * @return <p>The new max columns value of the design</p>
      */
-    private static int readGateDesignLine(String line, int maxColumns, Map<Character, Material> characterMaterialMap,
-                                          Map<Character, Tag<Material>> materialTagMap,
-                                          String fileName, List<List<Character>> design) {
+    private static int readGateDesignLine(@NotNull String line, int maxColumns,
+                                          @NotNull Map<Character, Material> characterMaterialMap,
+                                          @NotNull Map<Character, Tag<Material>> materialTagMap,
+                                          @NotNull String fileName, @NotNull List<List<Character>> design) {
         List<Character> row = new ArrayList<>();
 
         //Update the max columns number if this line has more columns
@@ -116,9 +114,9 @@ public final class GateReader {
      * @param config               <p>The config value map to store to</p>
      * @throws Exception <p>If an invalid material is encountered</p>
      */
-    private static void readGateConfigValue(String line, Map<Character, Material> characterMaterialMap,
-                                            Map<Character, Tag<Material>> materialTagMap,
-                                            Map<String, String> config) throws Exception {
+    private static void readGateConfigValue(@NotNull String line, @NotNull Map<Character, Material> characterMaterialMap,
+                                            @NotNull Map<Character, Tag<Material>> materialTagMap,
+                                            @NotNull Map<String, String> config) throws Exception {
         String[] split = line.split("=");
         String key = split[0].trim();
         String value = split[1].trim();
@@ -158,12 +156,13 @@ public final class GateReader {
      * @param key      <p>The config key to read</p>
      * @return <p>The read value, or -1 if it could not be read</p>
      */
-    public static int readGateConfig(Map<String, String> config, String fileName, String key) {
+    public static int readGateConfig(@NotNull Map<String, String> config, @NotNull String fileName,
+                                     @NotNull String key) {
         if (config.containsKey(key)) {
             try {
                 return Integer.parseInt(config.get(key));
-            } catch (NumberFormatException ex) {
-                Stargate.logWarning(String.format("%s reading %s: %s is not numeric", ex.getClass().getName(),
+            } catch (NumberFormatException exception) {
+                Stargate.logWarning(String.format("%s reading %s: %s is not numeric", exception.getClass().getName(),
                         fileName, key));
             }
         }
@@ -180,8 +179,9 @@ public final class GateReader {
      * @param defaultMaterial <p>The default material to use, in case the config is invalid</p>
      * @return <p>The material specified in the config, or the default material if it could not be read</p>
      */
-    public static Material readGateConfig(Map<String, String> config, String fileName, String key,
-                                          Material defaultMaterial) {
+    @NotNull
+    public static Material readGateConfig(@NotNull Map<String, String> config, @NotNull String fileName,
+                                          @NotNull String key, @NotNull Material defaultMaterial) {
         if (config.containsKey(key)) {
             Material material = Material.matchMaterial(config.get(key));
             if (material != null) {
@@ -203,7 +203,8 @@ public final class GateReader {
      * @param columns <p>The largest amount of columns in the design</p>
      * @return <p>A matrix containing the gate's layout</p>
      */
-    public static Character[][] generateLayoutMatrix(List<List<Character>> design, int columns) {
+    @NotNull
+    public static Character[][] generateLayoutMatrix(@NotNull List<List<Character>> design, int columns) {
         Character[][] layout = new Character[design.size()][columns];
         for (int lineIndex = 0; lineIndex < design.size(); lineIndex++) {
             List<Character> row = design.get(lineIndex);

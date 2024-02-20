@@ -1,5 +1,8 @@
 package net.knarcraft.stargate.container;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * This stores a block location as a vector relative to a position
  *
@@ -7,62 +10,48 @@ package net.knarcraft.stargate.container;
  * top-left block of a gate (top-left when looking at the side with the sign). The right is therefore the distance
  * from the top-left corner towards the top-right corner. Down is the distance from the top-left corner towards the
  * bottom-left corner. Out is the distance outward from the gate.</p>
+ *
+ * <p>Relative block vectors start from a top-left corner. A yaw is used to orient a relative block vector in the
+ * "real world". In terms of a gate layout, the origin is 0,0. Right is towards the end of the line. Down is to the
+ * next line. Out is towards the observer.</p>
+ *
+ * @param right <p>The distance rightward relative to the origin</p>
+ * @param down  <p>The distance downward relative to the origin</p>
+ * @param out   <p>The distance outward relative to the origin</p>
  */
-public class RelativeBlockVector {
-
-    private final int right;
-    private final int down;
-    private final int out;
+public record RelativeBlockVector(int right, int down, int out) {
 
     /**
-     * A specifier for one of the relative block vector's three properties
+     * Adds the given value to this relative block vector's "right" property
+     *
+     * @param valueToAdd <p>The value to add</p>
+     * @return <p>The new resulting vector</p>
      */
-    public enum Property {
-        /**
-         * Specifies the relative block vector's right property
-         */
-        RIGHT,
-        /**
-         * Specifies the relative block vector's down property
-         */
-        DOWN,
-        /**
-         * Specifies the relative block vector's out property
-         */
-        OUT
+    @NotNull
+    public RelativeBlockVector addRight(int valueToAdd) {
+        return new RelativeBlockVector(this.right + valueToAdd, this.down, this.out);
     }
 
     /**
-     * Instantiates a new relative block vector
+     * Adds the given value to this relative block vector's "down" property
      *
-     * <p>Relative block vectors start from a top-left corner. A yaw is used to orient a relative block vector in the
-     * "real world".
-     * In terms of a gate layout, the origin is 0,0. Right is towards the end of the line. Down is to the
-     * next line. Out is towards the observer.</p>
-     *
-     * @param right <p>The distance rightward relative to the origin</p>
-     * @param down  <p>The distance downward relative to the origin</p>
-     * @param out   <p>The distance outward relative to the origin</p>
+     * @param valueToAdd <p>The value to add</p>
+     * @return <p>The new resulting vector</p>
      */
-    public RelativeBlockVector(int right, int down, int out) {
-        this.right = right;
-        this.down = down;
-        this.out = out;
+    @NotNull
+    public RelativeBlockVector addDown(int valueToAdd) {
+        return new RelativeBlockVector(this.right, this.down + valueToAdd, this.out);
     }
 
     /**
-     * Adds a value to one of the properties of this relative block vector
+     * Adds the given value to this relative block vector's "out" property
      *
-     * @param propertyToAddTo <p>The property to add to</p>
-     * @param valueToAdd      <p>The value to add to the property (negative to move in the opposite direction)</p>
-     * @return <p>A new relative block vector with the property altered</p>
+     * @param valueToAdd <p>The value to add</p>
+     * @return <p>The new resulting vector</p>
      */
-    public RelativeBlockVector addToVector(Property propertyToAddTo, int valueToAdd) {
-        return switch (propertyToAddTo) {
-            case RIGHT -> new RelativeBlockVector(this.right + valueToAdd, this.down, this.out);
-            case DOWN -> new RelativeBlockVector(this.right, this.down + valueToAdd, this.out);
-            case OUT -> new RelativeBlockVector(this.right, this.down, this.out + valueToAdd);
-        };
+    @NotNull
+    public RelativeBlockVector addOut(int valueToAdd) {
+        return new RelativeBlockVector(this.right, this.down, this.out + valueToAdd);
     }
 
     /**
@@ -70,6 +59,7 @@ public class RelativeBlockVector {
      *
      * @return <p>This vector, but inverted</p>
      */
+    @NotNull
     public RelativeBlockVector invert() {
         return new RelativeBlockVector(-this.right, -this.down, -this.out);
     }
@@ -79,7 +69,8 @@ public class RelativeBlockVector {
      *
      * @return <p>The distance to the right relative to the origin</p>
      */
-    public int getRight() {
+    @Override
+    public int right() {
         return right;
     }
 
@@ -88,7 +79,8 @@ public class RelativeBlockVector {
      *
      * @return <p>The distance downward relative to the origin</p>
      */
-    public int getDown() {
+    @Override
+    public int down() {
         return down;
     }
 
@@ -97,17 +89,19 @@ public class RelativeBlockVector {
      *
      * @return <p>The distance outward relative to the origin</p>
      */
-    public int getOut() {
+    @Override
+    public int out() {
         return out;
     }
 
     @Override
+    @NotNull
     public String toString() {
         return String.format("(right = %d, down = %d, out = %d)", right, down, out);
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (other == this) {
             return true;
         }

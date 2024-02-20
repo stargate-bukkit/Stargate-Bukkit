@@ -3,6 +3,8 @@ package net.knarcraft.stargate.config;
 import net.knarcraft.knarlib.property.ColorConversion;
 import net.knarcraft.knarlib.util.FileHelper;
 import net.knarcraft.stargate.Stargate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,7 +32,7 @@ public final class LanguageLoader {
      *
      * @param languageFolder <p>The folder containing the language files</p>
      */
-    public LanguageLoader(String languageFolder) {
+    public LanguageLoader(@NotNull String languageFolder) {
         this.languageFolder = languageFolder;
         File testFile = new File(languageFolder, "en.txt");
         if (!testFile.exists()) {
@@ -65,7 +67,8 @@ public final class LanguageLoader {
      * @param name <p>The name/key of the string to display</p>
      * @return <p>The string in the user's preferred language</p>
      */
-    public String getString(String name) {
+    @NotNull
+    public String getString(@NotNull String name) {
         String value = null;
         if (loadedStringTranslations != null) {
             value = loadedStringTranslations.get(name);
@@ -82,7 +85,8 @@ public final class LanguageLoader {
      * @param name <p>The name/key of the string to display</p>
      * @return <p>The string in the backup language (English)</p>
      */
-    public String getBackupString(String name) {
+    @NotNull
+    public String getBackupString(@NotNull String name) {
         String value = null;
         if (loadedBackupStrings != null) {
             value = loadedBackupStrings.get(name);
@@ -98,7 +102,7 @@ public final class LanguageLoader {
      *
      * @param chosenLanguage <p>The new plugin language</p>
      */
-    public void setChosenLanguage(String chosenLanguage) {
+    public void setChosenLanguage(@NotNull String chosenLanguage) {
         this.chosenLanguage = chosenLanguage;
     }
 
@@ -107,7 +111,7 @@ public final class LanguageLoader {
      *
      * @param language <p>The language to update</p>
      */
-    private void updateLanguage(String language) {
+    private void updateLanguage(@NotNull String language) {
         Map<String, String> currentLanguageValues = load(language);
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
@@ -133,8 +137,8 @@ public final class LanguageLoader {
      * @param currentLanguageValues <p>The current values of the loaded/processed language</p>
      * @throws IOException <p>if unable to read a language file</p>
      */
-    private void readChangedLanguageStrings(InputStream inputStream, String language, Map<String,
-            String> currentLanguageValues) throws IOException {
+    private void readChangedLanguageStrings(@NotNull InputStream inputStream, @NotNull String language,
+                                            @Nullable Map<String, String> currentLanguageValues) throws IOException {
         //Get language values
         BufferedReader bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
         Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader, "=",
@@ -177,8 +181,8 @@ public final class LanguageLoader {
      * @param customLanguageStrings <p>Any custom language strings not recognized</p>
      * @throws IOException <p>If unable to write to the language file</p>
      */
-    private void updateLanguageFile(String language, Map<String, String> languageStrings,
-                                    Map<String, String> customLanguageStrings) throws IOException {
+    private void updateLanguageFile(@NotNull String language, @NotNull Map<String, String> languageStrings,
+                                    @Nullable Map<String, String> customLanguageStrings) throws IOException {
         BufferedWriter bufferedWriter = FileHelper.getBufferedWriterFromString(languageFolder + language + ".txt");
 
         //Output normal Language data
@@ -203,7 +207,8 @@ public final class LanguageLoader {
      * @param lang <p>The language to load</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
-    private Map<String, String> load(String lang) {
+    @Nullable
+    private Map<String, String> load(@NotNull String lang) {
         return load(lang, null);
     }
 
@@ -214,7 +219,8 @@ public final class LanguageLoader {
      * @param inputStream <p>An optional input stream to use. Defaults to using a file input stream</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
-    private Map<String, String> load(String lang, InputStream inputStream) {
+    @Nullable
+    private Map<String, String> load(@NotNull String lang, @Nullable InputStream inputStream) {
         Map<String, String> strings;
         BufferedReader bufferedReader;
         try {
@@ -224,7 +230,7 @@ public final class LanguageLoader {
                 bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
             }
             strings = FileHelper.readKeyValuePairs(bufferedReader, "=", ColorConversion.NORMAL);
-        } catch (Exception e) {
+        } catch (Exception exception) {
             if (Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.logInfo("Unable to load language " + lang);
             }

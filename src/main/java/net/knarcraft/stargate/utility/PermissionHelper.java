@@ -7,6 +7,8 @@ import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static net.knarcraft.stargate.Stargate.getMaxNameNetworkLength;
 
@@ -25,7 +27,7 @@ public final class PermissionHelper {
      * @param player <p>The player opening the portal</p>
      * @param portal <p>The portal to open</p>
      */
-    public static void openPortal(Player player, Portal portal) {
+    public static void openPortal(@NotNull Player player, @NotNull Portal portal) {
         Portal destination = portal.getPortalActivator().getDestination();
 
         //For an always open portal, no action is necessary
@@ -89,7 +91,7 @@ public final class PermissionHelper {
      * @param deny   <p>Whether the player's access has already been denied by a previous check</p>
      * @return <p>False if the player should be allowed through the portal</p>
      */
-    public static boolean portalAccessDenied(Player player, Portal portal, boolean deny) {
+    public static boolean portalAccessDenied(@NotNull Player player, @NotNull Portal portal, boolean deny) {
         StargateAccessEvent event = new StargateAccessEvent(player, portal, deny);
         Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         return event.getDeny();
@@ -103,7 +105,8 @@ public final class PermissionHelper {
      * @param destination    <p>The portal the user wants to exit from</p>
      * @return <p>False if the user is allowed to access the portal</p>
      */
-    public static boolean cannotAccessPortal(Player player, Portal entrancePortal, Portal destination) {
+    public static boolean cannotAccessPortal(@NotNull Player player, @NotNull Portal entrancePortal,
+                                             @Nullable Portal destination) {
         boolean deny = false;
 
         if (entrancePortal.getOptions().isBungee()) {
@@ -116,10 +119,17 @@ public final class PermissionHelper {
             //If the player does not have access to the network, deny
             Stargate.debug("cannotAccessPortal", "Cannot access network");
             deny = true;
-        } else if (PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
-            //If the player does not have access to the portal's world, deny
-            Stargate.debug("cannotAccessPortal", "Cannot access world");
-            deny = true;
+        } else {
+            if (destination == null) {
+                //If there is no destination, deny
+                Stargate.debug("cannotAccessPortal", "Portal has no destination");
+                deny = true;
+            } else if (destination.getWorld() != null &&
+                    PermissionHelper.cannotAccessWorld(player, destination.getWorld().getName())) {
+                //If the player does not have access to the portal's world, deny
+                Stargate.debug("cannotAccessPortal", "Cannot access world");
+                deny = true;
+            }
         }
         //Allow other plugins to override whether the player can access the portal
         return portalAccessDenied(player, entrancePortal, deny);
@@ -134,7 +144,7 @@ public final class PermissionHelper {
      * @param permission <p>The permission to check</p>
      * @return <p>True if the player has the permission</p>
      */
-    public static boolean hasPermission(Player player, String permission) {
+    public static boolean hasPermission(@NotNull Player player, @NotNull String permission) {
         if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
             Stargate.debug("hasPerm::Permission(" + player.getName() + ")", permission + " => " +
                     player.hasPermission(permission));
@@ -152,7 +162,7 @@ public final class PermissionHelper {
      * @param permission <p>The permission to check</p>
      * @return <p>True if the player has the permission implicitly or explicitly</p>
      */
-    public static boolean hasPermissionImplicit(Player player, String permission) {
+    public static boolean hasPermissionImplicit(@NotNull Player player, @NotNull String permission) {
         if (!player.isPermissionSet(permission)) {
             if (Stargate.getStargateConfig().isPermissionDebuggingEnabled()) {
                 Stargate.debug("hasPermissionImplicit::Permission", permission + " => implicitly true");
@@ -173,7 +183,7 @@ public final class PermissionHelper {
      * @param world  <p>The world the player is trying to access</p>
      * @return <p>False if the player should be allowed to access the world</p>
      */
-    public static boolean cannotAccessWorld(Player player, String world) {
+    public static boolean cannotAccessWorld(@NotNull Player player, @NotNull String world) {
         //The player can access all worlds
         if (hasPermission(player, "stargate.world")) {
             //Check if the world permission has been explicitly denied
@@ -190,7 +200,7 @@ public final class PermissionHelper {
      * @param network <p>The network to check</p>
      * @return <p>True if the player is denied from accessing the network</p>
      */
-    public static boolean cannotAccessNetwork(Player player, String network) {
+    public static boolean cannotAccessNetwork(@NotNull Player player, @NotNull String network) {
         //The player can access all networks
         if (hasPermission(player, "stargate.network")) {
             //Check if the world permission has been explicitly denied
@@ -215,7 +225,7 @@ public final class PermissionHelper {
      * @param server <p>The server the player is trying to connect to</p>
      * @return <p>True if the player is allowed to access the given server</p>
      */
-    public static boolean canAccessServer(Player player, String server) {
+    public static boolean canAccessServer(@NotNull Player player, @NotNull String server) {
         //The player can access all servers
         if (hasPermission(player, "stargate.server")) {
             //Check if the server permission has been explicitly denied
@@ -233,7 +243,7 @@ public final class PermissionHelper {
      * @param dest   <p>The portal the player wants to teleport to</p>
      * @return <p>True if the player can travel for free</p>
      */
-    public static boolean isFree(Player player, Portal src, Portal dest) {
+    public static boolean isFree(@NotNull Player player, @NotNull Portal src, @Nullable Portal dest) {
         //This portal is free
         if (src.getOptions().isFree()) {
             return true;
@@ -255,7 +265,7 @@ public final class PermissionHelper {
      * @param portal <p>The portal to check</p>
      * @return <p>True if the given player can see the given portal</p>
      */
-    public static boolean canSeePortal(Player player, Portal portal) {
+    public static boolean canSeePortal(@NotNull Player player, @NotNull Portal portal) {
         //The portal is not hidden
         if (!portal.getOptions().isHidden()) {
             return true;
@@ -275,7 +285,7 @@ public final class PermissionHelper {
      * @param portal <p>The private portal used</p>
      * @return <p>True if the player is allowed to use the portal</p>
      */
-    public static boolean canUsePrivatePortal(Player player, Portal portal) {
+    public static boolean canUsePrivatePortal(@NotNull Player player, @NotNull Portal portal) {
         //Check if the player is the owner of the gate
         if (portal.isOwner(player)) {
             return true;
@@ -291,7 +301,7 @@ public final class PermissionHelper {
      * @param option <p>The option the player is trying to use</p>
      * @return <p>True if the player is allowed to create a portal with the given option</p>
      */
-    public static boolean canUseOption(Player player, PortalOption option) {
+    public static boolean canUseOption(@NotNull Player player, @NotNull PortalOption option) {
         return hasPermission(player, option.getPermissionString());
     }
 
@@ -302,7 +312,7 @@ public final class PermissionHelper {
      * @param network <p>The network the player is trying to create a gate on</p>
      * @return <p>True if the player is allowed to create the new gate</p>
      */
-    public static boolean canCreateNetworkGate(Player player, String network) {
+    public static boolean canCreateNetworkGate(@NotNull Player player, @NotNull String network) {
         //Check if the player is allowed to create a portal on any network
         if (hasPermission(player, "stargate.create.network")) {
             //Check if the network has been explicitly denied
@@ -318,7 +328,7 @@ public final class PermissionHelper {
      * @param player <p>The player trying to create the new gate</p>
      * @return <p>True if the player is allowed</p>
      */
-    public static boolean canCreatePersonalPortal(Player player) {
+    public static boolean canCreatePersonalPortal(@NotNull Player player) {
         return hasPermission(player, "stargate.create.personal");
     }
 
@@ -329,7 +339,7 @@ public final class PermissionHelper {
      * @param gate   <p>The gate type of the new portal</p>
      * @return <p>True if the player is allowed to create a portal with the given gate layout</p>
      */
-    public static boolean canCreatePortal(Player player, String gate) {
+    public static boolean canCreatePortal(@NotNull Player player, @NotNull String gate) {
         //Check if the player is allowed to create all gates
         if (hasPermission(player, "stargate.create.gate")) {
             //Check if the gate type has been explicitly denied
@@ -346,7 +356,7 @@ public final class PermissionHelper {
      * @param portal <p>The portal to destroy</p>
      * @return <p>True if the player is allowed to destroy the portal</p>
      */
-    public static boolean canDestroyPortal(Player player, Portal portal) {
+    public static boolean canDestroyPortal(@NotNull Player player, @NotNull Portal portal) {
         String network = portal.getCleanNetwork();
 
         //Use a special check for bungee portals
@@ -376,7 +386,8 @@ public final class PermissionHelper {
      * @param event          <p>The move event causing the teleportation</p>
      * @return <p>True if the player cannot teleport. False otherwise</p>
      */
-    public static boolean playerCannotTeleport(Portal entrancePortal, Portal destination, Player player, PlayerMoveEvent event) {
+    public static boolean playerCannotTeleport(@Nullable Portal entrancePortal, @Nullable Portal destination,
+                                               @NotNull Player player, @Nullable PlayerMoveEvent event) {
         //No portal or not open
         if (entrancePortal == null || !entrancePortal.isOpen()) {
             return true;
@@ -392,12 +403,13 @@ public final class PermissionHelper {
         }
 
         //No destination
-        if (!entrancePortal.getOptions().isBungee() && destination == null) {
+        boolean isBungee = entrancePortal.getOptions().isBungee();
+        if (!isBungee && destination == null) {
             return true;
         }
 
         //Player cannot access portal
-        if (PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
+        if (!PermissionHelper.cannotAccessPortal(player, entrancePortal, destination)) {
             if (!entrancePortal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("denyMsg"));
             }

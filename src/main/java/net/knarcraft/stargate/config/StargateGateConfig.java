@@ -6,6 +6,7 @@ import net.knarcraft.stargate.portal.PortalSignDrawer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public final class StargateGateConfig {
      *
      * @param configOptions <p>The loaded config options to use</p>
      */
-    public StargateGateConfig(Map<ConfigOption, Object> configOptions) {
+    public StargateGateConfig(@NotNull Map<ConfigOption, Object> configOptions) {
         this.configOptions = configOptions;
         loadGateConfig();
     }
@@ -248,8 +249,8 @@ public final class StargateGateConfig {
      * @param defaultColors          <p>The specified default colors</p>
      * @param colorMaps              <p>The list of color maps to save the resulting colors to</p>
      */
-    private void parsePerSignColors(Object signColorSpecification, ChatColor[] defaultColors,
-                                    List<Map<Material, ChatColor>> colorMaps) {
+    private void parsePerSignColors(@NotNull Object signColorSpecification, @NotNull ChatColor[] defaultColors,
+                                    @NotNull List<Map<Material, ChatColor>> colorMaps) {
         String[] specificationData = String.valueOf(signColorSpecification).split(":");
         Material[] signMaterials = new Material[]{Material.matchMaterial(specificationData[0] + "_SIGN"),
                 Material.matchMaterial(specificationData[0] + "_WALL_SIGN")};
@@ -280,8 +281,8 @@ public final class StargateGateConfig {
      * @param signMaterials <p>The materials to load this color for</p>
      * @param colorMaps     <p>The list of color maps to save the resulting color to</p>
      */
-    private void loadPerSignColor(String[] colors, int colorIndex, ChatColor[] defaultColors, Material[] signMaterials,
-                                  List<Map<Material, ChatColor>> colorMaps) {
+    private void loadPerSignColor(@NotNull String[] colors, int colorIndex, @NotNull ChatColor[] defaultColors,
+                                  @NotNull Material[] signMaterials, @NotNull List<Map<Material, ChatColor>> colorMaps) {
         ChatColor parsedColor;
         if (colors[colorIndex].equalsIgnoreCase("inverted")) {
             //Convert from ChatColor to awt.Color to Bukkit.Color then invert and convert to ChatColor
@@ -309,7 +310,7 @@ public final class StargateGateConfig {
      *
      * @param mainSignColor <p>A string representing the main sign color</p>
      */
-    private void loadPerSignColor(String mainSignColor, String highlightSignColor) {
+    private void loadPerSignColor(@NotNull String mainSignColor, @NotNull String highlightSignColor) {
         try {
             PortalSignDrawer.setMainColor(ChatColor.of(mainSignColor.toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException exception) {

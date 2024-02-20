@@ -61,7 +61,9 @@ public class ConfigTabCompleter implements TabCompleter {
      * @param typedText      <p>The beginning of the typed text, for filtering matching results</p>
      * @return <p>Some or all of the valid values for the option</p>
      */
-    private List<String> getPossibleOptionValues(ConfigOption selectedOption, String typedText) {
+    @Nullable
+    private List<String> getPossibleOptionValues(@NotNull ConfigOption selectedOption,
+                                                 @NotNull String typedText) {
         switch (selectedOption) {
             case LANGUAGE:
                 //Return available languages
@@ -71,7 +73,7 @@ public class ConfigTabCompleter implements TabCompleter {
             case DEFAULT_GATE_NETWORK:
                 //Just return the default value as most values should be possible
                 if (typedText.trim().isEmpty()) {
-                    return putStringInList((String) selectedOption.getDefaultValue());
+                    return List.of((String) selectedOption.getDefaultValue());
                 } else {
                     return new ArrayList<>();
                 }
@@ -114,7 +116,9 @@ public class ConfigTabCompleter implements TabCompleter {
      * @param args           <p>The arguments given by the user</p>
      * @return <p>Some or all of the valid values for the option</p>
      */
-    private List<String> getPossibleStringListOptionValues(ConfigOption selectedOption, String[] args) {
+    @Nullable
+    private List<String> getPossibleStringListOptionValues(@NotNull ConfigOption selectedOption,
+                                                           @NotNull String[] args) {
         if (selectedOption == ConfigOption.PER_SIGN_COLORS) {
             return getPerSignColorCompletion(args);
         } else {
@@ -128,7 +132,8 @@ public class ConfigTabCompleter implements TabCompleter {
      * @param args <p>The arguments given by the user</p>
      * @return <p>The options to give the user</p>
      */
-    private List<String> getPerSignColorCompletion(String[] args) {
+    @NotNull
+    private List<String> getPerSignColorCompletion(@NotNull String[] args) {
         if (args.length < 3) {
             return filterMatchingStartsWith(signTypes, args[1]);
         } else if (args.length < 4) {
@@ -137,18 +142,6 @@ public class ConfigTabCompleter implements TabCompleter {
             return filterMatchingStartsWith(extendedColors, args[3]);
         }
         return new ArrayList<>();
-    }
-
-    /**
-     * Puts a single string value into a string list
-     *
-     * @param value <p>The string to make into a list</p>
-     * @return <p>A list containing the string value</p>
-     */
-    private List<String> putStringInList(String value) {
-        List<String> list = new ArrayList<>();
-        list.add(value);
-        return list;
     }
 
     /**
@@ -200,6 +193,7 @@ public class ConfigTabCompleter implements TabCompleter {
      *
      * @return <p>The available chat colors</p>
      */
+    @NotNull
     private List<ChatColor> getChatColors() {
         List<ChatColor> chatColors = new ArrayList<>();
         char[] colors = new char[]{'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};

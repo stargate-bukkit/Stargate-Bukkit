@@ -4,6 +4,7 @@ import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event should be called whenever a player opens a stargate
@@ -23,7 +24,7 @@ public class StargateOpenEvent extends StargatePlayerEvent {
      * @param portal <p>The opened portal</p>
      * @param force  <p>Whether to force the portal open</p>
      */
-    public StargateOpenEvent(Player player, Portal portal, boolean force) {
+    public StargateOpenEvent(@Nullable Player player, @NotNull Portal portal, boolean force) {
         super(portal, player);
 
         this.force = force;
@@ -52,6 +53,7 @@ public class StargateOpenEvent extends StargatePlayerEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

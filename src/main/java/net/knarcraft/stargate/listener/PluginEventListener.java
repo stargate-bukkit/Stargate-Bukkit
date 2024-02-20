@@ -5,6 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This listener listens for any plugins being enabled or disabled to catch the loading of vault
@@ -19,7 +21,7 @@ public class PluginEventListener implements Listener {
      *
      * @param stargate <p>A reference to the stargate plugin to </p>
      */
-    public PluginEventListener(Stargate stargate) {
+    public PluginEventListener(@NotNull Stargate stargate) {
         this.stargate = stargate;
     }
 
@@ -31,10 +33,14 @@ public class PluginEventListener implements Listener {
      * @param ignored <p>The actual event called. This is currently not used</p>
      */
     @EventHandler
-    public void onPluginEnable(PluginEnableEvent ignored) {
+    public void onPluginEnable(@NotNull PluginEnableEvent ignored) {
         if (Stargate.getEconomyConfig().setupEconomy(stargate.getServer().getPluginManager())) {
-            String vaultVersion = Stargate.getEconomyConfig().getVault().getDescription().getVersion();
-            Stargate.logInfo(Stargate.replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            Plugin vault = Stargate.getEconomyConfig().getVault();
+            if (vault != null) {
+                String vaultVersion = vault.getDescription().getVersion();
+                Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString("vaultLoaded"), "%version%",
+                        vaultVersion));
+            }
         }
     }
 
@@ -44,7 +50,7 @@ public class PluginEventListener implements Listener {
      * @param event <p>The event caused by disabling a plugin</p>
      */
     @EventHandler
-    public void onPluginDisable(PluginDisableEvent event) {
+    public void onPluginDisable(@NotNull PluginDisableEvent event) {
         if (event.getPlugin().equals(Stargate.getEconomyConfig().getVault())) {
             Stargate.logInfo("Vault plugin lost.");
         }

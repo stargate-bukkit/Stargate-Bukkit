@@ -2,6 +2,7 @@ package net.knarcraft.stargate.config;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The message sender is responsible sending messages to players with correct coloring and formatting
@@ -15,7 +16,7 @@ public final class MessageSender {
      *
      * @param languageLoader <p>The language loader to get translated strings from</p>
      */
-    public MessageSender(LanguageLoader languageLoader) {
+    public MessageSender(@NotNull LanguageLoader languageLoader) {
         this.languageLoader = languageLoader;
     }
 
@@ -25,7 +26,7 @@ public final class MessageSender {
      * @param player  <p>The player to send the message to</p>
      * @param message <p>The message to send</p>
      */
-    public void sendErrorMessage(CommandSender player, String message) {
+    public void sendErrorMessage(@NotNull CommandSender player, @NotNull String message) {
         sendMessage(player, message, true);
     }
 
@@ -35,7 +36,7 @@ public final class MessageSender {
      * @param player  <p>The player to send the message to</p>
      * @param message <p>The message to send</p>
      */
-    public void sendSuccessMessage(CommandSender player, String message) {
+    public void sendSuccessMessage(@NotNull CommandSender player, @NotNull String message) {
         sendMessage(player, message, false);
     }
 
@@ -46,7 +47,7 @@ public final class MessageSender {
      * @param message <p>The message to send</p>
      * @param error   <p>Whether the message sent is an error</p>
      */
-    private void sendMessage(CommandSender sender, String message, boolean error) {
+    private void sendMessage(@NotNull CommandSender sender, @NotNull String message, boolean error) {
         if (message.isEmpty()) {
             return;
         }

@@ -13,6 +13,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ public class PortalHandler {
      *
      * @return <p>A copy of all portal networks</p>
      */
+    @NotNull
     public static Map<String, List<String>> getAllPortalNetworks() {
         return PortalRegistry.getAllPortalNetworks();
     }
@@ -42,6 +45,7 @@ public class PortalHandler {
      *
      * @return <p>A copy of all bungee portals</p>
      */
+    @NotNull
     public static Map<String, Portal> getBungeePortals() {
         return PortalRegistry.getBungeePortals();
     }
@@ -52,6 +56,7 @@ public class PortalHandler {
      * @param network <p>The network to get portals from</p>
      * @return <p>A list of portal names</p>
      */
+    @NotNull
     public static List<String> getNetwork(String network) {
         return PortalRegistry.getNetwork(network);
     }
@@ -64,7 +69,9 @@ public class PortalHandler {
      * @param network        <p>The network to get destinations from</p>
      * @return <p>All destinations the player can go to</p>
      */
-    public static List<String> getDestinations(Portal entrancePortal, Player player, String network) {
+    @NotNull
+    public static List<String> getDestinations(@NotNull Portal entrancePortal, @Nullable Player player,
+                                               @NotNull String network) {
         List<String> destinations = new ArrayList<>();
         for (String destination : PortalRegistry.getAllPortalNetworks().get(network)) {
             Portal portal = getByName(destination, network);
@@ -94,7 +101,7 @@ public class PortalHandler {
                 continue;
             }
             //Check if this player can access the destination world
-            if (PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
+            if (portal.getWorld() != null && PermissionHelper.cannotAccessWorld(player, portal.getWorld().getName())) {
                 continue;
             }
             //The portal is visible to the player
@@ -110,7 +117,7 @@ public class PortalHandler {
      *
      * @param portal <p>The portal to register</p>
      */
-    public static void registerPortal(Portal portal) {
+    public static void registerPortal(@NotNull Portal portal) {
         PortalRegistry.registerPortal(portal);
     }
 
@@ -123,8 +130,8 @@ public class PortalHandler {
      * @param network         <p>The name of the portal's network</p>
      * @return <p>False if the portal is an invalid bungee portal. True otherwise</p>
      */
-    static boolean isValidBungeePortal(Map<PortalOption, Boolean> portalOptions, Player player,
-                                       String destinationName, String network) {
+    public static boolean isValidBungeePortal(@NotNull Map<PortalOption, Boolean> portalOptions, @NotNull Player player,
+                                              @NotNull String destinationName, String network) {
         if (portalOptions.get(PortalOption.BUNGEE)) {
             if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDeny"));
@@ -147,13 +154,17 @@ public class PortalHandler {
      * @param world          <p>The world the player is located in</p>
      * @return <p>The matching gate type, or null if no such gate could be found</p>
      */
-    static Gate findMatchingGate(PortalLocation portalLocation, World world) {
+    @Nullable
+    public static Gate findMatchingGate(@NotNull PortalLocation portalLocation, @NotNull World world) {
         Block signParent = portalLocation.getSignLocation().getParent();
+        if (signParent == null) {
+            return null;
+        }
         BlockLocation parent = new BlockLocation(world, signParent.getX(), signParent.getY(),
                 signParent.getZ());
 
         //Get all gates with the used type of control blocks
-        Gate[] possibleGates = GateHandler.getGatesByControlBlock(signParent);
+        List<Gate> possibleGates = GateHandler.getGatesByControlBlock(signParent);
         double yaw = portalLocation.getYaw();
         Gate gate = null;
 
@@ -187,7 +198,7 @@ public class PortalHandler {
      *
      * @param portal <p>The newly created portal</p>
      */
-    static void updatePortalsPointingAtNewPortal(Portal portal) {
+    public static void updatePortalsPointingAtNewPortal(@NotNull Portal portal) {
         for (String originName : PortalRegistry.getAllPortalNetworks().get(portal.getCleanNetwork())) {
             Portal origin = getByName(originName, portal.getCleanNetwork());
             if (origin == null ||
@@ -214,7 +225,9 @@ public class PortalHandler {
      * @param options         <p>The string on the option line of the sign</p>
      * @return <p>A map containing all portal options and their values</p>
      */
-    static Map<PortalOption, Boolean> getPortalOptions(Player player, String destinationName, String options) {
+    @NotNull
+    public static Map<PortalOption, Boolean> getPortalOptions(@NotNull Player player, @NotNull String destinationName,
+                                                              @NotNull String options) {
         Map<PortalOption, Boolean> portalOptions = new HashMap<>();
         for (PortalOption option : PortalOption.values()) {
             portalOptions.put(option, options.indexOf(option.getCharacterRepresentation()) != -1 &&
@@ -252,7 +265,8 @@ public class PortalHandler {
      * @param network <p>The network the portal is connected to</p>
      * @return <p>The portal with the given name or null</p>
      */
-    public static Portal getByName(String name, String network) {
+    @Nullable
+    public static Portal getByName(@NotNull String name, @NotNull String network) {
         Map<String, Map<String, Portal>> lookupMap = PortalRegistry.getPortalLookupByNetwork();
         if (!lookupMap.containsKey(network.toLowerCase())) {
             return null;
@@ -267,7 +281,11 @@ public class PortalHandler {
      * @param location <p>The location of the portal's entrance</p>
      * @return <p>The portal at the given location</p>
      */
-    public static Portal getByEntrance(Location location) {
+    @Nullable
+    public static Portal getByEntrance(@NotNull Location location) {
+        if (location.getWorld() == null) {
+            return null;
+        }
         return PortalRegistry.getLookupEntrances().get(new BlockLocation(location.getWorld(), location.getBlockX(),
                 location.getBlockY(), location.getBlockZ()));
     }
@@ -278,7 +296,8 @@ public class PortalHandler {
      * @param block <p>The block at the portal's entrance</p>
      * @return <p>The portal at the given block's location</p>
      */
-    public static Portal getByEntrance(Block block) {
+    @Nullable
+    public static Portal getByEntrance(@NotNull Block block) {
         return PortalRegistry.getLookupEntrances().get(new BlockLocation(block));
     }
 
@@ -288,7 +307,8 @@ public class PortalHandler {
      * @param location <p>A location adjacent to the portal's entrance</p>
      * @return <p>The portal adjacent to the given location</p>
      */
-    public static Portal getByAdjacentEntrance(Location location) {
+    @Nullable
+    public static Portal getByAdjacentEntrance(@NotNull Location location) {
         return getByAdjacentEntrance(location, 1);
     }
 
@@ -299,7 +319,8 @@ public class PortalHandler {
      * @param range    <p>The range to scan for portals</p>
      * @return <p>The portal adjacent to the given location</p>
      */
-    public static Portal getByAdjacentEntrance(Location location, int range) {
+    @Nullable
+    public static Portal getByAdjacentEntrance(@NotNull Location location, int range) {
         List<BlockLocation> adjacentPositions = new ArrayList<>();
         BlockLocation centerLocation = new BlockLocation(location.getBlock());
         adjacentPositions.add(centerLocation);
@@ -332,7 +353,8 @@ public class PortalHandler {
      * @param block <p>The portal's control block</p>
      * @return <p>The portal with the given control block</p>
      */
-    public static Portal getByControl(Block block) {
+    @Nullable
+    public static Portal getByControl(@NotNull Block block) {
         return PortalRegistry.getLookupControls().get(new BlockLocation(block));
     }
 
@@ -342,7 +364,8 @@ public class PortalHandler {
      * @param block <p>One of the loaded lookup blocks</p>
      * @return <p>The portal corresponding to the block</p>
      */
-    public static Portal getByBlock(Block block) {
+    @Nullable
+    public static Portal getByBlock(@NotNull Block block) {
         return PortalRegistry.getLookupBlocks().get(new BlockLocation(block));
     }
 
@@ -352,7 +375,8 @@ public class PortalHandler {
      * @param name <p>The name of the bungee portal to get</p>
      * @return <p>A bungee portal</p>
      */
-    public static Portal getBungeePortal(String name) {
+    @Nullable
+    public static Portal getBungeePortal(@NotNull String name) {
         return PortalRegistry.getBungeePortals().get(name.toLowerCase());
     }
 
@@ -362,7 +386,8 @@ public class PortalHandler {
      * @param portalData <p>The string list containing all information about a portal</p>
      * @return <p>A map between portal options and booleans</p>
      */
-    public static Map<PortalOption, Boolean> getPortalOptions(String[] portalData) {
+    @NotNull
+    public static Map<PortalOption, Boolean> getPortalOptions(@NotNull String[] portalData) {
         Map<PortalOption, Boolean> portalOptions = new HashMap<>();
         for (PortalOption option : PortalOption.values()) {
             int saveIndex = option.getSaveIndex();
@@ -415,7 +440,7 @@ public class PortalHandler {
      *
      * @param portal <p>The portal of the star portal</p>
      */
-    private static void unregisterInvalidPortal(Portal portal) {
+    private static void unregisterInvalidPortal(@NotNull Portal portal) {
         //Show debug information
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             Block block = portal.getBlockAt(control).getBlock();
@@ -447,7 +472,8 @@ public class PortalHandler {
      * @param input <p>The name to filter</p>
      * @return <p>The filtered name</p>
      */
-    public static String filterName(String input) {
+    @NotNull
+    public static String filterName(@Nullable String input) {
         if (input == null) {
             return "";
         }

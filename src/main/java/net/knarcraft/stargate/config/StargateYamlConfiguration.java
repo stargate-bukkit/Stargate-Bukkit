@@ -21,18 +21,20 @@ import java.util.List;
  */
 public class StargateYamlConfiguration extends YamlConfiguration {
 
-    public static final String START_OF_COMMENT_LINE = "[HASHTAG]";
-    static public final String END_OF_COMMENT = "_endOfComment_";
-    static public final String START_OF_COMMENT = "comment_";
+    private static final String START_OF_COMMENT_LINE = "[HASHTAG]";
+    private static final String END_OF_COMMENT = "_endOfComment_";
+    private static final String START_OF_COMMENT = "comment_";
 
     @Override
+    @NotNull
     @SuppressWarnings("deprecation")
-    protected @NotNull String buildHeader() {
+    protected String buildHeader() {
         return "";
     }
 
     @Override
-    public @NotNull String saveToString() {
+    @NotNull
+    public String saveToString() {
         // Convert YAML comments to normal comments
         return this.convertYAMLMappingsToComments(super.saveToString());
     }
@@ -51,7 +53,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * the {@link FileConfiguration#save(File)} method. The config
      * needs to be saved if a config value has changed.</p>
      */
-    private String convertCommentsToYAMLMappings(String configString) {
+    @NotNull
+    private String convertCommentsToYAMLMappings(@NotNull String configString) {
         StringBuilder yamlBuilder = new StringBuilder();
         List<String> currentComment = new ArrayList<>();
         int commentId = 0;
@@ -84,8 +87,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param previousIndentation <p>The indentation of the current block comment</p>
      * @param commentId           <p>The id of the comment</p>
      */
-    private void addYamlString(StringBuilder yamlBuilder, List<String> currentComment, String line,
-                               int previousIndentation, int commentId) {
+    private void addYamlString(@NotNull StringBuilder yamlBuilder, @NotNull List<String> currentComment,
+                               @NotNull String line, int previousIndentation, int commentId) {
         String trimmed = line.trim();
         //Write the full formatted comment to the StringBuilder
         if (!currentComment.isEmpty()) {
@@ -105,7 +108,7 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param commentParts <p>The list to add to</p>
      * @param comment      <p>The comment to add</p>
      */
-    private void addComment(List<String> commentParts, String comment) {
+    private void addComment(@NotNull List<String> commentParts, @NotNull String comment) {
         if (comment.startsWith("# ")) {
             commentParts.add(comment.replaceFirst("# ", START_OF_COMMENT_LINE));
         } else {
@@ -121,7 +124,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param commentId    <p>The unique id of the comment</p>
      * @param indentation  <p>The indentation to add to every line</p>
      */
-    private void generateCommentYAML(StringBuilder yamlBuilder, List<String> commentLines, int commentId, int indentation) {
+    private void generateCommentYAML(@NotNull StringBuilder yamlBuilder, @NotNull List<String> commentLines,
+                                     int commentId, int indentation) {
         String subIndentation = this.addIndentation(indentation + 2);
         //Add the comment start marker
         yamlBuilder.append(this.addIndentation(indentation)).append(START_OF_COMMENT).append(commentId).append(": |\n");
@@ -143,7 +147,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param yamlString <p>A string using the YAML format</p>
      * @return <p>The corresponding comment string</p>
      */
-    private String convertYAMLMappingsToComments(String yamlString) {
+    @NotNull
+    private String convertYAMLMappingsToComments(@NotNull String yamlString) {
         StringBuilder finalText = new StringBuilder();
 
         String[] lines = yamlString.split("\n");
@@ -173,7 +178,8 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param commentIndentation <p>The indentation of the read comment</p>
      * @return <p>The index containing the next non-comment line</p>
      */
-    private int readComment(StringBuilder builder, String[] lines, int startIndex, int commentIndentation) {
+    private int readComment(@NotNull StringBuilder builder, @NotNull String[] lines, int startIndex,
+                            int commentIndentation) {
         for (int currentIndex = startIndex; currentIndex < lines.length; currentIndex++) {
             String line = lines[currentIndex];
             String possibleComment = line.trim();
@@ -194,6 +200,7 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param indentationSpaces <p>The number spaces to use for indentation</p>
      * @return <p>A string containing the number of spaces specified</p>
      */
+    @NotNull
     private String addIndentation(int indentationSpaces) {
         return " ".repeat(Math.max(0, indentationSpaces));
     }
@@ -205,7 +212,7 @@ public class StargateYamlConfiguration extends YamlConfiguration {
      * @param line <p>The line to get indentation of</p>
      * @return <p>The number of spaces in the line's indentation</p>
      */
-    private int getIndentation(String line) {
+    private int getIndentation(@NotNull String line) {
         int spacesFound = 0;
         for (char aCharacter : line.toCharArray()) {
             if (aCharacter == ' ') {

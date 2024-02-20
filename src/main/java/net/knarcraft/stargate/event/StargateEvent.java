@@ -3,6 +3,7 @@ package net.knarcraft.stargate.event;
 import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An abstract event describing any stargate event
@@ -18,7 +19,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    StargateEvent(Portal portal) {
+    StargateEvent(@NotNull Portal portal) {
         this.portal = portal;
         this.cancelled = false;
     }
@@ -28,6 +29,7 @@ public abstract class StargateEvent extends Event implements Cancellable {
      *
      * @return <p>The portal involved in this stargate event</p>
      */
+    @NotNull
     public Portal getPortal() {
         return portal;
     }

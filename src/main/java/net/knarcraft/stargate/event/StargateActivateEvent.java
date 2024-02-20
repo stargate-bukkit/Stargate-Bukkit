@@ -28,7 +28,8 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      * @param destinations <p>The destinations available to the player using the portal</p>
      * @param destination  <p>The currently selected destination</p>
      */
-    public StargateActivateEvent(Portal portal, Player player, List<String> destinations, String destination) {
+    public StargateActivateEvent(@NotNull Portal portal, @NotNull Player player, @NotNull List<String> destinations,
+                                 @NotNull String destination) {
         super(portal, player);
 
         this.destinations = destinations;
@@ -40,6 +41,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      *
      * @return <p>The destinations available for the portal</p>
      */
+    @NotNull
     public List<String> getDestinations() {
         return destinations;
     }
@@ -49,7 +51,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      *
      * @param destinations <p>The new list of available destinations</p>
      */
-    public void setDestinations(List<String> destinations) {
+    public void setDestinations(@NotNull List<String> destinations) {
         this.destinations = destinations;
     }
 
@@ -58,6 +60,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      *
      * @return <p>The selected destination</p>
      */
+    @NotNull
     public String getDestination() {
         return destination;
     }
@@ -67,7 +70,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      *
      * @param destination <p>The new selected destination</p>
      */
-    public void setDestination(String destination) {
+    public void setDestination(@NotNull String destination) {
         this.destination = destination;
     }
 
@@ -76,6 +79,7 @@ public class StargateActivateEvent extends StargatePlayerEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

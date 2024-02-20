@@ -11,6 +11,8 @@ import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -46,8 +48,9 @@ public class Portal {
      * @param portalOwner    <p>The portal's owner</p>
      * @param options        <p>A map containing all possible portal options, with true for the ones enabled</p>
      */
-    public Portal(PortalLocation portalLocation, BlockLocation button, String destination, String name, String network,
-                  Gate gate, PortalOwner portalOwner, Map<PortalOption, Boolean> options) {
+    public Portal(@NotNull PortalLocation portalLocation, @Nullable BlockLocation button, @NotNull String destination,
+                  @NotNull String name, @NotNull String network, @NotNull Gate gate, @NotNull PortalOwner portalOwner,
+                  @NotNull Map<PortalOption, Boolean> options) {
         this.location = portalLocation;
         this.network = network;
         this.name = name;
@@ -84,6 +87,7 @@ public class Portal {
      *
      * @return <p>This portal's location data</p>
      */
+    @NotNull
     public PortalLocation getLocation() {
         return this.location;
     }
@@ -96,6 +100,7 @@ public class Portal {
      *
      * @return <p>This portal's structure</p>
      */
+    @NotNull
     public PortalStructure getStructure() {
         return this.structure;
     }
@@ -108,6 +113,7 @@ public class Portal {
      *
      * @return <p>This portal's activator</p>
      */
+    @NotNull
     public PortalActivator getPortalActivator() {
         return this.portalActivator;
     }
@@ -124,6 +130,7 @@ public class Portal {
      *
      * @return <p>This portal's portal options</p>
      */
+    @NotNull
     public PortalOptions getOptions() {
         return this.options;
     }
@@ -142,6 +149,7 @@ public class Portal {
      *
      * @return <p>The player currently using this portal</p>
      */
+    @Nullable
     public Player getActivePlayer() {
         return portalActivator.getActivePlayer();
     }
@@ -151,6 +159,7 @@ public class Portal {
      *
      * @return <p>The network this portal belongs to</p>
      */
+    @NotNull
     public String getNetwork() {
         return network;
     }
@@ -160,6 +169,7 @@ public class Portal {
      *
      * @return <p>The clean network name</p>
      */
+    @NotNull
     public String getCleanNetwork() {
         return cleanNetwork;
     }
@@ -181,6 +191,7 @@ public class Portal {
      *
      * @return <p>The name of this portal</p>
      */
+    @NotNull
     public String getName() {
         return name;
     }
@@ -190,6 +201,7 @@ public class Portal {
      *
      * @return <p>The clean name of this portal</p>
      */
+    @NotNull
     public String getCleanName() {
         return cleanName;
     }
@@ -201,6 +213,7 @@ public class Portal {
      *
      * @return <p>This portal's portal opener</p>
      */
+    @NotNull
     public PortalOpener getPortalOpener() {
         return portalOpener;
     }
@@ -210,6 +223,7 @@ public class Portal {
      *
      * @return <p>The name of this portal's destination portal</p>
      */
+    @NotNull
     public String getDestinationName() {
         return portalOpener.getPortalActivator().getDestinationName();
     }
@@ -219,6 +233,7 @@ public class Portal {
      *
      * @return <p>The gate type used by this portal</p>
      */
+    @NotNull
     public Gate getGate() {
         return structure.getGate();
     }
@@ -230,6 +245,7 @@ public class Portal {
      *
      * @return <p>This portal's owner</p>
      */
+    @NotNull
     public PortalOwner getOwner() {
         return portalOwner;
     }
@@ -240,7 +256,7 @@ public class Portal {
      * @param player <p>The player to check</p>
      * @return <p>True if the player is the owner of this portal</p>
      */
-    public boolean isOwner(Player player) {
+    public boolean isOwner(@NotNull Player player) {
         if (this.portalOwner.getUUID() != null) {
             return player.getUniqueId().compareTo(this.portalOwner.getUUID()) == 0;
         } else {
@@ -253,6 +269,7 @@ public class Portal {
      *
      * @return <p>The world this portal belongs to</p>
      */
+    @Nullable
     public World getWorld() {
         return location.getWorld();
     }
@@ -262,6 +279,7 @@ public class Portal {
      *
      * @return <p>The location of this portal's sign</p>
      */
+    @NotNull
     public BlockLocation getSignLocation() {
         return this.location.getSignLocation();
     }
@@ -283,6 +301,7 @@ public class Portal {
      *
      * @return <p>The location of the top-left portal block</p>
      */
+    @NotNull
     public BlockLocation getTopLeft() {
         return this.location.getTopLeft();
     }
@@ -293,7 +312,8 @@ public class Portal {
      * @param vector <p>The relative block vector explaining the position of the block</p>
      * @return <p>The block at the given relative position</p>
      */
-    public BlockLocation getBlockAt(RelativeBlockVector vector) {
+    @NotNull
+    public BlockLocation getBlockAt(@NotNull RelativeBlockVector vector) {
         return getTopLeft().getRelativeLocation(vector, getYaw());
     }
 
@@ -303,11 +323,13 @@ public class Portal {
      * @param string <p>The string to clean</p>
      * @return <p>The clean string</p>
      */
-    public static String cleanString(String string) {
+    @NotNull
+    public static String cleanString(@NotNull String string) {
         return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string)).toLowerCase();
     }
 
     @Override
+    @NotNull
     public String toString() {
         return String.format("Portal [id=%s, network=%s name=%s, type=%s]", getSignLocation(), network, name,
                 structure.getGate().getFilename());
@@ -323,7 +345,7 @@ public class Portal {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
         if (this == object) {
             return true;
         }

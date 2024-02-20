@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.config;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import org.bukkit.Location;
@@ -10,6 +11,8 @@ import org.dynmap.markers.GenericMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A manager for dealing with everything Dynmap
@@ -29,7 +32,7 @@ public final class DynmapManager {
      * @param dynmapAPI <p>A reference</p>
      * @throws NullPointerException <p>If dynmap has an invalid state</p>
      */
-    public static void initialize(DynmapAPI dynmapAPI) throws NullPointerException {
+    public static void initialize(@Nullable DynmapAPI dynmapAPI) throws NullPointerException {
         if (dynmapAPI == null || !dynmapAPI.markerAPIInitialized() || dynmapAPI.getMarkerAPI() == null) {
             markerSet = null;
             portalIcon = null;
@@ -67,7 +70,7 @@ public final class DynmapManager {
      *
      * @param portal <p>The portal to add a marker for</p>
      */
-    public static void addPortalMarker(Portal portal) {
+    public static void addPortalMarker(@NotNull Portal portal) {
         if (markerSet == null || Stargate.getStargateConfig().isDynmapDisabled()) {
             return;
         }
@@ -76,7 +79,13 @@ public final class DynmapManager {
             return;
         }
 
-        Location location = portal.getBlockAt(portal.getGate().getLayout().getExit());
+        Location location;
+        @Nullable RelativeBlockVector exit = portal.getGate().getLayout().getExit();
+        if (exit == null) {
+            location = portal.getTopLeft();
+        } else {
+            location = portal.getBlockAt(exit);
+        }
         Marker marker = markerSet.createMarker(getPortalMarkerId(portal), portal.getName(), world.getName(),
                 location.getX(), location.getY(), location.getZ(), portalIcon, false);
         if (marker == null) {
@@ -112,7 +121,7 @@ public final class DynmapManager {
      *
      * @param portal <p>The portal to remove the marker for</p>
      */
-    public static void removePortalMarker(Portal portal) {
+    public static void removePortalMarker(@NotNull Portal portal) {
         if (markerSet == null || Stargate.getStargateConfig().isDynmapDisabled()) {
             return;
         }
@@ -128,7 +137,7 @@ public final class DynmapManager {
      * @param portal <p>The portal to get a marker id for</p>
      * @return <p></p>
      */
-    private static String getPortalMarkerId(Portal portal) {
+    private static String getPortalMarkerId(@NotNull Portal portal) {
         return portal.getNetwork() + "-:-" + portal.getName();
     }
 

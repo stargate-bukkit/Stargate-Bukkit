@@ -7,6 +7,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public final class UUIDMigrationHelper {
      *
      * @param player <p>The player to migrate</p>
      */
-    public static void migrateUUID(OfflinePlayer player) {
+    public static void migrateUUID(@NotNull OfflinePlayer player) {
         Map<String, List<Portal>> playersToMigrate = getPlayersToMigrate();
         String playerName = player.getName();
 
@@ -53,7 +54,7 @@ public final class UUIDMigrationHelper {
 
         migratePortalsToUUID(portalsOwned, player.getUniqueId());
 
-        //Remove the player to prevent the migration to happen every time the player joins
+        //Remove the player to prevent the migration from happening every time the player joins
         playersToMigrate.remove(playerName);
     }
 
@@ -63,7 +64,7 @@ public final class UUIDMigrationHelper {
      * @param portals  <p>The portals to migrate</p>
      * @param uniqueId <p>The unique ID of the portals' owner</p>
      */
-    private static void migratePortalsToUUID(List<Portal> portals, UUID uniqueId) {
+    private static void migratePortalsToUUID(@NotNull List<Portal> portals, @NotNull UUID uniqueId) {
         Set<World> worldsToSave = new HashSet<>();
 
         //Get the real portal from the copy and set UUID
@@ -86,6 +87,7 @@ public final class UUIDMigrationHelper {
      *
      * @return <p>The player names to migrate</p>
      */
+    @NotNull
     private static Map<String, List<Portal>> getPlayersToMigrate() {
         //Make sure to only go through portals once
         if (playerNamesToMigrate != null) {

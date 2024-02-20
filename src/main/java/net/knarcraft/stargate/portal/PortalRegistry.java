@@ -5,6 +5,7 @@ import net.knarcraft.stargate.config.DynmapManager;
 import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +45,11 @@ public class PortalRegistry {
      *
      * @param world <p>The world containing the portals to clear</p>
      */
-    public static void clearPortals(World world) {
+    public static void clearPortals(@NotNull World world) {
         //Storing the portals to clear is necessary to avoid a concurrent modification exception
         List<Portal> portalsToRemove = new ArrayList<>();
         allPortals.forEach((portal) -> {
-            if (portal.getWorld().equals(world)) {
+            if (portal.getWorld() != null && portal.getWorld().equals(world)) {
                 portalsToRemove.add(portal);
             }
         });
@@ -61,7 +62,7 @@ public class PortalRegistry {
      *
      * @param portalsToRemove <p>A list of portals to remove</p>
      */
-    private static void clearPortals(List<Portal> portalsToRemove) {
+    private static void clearPortals(@NotNull List<Portal> portalsToRemove) {
         //Store the names of the portals to remove as some maps require the name, not the object
         List<String> portalNames = new ArrayList<>();
         portalsToRemove.forEach((portal) -> portalNames.add(portal.getCleanName()));
@@ -87,6 +88,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of the list of all portals</p>
      */
+    @NotNull
     public static List<Portal> getAllPortals() {
         return new ArrayList<>(allPortals);
     }
@@ -96,6 +98,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of the frame block lookup map</p>
      */
+    @NotNull
     public static Map<BlockLocation, Portal> getLookupBlocks() {
         return new HashMap<>(lookupBlocks);
     }
@@ -105,6 +108,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of the control block lookup map</p>
      */
+    @NotNull
     public static Map<BlockLocation, Portal> getLookupControls() {
         return new HashMap<>(lookupControls);
     }
@@ -114,6 +118,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of the network portal lookup map</p>
      */
+    @NotNull
     public static Map<String, Map<String, Portal>> getPortalLookupByNetwork() {
         return new HashMap<>(portalLookupByNetwork);
     }
@@ -123,6 +128,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of all entrances to portal mappings</p>
      */
+    @NotNull
     public static Map<BlockLocation, Portal> getLookupEntrances() {
         return new HashMap<>(lookupEntrances);
     }
@@ -132,6 +138,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of all portal networks</p>
      */
+    @NotNull
     public static Map<String, List<String>> getAllPortalNetworks() {
         return new HashMap<>(allPortalNetworks);
     }
@@ -141,6 +148,7 @@ public class PortalRegistry {
      *
      * @return <p>A copy of all bungee portals</p>
      */
+    @NotNull
     public static Map<String, Portal> getBungeePortals() {
         return new HashMap<>(bungeePortals);
     }
@@ -151,7 +159,8 @@ public class PortalRegistry {
      * @param network <p>The network to get portals from</p>
      * @return <p>A list of portal names</p>
      */
-    public static List<String> getNetwork(String network) {
+    @NotNull
+    public static List<String> getNetwork(@NotNull String network) {
         return allPortalNetworks.get(network.toLowerCase());
     }
 
@@ -161,7 +170,7 @@ public class PortalRegistry {
      * @param portal    <p>The portal to un-register</p>
      * @param removeAll <p>Whether to remove the portal from the list of all portals</p>
      */
-    public static void unregisterPortal(Portal portal, boolean removeAll) {
+    public static void unregisterPortal(@NotNull Portal portal, boolean removeAll) {
         Stargate.debug("Unregister", "Unregistering gate " + portal.getName());
         portal.getPortalActivator().deactivate();
         portal.getPortalOpener().closePortal(true);
@@ -223,7 +232,9 @@ public class PortalRegistry {
         //Mark the portal's sign as unregistered
         new PortalSignDrawer(portal).drawUnregisteredSign();
 
-        PortalFileHelper.saveAllPortals(portal.getWorld());
+        if (portal.getWorld() != null) {
+            PortalFileHelper.saveAllPortals(portal.getWorld());
+        }
         portal.setRegistered(false);
         DynmapManager.removePortalMarker(portal);
     }
@@ -233,7 +244,7 @@ public class PortalRegistry {
      *
      * @param portal <p>The portal to register</p>
      */
-    static void registerPortal(Portal portal) {
+    public static void registerPortal(@NotNull Portal portal) {
         portal.getOptions().setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() ||
                 portal.getOptions().isBungee());
 

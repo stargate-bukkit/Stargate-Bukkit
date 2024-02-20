@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.RelativeBlockVector;
+import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.portal.property.gate.GateLayout;
 import org.bukkit.Material;
@@ -28,7 +29,12 @@ public class GateLayoutTest {
         server.addWorld(new WorldMock(Material.DIRT, 5));
         System.setProperty("bstats.relocatecheck", "false");
         MockBukkit.load(Stargate.class);
-        layout = GateHandler.getGateByName("nethergate.gate").getLayout();
+        Gate gate = GateHandler.getGateByName("nethergate.gate");
+        if (gate != null) {
+            layout = gate.getLayout();
+        } else {
+            throw new IllegalStateException("Could not set up tests, because nethergate.gate is unavailable");
+        }
     }
 
     @AfterAll

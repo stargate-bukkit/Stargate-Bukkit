@@ -4,6 +4,7 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This listener listens to teleportation-related events
@@ -21,7 +22,7 @@ public class TeleportEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
 
         //Block normal portal teleportation if teleporting from a stargate
