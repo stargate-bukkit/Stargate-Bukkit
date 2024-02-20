@@ -78,8 +78,8 @@ public class PortalActivator {
                 return null;
             }
             //Get one random destination
-            String destination = ListHelper.getRandom(destinations);
-            return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
+            String randomDestination = ListHelper.getRandom(destinations);
+            return PortalHandler.getByName(Portal.cleanString(randomDestination), portalNetwork);
         } else {
             //Just return the normal fixed destination
             return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);

@@ -9,6 +9,7 @@ import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.PortalStrings;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.utility.DirectionHelper;
@@ -167,8 +168,8 @@ public class PortalCreator {
         }
 
         PortalOwner owner = new PortalOwner(player);
-        this.portal = new Portal(portalLocation, null, destinationName, portalName, network, gate, owner,
-                portalOptions);
+        PortalStrings portalStrings = new PortalStrings(portalName, network, destinationName);
+        this.portal = new Portal(portalLocation, null, portalStrings, gate, owner, portalOptions);
         return validatePortal(denyMessage, event.getLines(), deny);
     }
 

@@ -353,7 +353,7 @@ public class PlayerEventListener implements Listener {
         }
 
         //Prevent a double click caused by a Spigot bug
-        if (clickIsBug(event.getPlayer(), block)) {
+        if (clickIsBug(event.getPlayer())) {
             return;
         }
 
@@ -425,10 +425,9 @@ public class PlayerEventListener implements Listener {
      * clicking once the bug is fixed.</p>
      *
      * @param player <p>The player performing the right-click</p>
-     * @param block  <p>The block to check</p>
      * @return <p>True if the click is a bug and should be cancelled</p>
      */
-    private boolean clickIsBug(@NotNull Player player, @NotNull Block block) {
+    private boolean clickIsBug(@NotNull Player player) {
         Long previousEventTime = previousEventTimes.get(player);
         if (previousEventTime != null && previousEventTime + 50 > System.currentTimeMillis()) {
             previousEventTimes.put(player, null);

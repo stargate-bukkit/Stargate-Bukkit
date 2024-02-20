@@ -64,36 +64,6 @@ public record RelativeBlockVector(int right, int down, int out) {
         return new RelativeBlockVector(-this.right, -this.down, -this.out);
     }
 
-    /**
-     * Gets the distance to the right relative to the origin
-     *
-     * @return <p>The distance to the right relative to the origin</p>
-     */
-    @Override
-    public int right() {
-        return right;
-    }
-
-    /**
-     * Gets the distance downward relative to the origin
-     *
-     * @return <p>The distance downward relative to the origin</p>
-     */
-    @Override
-    public int down() {
-        return down;
-    }
-
-    /**
-     * Gets the distance outward relative to the origin
-     *
-     * @return <p>The distance outward relative to the origin</p>
-     */
-    @Override
-    public int out() {
-        return out;
-    }
-
     @Override
     @NotNull
     public String toString() {

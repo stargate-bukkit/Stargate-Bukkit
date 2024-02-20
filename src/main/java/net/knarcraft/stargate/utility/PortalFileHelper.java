@@ -10,6 +10,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.PortalStrings;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import org.bukkit.Bukkit;
@@ -286,7 +287,8 @@ public final class PortalFileHelper {
         PortalOwner owner = new PortalOwner(ownerString);
 
         //Create the new portal
-        Portal portal = new Portal(portalLocation, button, destination, name, network, gate, owner,
+        PortalStrings portalStrings = new PortalStrings(name, network, destination);
+        Portal portal = new Portal(portalLocation, button, portalStrings, gate, owner,
                 PortalHandler.getPortalOptions(portalData));
 
         //Register the portal, and close it in case it wasn't properly closed when the server stopped

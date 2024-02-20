@@ -6,6 +6,7 @@ import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOption;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.PortalStrings;
 import net.knarcraft.stargate.portal.property.PortalStructure;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.md_5.bungee.api.ChatColor;
@@ -41,23 +42,21 @@ public class Portal {
      *
      * @param portalLocation <p>Object containing locations of all relevant blocks</p>
      * @param button         <p>The location of the portal's open button</p>
-     * @param destination    <p>The destination defined on the sign's destination line. "" for non-fixed gates</p>
-     * @param name           <p>The name of the portal defined on the sign's first line</p>
-     * @param network        <p>The network the portal belongs to, defined on the sign's third</p>
+     * @param portalStrings  <p>The portal's string values, such as name, network and destination</p>
      * @param gate           <p>The gate type to use for this portal</p>
      * @param portalOwner    <p>The portal's owner</p>
      * @param options        <p>A map containing all possible portal options, with true for the ones enabled</p>
      */
-    public Portal(@NotNull PortalLocation portalLocation, @Nullable BlockLocation button, @NotNull String destination,
-                  @NotNull String name, @NotNull String network, @NotNull Gate gate, @NotNull PortalOwner portalOwner,
+    public Portal(@NotNull PortalLocation portalLocation, @Nullable BlockLocation button,
+                  @NotNull PortalStrings portalStrings, @NotNull Gate gate, @NotNull PortalOwner portalOwner,
                   @NotNull Map<PortalOption, Boolean> options) {
         this.location = portalLocation;
-        this.network = network;
-        this.name = name;
+        this.network = portalStrings.network();
+        this.name = portalStrings.name();
         this.portalOwner = portalOwner;
-        this.options = new PortalOptions(options, destination.length() > 0);
+        this.options = new PortalOptions(options, portalStrings.destination().length() > 0);
         this.signDrawer = new PortalSignDrawer(this);
-        this.portalOpener = new PortalOpener(this, destination);
+        this.portalOpener = new PortalOpener(this, portalStrings.destination());
         this.structure = new PortalStructure(this, gate, button);
         this.portalActivator = portalOpener.getPortalActivator();
         this.cleanName = cleanString(name);

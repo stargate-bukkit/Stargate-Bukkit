@@ -116,16 +116,32 @@ public class VehicleEventListener implements Listener {
             return;
         }
 
+        // Perform the teleportation
+        teleportPlayerAndVehicle(players, vehicle, entrancePortal, destinationPortal);
+    }
+
+    /**
+     * Performs the teleportation of one or more players in a vehicle
+     *
+     * @param players           <p>The players to be teleported</p>
+     * @param vehicle           <p>The vehicle that triggered the teleportation</p>
+     * @param entrancePortal    <p>The portal the player(s) and vehicle entered from</p>
+     * @param destinationPortal <p>The portal the player(s) and vehicle are teleporting to</p>
+     */
+    private static void teleportPlayerAndVehicle(@NotNull List<Player> players, @NotNull Vehicle vehicle,
+                                                 @NotNull Portal entrancePortal, @NotNull Portal destinationPortal) {
         //Teleport the vehicle and inform the user if the vehicle was teleported
         boolean teleported = new VehicleTeleporter(destinationPortal, vehicle).teleportEntity(entrancePortal);
-        if (teleported) {
-            if (!entrancePortal.getOptions().isSilent()) {
-                for (Player player : players) {
-                    Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.TELEPORTED));
-                }
-            }
-            entrancePortal.getPortalOpener().closePortal(false);
+        if (!teleported) {
+            return;
         }
+
+        if (!entrancePortal.getOptions().isSilent()) {
+            for (Player player : players) {
+                Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.TELEPORTED));
+            }
+        }
+        entrancePortal.getPortalOpener().closePortal(false);
     }
 
     /**
