@@ -33,7 +33,7 @@ public abstract class StargateEntityTask extends StargateTask {
 
     @Override
     public void runTaskTimer(long period, long delay) {
-        super.setRepeatable();
+        super.setRepeatable(true);
         if (USING_FOLIA) {
             entity.getScheduler().runAtFixedRate(plugin, super::runTask, null, delay, period);
         } else {

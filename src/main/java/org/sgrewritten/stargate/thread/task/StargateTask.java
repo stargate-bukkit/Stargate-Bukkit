@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public abstract class StargateTask implements Runnable{
+public abstract class StargateTask implements Runnable {
     protected static final boolean USING_FOLIA = NonLegacyClass.REGIONIZED_SERVER.isImplemented();
     private static final int MAXIMUM_SHUTDOWN_CYCLES = 10;
     private boolean taskIsRegistered = false;
@@ -33,7 +33,7 @@ public abstract class StargateTask implements Runnable{
     }
 
     protected void registerTask() {
-        if(taskIsRegistered){
+        if (taskIsRegistered) {
             return;
         }
         taskIsRegistered = true;
@@ -51,9 +51,7 @@ public abstract class StargateTask implements Runnable{
 
     protected BukkitRunnable registerBukkitTask(BukkitRunnable scheduledBukkitTask) {
         this.scheduledBukkitTask = scheduledBukkitTask;
-        if (cancelled) {
-            cancelIfTaskHasBeenScheduled(true);
-        } else {
+        if (!cancelled) {
             registerTask();
         }
         return scheduledBukkitTask;
@@ -91,7 +89,11 @@ public abstract class StargateTask implements Runnable{
      * Run the task if not already been running (should be threadsafe)
      */
     protected void runTask() {
-        if ((running && ! repeatable)|| cancelled) {
+        if (cancelled) {
+            cancelIfTaskHasBeenScheduled(true);
+            return;
+        }
+        if (running && !repeatable) {
             return;
         }
         running = true;
@@ -111,7 +113,7 @@ public abstract class StargateTask implements Runnable{
         this.runTask();
     }
 
-    protected void setRepeatable(){
-        this.repeatable = true;
+    protected void setRepeatable(boolean repeatable) {
+        this.repeatable = repeatable;
     }
 }

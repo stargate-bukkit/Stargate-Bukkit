@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.Stargate;
 
 class StargateGlobalTaskTest {
 
@@ -33,12 +34,13 @@ class StargateGlobalTaskTest {
     @Test
     void run_bungee_noDuplicates() {
         TestRunnable runnable = new TestRunnable(true, true);
-        runnable.run();
-        serverMock.getScheduler().performTicks(1000);
+        runnable.runNow();
+        serverMock.getScheduler().performTicks(30);
         Assertions.assertFalse(runnable.hasRunBefore);
         // Necessary to add a player here to avoid recursion loop
         serverMock.addPlayer();
-        MockBukkit.unmock();
+        Stargate.setKnowsServerName(true);
+        serverMock.getScheduler().performTicks(30);
         Assertions.assertTrue(runnable.hasRunBefore);
     }
 

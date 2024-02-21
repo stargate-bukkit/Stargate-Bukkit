@@ -33,7 +33,7 @@ public abstract class StargateAsyncTask extends StargateTask {
 
     @Override
     public void runTaskTimer(long period, long delay) {
-        super.setRepeatable();
+        super.setRepeatable(true);
         if (USING_FOLIA) {
             super.registerFoliaTask(Bukkit.getServer().getAsyncScheduler().runAtFixedRate(plugin, super::runTask, delay, period, TimeUnit.MILLISECONDS));
         } else {

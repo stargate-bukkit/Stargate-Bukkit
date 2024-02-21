@@ -28,11 +28,11 @@ public abstract class StargateGlobalTask extends StargateTask {
 
     @Override
     public void runNow() {
+        super.setRepeatable(false);
         if (bungee && !BungeeHelper.canSendBungeeMessages()) {
             runTaskTimer(20, 20, () -> {
                 if (BungeeHelper.canSendBungeeMessages()) {
                     this.runNow();
-                    this.cancel();
                 }
             });
             return;
@@ -45,11 +45,11 @@ public abstract class StargateGlobalTask extends StargateTask {
     }
 
     public void runTaskTimer(long period, long delay, Runnable runnable) {
-        super.setRepeatable();
+        super.setRepeatable(true);
         if (USING_FOLIA) {
             super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, ignored -> runnable.run(), delay, period));
         } else {
-            super.registerBukkitTask(new StargateBukkitRunnable(this::runTask)).runTaskTimer(plugin, delay, period);
+            super.registerBukkitTask(new StargateBukkitRunnable(runnable)).runTaskTimer(plugin, delay, period);
         }
     }
 

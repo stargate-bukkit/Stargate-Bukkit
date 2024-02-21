@@ -36,7 +36,7 @@ public abstract class StargateQueuedAsyncTask extends StargateTask {
 
     @Override
     public void runTaskTimer(long period, long delay) {
-        super.setRepeatable();
+        super.setRepeatable(true);
         StargateQueuedAsyncTask task = this;
         new StargateAsyncTask() {
             @Override

@@ -47,7 +47,7 @@ public abstract class StargateRegionTask extends StargateTask {
 
     @Override
     public void runTaskTimer(long period, long delay) {
-        super.setRepeatable();
+        super.setRepeatable(true);
         if (USING_FOLIA) {
             ScheduledTask theTask = Bukkit.getServer().getRegionScheduler().runAtFixedRate(plugin, location, super::runTask, delay, period);
             super.registerFoliaTask(theTask);

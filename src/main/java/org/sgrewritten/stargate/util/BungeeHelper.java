@@ -145,6 +145,6 @@ public final class BungeeHelper {
 
 
     public static boolean canSendBungeeMessages() {
-        return (Bukkit.getServer().getOnlinePlayers().isEmpty() || !Stargate.knowsServerName());
+        return (!Bukkit.getServer().getOnlinePlayers().isEmpty() && Stargate.knowsServerName());
     }
 }
