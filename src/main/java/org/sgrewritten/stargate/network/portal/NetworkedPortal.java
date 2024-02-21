@@ -392,17 +392,25 @@ public class NetworkedPortal extends AbstractPortal {
             /**
              * Avoid unnecessary database spam whenever the destination has changed.
              */
-            new StargateGlobalTask(() -> {
-                Portal destination = getDestination();
-                if (currentTime == previousDestinationSelectionTime && destination != null) {
-                    /*
-                     * setSelectedDestination(int) can be called multiple times within the same millisecond, this avoids
-                     * duplicate unnecessary calls
-                     */
-                    previousDestinationSelectionTime = -1;
-                    new StargateQueuedAsyncTask(() -> super.setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name())).run();
+            new StargateGlobalTask() {
+                @Override
+                public void run() {
+                    Portal destination = getDestination();
+                    if (currentTime == previousDestinationSelectionTime && destination != null) {
+                        /*
+                         * setSelectedDestination(int) can be called multiple times within the same millisecond, this avoids
+                         * duplicate unnecessary calls
+                         */
+                        previousDestinationSelectionTime = -1;
+                        new StargateQueuedAsyncTask() {
+                            @Override
+                            public void run() {
+                                setMetadata(new JsonPrimitive(destination.getId()), MetadataType.DESTINATION.name());
+                            }
+                        }.runNow();
+                    }
                 }
-            }).runDelayed(20);
+            }.runDelayed(20);
         }
         this.selectedDestination = selectedDestination;
     }

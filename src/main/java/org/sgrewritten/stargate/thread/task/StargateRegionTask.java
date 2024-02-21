@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 
-public class StargateRegionTask extends StargateTask {
+public abstract class StargateRegionTask extends StargateTask {
 
     private final Location location;
     private final Stargate plugin;
@@ -15,19 +15,18 @@ public class StargateRegionTask extends StargateTask {
 
     private final boolean bungee;
 
-    public StargateRegionTask(Location location, Runnable runnable, boolean bungee) {
-        super(runnable);
+    protected StargateRegionTask(Location location, boolean bungee) {
         this.location = location;
         this.plugin = Stargate.getInstance();
         this.bungee = bungee;
     }
 
-    public StargateRegionTask(Location location, Runnable runnable) {
-        this(location, runnable, false);
+    protected StargateRegionTask(Location location) {
+        this(location, false);
     }
 
     @Override
-    public void run() {
+    public void runNow() {
         if (USING_FOLIA) {
             ScheduledTask theTask = Bukkit.getServer().getRegionScheduler().run(plugin, location, super::runTask);
             super.registerFoliaTask(theTask);
@@ -43,6 +42,17 @@ public class StargateRegionTask extends StargateTask {
             super.registerFoliaTask(theTask);
         } else {
             super.registerBukkitTask(new StargateBukkitRunnable(this::runPopulatorTask)).runTaskLater(plugin, delay);
+        }
+    }
+
+    @Override
+    public void runTaskTimer(long period, long delay) {
+        super.setRepeatable();
+        if (USING_FOLIA) {
+            ScheduledTask theTask = Bukkit.getServer().getRegionScheduler().runAtFixedRate(plugin, location, super::runTask, delay, period);
+            super.registerFoliaTask(theTask);
+        } else {
+            super.registerBukkitTask(new StargateBukkitRunnable(this::runPopulatorTask)).runTaskTimer(plugin, delay, period);
         }
     }
 

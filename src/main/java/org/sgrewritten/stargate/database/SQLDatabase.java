@@ -15,7 +15,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
@@ -289,18 +288,21 @@ public class SQLDatabase implements StorageAPI {
         final List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
 
         //Actually register the gate and its positions
-        new StargateRegionTask(portalData.gateData().topLeft(), () -> {
-            try {
-                registerPortalGate(portalData, network, stargateAPI, portalPositions);
-            } catch (TranslatableException e) {
-                Stargate.log(e);
-            } catch (InvalidStructureException e) {
-                Stargate.log(Level.WARNING, String.format(
-                        "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                        portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
-                        portalData.gateData().topLeft()));
+        new StargateRegionTask(portalData.gateData().topLeft()) {
+            @Override
+            public void run() {
+                try {
+                    registerPortalGate(portalData, network, stargateAPI, portalPositions);
+                } catch (TranslatableException e) {
+                    Stargate.log(e);
+                } catch (InvalidStructureException e) {
+                    Stargate.log(Level.WARNING, String.format(
+                            "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
+                            portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
+                            portalData.gateData().topLeft()));
+                }
             }
-        }).run();
+        }.runNow();
     }
 
     /**

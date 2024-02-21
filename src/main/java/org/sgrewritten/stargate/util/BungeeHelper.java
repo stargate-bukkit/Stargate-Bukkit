@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
@@ -139,5 +140,11 @@ public final class BungeeHelper {
 
     public static String generateLegacyTeleportMessage(String player, Portal portal) {
         return player + "#@#" + portal.getName();
+    }
+
+
+
+    public static boolean canSendBungeeMessages() {
+        return (Bukkit.getServer().getOnlinePlayers().isEmpty() || !Stargate.knowsServerName());
     }
 }

@@ -18,14 +18,17 @@ public class BukkitPluginMessageInterface implements PluginMessageInterface {
         Stargate stargate = Stargate.getInstance();
 
 
-        new StargateGlobalTask(() -> {
-            try {
-                this.sendMessage(message, channel, stargate);
-            } catch (IOException e) {
-                Stargate.log(Level.WARNING, "Error sending BungeeCord connect packet");
-                Stargate.log(e);
+        new StargateGlobalTask(true) {
+            @Override
+            public void run() {
+                try {
+                    sendMessage(message, channel, stargate);
+                } catch (IOException e) {
+                    Stargate.log(Level.WARNING, "Error sending BungeeCord connect packet");
+                    Stargate.log(e);
+                }
             }
-        }).run(true);
+        }.runNow();
     }
 
 

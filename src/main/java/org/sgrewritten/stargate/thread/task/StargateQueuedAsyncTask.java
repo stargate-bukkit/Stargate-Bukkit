@@ -5,21 +5,26 @@ import org.sgrewritten.stargate.Stargate;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class StargateQueuedAsyncTask extends StargateTask {
+public abstract class StargateQueuedAsyncTask extends StargateTask {
     private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
     private static boolean asyncQueueThreadIsEnabled = false;
 
-    public StargateQueuedAsyncTask(Runnable runnable) {
-        super(runnable);
+    protected StargateQueuedAsyncTask() {
     }
 
     @Override
-    void runDelayed(long delay) {
-        new StargateAsyncTask(this).runDelayed(delay);
+    public void runDelayed(long delay) {
+        StargateQueuedAsyncTask task = this;
+        new StargateAsyncTask() {
+            @Override
+            public void run() {
+                task.run();
+            }
+        }.runDelayed(delay);
     }
 
     @Override
-    public void run() {
+    public void runNow() {
         try {
             super.registerTask();
             asyncQueue.put(super::runTask);
@@ -27,6 +32,18 @@ public class StargateQueuedAsyncTask extends StargateTask {
             Stargate.log(e);
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public void runTaskTimer(long period, long delay) {
+        super.setRepeatable();
+        StargateQueuedAsyncTask task = this;
+        new StargateAsyncTask() {
+            @Override
+            public void run() {
+                task.run();
+            }
+        }.runTaskTimer(period, delay);
     }
 
     public static void disableAsyncQueue() {
@@ -43,7 +60,12 @@ public class StargateQueuedAsyncTask extends StargateTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        new StargateAsyncTask(StargateQueuedAsyncTask::cycleThroughAsyncQueue).run();
+        new StargateAsyncTask() {
+            @Override
+            public void run() {
+                StargateQueuedAsyncTask.cycleThroughAsyncQueue();
+            }
+        }.runNow();
     }
 
     private static void cycleThroughAsyncQueue() {

@@ -2,44 +2,59 @@ package org.sgrewritten.stargate.thread.task;
 
 import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.util.BungeeHelper;
 
-public class StargateGlobalTask extends StargateTask {
+public abstract class StargateGlobalTask extends StargateTask {
     private final Stargate plugin;
+    private boolean bungee = false;
 
-    public StargateGlobalTask(Runnable runnable){
-        super(runnable);
+    protected StargateGlobalTask() {
         this.plugin = Stargate.getInstance();
     }
 
-    public void run(boolean bungee) {
-        // if no players are online, then no bungee messages can be sent (wait 10 second until a player joins)
-        if(bungee && Bukkit.getServer().getOnlinePlayers().isEmpty()){
-            runDelayed(200, () -> run(true));
+    protected StargateGlobalTask(boolean bungee) {
+        this.plugin = Stargate.getInstance();
+        this.bungee = bungee;
+    }
+
+    @Override
+    public void runDelayed(long delay) {
+        if (USING_FOLIA) {
+            super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().runDelayed(plugin, super::runTask, delay));
+        } else {
+            super.registerBukkitTask(new StargateBukkitRunnable(super::runTask)).runTaskLater(plugin, delay);
+        }
+    }
+
+    @Override
+    public void runNow() {
+        if (bungee && !BungeeHelper.canSendBungeeMessages()) {
+            runTaskTimer(20, 20, () -> {
+                if (BungeeHelper.canSendBungeeMessages()) {
+                    this.runNow();
+                    this.cancel();
+                }
+            });
             return;
         }
-
-        if(USING_FOLIA){
+        if (USING_FOLIA) {
             super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().run(plugin, this::runTask));
         } else {
             super.registerBukkitTask(new StargateBukkitRunnable(this::runTask)).runTask(plugin);
         }
     }
 
-    private void runDelayed(long delay, Runnable runnable) {
-        if(USING_FOLIA){
-            super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> runnable.run(), delay));
+    public void runTaskTimer(long period, long delay, Runnable runnable) {
+        super.setRepeatable();
+        if (USING_FOLIA) {
+            super.registerFoliaTask(Bukkit.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, ignored -> runnable.run(), delay, period));
         } else {
-            super.registerBukkitTask(new StargateBukkitRunnable(runnable)).runTaskLater(plugin, delay);
+            super.registerBukkitTask(new StargateBukkitRunnable(this::runTask)).runTaskTimer(plugin, delay, period);
         }
     }
 
     @Override
-    public void runDelayed(long delay) {
-        runDelayed(delay, super::runTask);
-    }
-
-    @Override
-    public void run() {
-        run(false);
+    public void runTaskTimer(long period, long delay) {
+        runTaskTimer(period, delay, super::runTask);
     }
 }

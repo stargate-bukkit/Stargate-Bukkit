@@ -197,18 +197,23 @@ public class PlayerEventListener implements Listener {
      */
     private void getBungeeServerName() {
         //Action for loading bungee server id
-        Runnable action = (() -> {
-            try {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-                dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
-                Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
-                        byteArrayOutputStream.toByteArray());
-            } catch (IOException e) {
-                Stargate.log(e);
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                if(Bukkit.getServer().getOnlinePlayers().isEmpty()){
+                    return;
+                }
+                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+                    dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
+                    Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
+                            byteArrayOutputStream.toByteArray());
+                } catch (IOException e) {
+                    Stargate.log(e);
+                }
+                this.cancel();
             }
-        });
-        new StargateGlobalTask(action).run(true);
+        }.runTaskTimer(0,20);
 
 
         //Update the server name in the database once it's known
@@ -219,13 +224,16 @@ public class PlayerEventListener implements Listener {
      * Updates this server's name in the database if necessary
      */
     private void updateServerName() {
-        new StargateGlobalTask(() -> {
-            try {
-                storageAPI.startInterServerConnection();
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateGlobalTask(true) {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.startInterServerConnection();
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        }).run(true);
+        }.runNow();
     }
 
     /**

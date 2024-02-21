@@ -311,13 +311,16 @@ public class StargateRegistry implements RegistryAPI {
     public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type, relativeVector, plugin.getName());
-        new StargateQueuedAsyncTask(() -> {
-            try {
-                storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask(){
+            @Override
+            public void run() {
+                try {
+                    storageAPI.addPortalPosition(portal, portal.getStorageType(), portalPosition);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        }).run();
+        }.runNow();
         return portalPosition;
     }
 
@@ -332,13 +335,16 @@ public class StargateRegistry implements RegistryAPI {
         portalPositionPluginNameMap.get(portalPosition.getPluginName()).remove(blockLocation);
         RealPortal portal = portalPosition.getPortal();
         portal.getGate().removePortalPosition(portalPosition);
-        new StargateQueuedAsyncTask(() -> {
-            try {
-                storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.removePortalPosition(portal, portal.getStorageType(), portalPosition);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        }).run();
+        }.runNow();
     }
 
     @Override

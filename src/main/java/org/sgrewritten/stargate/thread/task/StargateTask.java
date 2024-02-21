@@ -9,22 +9,23 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public abstract class StargateTask implements Runnable {
+public abstract class StargateTask implements Runnable{
     protected static final boolean USING_FOLIA = NonLegacyClass.REGIONIZED_SERVER.isImplemented();
     private static final int MAXIMUM_SHUTDOWN_CYCLES = 10;
-    private final Runnable runnable;
-    private boolean taskIsRegistered;
-    private volatile boolean cancelled;
-    private volatile boolean running;
+    private boolean taskIsRegistered = false;
+    private volatile boolean cancelled = false;
+    private volatile boolean running = false;
     private ScheduledTask scheduledTask;
     private BukkitRunnable scheduledBukkitTask;
     private static final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
+    private boolean repeatable = false;
 
-    abstract void runDelayed(long delay);
+    public abstract void runDelayed(long delay);
 
-    protected StargateTask(Runnable runnable) {
-        this.runnable = runnable;
-    }
+    public abstract void runNow();
+
+    public abstract void runTaskTimer(long period, long delay);
+
 
     public void cancel() {
         this.cancelled = true;
@@ -36,7 +37,7 @@ public abstract class StargateTask implements Runnable {
             return;
         }
         taskIsRegistered = true;
-        tasks.add(runnable);
+        tasks.add(this);
     }
 
     protected void registerFoliaTask(ScheduledTask scheduledTask) {
@@ -64,7 +65,7 @@ public abstract class StargateTask implements Runnable {
         } else if (scheduledTask != null) {
             scheduledTask.cancel();
         }
-        tasks.remove(runnable);
+        tasks.remove(this);
     }
 
     /**
@@ -90,12 +91,12 @@ public abstract class StargateTask implements Runnable {
      * Run the task if not already been running (should be threadsafe)
      */
     protected void runTask() {
-        if (running || cancelled) {
+        if ((running && ! repeatable)|| cancelled) {
             return;
         }
         running = true;
-        tasks.remove(runnable);
-        runnable.run();
+        tasks.remove(this);
+        this.run();
     }
 
     /**
@@ -108,5 +109,9 @@ public abstract class StargateTask implements Runnable {
             this.scheduledTask = scheduledTask;
         }
         this.runTask();
+    }
+
+    protected void setRepeatable(){
+        this.repeatable = true;
     }
 }

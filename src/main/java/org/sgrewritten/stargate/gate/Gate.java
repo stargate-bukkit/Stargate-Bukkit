@@ -145,19 +145,22 @@ public class Gate implements GateAPI {
         List<PortalPosition> activePortalPositions = getActivePortalPositions(PositionType.SIGN);
         for (PortalPosition portalPosition : activePortalPositions) {
             Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(signLocation, () -> {
-                Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
-                BlockState signState = signLocation.getBlock().getState();
-                if (!(signState instanceof Sign sign)) {
-                    Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
-                    return;
+            new StargateRegionTask(signLocation){
+                @Override
+                public void run() {
+                    Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
+                    BlockState signState = signLocation.getBlock().getState();
+                    if (!(signState instanceof Sign sign)) {
+                        Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
+                        return;
+                    }
+                    StargateSignFormatPortalEvent event = new StargateSignFormatPortalEvent(portal, signLines, portalPosition, signLocation);
+                    Bukkit.getPluginManager().callEvent(event);
+                    SignLine[] newSignLines = event.getLines();
+                    setSignLines(sign, newSignLines);
+                    sign.update();
                 }
-                StargateSignFormatPortalEvent event = new StargateSignFormatPortalEvent(portal, signLines, portalPosition, signLocation);
-                Bukkit.getPluginManager().callEvent(event);
-                SignLine[] newSignLines = event.getLines();
-                setSignLines(sign, newSignLines);
-                sign.update();
-            }).run();
+            }.runNow();
         }
     }
 
@@ -179,19 +182,22 @@ public class Gate implements GateAPI {
     private void drawButtons() {
         for (PortalPosition portalPosition : getActivePortalPositions(PositionType.BUTTON)) {
             Location buttonLocation = getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(buttonLocation, () -> {
-                Material blockType = buttonLocation.getBlock().getType();
-                if (ButtonHelper.isButton(blockType)) {
-                    return;
-                }
-                Material buttonMaterial = ButtonHelper.getButtonMaterial(buttonLocation);
-                Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
-                Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
-                buttonData.setFacing(facing);
+            new StargateRegionTask(buttonLocation) {
+                @Override
+                public void run() {
+                    Material blockType = buttonLocation.getBlock().getType();
+                    if (ButtonHelper.isButton(blockType)) {
+                        return;
+                    }
+                    Material buttonMaterial = ButtonHelper.getButtonMaterial(buttonLocation);
+                    Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
+                    Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
+                    buttonData.setFacing(facing);
 
-                buttonLocation.getBlock().setBlockData(buttonData);
-                BlockDropManager.disableBlockDrops(buttonLocation.getBlock());
-            }).run();
+                    buttonLocation.getBlock().setBlockData(buttonData);
+                    BlockDropManager.disableBlockDrops(buttonLocation.getBlock());
+                }
+            }.runNow();
 
         }
     }
@@ -295,19 +301,22 @@ public class Gate implements GateAPI {
 
         for (BlockLocation blockLocation : locations) {
             Block block = blockLocation.getLocation().getBlock();
-            new StargateRegionTask(block.getLocation(), ()->{
-                block.setBlockData(blockData);
-                if (material == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
-                    EndGateway gateway = (EndGateway) block.getState();
-                    // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
-                    gateway.setAge(-9223372036854775808L);
-                    if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
-                        gateway.setExitLocation(block.getLocation());
-                        gateway.setExactTeleport(true);
+            new StargateRegionTask(block.getLocation()) {
+                @Override
+                public void run() {
+                    block.setBlockData(blockData);
+                    if (material == Material.END_GATEWAY) {// force a location to prevent exit gateway generation
+                        EndGateway gateway = (EndGateway) block.getState();
+                        // https://github.com/stargate-bukkit/Stargate-Bukkit/issues/36
+                        gateway.setAge(-9223372036854775808L);
+                        if (block.getWorld().getEnvironment() == World.Environment.THE_END) {
+                            gateway.setExitLocation(block.getLocation());
+                            gateway.setExactTeleport(true);
+                        }
+                        gateway.update(false, false);
                     }
-                    gateway.update(false, false);
                 }
-            }).run();
+            }.runNow();
         }
     }
 

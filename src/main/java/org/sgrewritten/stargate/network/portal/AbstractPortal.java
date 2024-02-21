@@ -202,7 +202,12 @@ public abstract class AbstractPortal implements RealPortal {
         final long openTimeForAction = System.currentTimeMillis();
         this.openTime = openTimeForAction;
 
-        new StargateGlobalTask(() -> close(openTimeForAction)).runDelayed(OPEN_DELAY);
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                close(openTimeForAction);
+            }
+        }.runDelayed(OPEN_DELAY);
     }
 
     @Override
@@ -434,28 +439,37 @@ public abstract class AbstractPortal implements RealPortal {
                 continue;
             }
             Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(location, () ->
-                    updateColorDrawer(location, changedColor, portalPosition)
-            ).run();
+            new StargateRegionTask(location) {
+                @Override
+                public void run() {
+                    updateColorDrawer(location, changedColor, portalPosition);
+                }
+            }.runNow();
         }
         // Has to be done one tick later to avoid a bukkit bug
         if (changedColor == null) {
             gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
                 final Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
-                new StargateRegionTask(signBlock.getLocation(), () -> {
-                    if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
-                        Sign sign = (Sign) signBlock.getState();
-                        sign.setColor(ColorRegistry.DEFAULT_DYE_COLOR);
-                        sign.update();
+                new StargateRegionTask(signBlock.getLocation()) {
+                    @Override
+                    public void run() {
+                        if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
+                            Sign sign = (Sign) signBlock.getState();
+                            sign.setColor(ColorRegistry.DEFAULT_DYE_COLOR);
+                            sign.update();
+                        }
                     }
-                }).run();
+                }.runNow();
             });
         }
 
-        new StargateGlobalTask(() -> {
-            SignLine[] lines = this.getDrawnControlLines();
-            getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
-        }).runDelayed(2);
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                SignLine[] lines = getDrawnControlLines();
+                getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+            }
+        }.runDelayed(2);
     }
 
     private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition) {
@@ -560,7 +574,12 @@ public abstract class AbstractPortal implements RealPortal {
                 new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
                 new TextLine(this.colorDrawer.formatLine(INTERNAL_FLAG.matcher(getAllFlagsString()).replaceAll("")))
         };
-        new StargateGlobalTask(() -> gate.drawControlMechanisms(lines, false)).run();
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                gate.drawControlMechanisms(lines, false);
+            }
+        }.runNow();
         activate(event.getPlayer());
     }
 
@@ -571,7 +590,12 @@ public abstract class AbstractPortal implements RealPortal {
         this.activatedTime = activationTime;
 
         //Schedule for deactivation
-        new StargateGlobalTask(() -> deactivate(activationTime)).runDelayed(ACTIVE_DELAY);
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                deactivate(activationTime);
+            }
+        }.runDelayed(ACTIVE_DELAY);
     }
 
 

@@ -134,7 +134,12 @@ public class Teleporter {
             entitiesToTeleport.forEach(entity -> entity.sendMessage(worldBorderInterfereMessage));
             return;
         }
-        new StargateEntityTask(baseEntity, () -> betterTeleport(baseEntity, exit, rotation)).run();
+        new StargateEntityTask(baseEntity) {
+            @Override
+            public void run() {
+                betterTeleport(baseEntity, exit, rotation);
+            }
+        }.runNow();
     }
 
     /**
@@ -242,11 +247,13 @@ public class Teleporter {
      */
     private void teleportPassengers(Entity target, Location exit, List<Entity> passengers) {
         for (Entity passenger : passengers) {
-            Runnable action = () -> {
-                betterTeleport(passenger, exit, rotation);
-                target.addPassenger(passenger);
-            };
-            new StargateEntityTask(target, action).runDelayed(1);
+            new StargateEntityTask(target) {
+                @Override
+                public void run() {
+                    betterTeleport(passenger, exit, rotation);
+                    target.addPassenger(passenger);
+                }
+            }.runDelayed(1);
         }
     }
 
@@ -268,12 +275,14 @@ public class Teleporter {
                 modifiedExit = exit;
             }
             if (entity.isLeashed() && entity.getLeashHolder() == holder) {
-                Runnable action = () -> {
-                    entity.setLeashHolder(null);
-                    betterTeleport(entity, modifiedExit, rotation);
-                    entity.setLeashHolder(holder);
-                };
-                new StargateEntityTask(entity, action).run();
+                new StargateEntityTask(entity) {
+                    @Override
+                    public void run() {
+                        entity.setLeashHolder(null);
+                        betterTeleport(entity, modifiedExit, rotation);
+                        entity.setLeashHolder(holder);
+                    }
+                }.runNow();
             }
         }
     }
@@ -335,24 +344,26 @@ public class Teleporter {
         teleport(poweredMinecart, exit);
         poweredMinecart.setFuel(fuel);
 
-        new StargateEntityTask(poweredMinecart, () -> {
-            //Re-apply fuel and velocity
-            Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
-            poweredMinecart.setVelocity(targetVelocity);
+        new StargateEntityTask(poweredMinecart) {
+            @Override
+            public void run() {
+                Stargate.log(Level.FINEST, "Setting new velocity " + targetVelocity);
+                poweredMinecart.setVelocity(targetVelocity);
 
-            //Use the paper-only methods for setting the powered minecart's actual push
-            if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
-                Vector direction = destinationFace.getDirection();
-                double pushX = -direction.getBlockX();
-                double pushZ = -direction.getBlockZ();
-                Stargate.log(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
-                NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
-                NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
-            } else {
-                Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
-                        " use Paper 1.18.2+ for this feature.", location));
+                //Use the paper-only methods for setting the powered minecart's actual push
+                if (NonLegacyMethod.PUSH_X.isImplemented() && NonLegacyMethod.PUSH_Z.isImplemented()) {
+                    Vector direction = destinationFace.getDirection();
+                    double pushX = -direction.getBlockX();
+                    double pushZ = -direction.getBlockZ();
+                    Stargate.log(Level.FINEST, "Setting push: X = " + pushX + " Z = " + pushZ);
+                    NonLegacyMethod.PUSH_X.invoke(poweredMinecart, pushX);
+                    NonLegacyMethod.PUSH_Z.invoke(poweredMinecart, pushZ);
+                } else {
+                    Stargate.log(Level.FINE, String.format("Unable to restore Furnace Minecart Momentum at %S --" +
+                            " use Paper 1.18.2+ for this feature.", location));
+                }
             }
-        }).runDelayed(1);
+        }.runDelayed(1);
     }
 
     /**

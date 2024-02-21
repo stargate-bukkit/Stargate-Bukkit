@@ -161,13 +161,16 @@ public class StargateNetworkManager implements NetworkManager {
                 if (network != null && network.getType() != type) {
                     String newId = registry.getValidNewName(network);
                     registry.renameNetwork(newId, network.getId(), network.getStorageType());
-                    new StargateQueuedAsyncTask(() -> {
-                        try {
-                            storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
-                        } catch (StorageWriteException e) {
-                            Stargate.log(e);
+                    new StargateQueuedAsyncTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
+                            } catch (StorageWriteException e) {
+                                Stargate.log(e);
+                            }
                         }
-                    }).run();
+                    }.runNow();
                 }
             }
             throw new NameConflictException("network of id '" + name + "' already exists", true);
@@ -213,7 +216,12 @@ public class StargateNetworkManager implements NetworkManager {
          * region scheduler. Temporary solution right now is to just have a large delay here.
          * TODO: come up with a general solution
          */
-        new StargateGlobalTask(registry::updateAllPortals).runDelayed(20);
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                registry.updateAllPortals();
+            }
+        }.runDelayed(20);
     }
 
     @Override
@@ -238,13 +246,16 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void savePortal(RealPortal portal, Network network) throws NameConflictException {
         network.addPortal(portal);
-        new StargateQueuedAsyncTask(() -> {
-            try {
-                storageAPI.savePortalToStorage(portal);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.savePortalToStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        }).run();
+        }.runNow();
         network.getPluginMessageSender().sendCreatePortal(portal);
         network.updatePortals();
     }
@@ -256,13 +267,16 @@ public class StargateNetworkManager implements NetworkManager {
         portal.destroy();
         registry.unregisterPortal(portal);
         network.updatePortals();
-        new StargateQueuedAsyncTask(() -> {
-            try {
-                storageAPI.removePortalFromStorage(portal);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        }).run();
+        }.runNow();
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
     }
 

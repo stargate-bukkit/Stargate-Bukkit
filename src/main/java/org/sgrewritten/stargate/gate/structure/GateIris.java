@@ -77,23 +77,26 @@ public class GateIris extends GateStructure {
     public void generateStructure(VectorOperation converter, Location topLeft) {
         // (Clear all blocks that are in the portal iris)
         Material[] irisClosedList = irisClosed.toArray(new Material[0]);
-        for(BlockVector blockVector : this.blocks){
+        for (BlockVector blockVector : this.blocks) {
             int target = RANDOM.nextInt(irisClosedList.length);
             Material chosenType = irisClosedList[target];
-            Location location = VectorUtils.getLocation(topLeft,converter,blockVector);
-            new StargateRegionTask(location, () -> {
-                Block block = location.getBlock();
-                if(chosenType == block.getType()){
-                    return;
+            Location location = VectorUtils.getLocation(topLeft, converter, blockVector);
+            new StargateRegionTask(location) {
+                @Override
+                public void run() {
+                    Block block = location.getBlock();
+                    if (chosenType == block.getType()) {
+                        return;
+                    }
+                    BlockData blockData = chosenType.createBlockData();
+                    // Over-engineering :)
+                    if (blockData instanceof Orientable orientable) {
+                        orientable.setAxis(converter.getIrisNormal());
+                    }
+                    block.setBlockData(blockData);
+                    BlockDropManager.disableBlockDrops(block);
                 }
-                BlockData blockData = chosenType.createBlockData();
-                // Over-engineering :)
-                if(blockData instanceof Orientable orientable){
-                    orientable.setAxis(converter.getIrisNormal());
-                }
-                block.setBlockData(blockData);
-                BlockDropManager.disableBlockDrops(block);
-            }).run();
+            }.runNow();
 
         }
     }
