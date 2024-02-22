@@ -19,6 +19,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.messaging.Messenger;
 import org.dynmap.DynmapAPI;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The stargate config is responsible for keeping track of all configuration values
@@ -58,7 +61,7 @@ public final class StargateConfig {
      *
      * @param logger <p>The logger to use for logging errors</p>
      */
-    public StargateConfig(Logger logger) {
+    public StargateConfig(@NotNull Logger logger) {
         this.logger = logger;
         configOptions = new HashMap<>();
 
@@ -76,6 +79,7 @@ public final class StargateConfig {
      *
      * @return <p>A reference to the config options map</p>
      */
+    @NotNull
     public Map<ConfigOption, Object> getConfigOptionsReference() {
         return configOptions;
     }
@@ -136,6 +140,7 @@ public final class StargateConfig {
      *
      * @return <p>The loaded config options</p>
      */
+    @NotNull
     public Map<ConfigOption, Object> getConfigOptions() {
         return new HashMap<>(configOptions);
     }
@@ -147,6 +152,7 @@ public final class StargateConfig {
      *
      * @return <p>The open portals queue</p>
      */
+    @NotNull
     public Queue<Portal> getOpenPortalsQueue() {
         return openPortalsQueue;
     }
@@ -158,6 +164,7 @@ public final class StargateConfig {
      *
      * @return <p>The active portals queue</p>
      */
+    @NotNull
     public Queue<Portal> getActivePortalsQueue() {
         return activePortalsQueue;
     }
@@ -203,6 +210,7 @@ public final class StargateConfig {
      *
      * @return <p>The object containing economy config values</p>
      */
+    @NotNull
     public EconomyConfig getEconomyConfig() {
         return this.economyConfig;
     }
@@ -212,7 +220,7 @@ public final class StargateConfig {
      *
      * @param sender <p>The sender of the reload request</p>
      */
-    public void reload(CommandSender sender) {
+    public void reload(@NotNull CommandSender sender) {
         //Unload all saved data
         unload();
 
@@ -238,7 +246,7 @@ public final class StargateConfig {
         //Reload portal markers
         DynmapManager.addAllPortalMarkers();
 
-        messageSender.sendErrorMessage(sender, languageLoader.getString("reloaded"));
+        messageSender.sendErrorMessage(sender, languageLoader.getString(Message.RELOADED));
     }
 
     /**
@@ -285,6 +293,7 @@ public final class StargateConfig {
      *
      * @return <p>The managed worlds</p>
      */
+    @NotNull
     public Set<String> getManagedWorlds() {
         return new HashSet<>(managedWorlds);
     }
@@ -294,7 +303,7 @@ public final class StargateConfig {
      *
      * @param worldName <p>The name of the world to manage</p>
      */
-    public void addManagedWorld(String worldName) {
+    public void addManagedWorld(@NotNull String worldName) {
         managedWorlds.add(worldName);
     }
 
@@ -303,7 +312,7 @@ public final class StargateConfig {
      *
      * @param worldName <p>The name of the world to stop managing</p>
      */
-    public void removeManagedWorld(String worldName) {
+    public void removeManagedWorld(@NotNull String worldName) {
         managedWorlds.remove(worldName);
     }
 
@@ -422,11 +431,18 @@ public final class StargateConfig {
         portalFolder = (String) configOptions.get(ConfigOption.PORTAL_FOLDER);
         if (portalFolder.isEmpty()) {
             portalFolder = dataFolderPath + "/portals/";
+        } else {
+            portalFolder = replacePluginFolderPath(portalFolder);
         }
+        Stargate.debug("StargateConfig::loadConfig", "Portal folder is " + portalFolder);
+
         gateFolder = (String) configOptions.get(ConfigOption.GATE_FOLDER);
         if (gateFolder.isEmpty()) {
             gateFolder = dataFolderPath + "/gates/";
+        } else {
+            gateFolder = replacePluginFolderPath(gateFolder);
         }
+        Stargate.debug("StargateConfig::loadConfig", "Gate folder is " + gateFolder);
 
         //If users have an outdated config, assume they also need to update their default gates
         if (isMigrating) {
@@ -444,10 +460,28 @@ public final class StargateConfig {
     }
 
     /**
+     * Replaces "plugins/Stargate" in a folder path, and replaces it with the full path relative to the data folder
+     *
+     * @param input <p>The input string to replace in</p>
+     * @return <p>The replaced path, or the input if not applicable</p>
+     */
+    @NotNull
+    private String replacePluginFolderPath(@NotNull String input) {
+        Pattern pattern = Pattern.compile("(?i)^plugins[\\\\/]Stargate");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return dataFolderPath + matcher.replaceAll("");
+        } else {
+            return input;
+        }
+    }
+
+    /**
      * Gets the object containing configuration values regarding gates
      *
      * @return <p>Gets the gate config</p>
      */
+    @NotNull
     public StargateGateConfig getStargateGateConfig() {
         return stargateGateConfig;
     }
@@ -465,13 +499,13 @@ public final class StargateConfig {
      *
      * @param currentConfiguration <p>The current config to back up</p>
      */
-    private void migrateConfig(FileConfiguration currentConfiguration) {
+    private void migrateConfig(@NotNull FileConfiguration currentConfiguration) {
         String debugPath = "StargateConfig::migrateConfig";
 
         //Save the old config just in case something goes wrong
         try {
             currentConfiguration.save(new File(dataFolderPath, "config.yml.old"));
-        } catch (IOException e) {
+        } catch (IOException exception) {
             Stargate.debug(debugPath, "Unable to save old backup and do migration");
             return;
         }
@@ -489,7 +523,7 @@ public final class StargateConfig {
             migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
                             FileHelper.getInputStreamForInternalFile("/config-migrations.txt")), "=",
                     ColorConversion.NORMAL);
-        } catch (IOException e) {
+        } catch (IOException exception) {
             Stargate.debug(debugPath, "Unable to load config migration file");
             return;
         }
@@ -530,9 +564,10 @@ public final class StargateConfig {
      */
     private void setupVaultEconomy() {
         EconomyConfig economyConfig = getEconomyConfig();
-        if (economyConfig.setupEconomy(Stargate.getPluginManager()) && economyConfig.getEconomy() != null) {
+        if (economyConfig.setupEconomy(Stargate.getPluginManager()) && economyConfig.getEconomy() != null &&
+                economyConfig.getVault() != null) {
             String vaultVersion = economyConfig.getVault().getDescription().getVersion();
-            Stargate.logInfo(Stargate.replaceVars(Stargate.getString("vaultLoaded"), "%version%", vaultVersion));
+            Stargate.logInfo(Stargate.replacePlaceholders(Stargate.getString(Message.VAULT_LOADED), "%version%", vaultVersion));
         }
     }
 
@@ -578,6 +613,7 @@ public final class StargateConfig {
      *
      * @return <p>The portal folder</p>
      */
+    @NotNull
     public String getPortalFolder() {
         return portalFolder;
     }
@@ -589,6 +625,7 @@ public final class StargateConfig {
      *
      * @return <p>The folder storing gate files</p>
      */
+    @NotNull
     public String getGateFolder() {
         return gateFolder;
     }
@@ -598,6 +635,7 @@ public final class StargateConfig {
      *
      * @return <p>The sender for sending messages to players</p>
      */
+    @NotNull
     public MessageSender getMessageSender() {
         return messageSender;
     }
@@ -607,6 +645,7 @@ public final class StargateConfig {
      *
      * @return <p>The language loader</p>
      */
+    @NotNull
     public LanguageLoader getLanguageLoader() {
         return languageLoader;
     }

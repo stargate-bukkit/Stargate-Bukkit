@@ -11,6 +11,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public final class EconomyConfig {
      *
      * @param configOptions <p>The loaded config options to read</p>
      */
-    public EconomyConfig(Map<ConfigOption, Object> configOptions) {
+    public EconomyConfig(@NotNull Map<ConfigOption, Object> configOptions) {
         this.configOptions = configOptions;
         try {
             String freeColor = (String) configOptions.get(ConfigOption.FREE_GATES_COLOR);
@@ -62,6 +64,7 @@ public final class EconomyConfig {
      *
      * @return <p>An economy object, or null if economy is disabled or not initialized</p>
      */
+    @Nullable
     public Economy getEconomy() {
         return economy;
     }
@@ -71,6 +74,7 @@ public final class EconomyConfig {
      *
      * @return <p>An instance of the Vault plugin, or null if Vault is not loaded</p>
      */
+    @Nullable
     public Plugin getVault() {
         return vault;
     }
@@ -137,6 +141,7 @@ public final class EconomyConfig {
      *
      * @return <p>The account all taxes are paid to</p>
      */
+    @Nullable
     public String getTaxAccount() {
         return (String) configOptions.get(ConfigOption.TAX_ACCOUNT);
     }
@@ -158,6 +163,7 @@ public final class EconomyConfig {
      * @param amount <p>The amount to display</p>
      * @return <p>A formatted text string describing the amount</p>
      */
+    @NotNull
     public String format(int amount) {
         if (isEconomyEnabled()) {
             return economy.format(amount);
@@ -172,7 +178,7 @@ public final class EconomyConfig {
      * @param pluginManager <p>The plugin manager to get plugins from</p>
      * @return <p>True if economy was enabled</p>
      */
-    public boolean setupEconomy(PluginManager pluginManager) {
+    public boolean setupEconomy(@NotNull PluginManager pluginManager) {
         if (!isEconomyEnabled()) {
             return false;
         }
@@ -186,10 +192,10 @@ public final class EconomyConfig {
                 this.vault = vault;
                 return true;
             } else {
-                Stargate.logInfo(Stargate.getString("ecoLoadError"));
+                Stargate.logInfo(Stargate.getString(Message.ECONOMY_LOAD_ERROR));
             }
         } else {
-            Stargate.logInfo(Stargate.getString("vaultLoadError"));
+            Stargate.logInfo(Stargate.getString(Message.VAULT_LOAD_ERROR));
         }
         configOptions.put(ConfigOption.USE_ECONOMY, false);
         return false;
@@ -211,7 +217,7 @@ public final class EconomyConfig {
      * @param gate   <p>The gate type used</p>
      * @return <p>The cost of creating the gate</p>
      */
-    public int getCreateCost(Player player, Gate gate) {
+    public int getCreateCost(@NotNull Player player, @NotNull Gate gate) {
         if (isFree(player, "create")) {
             return 0;
         } else {
@@ -226,7 +232,7 @@ public final class EconomyConfig {
      * @param gate   <p>The gate type used</p>
      * @return <p>The cost of destroying the gate</p>
      */
-    public int getDestroyCost(Player player, Gate gate) {
+    public int getDestroyCost(@NotNull Player player, @NotNull Gate gate) {
         if (isFree(player, "destroy")) {
             return 0;
         } else {
@@ -241,7 +247,7 @@ public final class EconomyConfig {
      * @param permissionNode <p>The free.permissionNode necessary to allow free gate {action}</p>
      * @return <p></p>
      */
-    private boolean isFree(Player player, String permissionNode) {
+    private boolean isFree(@NotNull Player player, @NotNull String permissionNode) {
         return !useEconomy() || PermissionHelper.hasPermission(player, "stargate.free." + permissionNode);
     }
 

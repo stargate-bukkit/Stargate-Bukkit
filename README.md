@@ -541,7 +541,7 @@ portalInfoServer=Server: %server%
 
 #### \[Version 0.11.5.3] Unified Legacy Fork
 
-- Hotfix for an issue wherein the gate folder failed to populate on fresh installs.
+- Hotfix for an issue wherein the gate folder failed to populate on fresh installations.
 
 #### \[Version 0.11.5.2] Unified Legacy Fork
 
@@ -757,7 +757,7 @@ found [here](https://github.com/stargate-rewritten/Stargate-ESR#version-01081-lc
 - Improves the stability of Stargate's load-time portal handling.
 - Highlights destination selector brackets on signs ("-") as to improve readability.
 - Uses dark red to mark portals which are inactive (missing destination or invalid gate type)
-- Adds provisions to re-draw incorrect signs.
+- Adds provision to re-draw incorrect signs.
 - Fixed a load of other miscellaneous bugs.
 
 #### \[Version 0.8.0.3] PseudoKnight fork

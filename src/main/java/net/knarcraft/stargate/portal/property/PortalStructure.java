@@ -5,6 +5,8 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.property.gate.Gate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The portal structure is responsible for the physical properties of a portal
@@ -28,7 +30,7 @@ public class PortalStructure {
      * @param gate   <p>The gate type used by this portal structure</p>
      * @param button <p>The real location of the portal's button</p>
      */
-    public PortalStructure(Portal portal, Gate gate, BlockLocation button) {
+    public PortalStructure(@NotNull Portal portal, @NotNull Gate gate, @Nullable BlockLocation button) {
         this.portal = portal;
         this.gate = gate;
         this.verified = false;
@@ -40,6 +42,7 @@ public class PortalStructure {
      *
      * @return <p>The gate used by this portal structure</p>
      */
+    @NotNull
     public Gate getGate() {
         return gate;
     }
@@ -49,6 +52,7 @@ public class PortalStructure {
      *
      * @return <p>The location of this portal's button</p>
      */
+    @Nullable
     public BlockLocation getButton() {
         return button;
     }
@@ -58,7 +62,7 @@ public class PortalStructure {
      *
      * @param button <p>The location of this portal's button</p>
      */
-    public void setButton(BlockLocation button) {
+    public void setButton(@NotNull BlockLocation button) {
         this.button = button;
     }
 
@@ -113,7 +117,8 @@ public class PortalStructure {
      * @param vectors <p>The relative block vectors to convert</p>
      * @return <p>A list of block locations</p>
      */
-    private BlockLocation[] relativeBlockVectorsToBlockLocations(RelativeBlockVector[] vectors) {
+    @NotNull
+    private BlockLocation[] relativeBlockVectorsToBlockLocations(@NotNull RelativeBlockVector[] vectors) {
         BlockLocation[] locations = new BlockLocation[vectors.length];
         for (int i = 0; i < vectors.length; i++) {
             locations[i] = portal.getBlockAt(vectors[i]);
@@ -126,6 +131,7 @@ public class PortalStructure {
      *
      * @return <p>The locations of this portal's entrances</p>
      */
+    @NotNull
     public BlockLocation[] getEntrances() {
         if (entrances == null) {
             //Get the locations of the entrances once, and only if necessary as it's an expensive operation
@@ -139,6 +145,7 @@ public class PortalStructure {
      *
      * @return <p>The locations of this portal's frame</p>
      */
+    @NotNull
     public BlockLocation[] getFrame() {
         if (frame == null) {
             //Get the locations of the frame blocks once, and only if necessary as it's an expensive operation

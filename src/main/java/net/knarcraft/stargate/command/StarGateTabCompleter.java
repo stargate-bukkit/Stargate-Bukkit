@@ -17,8 +17,9 @@ import java.util.List;
 public class StarGateTabCompleter implements TabCompleter {
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
-                                                @NotNull String s, @NotNull String[] args) {
+    @Nullable
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s,
+                                      @NotNull String[] args) {
         if (args.length == 1) {
             List<String> commands = getAvailableCommands(commandSender);
             List<String> matchingCommands = new ArrayList<>();
@@ -42,7 +43,8 @@ public class StarGateTabCompleter implements TabCompleter {
      * @param commandSender <p>The command sender to get available commands for</p>
      * @return <p>The commands available to the command sender</p>
      */
-    private List<String> getAvailableCommands(CommandSender commandSender) {
+    @NotNull
+    private List<String> getAvailableCommands(@NotNull CommandSender commandSender) {
         List<String> commands = new ArrayList<>();
         commands.add("about");
         if (!(commandSender instanceof Player player) || player.hasPermission("stargate.admin.reload")) {

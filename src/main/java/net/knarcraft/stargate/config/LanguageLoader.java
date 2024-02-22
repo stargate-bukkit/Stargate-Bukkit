@@ -3,15 +3,16 @@ package net.knarcraft.stargate.config;
 import net.knarcraft.knarlib.property.ColorConversion;
 import net.knarcraft.knarlib.util.FileHelper;
 import net.knarcraft.stargate.Stargate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This class is responsible for loading all strings which are translated into several languages
@@ -19,9 +20,9 @@ import java.util.Set;
 public final class LanguageLoader {
 
     private final String languageFolder;
-    private final Map<String, String> loadedBackupStrings;
+    private final Map<Message, String> loadedBackupStrings;
     private String chosenLanguage;
-    private Map<String, String> loadedStringTranslations;
+    private Map<Message, String> loadedStringTranslations;
 
     /**
      * Instantiates a new language loader
@@ -30,7 +31,7 @@ public final class LanguageLoader {
      *
      * @param languageFolder <p>The folder containing the language files</p>
      */
-    public LanguageLoader(String languageFolder) {
+    public LanguageLoader(@NotNull String languageFolder) {
         this.languageFolder = languageFolder;
         File testFile = new File(languageFolder, "en.txt");
         if (!testFile.exists()) {
@@ -60,32 +61,34 @@ public final class LanguageLoader {
     }
 
     /**
-     * Gets the string to display given its name/key
+     * Gets the string to display given its message key
      *
-     * @param name <p>The name/key of the string to display</p>
-     * @return <p>The string in the user's preferred language</p>
+     * @param message <p>The message to display</p>
+     * @return <p>The message in the user's preferred language</p>
      */
-    public String getString(String name) {
+    @NotNull
+    public String getString(@NotNull Message message) {
         String value = null;
         if (loadedStringTranslations != null) {
-            value = loadedStringTranslations.get(name);
+            value = loadedStringTranslations.get(message);
         }
         if (value == null) {
-            value = getBackupString(name);
+            value = getBackupString(message);
         }
         return value;
     }
 
     /**
-     * Gets the string to display given its name/key
+     * Gets the string to display given its message key
      *
-     * @param name <p>The name/key of the string to display</p>
+     * @param message <p>The message to display</p>
      * @return <p>The string in the backup language (English)</p>
      */
-    public String getBackupString(String name) {
+    @NotNull
+    public String getBackupString(@NotNull Message message) {
         String value = null;
         if (loadedBackupStrings != null) {
-            value = loadedBackupStrings.get(name);
+            value = loadedBackupStrings.get(message);
         }
         if (value == null) {
             return "";
@@ -98,7 +101,7 @@ public final class LanguageLoader {
      *
      * @param chosenLanguage <p>The new plugin language</p>
      */
-    public void setChosenLanguage(String chosenLanguage) {
+    public void setChosenLanguage(@NotNull String chosenLanguage) {
         this.chosenLanguage = chosenLanguage;
     }
 
@@ -107,8 +110,8 @@ public final class LanguageLoader {
      *
      * @param language <p>The language to update</p>
      */
-    private void updateLanguage(String language) {
-        Map<String, String> currentLanguageValues = load(language);
+    private void updateLanguage(@NotNull String language) {
+        Map<Message, String> currentLanguageValues = load(language);
 
         InputStream inputStream = getClass().getResourceAsStream("/lang/" + language + ".txt");
         if (inputStream == null) {
@@ -133,12 +136,12 @@ public final class LanguageLoader {
      * @param currentLanguageValues <p>The current values of the loaded/processed language</p>
      * @throws IOException <p>if unable to read a language file</p>
      */
-    private void readChangedLanguageStrings(InputStream inputStream, String language, Map<String,
-            String> currentLanguageValues) throws IOException {
+    private void readChangedLanguageStrings(@NotNull InputStream inputStream, @NotNull String language,
+                                            @Nullable Map<Message, String> currentLanguageValues) throws IOException {
         //Get language values
         BufferedReader bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
-        Map<String, String> internalLanguageValues = FileHelper.readKeyValuePairs(bufferedReader, "=",
-                ColorConversion.NORMAL);
+        Map<Message, String> internalLanguageValues = fromStringMap(FileHelper.readKeyValuePairs(bufferedReader,
+                "=", ColorConversion.NORMAL));
 
         //If currentLanguageValues is null; the chosen language has not been used before
         if (currentLanguageValues == null) {
@@ -149,11 +152,14 @@ public final class LanguageLoader {
 
         //If a key is not found in the language file, add the one in the internal file. Must update the external file
         if (!internalLanguageValues.keySet().equals(currentLanguageValues.keySet())) {
-            Map<String, String> newLanguageValues = new HashMap<>();
+            Map<Message, String> newLanguageValues = new EnumMap<>(Message.class);
             boolean updateNecessary = false;
-            for (String key : internalLanguageValues.keySet()) {
+            for (Map.Entry<Message, String> entry : internalLanguageValues.entrySet()) {
+                Message key = entry.getKey();
+                String value = entry.getValue();
+
                 if (currentLanguageValues.get(key) == null) {
-                    newLanguageValues.put(key, internalLanguageValues.get(key));
+                    newLanguageValues.put(key, value);
                     //Found at least one value in the internal file not in the external file. Need to update
                     updateNecessary = true;
                 } else {
@@ -177,20 +183,20 @@ public final class LanguageLoader {
      * @param customLanguageStrings <p>Any custom language strings not recognized</p>
      * @throws IOException <p>If unable to write to the language file</p>
      */
-    private void updateLanguageFile(String language, Map<String, String> languageStrings,
-                                    Map<String, String> customLanguageStrings) throws IOException {
+    private void updateLanguageFile(@NotNull String language, @NotNull Map<Message, String> languageStrings,
+                                    @Nullable Map<Message, String> customLanguageStrings) throws IOException {
         BufferedWriter bufferedWriter = FileHelper.getBufferedWriterFromString(languageFolder + language + ".txt");
 
         //Output normal Language data
-        for (String key : languageStrings.keySet()) {
-            bufferedWriter.write(key + "=" + languageStrings.get(key));
+        for (Map.Entry<Message, String> entry : languageStrings.entrySet()) {
+            bufferedWriter.write(entry.getKey() + "=" + entry.getValue());
             bufferedWriter.newLine();
         }
         bufferedWriter.newLine();
         //Output any custom language strings the user had
         if (customLanguageStrings != null) {
-            for (String key : customLanguageStrings.keySet()) {
-                bufferedWriter.write(key + "=" + customLanguageStrings.get(key));
+            for (Map.Entry<Message, String> entry : customLanguageStrings.entrySet()) {
+                bufferedWriter.write(entry.getKey() + "=" + entry.getValue());
                 bufferedWriter.newLine();
             }
         }
@@ -203,7 +209,7 @@ public final class LanguageLoader {
      * @param lang <p>The language to load</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
-    private Map<String, String> load(String lang) {
+    private Map<Message, String> load(@NotNull String lang) {
         return load(lang, null);
     }
 
@@ -214,8 +220,7 @@ public final class LanguageLoader {
      * @param inputStream <p>An optional input stream to use. Defaults to using a file input stream</p>
      * @return <p>A mapping between loaded string indexes and the strings to display</p>
      */
-    private Map<String, String> load(String lang, InputStream inputStream) {
-        Map<String, String> strings;
+    private Map<Message, String> load(@NotNull String lang, @Nullable InputStream inputStream) {
         BufferedReader bufferedReader;
         try {
             if (inputStream == null) {
@@ -223,14 +228,13 @@ public final class LanguageLoader {
             } else {
                 bufferedReader = FileHelper.getBufferedReaderFromInputStream(inputStream);
             }
-            strings = FileHelper.readKeyValuePairs(bufferedReader, "=", ColorConversion.NORMAL);
-        } catch (Exception e) {
+            return fromStringMap(FileHelper.readKeyValuePairs(bufferedReader, "=", ColorConversion.NORMAL));
+        } catch (Exception exception) {
             if (Stargate.getStargateConfig().isDebuggingEnabled()) {
                 Stargate.logInfo("Unable to load language " + lang);
             }
             return null;
         }
-        return strings;
     }
 
     /**
@@ -238,20 +242,35 @@ public final class LanguageLoader {
      */
     public void debug() {
         if (loadedStringTranslations != null) {
-            Set<String> keys = loadedStringTranslations.keySet();
-            for (String key : keys) {
-                Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", key + " => " +
-                        loadedStringTranslations.get(key));
+            for (Map.Entry<Message, String> entry : loadedStringTranslations.entrySet()) {
+                Stargate.debug("LanguageLoader::Debug::loadedStringTranslations", entry.getKey() +
+                        " => " + entry.getValue());
             }
         }
         if (loadedBackupStrings == null) {
             return;
         }
-        Set<String> keys = loadedBackupStrings.keySet();
-        for (String key : keys) {
-            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", key + " => " +
-                    loadedBackupStrings.get(key));
+
+        for (Map.Entry<Message, String> entry : loadedBackupStrings.entrySet()) {
+            Stargate.debug("LanguageLoader::Debug::loadedBackupStrings", entry.getKey() + " => " +
+                    entry.getValue());
         }
+    }
+
+    @NotNull
+    private Map<Message, String> fromStringMap(@NotNull Map<String, String> configurationStrings) {
+        Map<Message, String> output = new EnumMap<>(Message.class);
+        for (Map.Entry<String, String> entry : configurationStrings.entrySet()) {
+            Message message = Message.getFromKey(entry.getKey());
+            if (message == null) {
+                Stargate.logWarning("Found unrecognized language key " + entry.getKey());
+                continue;
+            }
+
+            output.put(message, entry.getValue());
+        }
+
+        return output;
     }
 
 }

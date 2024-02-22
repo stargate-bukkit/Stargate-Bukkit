@@ -1,12 +1,15 @@
 package net.knarcraft.stargate.utility;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.PlayerTeleporter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +39,7 @@ public final class BungeeHelper {
      *
      * @return <p>The bungee plugin channel</p>
      */
+    @NotNull
     public static String getBungeeChannel() {
         return bungeeChannel;
     }
@@ -48,9 +52,10 @@ public final class BungeeHelper {
      * queue and teleported to the destination.</p>
      *
      * @param playerUUID <p>The UUID of the player to remove</p>
-     * @return <p>The name of the destination portal the player should be teleported to</p>
+     * @return <p>The name of the destination portal the player should be teleported to, or null if not queued</p>
      */
-    public static String removeFromQueue(UUID playerUUID) {
+    @Nullable
+    public static String removeFromQueue(@NotNull UUID playerUUID) {
         return bungeeQueue.remove(playerUUID);
     }
 
@@ -61,7 +66,7 @@ public final class BungeeHelper {
      * @param entrancePortal <p>The portal the player is teleporting from</p>
      * @return <p>True if the message was successfully sent</p>
      */
-    public static boolean sendTeleportationMessage(Player player, Portal entrancePortal) {
+    public static boolean sendTeleportationMessage(@NotNull Player player, @NotNull Portal entrancePortal) {
         try {
             //Build the teleportation message, format is <player identifier>delimiter<destination>
             String message = player.getUniqueId() + teleportMessageDelimiter + entrancePortal.getDestinationName();
@@ -81,8 +86,8 @@ public final class BungeeHelper {
             dataOutputStream.writeBytes(message);
             //Send the plugin message
             player.sendPluginMessage(Stargate.getInstance(), bungeeChannel, byteArrayOutputStream.toByteArray());
-        } catch (IOException ex) {
-            Stargate.logSevere("Error sending BungeeCord teleport packet! Message: " + ex.getMessage());
+        } catch (IOException exception) {
+            Stargate.logSevere("Error sending BungeeCord teleport packet! Message: " + exception.getMessage());
             return false;
         }
         return true;
@@ -95,7 +100,7 @@ public final class BungeeHelper {
      * @param entrancePortal <p>The bungee portal the player is teleporting from</p>
      * @return <p>True if the plugin message was sent successfully</p>
      */
-    public static boolean changeServer(Player player, Portal entrancePortal) {
+    public static boolean changeServer(@NotNull Player player, @NotNull Portal entrancePortal) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
@@ -119,6 +124,7 @@ public final class BungeeHelper {
      * @param message <p>The byte array to read</p>
      * @return <p>The message contained in the byte array, or null on failure</p>
      */
+    @Nullable
     public static String readPluginMessage(byte[] message) {
         byte[] data;
         try {
@@ -147,7 +153,7 @@ public final class BungeeHelper {
      *
      * @param receivedMessage <p>The received teleport message</p>
      */
-    public static void handleTeleportMessage(String receivedMessage) {
+    public static void handleTeleportMessage(@NotNull String receivedMessage) {
         //Get the player id and destination from the message
         String[] messageParts = receivedMessage.split(teleportMessageDelimiter);
         UUID playerUUID = UUID.fromString(messageParts[0]);
@@ -176,11 +182,12 @@ public final class BungeeHelper {
      * @param event          <p>The event causing the teleportation</p>
      * @return <p>True if the teleportation was successful</p>
      */
-    public static boolean bungeeTeleport(Player player, Portal entrancePortal, PlayerMoveEvent event) {
+    public static boolean bungeeTeleport(@NotNull Player player, @NotNull Portal entrancePortal,
+                                         @NotNull PlayerMoveEvent event) {
         //Check if bungee is actually enabled
         if (!Stargate.getGateConfig().enableBungee()) {
             if (!entrancePortal.getOptions().isSilent()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("bungeeDisabled"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_DISABLED));
             }
             entrancePortal.getPortalOpener().closePortal(false);
             return false;
@@ -211,7 +218,8 @@ public final class BungeeHelper {
      * @param string <p>The string to strip color from</p>
      * @return <p>The string without color codes</p>
      */
-    private static String stripColor(String string) {
+    @NotNull
+    private static String stripColor(@NotNull String string) {
         return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string));
     }
 

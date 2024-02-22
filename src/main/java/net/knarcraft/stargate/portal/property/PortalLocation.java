@@ -5,6 +5,8 @@ import net.knarcraft.stargate.container.RelativeBlockVector;
 import org.bukkit.Axis;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Keeps track of location related data for a portal
@@ -23,6 +25,7 @@ public class PortalLocation {
      *
      * @return <p>The top-left block of the portal</p>
      */
+    @NotNull
     public BlockLocation getTopLeft() {
         return topLeft;
     }
@@ -41,6 +44,7 @@ public class PortalLocation {
      *
      * @return <p>The location of the portal's sign</p>
      */
+    @NotNull
     public BlockLocation getSignLocation() {
         return signLocation;
     }
@@ -50,6 +54,7 @@ public class PortalLocation {
      *
      * @return <p>The relative location of the portal's button</p>
      */
+    @Nullable
     public RelativeBlockVector getButtonVector() {
         return buttonVector;
     }
@@ -59,16 +64,19 @@ public class PortalLocation {
      *
      * @return <p>The button's block face</p>
      */
+    @NotNull
     public BlockFace getButtonFacing() {
         return buttonFacing;
     }
 
     /**
      * Gets the rotation axis, which is the axis along which the gate is placed
+     *
      * <p>The portal's rotation axis is the cross axis of the button's axis</p>
      *
      * @return <p>The portal's rotation axis</p>
      */
+    @NotNull
     public Axis getRotationAxis() {
         return getYaw() == 0.0F || getYaw() == 180.0F ? Axis.X : Axis.Z;
     }
@@ -78,6 +86,7 @@ public class PortalLocation {
      *
      * @return <p>The world this portal resides in</p>
      */
+    @Nullable
     public World getWorld() {
         return topLeft.getWorld();
     }
@@ -91,7 +100,8 @@ public class PortalLocation {
      * @param topLeft <p>The new top-left block of the portal's square structure</p>
      * @return <p>The portal location Object</p>
      */
-    public PortalLocation setTopLeft(BlockLocation topLeft) {
+    @NotNull
+    public PortalLocation setTopLeft(@NotNull BlockLocation topLeft) {
         this.topLeft = topLeft;
         return this;
     }
@@ -104,6 +114,7 @@ public class PortalLocation {
      * @param yaw <p>The portal's new yaw</p>
      * @return <p>The portal location Object</p>
      */
+    @NotNull
     public PortalLocation setYaw(float yaw) {
         this.yaw = yaw;
         return this;
@@ -115,7 +126,8 @@ public class PortalLocation {
      * @param signLocation <p>The new sign location</p>
      * @return <p>The portal location Object</p>
      */
-    public PortalLocation setSignLocation(BlockLocation signLocation) {
+    @NotNull
+    public PortalLocation setSignLocation(@NotNull BlockLocation signLocation) {
         this.signLocation = signLocation;
         return this;
     }
@@ -126,7 +138,8 @@ public class PortalLocation {
      * @param buttonVector <p>The new relative button location</p>
      * @return <p>The portal location Object</p>
      */
-    public PortalLocation setButtonVector(RelativeBlockVector buttonVector) {
+    @NotNull
+    public PortalLocation setButtonVector(@Nullable RelativeBlockVector buttonVector) {
         this.buttonVector = buttonVector;
         return this;
     }
@@ -137,7 +150,8 @@ public class PortalLocation {
      * @param buttonFacing <p>The new block face of the portal's button</p>
      * @return <p>The portal location Object</p>
      */
-    public PortalLocation setButtonFacing(BlockFace buttonFacing) {
+    @NotNull
+    public PortalLocation setButtonFacing(@NotNull BlockFace buttonFacing) {
         this.buttonFacing = buttonFacing;
         return this;
     }

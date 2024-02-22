@@ -22,7 +22,7 @@ public class StargateCloseEvent extends StargateEvent {
      * @param portal <p>The portal to close</p>
      * @param force  <p>Whether to force the gate to close, even if set as always-on</p>
      */
-    public StargateCloseEvent(Portal portal, boolean force) {
+    public StargateCloseEvent(@NotNull Portal portal, boolean force) {
         super(portal);
 
         this.force = force;
@@ -51,6 +51,7 @@ public class StargateCloseEvent extends StargateEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

@@ -24,7 +24,7 @@ public class StargateAccessEvent extends StargatePlayerEvent {
      * @param portal <p>The portal involved in the event</p>
      * @param deny   <p>Whether the stargate access should be denied</p>
      */
-    public StargateAccessEvent(Player player, Portal portal, boolean deny) {
+    public StargateAccessEvent(@NotNull Player player, @NotNull Portal portal, boolean deny) {
         super(portal, player);
 
         this.deny = deny;
@@ -53,6 +53,7 @@ public class StargateAccessEvent extends StargatePlayerEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

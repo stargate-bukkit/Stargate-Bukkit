@@ -17,7 +17,7 @@ public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
      * @param chunkToUnload   <p>The chunk to request the unloading of</p>
      * @param timeUntilUnload <p>The time in milliseconds to wait before unloading the chunk</p>
      */
-    public ChunkUnloadRequest(Chunk chunkToUnload, Long timeUntilUnload) {
+    public ChunkUnloadRequest(@NotNull Chunk chunkToUnload, @NotNull Long timeUntilUnload) {
         this.chunkToUnload = chunkToUnload;
         long systemNanoTime = System.nanoTime();
         this.unloadNanoTime = systemNanoTime + (timeUntilUnload * 1000000);
@@ -28,6 +28,7 @@ public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
      *
      * @return <p>The chunk to unload</p>
      */
+    @NotNull
     public Chunk getChunkToUnload() {
         return this.chunkToUnload;
     }
@@ -37,11 +38,13 @@ public class ChunkUnloadRequest implements Comparable<ChunkUnloadRequest> {
      *
      * @return <p>The system nano time denoting when the chunk is to be unloaded</p>
      */
+    @NotNull
     public Long getUnloadNanoTime() {
         return this.unloadNanoTime;
     }
 
     @Override
+    @NotNull
     public String toString() {
         return "{" + chunkToUnload + ", " + unloadNanoTime + "}";
     }

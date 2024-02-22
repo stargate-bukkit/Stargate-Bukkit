@@ -2,6 +2,8 @@ package net.knarcraft.stargate.event;
 
 import net.knarcraft.stargate.portal.Portal;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An abstract event describing any stargate event where a player is involved
@@ -16,7 +18,7 @@ public abstract class StargatePlayerEvent extends StargateEvent {
      *
      * @param portal <p>The portal involved in this stargate event</p>
      */
-    StargatePlayerEvent(Portal portal, Player player) {
+    StargatePlayerEvent(@NotNull Portal portal, @Nullable Player player) {
         super(portal);
         this.player = player;
     }
@@ -26,6 +28,7 @@ public abstract class StargatePlayerEvent extends StargateEvent {
      *
      * @return <p>The player creating the star gate</p>
      */
+    @Nullable
     public Player getPlayer() {
         return player;
     }

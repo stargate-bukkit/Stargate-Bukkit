@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.utility;
 
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This helper class helps with entity properties not immediately available
@@ -21,7 +22,7 @@ public final class EntityHelper {
      * @param entity <p>The entity to get max size for</p>
      * @return <p>The max size of the entity</p>
      */
-    public static int getEntityMaxSizeInt(Entity entity) {
+    public static int getEntityMaxSizeInt(@NotNull Entity entity) {
         return (int) Math.ceil((float) getEntityMaxSize(entity));
     }
 
@@ -31,7 +32,7 @@ public final class EntityHelper {
      * @param entity <p>The entity to get max size for</p>
      * @return <p>The max size of the entity</p>
      */
-    public static double getEntityMaxSize(Entity entity) {
+    public static double getEntityMaxSize(@NotNull Entity entity) {
         return Math.max(entity.getBoundingBox().getWidthX(), entity.getBoundingBox().getWidthZ());
     }
 

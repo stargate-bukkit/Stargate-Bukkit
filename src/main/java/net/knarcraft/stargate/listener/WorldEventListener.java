@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This listener listens for the loading and unloading of worlds to load and unload stargates
@@ -22,7 +23,7 @@ public class WorldEventListener implements Listener {
      * @param event <p>The triggered world load event</p>
      */
     @EventHandler
-    public void onWorldLoad(WorldLoadEvent event) {
+    public void onWorldLoad(@NotNull WorldLoadEvent event) {
         StargateConfig config = Stargate.getStargateConfig();
         if (!config.getManagedWorlds().contains(event.getWorld().getName()) &&
                 PortalFileHelper.loadAllPortals(event.getWorld())) {
@@ -36,7 +37,7 @@ public class WorldEventListener implements Listener {
      * @param event <p>The triggered world unload event</p>
      */
     @EventHandler
-    public void onWorldUnload(WorldUnloadEvent event) {
+    public void onWorldUnload(@NotNull WorldUnloadEvent event) {
         Stargate.debug("onWorldUnload", "Reloading all Stargates");
         World world = event.getWorld();
         String worldName = world.getName();

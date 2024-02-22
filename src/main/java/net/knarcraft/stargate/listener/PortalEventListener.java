@@ -17,16 +17,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Listens for and cancels relevant portal events
  */
 public class PortalEventListener implements Listener {
 
-    private static final List<FromTheEndTeleportation> playersFromTheEnd = new ArrayList<>();
+    private static final Map<Player, FromTheEndTeleportation> playersFromTheEnd = new HashMap<>();
 
     /**
      * Listens for and aborts vanilla portal creation caused by stargate creation
@@ -34,7 +35,7 @@ public class PortalEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler
-    public void onPortalCreation(PortalCreateEvent event) {
+    public void onPortalCreation(@NotNull PortalCreateEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -56,32 +57,37 @@ public class PortalEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler
-    public void onEntityPortalEnter(EntityPortalEnterEvent event) {
+    public void onEntityPortalEnter(@NotNull EntityPortalEnterEvent event) {
         Location location = event.getLocation();
         World world = location.getWorld();
         Entity entity = event.getEntity();
-        //Hijack normal portal teleportation if teleporting from a stargate
-        if (entity instanceof Player player && location.getBlock().getType() == Material.END_PORTAL && world != null &&
-                world.getEnvironment() == World.Environment.THE_END) {
-            Portal portal = PortalHandler.getByAdjacentEntrance(location);
-            if (portal == null) {
-                return;
-            }
 
+        //Hijack normal portal teleportation if teleporting from a stargate, and teleporting from an end portal in the
+        // end
+        if (!(entity instanceof Player player) || location.getBlock().getType() != Material.END_PORTAL ||
+                world == null || world.getEnvironment() != World.Environment.THE_END) {
+            return;
+        }
+
+        Portal portal = PortalHandler.getByAdjacentEntrance(location);
+        if (portal == null) {
+            return;
+        }
+
+        Stargate.debug("PortalEventListener::onEntityPortalEnter",
+                "Found player " + player + " entering END_PORTAL " + portal);
+
+        //Decide if the anything stops the player from teleporting
+        if (PermissionHelper.playerCannotTeleport(portal, portal.getPortalActivator().getDestination(),
+                player, null) || portal.getOptions().isBungee()) {
+            //Teleport the player back to the portal they came in, just in case
+            playersFromTheEnd.put(player, new FromTheEndTeleportation(portal));
             Stargate.debug("PortalEventListener::onEntityPortalEnter",
-                    "Found player " + player + " entering END_PORTAL " + portal);
-
-            //Remove any old player teleportations in case weird things happen
-            playersFromTheEnd.removeIf((teleportation -> teleportation.getPlayer() == player));
-            //Decide if the anything stops the player from teleporting
-            if (PermissionHelper.playerCannotTeleport(portal, portal.getPortalActivator().getDestination(), player, null) ||
-                    portal.getOptions().isBungee()) {
-                //Teleport the player back to the portal they came in, just in case
-                playersFromTheEnd.add(new FromTheEndTeleportation(player, portal));
-                Stargate.debug("PortalEventListener::onEntityPortalEnter",
-                        "Sending player back to the entrance");
-            } else {
-                playersFromTheEnd.add(new FromTheEndTeleportation(player, portal.getPortalActivator().getDestination()));
+                    "Sending player back to the entrance");
+        } else {
+            Portal destination = portal.getPortalActivator().getDestination();
+            if (destination != null) {
+                playersFromTheEnd.put(player, new FromTheEndTeleportation(destination));
                 Stargate.debug("PortalEventListener::onEntityPortalEnter",
                         "Sending player to destination");
             }
@@ -94,16 +100,11 @@ public class PortalEventListener implements Listener {
      * @param event <p>The triggered event</p>
      */
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
+    public void onRespawn(@NotNull PlayerRespawnEvent event) {
         Player respawningPlayer = event.getPlayer();
-        int playerIndex = playersFromTheEnd.indexOf(new FromTheEndTeleportation(respawningPlayer, null));
-        if (playerIndex == -1) {
-            return;
-        }
-        FromTheEndTeleportation teleportation = playersFromTheEnd.get(playerIndex);
-        playersFromTheEnd.remove(playerIndex);
+        FromTheEndTeleportation teleportation = playersFromTheEnd.remove(respawningPlayer);
+        Portal exitPortal = teleportation.exitPortal();
 
-        Portal exitPortal = teleportation.getExit();
         //Overwrite respawn location to respawn in front of the portal
         PlayerTeleporter teleporter = new PlayerTeleporter(exitPortal, respawningPlayer);
         Location respawnLocation = teleporter.getExit();

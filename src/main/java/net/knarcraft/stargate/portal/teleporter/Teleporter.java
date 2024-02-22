@@ -20,6 +20,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +57,7 @@ public abstract class Teleporter {
      * @param portal           <p>The portal which is the target of the teleportation</p>
      * @param teleportedEntity <p>The entity teleported by this teleporter</p>
      */
-    public Teleporter(Portal portal, Entity teleportedEntity) {
+    protected Teleporter(@NotNull Portal portal, @NotNull Entity teleportedEntity) {
         this.portal = portal;
         this.scheduler = Stargate.getInstance().getServer().getScheduler();
         this.teleportedEntity = teleportedEntity;
@@ -69,11 +71,11 @@ public abstract class Teleporter {
      * @param stargateTeleportEvent <p>The event to call to make sure the teleportation is valid</p>
      * @return <p>True if the teleportation was successfully performed</p>
      */
-    public boolean teleport(Portal origin, StargateTeleportEvent stargateTeleportEvent) {
+    public boolean teleport(@NotNull Portal origin, @Nullable StargateTeleportEvent stargateTeleportEvent) {
         List<Entity> passengers = teleportedEntity.getPassengers();
 
         //Call the StargateEntityPortalEvent to allow plugins to change destination
-        if (!origin.equals(portal)) {
+        if (!origin.equals(portal) && stargateTeleportEvent != null) {
             exit = triggerPortalEvent(origin, stargateTeleportEvent);
             if (exit == null) {
                 return false;
@@ -96,6 +98,7 @@ public abstract class Teleporter {
      *
      * @return <p>The exit location of this teleporter</p>
      */
+    @NotNull
     public Location getExit() {
         return exit.clone();
     }
@@ -107,7 +110,9 @@ public abstract class Teleporter {
      * @param stargateTeleportEvent <p>The exit location to teleport the entity to</p>
      * @return <p>The location the entity should be teleported to, or null if the event was cancelled</p>
      */
-    protected Location triggerPortalEvent(Portal origin, StargateTeleportEvent stargateTeleportEvent) {
+    @Nullable
+    protected Location triggerPortalEvent(@NotNull Portal origin,
+                                          @NotNull StargateTeleportEvent stargateTeleportEvent) {
         Stargate.getInstance().getServer().getPluginManager().callEvent((Event) stargateTeleportEvent);
         //Teleport is cancelled. Teleport the entity back to where it came from just for sanity's sake
         if (stargateTeleportEvent.isCancelled()) {
@@ -122,7 +127,7 @@ public abstract class Teleporter {
      *
      * @param exit <p>The location the entity will exit from</p>
      */
-    protected void adjustExitLocationRotation(Location exit) {
+    protected void adjustExitLocationRotation(@NotNull Location exit) {
         int adjust = 0;
         if (portal.getOptions().isBackwards()) {
             adjust = 180;
@@ -151,7 +156,9 @@ public abstract class Teleporter {
      * @param entity       <p>The travelling entity</p>
      * @return <p>A location which won't suffocate the entity inside the portal</p>
      */
-    private Location preventExitSuffocation(RelativeBlockVector relativeExit, Location exitLocation, Entity entity) {
+    @NotNull
+    private Location preventExitSuffocation(@NotNull RelativeBlockVector relativeExit,
+                                            @NotNull Location exitLocation, @NotNull Entity entity) {
         //Go left to find start of opening
         RelativeBlockVector openingLeft = getPortalExitEdge(relativeExit, -1);
 
@@ -159,8 +166,8 @@ public abstract class Teleporter {
         RelativeBlockVector openingRight = getPortalExitEdge(relativeExit, 1);
 
         //Get the width to check if the entity fits
-        int openingWidth = openingRight.getRight() - openingLeft.getRight() + 1;
-        int existingOffset = relativeExit.getRight() - openingLeft.getRight();
+        int openingWidth = openingRight.right() - openingLeft.right() + 1;
+        int existingOffset = relativeExit.right() - openingLeft.right();
         double newOffset = (openingWidth - existingOffset) / 2D;
 
         //Remove the half offset for better centering
@@ -180,7 +187,8 @@ public abstract class Teleporter {
      * @param entity       <p>The entity to adjust the exit location for</p>
      * @return <p>The adjusted exit location</p>
      */
-    private Location moveExitLocationOutwards(Location exitLocation, Entity entity) {
+    @NotNull
+    private Location moveExitLocationOutwards(@NotNull Location exitLocation, @NotNull Entity entity) {
         double entitySize = EntityHelper.getEntityMaxSize(entity);
         int entityBoxSize = EntityHelper.getEntityMaxSizeInt(entity);
         if (entitySize > 1) {
@@ -207,12 +215,13 @@ public abstract class Teleporter {
      * @param direction    <p>The direction to move (+1 for right, -1 for left)</p>
      * @return <p>The right or left edge of the opening</p>
      */
-    private RelativeBlockVector getPortalExitEdge(RelativeBlockVector relativeExit, int direction) {
+    @NotNull
+    private RelativeBlockVector getPortalExitEdge(@NotNull RelativeBlockVector relativeExit, int direction) {
         RelativeBlockVector openingEdge = relativeExit;
 
         do {
-            RelativeBlockVector possibleOpening = new RelativeBlockVector(openingEdge.getRight() + direction,
-                    openingEdge.getDown(), openingEdge.getOut());
+            RelativeBlockVector possibleOpening = new RelativeBlockVector(openingEdge.right() + direction,
+                    openingEdge.down(), openingEdge.out());
             if (portal.getGate().getLayout().getExits().contains(possibleOpening)) {
                 openingEdge = possibleOpening;
             } else {
@@ -234,7 +243,8 @@ public abstract class Teleporter {
      * @param exitLocation <p>The exit location generated</p>
      * @return <p>The location the travelling entity should be teleported to</p>
      */
-    private Location adjustExitLocationHeight(Entity entity, Location exitLocation) {
+    @NotNull
+    private Location adjustExitLocationHeight(@NotNull Entity entity, @Nullable Location exitLocation) {
         if (exitLocation != null) {
             BlockData blockData = exitLocation.getBlock().getBlockData();
             if ((blockData instanceof Bisected bisected && bisected.getHalf() == Bisected.Half.BOTTOM) ||
@@ -257,7 +267,8 @@ public abstract class Teleporter {
      * @param entity <p>The entity to teleport (used to determine distance from portal to avoid suffocation)</p>
      * @return <p>The location the entity should be teleported to.</p>
      */
-    private Location getExit(Entity entity) {
+    @NotNull
+    private Location getExit(@NotNull Entity entity) {
         Location exitLocation = null;
         RelativeBlockVector relativeExit = portal.getGate().getLayout().getExit();
         if (relativeExit != null) {
@@ -270,12 +281,10 @@ public abstract class Teleporter {
             }
             exitLocation = exit.getRelativeLocation(0D, 0D, 1, portalYaw);
 
-            if (entity != null) {
-                double entitySize = EntityHelper.getEntityMaxSize(entity);
-                //Prevent exit suffocation for players riding horses or similar
-                if (entitySize > 1) {
-                    exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
-                }
+            double entitySize = EntityHelper.getEntityMaxSize(entity);
+            //Prevent exit suffocation for players riding horses or similar
+            if (entitySize > 1) {
+                exitLocation = preventExitSuffocation(relativeExit, exitLocation, entity);
             }
         } else {
             Stargate.logWarning(String.format("Missing destination point in .gate file %s",
@@ -293,6 +302,7 @@ public abstract class Teleporter {
      *
      * @return <p>A list of chunks to load</p>
      */
+    @NotNull
     private List<Chunk> getChunksToLoad() {
         List<Chunk> chunksToLoad = new ArrayList<>();
         for (RelativeBlockVector vector : portal.getGate().getLayout().getEntrances()) {

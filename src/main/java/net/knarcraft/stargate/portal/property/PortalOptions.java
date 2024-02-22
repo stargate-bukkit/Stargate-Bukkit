@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.portal.property;
 
 import net.knarcraft.stargate.Stargate;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class PortalOptions {
      * @param options        <p>All options to keep track of</p>
      * @param hasDestination <p>Whether the portal has a fixed destination</p>
      */
-    public PortalOptions(Map<PortalOption, Boolean> options, boolean hasDestination) {
+    public PortalOptions(@NotNull Map<PortalOption, Boolean> options, boolean hasDestination) {
         this.options = options;
 
         isFixed = hasDestination || this.isRandom() || this.isBungee();

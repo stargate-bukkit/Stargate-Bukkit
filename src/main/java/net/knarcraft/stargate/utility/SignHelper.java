@@ -3,6 +3,8 @@ package net.knarcraft.stargate.utility;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A helper class for dealing with signs
@@ -21,7 +23,8 @@ public final class SignHelper {
      * @param sign <p>The sign to check</p>
      * @return <p>The dye currently applied to the sign</p>
      */
-    public static DyeColor getDye(Sign sign) {
+    @Nullable
+    public static DyeColor getDye(@NotNull Sign sign) {
         if (HAS_SIGN_SIDES) {
             return sign.getSide(Side.FRONT).getColor();
         } else {
@@ -38,7 +41,7 @@ public final class SignHelper {
      * @param line <p>The line to set</p>
      * @param text <p>The text to set</p>
      */
-    public static void setSignLine(Sign sign, int line, String text) {
+    public static void setSignLine(@NotNull Sign sign, int line, @NotNull String text) {
         if (HAS_SIGN_SIDES) {
             sign.getSide(Side.FRONT).setLine(line, text);
         } else {

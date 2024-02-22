@@ -4,6 +4,8 @@ import net.knarcraft.stargate.Stargate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -20,7 +22,7 @@ public class PortalOwner {
      *
      * @param ownerIdentifier <p>A UUID, or a username for legacy support</p>
      */
-    public PortalOwner(String ownerIdentifier) {
+    public PortalOwner(@NotNull String ownerIdentifier) {
         parseIdentifier(ownerIdentifier);
     }
 
@@ -29,7 +31,7 @@ public class PortalOwner {
      *
      * @param player <p>The player which is the owner of the portal</p>
      */
-    public PortalOwner(Player player) {
+    public PortalOwner(@NotNull Player player) {
         this.ownerUUID = player.getUniqueId();
         this.ownerName = player.getName();
     }
@@ -39,6 +41,7 @@ public class PortalOwner {
      *
      * @return <p>The UUID of this owner, or null if a UUID is not available</p>
      */
+    @Nullable
     public UUID getUUID() {
         return ownerUUID;
     }
@@ -51,7 +54,7 @@ public class PortalOwner {
      *
      * @param uniqueId <p>The new unique id for the portal owner</p>
      */
-    public void setUUID(UUID uniqueId) {
+    public void setUUID(@NotNull UUID uniqueId) {
         if (ownerUUID == null) {
             ownerUUID = uniqueId;
         } else {
@@ -64,6 +67,7 @@ public class PortalOwner {
      *
      * @return <p>The name of this owner</p>
      */
+    @NotNull
     public String getName() {
         return ownerName;
     }
@@ -76,6 +80,7 @@ public class PortalOwner {
      *
      * @return <p>The owner's identifier</p>
      */
+    @NotNull
     public String getIdentifier() {
         if (ownerUUID != null) {
             return ownerUUID.toString();
@@ -93,7 +98,7 @@ public class PortalOwner {
      *
      * @param ownerIdentifier <p>The identifier for a portal's owner</p>
      */
-    private void parseIdentifier(String ownerIdentifier) {
+    private void parseIdentifier(@NotNull String ownerIdentifier) {
         UUID ownerUUID = null;
         String ownerName;
         if (ownerIdentifier.length() > 16) {
@@ -102,7 +107,7 @@ public class PortalOwner {
                 ownerUUID = UUID.fromString(ownerIdentifier);
                 OfflinePlayer offlineOwner = Bukkit.getServer().getOfflinePlayer(ownerUUID);
                 ownerName = offlineOwner.getName();
-            } catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException exception) {
                 //Invalid as UUID and username, so just keep it as owner name and hope the server owner fixes it
                 ownerName = ownerIdentifier;
                 Stargate.debug("loadAllPortals", "Invalid stargate owner string: " + ownerIdentifier);

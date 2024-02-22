@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param targetPortal       <p>The targetPortal which is the target of the teleportation</p>
      * @param teleportingVehicle <p>The teleporting vehicle</p>
      */
-    public VehicleTeleporter(Portal targetPortal, Vehicle teleportingVehicle) {
+    public VehicleTeleporter(@NotNull Portal targetPortal, @NotNull Vehicle teleportingVehicle) {
         super(targetPortal, teleportingVehicle);
         this.teleportingVehicle = teleportingVehicle;
     }
@@ -45,7 +46,7 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @return <p>True if the vehicle was teleported. False otherwise</p>
      */
     @Override
-    public boolean teleportEntity(Portal origin) {
+    public boolean teleportEntity(@NotNull Portal origin) {
         Stargate.debug("VehicleTeleporter::teleport", "Preparing to teleport: " + teleportingVehicle);
 
         double velocity = teleportingVehicle.getVelocity().length();
@@ -75,7 +76,7 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param origin      <p>The portal the vehicle teleported from</p>
      * @return <p>True if the vehicle was teleported. False otherwise</p>
      */
-    private boolean teleportVehicle(Location exit, Vector newVelocity, Portal origin) {
+    private boolean teleportVehicle(@NotNull Location exit, @NotNull Vector newVelocity, @NotNull Portal origin) {
         //Load chunks to make sure not to teleport to the void
         loadChunks();
 
@@ -113,7 +114,7 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param passengers <p>The passengers to teleport</p>
      * @return <p>True if the passengers are allowed to teleport</p>
      */
-    private boolean vehiclePassengersAllowed(List<Entity> passengers) {
+    private boolean vehiclePassengersAllowed(@NotNull List<Entity> passengers) {
         StargateGateConfig config = Stargate.getGateConfig();
         //Don't teleport if the vehicle contains a creature and creature transportation is disabled
         if (TeleportHelper.containsNonPlayer(passengers) && !config.handleCreatureTransportation()) {
@@ -131,7 +132,8 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param newVelocity <p>The new velocity of the teleported vehicle</p>
      * @param origin      <p>The portal the vehicle teleported from</p>
      */
-    private void teleportVehicle(List<Entity> passengers, Location exit, Vector newVelocity, Portal origin) {
+    private void teleportVehicle(@NotNull List<Entity> passengers, @NotNull Location exit, @NotNull Vector newVelocity,
+                                 @NotNull Portal origin) {
         if (teleportingVehicle.eject()) {
             TeleportHelper.handleEntityPassengers(passengers, teleportingVehicle, origin, portal, exit.getDirection(),
                     newVelocity);
@@ -159,8 +161,8 @@ public class VehicleTeleporter extends EntityTeleporter {
      * @param newVelocity <p>The new velocity of the new vehicle</p>
      * @param origin      <p>The portal the vehicle teleported from</p>
      */
-    private void putPassengersInNewVehicle(List<Entity> passengers, Location exit,
-                                           Vector newVelocity, Portal origin) {
+    private void putPassengersInNewVehicle(@NotNull List<Entity> passengers, @NotNull Location exit,
+                                           @NotNull Vector newVelocity, Portal origin) {
         World vehicleWorld = exit.getWorld();
         if (vehicleWorld == null) {
             Stargate.logWarning("Unable to get the world to teleport the vehicle to");

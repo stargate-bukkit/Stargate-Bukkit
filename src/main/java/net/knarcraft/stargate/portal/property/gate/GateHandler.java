@@ -1,13 +1,16 @@
 package net.knarcraft.stargate.portal.property.gate;
 
 import net.knarcraft.stargate.Stargate;
-import net.knarcraft.stargate.utility.GateReader;
+import net.knarcraft.stargate.config.material.BukkitMaterialSpecifier;
+import net.knarcraft.stargate.config.material.MaterialSpecifier;
 import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import static net.knarcraft.stargate.utility.GateReader.generateLayoutMatrix;
 import static net.knarcraft.stargate.utility.GateReader.readGateConfig;
@@ -48,6 +53,7 @@ public class GateHandler {
      *
      * @return <p>The character used for blocks that are not part of the gate</p>
      */
+    @NotNull
     public static Character getAnythingCharacter() {
         return ANYTHING;
     }
@@ -57,6 +63,7 @@ public class GateHandler {
      *
      * @return <p>The character used for defining the entrance</p>
      */
+    @NotNull
     public static Character getEntranceCharacter() {
         return ENTRANCE;
     }
@@ -66,6 +73,7 @@ public class GateHandler {
      *
      * @return <p>The character used for defining the exit</p>
      */
+    @NotNull
     public static Character getExitCharacter() {
         return EXIT;
     }
@@ -76,6 +84,7 @@ public class GateHandler {
      *
      * @return <p>The character used for defining control blocks</p>
      */
+    @NotNull
     public static Character getControlBlockCharacter() {
         return CONTROL_BLOCK;
     }
@@ -85,23 +94,16 @@ public class GateHandler {
      *
      * @param gate <p>The gate to register</p>
      */
-    private static void registerGate(Gate gate) {
+    private static void registerGate(@NotNull Gate gate) {
         gates.put(gate.getFilename(), gate);
 
-        Material blockId = gate.getControlBlock();
-        if (blockId != null) {
-            if (!controlBlocks.containsKey(blockId)) {
-                controlBlocks.put(blockId, new ArrayList<>());
+        Set<Material> blockTypes = MaterialHelper.specifiersToMaterials(gate.getControlBlockMaterials());
+        for (Material material : blockTypes) {
+            if (!controlBlocks.containsKey(material)) {
+                controlBlocks.put(material, new ArrayList<>());
             }
-            controlBlocks.get(blockId).add(gate);
-            return;
+            controlBlocks.get(material).add(gate);
         }
-
-        Tag<Material> materialTag = gate.getControlBlockTag();
-        if (!controlBlockTags.containsKey(materialTag.getKey().toString())) {
-            controlBlockTags.put(materialTag.getKey().toString(), new ArrayList<>());
-        }
-        controlBlockTags.get(materialTag.getKey().toString()).add(gate);
     }
 
     /**
@@ -110,7 +112,8 @@ public class GateHandler {
      * @param file <p>The file containing the gate data</p>
      * @return <p>The loaded gate, or null if unable to load the gate</p>
      */
-    private static Gate loadGate(File file) {
+    @Nullable
+    private static Gate loadGate(@NotNull File file) {
         try (Scanner scanner = new Scanner(file)) {
             return loadGate(file.getName(), file.getParent(), scanner);
         } catch (Exception exception) {
@@ -127,26 +130,27 @@ public class GateHandler {
      * @param scanner      <p>The scanner to use for reading the gate data</p>
      * @return <p>The loaded gate or null if unable to load the gate</p>
      */
-    private static Gate loadGate(String fileName, String parentFolder, Scanner scanner) {
+    @Nullable
+    private static Gate loadGate(@NotNull String fileName, @NotNull String parentFolder,
+                                 @NotNull Scanner scanner) {
         List<List<Character>> design = new ArrayList<>();
-        Map<Character, Material> characterMaterialMap = new HashMap<>();
-        Map<Character, Tag<Material>> characterTagMap = new HashMap<>();
+        Map<Character, List<MaterialSpecifier>> characterMaterialMap = new HashMap<>();
         Map<String, String> config = new HashMap<>();
 
         //Initialize character to material map
-        characterMaterialMap.put(ENTRANCE, Material.AIR);
-        characterMaterialMap.put(EXIT, Material.AIR);
-        characterMaterialMap.put(ANYTHING, Material.AIR);
+        characterMaterialMap.put(ENTRANCE, List.of(new BukkitMaterialSpecifier(Material.AIR)));
+        characterMaterialMap.put(EXIT, List.of(new BukkitMaterialSpecifier(Material.AIR)));
+        characterMaterialMap.put(ANYTHING, List.of(new BukkitMaterialSpecifier(Material.AIR)));
 
         //Read the file into appropriate lists and maps
-        int columns = readGateFile(scanner, characterMaterialMap, characterTagMap, fileName, design, config);
+        int columns = readGateFile(scanner, characterMaterialMap, fileName, design, config);
         if (columns < 0) {
             return null;
         }
         Character[][] layout = generateLayoutMatrix(design, columns);
 
         //Create and validate the new gate
-        Gate gate = createGate(config, fileName, layout, characterMaterialMap, characterTagMap);
+        Gate gate = createGate(config, fileName, layout, characterMaterialMap);
         if (gate == null) {
             return null;
         }
@@ -163,27 +167,28 @@ public class GateHandler {
      * @param fileName             <p>The name of the saved gate config file</p>
      * @param layout               <p>The layout matrix of the new gate</p>
      * @param characterMaterialMap <p>A map between layout characters and the material to use</p>
-     * @param materialTagMap       <p>A map between layout characters and the material tags to use</p>
      * @return <p>A new gate, or null if the config is invalid</p>
      */
-    private static Gate createGate(Map<String, String> config, String fileName, Character[][] layout,
-                                   Map<Character, Material> characterMaterialMap,
-                                   Map<Character, Tag<Material>> materialTagMap) {
+    @Nullable
+    private static Gate createGate(@NotNull Map<String, String> config, @NotNull String fileName,
+                                   @NotNull Character[][] layout,
+                                   @NotNull Map<Character, List<MaterialSpecifier>> characterMaterialMap) {
         //Read relevant material types
-        Material portalOpenBlock = readGateConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
-        Material portalClosedBlock = readGateConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
-        Material portalButton = readGateConfig(config, fileName, "button", defaultButton);
+        List<MaterialSpecifier> portalOpenBlock = readGateConfig(config, fileName, "portal-open", defaultPortalBlockOpen);
+        List<MaterialSpecifier> portalClosedBlock = readGateConfig(config, fileName, "portal-closed", defaultPortalBlockClosed);
+        List<MaterialSpecifier> portalButton = readGateConfig(config, fileName, "button", defaultButton);
 
         //Read economy values
-        int useCost = GateReader.readGateConfig(config, fileName, "usecost");
-        int createCost = GateReader.readGateConfig(config, fileName, "createcost");
-        int destroyCost = GateReader.readGateConfig(config, fileName, "destroycost");
+        int useCost = readGateConfig(config, fileName, "usecost");
+        int createCost = readGateConfig(config, fileName, "createcost");
+        int destroyCost = readGateConfig(config, fileName, "destroycost");
         boolean toOwner = (config.containsKey("toowner") ? Boolean.parseBoolean(config.get("toowner")) :
                 Stargate.getEconomyConfig().sendPaymentToOwner());
+        GateCosts gateCosts = new GateCosts(useCost, createCost, destroyCost, toOwner);
 
         //Create the new gate
-        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, materialTagMap, portalOpenBlock,
-                portalClosedBlock, portalButton, useCost, createCost, destroyCost, toOwner);
+        Gate gate = new Gate(fileName, new GateLayout(layout), characterMaterialMap, portalOpenBlock, portalClosedBlock,
+                portalButton, gateCosts);
 
         if (!validateGate(gate, fileName)) {
             return null;
@@ -198,7 +203,7 @@ public class GateHandler {
      * @param fileName <p>The filename of the loaded gate file</p>
      * @return <p>True if the gate is valid. False otherwise</p>
      */
-    private static boolean validateGate(Gate gate, String fileName) {
+    private static boolean validateGate(@NotNull Gate gate, @NotNull String fileName) {
         String failString = String.format("Could not load Gate %s", fileName) + " - %s";
 
         if (gate.getLayout().getControls().length != 2) {
@@ -206,23 +211,23 @@ public class GateHandler {
             return false;
         }
 
-        if (!MaterialHelper.isButtonCompatible(gate.getPortalButton())) {
+        if (checkMaterialPredicateFail(gate.getPortalButtonMaterials(), MaterialHelper::isButtonCompatible)) {
             Stargate.logSevere(String.format(failString, "Gate button must be a type of button."));
             return false;
         }
 
-        if (!gate.getPortalOpenBlock().isBlock()) {
+        if (checkMaterialPredicateFail(gate.getPortalOpenMaterials(), Material::isBlock)) {
             Stargate.logSevere(String.format(failString, "Gate open block must be a type of block."));
             return false;
         }
 
-        if (!gate.getPortalClosedBlock().isBlock()) {
+        if (checkMaterialPredicateFail(gate.getPortalClosedMaterials(), Material::isBlock)) {
             Stargate.logSevere(String.format(failString, "Gate closed block must be a type of block."));
             return false;
         }
 
-        for (Material material : gate.getCharacterMaterialMap().values()) {
-            if (!material.isBlock()) {
+        for (List<MaterialSpecifier> materialSpecifiers : gate.getCharacterMaterialMap().values()) {
+            if (checkMaterialPredicateFail(materialSpecifiers, Material::isBlock)) {
                 Stargate.logSevere(String.format(failString, "Every gate border block must be a type of block."));
                 return false;
             }
@@ -232,11 +237,30 @@ public class GateHandler {
     }
 
     /**
+     * Checks whether a predicate is true for a list of material specifiers
+     *
+     * @param materialSpecifiers <p>The material specifiers to test</p>
+     * @param predicate          <p>The predicate to test</p>
+     * @return <p>True if the predicate failed for any specified materials</p>
+     */
+    private static boolean checkMaterialPredicateFail(@NotNull List<MaterialSpecifier> materialSpecifiers,
+                                                      @NotNull Predicate<Material> predicate) {
+        Set<Material> closedMaterials = MaterialHelper.specifiersToMaterials(materialSpecifiers);
+        for (Material material : closedMaterials) {
+            if (!predicate.test(material)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Loads all gates inside the given folder
      *
      * @param gateFolder <p>The folder containing the gates</p>
      */
-    public static void loadGates(String gateFolder) {
+    public static void loadGates(@NotNull String gateFolder) {
         File directory = new File(gateFolder);
         File[] files;
 
@@ -269,7 +293,7 @@ public class GateHandler {
      *
      * @param gateFolder <p>The folder containing gate config files</p>
      */
-    public static void writeDefaultGatesToFolder(String gateFolder) {
+    public static void writeDefaultGatesToFolder(@NotNull String gateFolder) {
         loadGateFromJar("nethergate.gate", gateFolder);
         loadGateFromJar("watergate.gate", gateFolder);
         loadGateFromJar("endgate.gate", gateFolder);
@@ -283,7 +307,7 @@ public class GateHandler {
      * @param gateFile   <p>The name of the gate file</p>
      * @param gateFolder <p>The folder containing gates</p>
      */
-    private static void loadGateFromJar(String gateFile, String gateFolder) {
+    private static void loadGateFromJar(@NotNull String gateFile, @NotNull String gateFolder) {
         //Get an input stream for the internal file
         InputStream gateFileStream = Gate.class.getResourceAsStream("/gates/" + gateFile);
         if (gateFileStream != null) {
@@ -305,7 +329,8 @@ public class GateHandler {
      * @param block <p>The control block to check</p>
      * @return <p>A list of gates using the given control block</p>
      */
-    public static Gate[] getGatesByControlBlock(Block block) {
+    @NotNull
+    public static List<Gate> getGatesByControlBlock(@NotNull Block block) {
         return getGatesByControlBlock(block.getType());
     }
 
@@ -318,7 +343,8 @@ public class GateHandler {
      * @param type <p>The type of the control block to check</p>
      * @return <p>A list of gates using the given material for control block</p>
      */
-    public static Gate[] getGatesByControlBlock(Material type) {
+    @NotNull
+    public static List<Gate> getGatesByControlBlock(@NotNull Material type) {
         List<Gate> result = new ArrayList<>();
         List<Gate> fromId = controlBlocks.get(type);
         List<Gate> fromTag = null;
@@ -337,7 +363,7 @@ public class GateHandler {
             result.addAll(fromTag);
         }
 
-        return result.toArray(new Gate[0]);
+        return result;
     }
 
     /**
@@ -346,7 +372,8 @@ public class GateHandler {
      * @param fileName <p>The filename of the gate to get</p>
      * @return <p>The gate with the given filename</p>
      */
-    public static Gate getGateByName(String fileName) {
+    @Nullable
+    public static Gate getGateByName(@NotNull String fileName) {
         return gates.get(fileName);
     }
 

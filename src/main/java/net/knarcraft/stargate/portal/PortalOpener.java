@@ -6,10 +6,16 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.event.StargateCloseEvent;
 import net.knarcraft.stargate.event.StargateOpenEvent;
 import net.knarcraft.stargate.portal.property.PortalOptions;
+import net.knarcraft.stargate.utility.ListHelper;
+import net.knarcraft.stargate.utility.MaterialHelper;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * The portal opener is responsible for opening and closing a portal
@@ -28,7 +34,7 @@ public class PortalOpener {
      * @param portal      <p>The portal this portal opener should open</p>
      * @param destination <p>The fixed destination defined on the portal's sign</p>
      */
-    public PortalOpener(Portal portal, String destination) {
+    public PortalOpener(@NotNull Portal portal, @NotNull String destination) {
         this.portal = portal;
         this.portalActivator = new PortalActivator(portal, this, destination);
     }
@@ -56,6 +62,7 @@ public class PortalOpener {
      *
      * @return <p>The portal activator belonging to this portal opener</p>
      */
+    @NotNull
     public PortalActivator getPortalActivator() {
         return this.portalActivator;
     }
@@ -75,7 +82,7 @@ public class PortalOpener {
      * @param openFor <p>The player to open the portal for</p>
      * @param force   <p>Whether to force the portal open, even if it's already open for some player</p>
      */
-    public void openPortal(Player openFor, boolean force) {
+    public void openPortal(@Nullable Player openFor, boolean force) {
         //Call the StargateOpenEvent to allow the opening to be cancelled
         StargateOpenEvent event = new StargateOpenEvent(openFor, portal, force);
         Stargate.getInstance().getServer().getPluginManager().callEvent(event);
@@ -84,7 +91,10 @@ public class PortalOpener {
         }
 
         //Get the material to change the opening to
-        Material openType = portal.getGate().getPortalOpenBlock();
+        @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                portal.getGate().getPortalOpenMaterials()).stream().toList();
+        Material openType = ListHelper.getRandom(possibleMaterials);
+
         //Adjust orientation if applicable
         Axis axis = (openType.createBlockData() instanceof Orientable) ? portal.getLocation().getRotationAxis() : null;
 
@@ -102,7 +112,7 @@ public class PortalOpener {
      *
      * @param openFor <p>The player to open this portal opener's portal for</p>
      */
-    private void updatePortalOpenState(Player openFor) {
+    private void updatePortalOpenState(@Nullable Player openFor) {
         //Update the open state of this portal
         isOpen = true;
         triggeredTime = System.currentTimeMillis() / 1000;
@@ -165,9 +175,15 @@ public class PortalOpener {
         }
 
         //Close the portal by requesting the opening blocks to change
-        Material closedType = portal.getGate().getPortalClosedBlock();
+        @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                portal.getGate().getPortalClosedMaterials()).stream().toList();
+        Material closedType = ListHelper.getRandom(possibleMaterials);
+
+        //Adjust orientation if applicable
+        Axis axis = (closedType.createBlockData() instanceof Orientable) ? portal.getLocation().getRotationAxis() : null;
+
         for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, null));
+            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, axis));
         }
 
         //Update the portal state to make it actually closed
@@ -207,7 +223,7 @@ public class PortalOpener {
      * @param player <p>The player to check portal state for</p>
      * @return <p>True if this portal opener's portal is open to the given player</p>
      */
-    public boolean isOpenFor(Player player) {
+    public boolean isOpenFor(@Nullable Player player) {
         //If closed, it's closed for everyone
         if (!isOpen) {
             return false;

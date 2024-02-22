@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This listener listens for any relevant events on portal entities
@@ -25,7 +26,7 @@ public class EntityEventListener implements Listener {
      * @param event <p>The event to check and possibly cancel</p>
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPortalEvent(EntityPortalEvent event) {
+    public void onPortalEvent(@NotNull EntityPortalEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -46,7 +47,7 @@ public class EntityEventListener implements Listener {
      * @param event <p>The triggered explosion event</p>
      */
     @EventHandler
-    public void onEntityExplode(EntityExplodeEvent event) {
+    public void onEntityExplode(@NotNull EntityExplodeEvent event) {
         if (event.isCancelled()) {
             return;
         }

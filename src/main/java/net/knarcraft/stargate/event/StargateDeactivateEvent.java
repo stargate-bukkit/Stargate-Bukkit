@@ -20,7 +20,7 @@ public class StargateDeactivateEvent extends StargateEvent {
      *
      * @param portal <p>The portal which was deactivated</p>
      */
-    public StargateDeactivateEvent(Portal portal) {
+    public StargateDeactivateEvent(@NotNull Portal portal) {
         super(portal);
     }
 
@@ -29,6 +29,7 @@ public class StargateDeactivateEvent extends StargateEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

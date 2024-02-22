@@ -27,7 +27,8 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      * @param destination      <p>The destination the entity should exit from</p>
      * @param exit             <p>The exit location of the destination portal the entity will be teleported to</p>
      */
-    public StargateEntityPortalEvent(Entity travellingEntity, Portal portal, Portal destination, Location exit) {
+    public StargateEntityPortalEvent(@NotNull Entity travellingEntity, @NotNull Portal portal,
+                                     @NotNull Portal destination, @NotNull Location exit) {
         super(portal);
 
         this.travellingEntity = travellingEntity;
@@ -40,6 +41,7 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      *
      * @return <p>The non-player teleporting</p>
      */
+    @NotNull
     public Entity getEntity() {
         return travellingEntity;
     }
@@ -49,6 +51,7 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      *
      * @return <p>The destination portal</p>
      */
+    @NotNull
     public Portal getDestination() {
         return destination;
     }
@@ -59,6 +62,7 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      * @return <p>Location of the exit point</p>
      */
     @Override
+    @NotNull
     public Location getExit() {
         return exit;
     }
@@ -68,7 +72,7 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      *
      * @param location <p>The new location of the entity's exit point</p>
      */
-    public void setExit(Location location) {
+    public void setExit(@NotNull Location location) {
         this.exit = location;
     }
 
@@ -77,6 +81,7 @@ public class StargateEntityPortalEvent extends StargateEvent implements Stargate
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

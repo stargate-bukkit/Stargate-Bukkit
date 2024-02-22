@@ -1,14 +1,17 @@
 package net.knarcraft.stargate.portal;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.event.StargateActivateEvent;
 import net.knarcraft.stargate.event.StargateDeactivateEvent;
+import net.knarcraft.stargate.utility.ListHelper;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * The portal activator activates/de-activates portals and keeps track of a portal's destinations
@@ -33,7 +36,7 @@ public class PortalActivator {
      * @param portalOpener <p>The portal opener to trigger when the activation causes the portal to open</p>
      * @param destination  <p>The fixed destination specified on the portal's sign</p>
      */
-    public PortalActivator(Portal portal, PortalOpener portalOpener, String destination) {
+    public PortalActivator(@NotNull Portal portal, @NotNull PortalOpener portalOpener, @NotNull String destination) {
         this.portal = portal;
         this.opener = portalOpener;
         this.destination = destination;
@@ -44,6 +47,7 @@ public class PortalActivator {
      *
      * @return <p>The player this activator's portal is currently activated for</p>
      */
+    @NotNull
     public Player getActivePlayer() {
         return activePlayer;
     }
@@ -53,6 +57,7 @@ public class PortalActivator {
      *
      * @return <p>The available portal destinations</p>
      */
+    @NotNull
     public List<String> getDestinations() {
         return new ArrayList<>(this.destinations);
     }
@@ -63,7 +68,8 @@ public class PortalActivator {
      * @param player <p>Used for random gates to determine which destinations are available</p>
      * @return <p>The destination portal the player should teleport to</p>
      */
-    public Portal getDestination(Player player) {
+    @Nullable
+    public Portal getDestination(@Nullable Player player) {
         String portalNetwork = portal.getCleanNetwork();
         if (portal.getOptions().isRandom()) {
             //Find possible destinations
@@ -72,8 +78,8 @@ public class PortalActivator {
                 return null;
             }
             //Get one random destination
-            String destination = destinations.get((new Random()).nextInt(destinations.size()));
-            return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
+            String randomDestination = ListHelper.getRandom(destinations);
+            return PortalHandler.getByName(Portal.cleanString(randomDestination), portalNetwork);
         } else {
             //Just return the normal fixed destination
             return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
@@ -88,6 +94,7 @@ public class PortalActivator {
      *
      * @return <p>The portal destination</p>
      */
+    @Nullable
     public Portal getDestination() {
         return getDestination(null);
     }
@@ -97,7 +104,7 @@ public class PortalActivator {
      *
      * @param destination <p>The new destination of this portal activator's portal</p>
      */
-    public void setDestination(Portal destination) {
+    public void setDestination(@NotNull Portal destination) {
         setDestination(destination.getName());
     }
 
@@ -106,7 +113,7 @@ public class PortalActivator {
      *
      * @param destination <p>The new destination of this portal activator's portal</p>
      */
-    public void setDestination(String destination) {
+    public void setDestination(@NotNull String destination) {
         this.destination = destination;
     }
 
@@ -115,6 +122,7 @@ public class PortalActivator {
      *
      * @return <p>The name of the selected destination</p>
      */
+    @NotNull
     public String getDestinationName() {
         return destination;
     }
@@ -125,7 +133,7 @@ public class PortalActivator {
      * @param player <p>The player to activate the portal for</p>
      * @return <p>True if the portal was activated</p>
      */
-    boolean activate(Player player) {
+    public boolean activate(@NotNull Player player) {
         //Clear previous destination data
         this.destination = "";
         this.destinations.clear();
@@ -162,7 +170,7 @@ public class PortalActivator {
      * @param player <p>The player trying to activate this activator's portal</p>
      * @return <p>True if the portal was activated. False otherwise</p>
      */
-    private boolean triggerStargateActivationEvent(Player player) {
+    private boolean triggerStargateActivationEvent(@NotNull Player player) {
         StargateActivateEvent event = new StargateActivateEvent(portal, player, destinations, destination);
         Stargate.getInstance().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -217,7 +225,7 @@ public class PortalActivator {
      *
      * @param player <p>The player to cycle the gate for</p>
      */
-    public void cycleDestination(Player player) {
+    public void cycleDestination(@NotNull Player player) {
         cycleDestination(player, 1);
     }
 
@@ -227,7 +235,7 @@ public class PortalActivator {
      * @param player    <p>The player cycling destinations</p>
      * @param direction <p>The direction of the cycle (+1 for next, -1 for previous)</p>
      */
-    public void cycleDestination(Player player, int direction) {
+    public void cycleDestination(@NotNull Player player, int direction) {
         //Only allow going exactly one step in either direction
         if (direction != 1 && direction != -1) {
             throw new IllegalArgumentException("The destination direction must be 1 or -1.");
@@ -249,7 +257,7 @@ public class PortalActivator {
         //If no destinations are available, just tell the player and quit
         if (destinations.size() == 0) {
             if (!portal.getOptions().isSilent()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("destEmpty"));
+                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.NO_DESTINATION));
             }
             return;
         }

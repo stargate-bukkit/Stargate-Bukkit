@@ -27,7 +27,8 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
      * @param denyMsg <p>The message to display if the event is denied</p>
      * @param cost    <p>The cost of destroying the portal</p>
      */
-    public StargateDestroyEvent(Portal portal, Player player, boolean deny, String denyMsg, int cost) {
+    public StargateDestroyEvent(@NotNull Portal portal, @NotNull Player player, boolean deny, @NotNull String denyMsg,
+                                int cost) {
         super(portal, player);
         this.deny = deny;
         this.denyReason = denyMsg;
@@ -57,6 +58,7 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
      *
      * @return <p>The reason the event was denied</p>
      */
+    @NotNull
     public String getDenyReason() {
         return denyReason;
     }
@@ -66,7 +68,7 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
      *
      * @param denyReason <p>The reason the event was denied</p>
      */
-    public void setDenyReason(String denyReason) {
+    public void setDenyReason(@NotNull String denyReason) {
         this.denyReason = denyReason;
     }
 
@@ -93,6 +95,7 @@ public class StargateDestroyEvent extends StargatePlayerEvent {
      *
      * @return <p>A handler-list with all event handlers</p>
      */
+    @NotNull
     public static HandlerList getHandlerList() {
         return handlers;
     }

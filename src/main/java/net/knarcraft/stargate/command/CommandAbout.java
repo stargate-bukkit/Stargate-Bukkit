@@ -2,6 +2,7 @@ package net.knarcraft.stargate.command;
 
 import de.themoep.minedown.MineDown;
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.utility.FileHelper;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -26,13 +27,15 @@ public class CommandAbout implements CommandExecutor {
         ChatColor highlightColor = ChatColor.GREEN;
 
         try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/about.md")) {
-            String aboutMessageString = FileHelper.readStreamToString(inputStream);
-            BaseComponent[] component = MineDown.parse(aboutMessageString);
-            commandSender.spigot().sendMessage(component);
+            if (inputStream != null) {
+                String aboutMessageString = FileHelper.readStreamToString(inputStream);
+                BaseComponent[] component = MineDown.parse(aboutMessageString);
+                commandSender.spigot().sendMessage(component);
+            }
         } catch (IOException ioException) {
             commandSender.sendMessage("Internal error");
         }
-        String author = Stargate.getStargateConfig().getLanguageLoader().getString("author");
+        String author = Stargate.getStargateConfig().getLanguageLoader().getString(Message.AUTHOR);
         if (!author.isEmpty()) {
             commandSender.sendMessage(textColor + "Language created by " + highlightColor + author);
         }

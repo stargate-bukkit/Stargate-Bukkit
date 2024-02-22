@@ -10,6 +10,7 @@ import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.portal.property.PortalLocation;
 import net.knarcraft.stargate.portal.property.PortalOptions;
 import net.knarcraft.stargate.portal.property.PortalOwner;
+import net.knarcraft.stargate.portal.property.PortalStrings;
 import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import org.bukkit.Bukkit;
@@ -20,11 +21,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Waterlogged;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import static net.knarcraft.stargate.portal.PortalSignDrawer.markPortalWithInvalidGate;
@@ -43,7 +47,7 @@ public final class PortalFileHelper {
      *
      * @param world <p>The world to save portals for</p>
      */
-    public static void saveAllPortals(World world) {
+    public static void saveAllPortals(@NotNull World world) {
         Stargate.getStargateConfig().addManagedWorld(world.getName());
         String saveFileLocation = Stargate.getPortalFolder() + "/" + world.getName() + ".db";
 
@@ -52,17 +56,22 @@ public final class PortalFileHelper {
 
             for (Portal portal : PortalRegistry.getAllPortals()) {
                 //Skip portals in other worlds
-                String worldName = portal.getWorld().getName();
-                if (!worldName.equalsIgnoreCase(world.getName())) {
-                    continue;
+                if (portal.getWorld() == null) {
+                    Stargate.logSevere(String.format("Could not save portal %s because its world is null",
+                            portal.getName()));
+                } else {
+                    String worldName = portal.getWorld().getName();
+                    if (!worldName.equalsIgnoreCase(world.getName())) {
+                        continue;
+                    }
+                    //Save the portal
+                    savePortal(bufferedWriter, portal);
                 }
-                //Save the portal
-                savePortal(bufferedWriter, portal);
             }
 
             bufferedWriter.close();
-        } catch (Exception e) {
-            Stargate.logSevere(String.format("Exception while writing stargates to %s: %s", saveFileLocation, e));
+        } catch (Exception exception) {
+            Stargate.logSevere(String.format("Exception while writing stargates to %s: %s", saveFileLocation, exception));
         }
     }
 
@@ -73,13 +82,13 @@ public final class PortalFileHelper {
      * @param portal         <p>The portal to save</p>
      * @throws IOException <p>If unable to write to the buffered writer</p>
      */
-    private static void savePortal(BufferedWriter bufferedWriter, Portal portal) throws IOException {
+    private static void savePortal(@NotNull BufferedWriter bufferedWriter, @NotNull Portal portal) throws IOException {
         StringBuilder builder = new StringBuilder();
         BlockLocation button = portal.getStructure().getButton();
 
         //WARNING: Because of the primitive save format, any change in order will break everything!
         builder.append(portal.getName()).append(':');
-        builder.append(portal.getSignLocation().toString()).append(':');
+        builder.append(portal.getSignLocation()).append(':');
         builder.append((button != null) ? button.toString() : "").append(':');
 
         //Add removes config values to keep indices consistent
@@ -87,7 +96,7 @@ public final class PortalFileHelper {
         builder.append(0).append(':');
 
         builder.append(portal.getYaw()).append(':');
-        builder.append(portal.getTopLeft().toString()).append(':');
+        builder.append(portal.getTopLeft()).append(':');
         builder.append(portal.getGate().getFilename()).append(':');
 
         //Only save the destination name if the gate is fixed as it doesn't matter otherwise
@@ -111,13 +120,17 @@ public final class PortalFileHelper {
      * @param portal  <p>The portal to save</p>
      * @param builder <p>The string builder to append to</p>
      */
-    private static void savePortalOptions(Portal portal, StringBuilder builder) {
+    private static void savePortalOptions(@NotNull Portal portal, @NotNull StringBuilder builder) {
         PortalOptions options = portal.getOptions();
         builder.append(':');
         builder.append(options.isHidden()).append(':');
         builder.append(options.isAlwaysOn()).append(':');
         builder.append(options.isPrivate()).append(':');
-        builder.append(portal.getWorld().getName()).append(':');
+        if (portal.getWorld() != null) {
+            builder.append(portal.getWorld().getName()).append(':');
+        } else {
+            builder.append(':');
+        }
         builder.append(options.isFree()).append(':');
         builder.append(options.isBackwards()).append(':');
         builder.append(options.isShown()).append(':');
@@ -134,7 +147,7 @@ public final class PortalFileHelper {
      * @param world <p>The world to load portals for</p>
      * @return <p>True if portals could be loaded</p>
      */
-    public static boolean loadAllPortals(World world) {
+    public static boolean loadAllPortals(@NotNull World world) {
         String location = Stargate.getPortalFolder();
 
         File database = new File(location, world.getName() + ".db");
@@ -154,7 +167,7 @@ public final class PortalFileHelper {
      * @param database <p>The database file containing the portals</p>
      * @return <p>True if the portals were loaded successfully</p>
      */
-    private static boolean loadPortals(World world, File database) {
+    private static boolean loadPortals(@NotNull World world, @NotNull File database) {
         int lineIndex = 0;
         try {
             Scanner scanner = new Scanner(database);
@@ -185,7 +198,7 @@ public final class PortalFileHelper {
      * @param world     <p>The world for which portals are currently being read</p>
      * @return <p>True if the read portal has changed and the world's database needs to be saved</p>
      */
-    private static boolean readPortalLine(Scanner scanner, int lineIndex, World world) {
+    private static boolean readPortalLine(@NotNull Scanner scanner, int lineIndex, @NotNull World world) {
         String line = scanner.nextLine().trim();
 
         //Ignore empty and comment lines
@@ -213,7 +226,7 @@ public final class PortalFileHelper {
      * @param world               <p>The world portals have been loaded for</p>
      * @param needsToSaveDatabase <p>Whether the portal database's file needs to be updated</p>
      */
-    private static void doPostLoadTasks(World world, boolean needsToSaveDatabase) {
+    private static void doPostLoadTasks(@NotNull World world, boolean needsToSaveDatabase) {
         //Open any always-on portals. Do this here as it should be more efficient than in the loop.
         PortalHandler.verifyAllPortals();
         int portalCount = PortalRegistry.getAllPortals().size();
@@ -245,7 +258,7 @@ public final class PortalFileHelper {
      * @param lineIndex  <p>The line index to report in case the user needs to fix an error</p>
      * @return <p>True if the portal's data has changed and its database needs to be updated</p>
      */
-    private static boolean loadPortal(String[] portalData, World world, int lineIndex) {
+    private static boolean loadPortal(@NotNull String[] portalData, @NotNull World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
         BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
@@ -274,7 +287,8 @@ public final class PortalFileHelper {
         PortalOwner owner = new PortalOwner(ownerString);
 
         //Create the new portal
-        Portal portal = new Portal(portalLocation, button, destination, name, network, gate, owner,
+        PortalStrings portalStrings = new PortalStrings(name, network, destination);
+        Portal portal = new Portal(portalLocation, button, portalStrings, gate, owner,
                 PortalHandler.getPortalOptions(portalData));
 
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
@@ -289,17 +303,21 @@ public final class PortalFileHelper {
      *
      * @param portal <p>The portal update the button of</p>
      */
-    private static void updatePortalButton(Portal portal) {
+    private static void updatePortalButton(@NotNull Portal portal) {
         BlockLocation buttonLocation = getButtonLocation(portal);
+        if (buttonLocation == null) {
+            return;
+        }
+
         if (portal.getOptions().isAlwaysOn()) {
-            //Clear button if not already air or water
+            //Clear button if it exists
             if (MaterialHelper.isButtonCompatible(buttonLocation.getType())) {
                 Material newMaterial = decideRemovalMaterial(buttonLocation, portal);
                 Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, newMaterial, null));
             }
         } else {
-            //Replace button if the material does not match
-            if (buttonLocation.getType() != portal.getGate().getPortalButton()) {
+            //Replace button if the material is not a button
+            if (!MaterialHelper.isButtonCompatible(buttonLocation.getType())) {
                 generatePortalButton(portal, DirectionHelper.getBlockFaceFromYaw(portal.getYaw()));
             }
         }
@@ -312,7 +330,8 @@ public final class PortalFileHelper {
      * @param portal   <p>The portal the button/sign belongs to</p>
      * @return <p>The material to use for removing the button/sign</p>
      */
-    public static Material decideRemovalMaterial(BlockLocation location, Portal portal) {
+    @NotNull
+    public static Material decideRemovalMaterial(@NotNull BlockLocation location, @NotNull Portal portal) {
         //Get the blocks to each side of the location
         Location leftLocation = location.getRelativeLocation(-1, 0, 0, portal.getYaw());
         Location rightLocation = location.getRelativeLocation(1, 0, 0, portal.getYaw());
@@ -333,7 +352,7 @@ public final class PortalFileHelper {
      * @param location <p>The location to check</p>
      * @return <p>True if the location is underwater</p>
      */
-    private static boolean isUnderwater(Location location) {
+    private static boolean isUnderwater(@NotNull Location location) {
         BlockData blockData = location.getBlock().getBlockData();
         return blockData.getMaterial() == Material.WATER ||
                 (blockData instanceof Waterlogged waterlogged && waterlogged.isWaterlogged());
@@ -348,7 +367,7 @@ public final class PortalFileHelper {
      * @param portal <p>The portal to update the button vector for</p>
      * @return <p>True if the calculated button location is not the same as the one in the portal file</p>
      */
-    private static boolean updateButtonVector(Portal portal) {
+    private static boolean updateButtonVector(@NotNull Portal portal) {
         for (RelativeBlockVector control : portal.getGate().getLayout().getControls()) {
             BlockLocation controlLocation = portal.getLocation().getTopLeft().getRelativeLocation(control,
                     portal.getYaw());
@@ -374,13 +393,24 @@ public final class PortalFileHelper {
      * @param portal       <p>The portal to generate button for</p>
      * @param buttonFacing <p>The direction the button should be facing</p>
      */
-    public static void generatePortalButton(Portal portal, BlockFace buttonFacing) {
+    public static void generatePortalButton(@NotNull Portal portal, @NotNull BlockFace buttonFacing) {
         //Go one block outwards to find the button's location rather than the control block's location
         BlockLocation button = getButtonLocation(portal);
 
-        Directional buttonData = (Directional) Bukkit.createBlockData(portal.getGate().getPortalButton());
-        buttonData.setFacing(buttonFacing);
-        button.getBlock().setBlockData(buttonData);
+        // If the button location is null here, it is assumed that the button generation wasn't necessary
+        if (button == null) {
+            return;
+        }
+
+        if (!MaterialHelper.isButtonCompatible(button.getType())) {
+            @NotNull List<Material> possibleMaterials = MaterialHelper.specifiersToMaterials(
+                    portal.getGate().getPortalButtonMaterials()).stream().toList();
+            Material buttonType = ListHelper.getRandom(possibleMaterials);
+
+            Directional buttonData = (Directional) Bukkit.createBlockData(buttonType);
+            buttonData.setFacing(buttonFacing);
+            button.getBlock().setBlockData(buttonData);
+        }
         portal.getStructure().setButton(button);
     }
 
@@ -390,11 +420,16 @@ public final class PortalFileHelper {
      * @param portal <p>The portal to find the button for</p>
      * @return <p>The location of the portal's button</p>
      */
-    private static BlockLocation getButtonLocation(Portal portal) {
+    @Nullable
+    private static BlockLocation getButtonLocation(@NotNull Portal portal) {
         BlockLocation topLeft = portal.getTopLeft();
         RelativeBlockVector buttonVector = portal.getLocation().getButtonVector();
-        return topLeft.getRelativeLocation(buttonVector.addToVector(RelativeBlockVector.Property.OUT, 1),
-                portal.getYaw());
+
+        if (buttonVector == null) {
+            return null;
+        }
+
+        return topLeft.getRelativeLocation(buttonVector.addOut(1), portal.getYaw());
     }
 
 }

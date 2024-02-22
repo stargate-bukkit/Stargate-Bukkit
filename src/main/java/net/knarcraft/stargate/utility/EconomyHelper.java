@@ -3,12 +3,15 @@ package net.knarcraft.stargate.utility;
 import net.knarcraft.knarlib.formatting.StringFormatter;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.config.EconomyConfig;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.property.PortalOwner;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -29,7 +32,7 @@ public final class EconomyHelper {
      * @param cost           <p>The cost of teleportation</p>
      * @return <p>False if payment was successful. True if the payment was unsuccessful</p>
      */
-    public static boolean cannotPayTeleportFee(Portal entrancePortal, Player player, int cost) {
+    public static boolean cannotPayTeleportFee(@NotNull Portal entrancePortal, @NotNull Player player, int cost) {
         boolean success;
 
         //Try to charge the player. Paying the portal owner is only possible if a UUID is available
@@ -78,8 +81,8 @@ public final class EconomyHelper {
      * @param portalOwner <p>The owner of the portal</p>
      * @param earnings    <p>The amount the owner earned</p>
      */
-    public static void sendObtainMessage(String portalName, Player portalOwner, int earnings) {
-        String obtainedMsg = Stargate.getString("ecoObtain");
+    public static void sendObtainMessage(@NotNull String portalName, @NotNull Player portalOwner, int earnings) {
+        String obtainedMsg = Stargate.getString(Message.ECONOMY_OBTAINED);
         obtainedMsg = replacePlaceholders(obtainedMsg, portalName, earnings);
         Stargate.getMessageSender().sendSuccessMessage(portalOwner, obtainedMsg);
     }
@@ -91,8 +94,8 @@ public final class EconomyHelper {
      * @param player     <p>The interacting player</p>
      * @param cost       <p>The cost of the interaction</p>
      */
-    public static void sendDeductMessage(String portalName, Player player, int cost) {
-        String deductMsg = Stargate.getString("ecoDeduct");
+    public static void sendDeductMessage(@NotNull String portalName, @NotNull Player player, int cost) {
+        String deductMsg = Stargate.getString(Message.ECONOMY_DEDUCTED);
         deductMsg = replacePlaceholders(deductMsg, portalName, cost);
         Stargate.getMessageSender().sendSuccessMessage(player, deductMsg);
     }
@@ -104,8 +107,8 @@ public final class EconomyHelper {
      * @param player     <p>The interacting player</p>
      * @param cost       <p>The cost of the interaction</p>
      */
-    public static void sendInsufficientFundsMessage(String portalName, Player player, int cost) {
-        String inFundMsg = Stargate.getString("ecoInFunds");
+    public static void sendInsufficientFundsMessage(@NotNull String portalName, @NotNull Player player, int cost) {
+        String inFundMsg = Stargate.getString(Message.ECONOMY_INSUFFICIENT);
         inFundMsg = replacePlaceholders(inFundMsg, portalName, cost);
         Stargate.getMessageSender().sendErrorMessage(player, inFundMsg);
     }
@@ -117,8 +120,8 @@ public final class EconomyHelper {
      * @param player     <p>The player breaking the portal</p>
      * @param cost       <p>The amount the user has to pay for destroying the portal. (expects a negative value)</p>
      */
-    public static void sendRefundMessage(String portalName, Player player, int cost) {
-        String refundMsg = Stargate.getString("ecoRefund");
+    public static void sendRefundMessage(@NotNull String portalName, @NotNull Player player, int cost) {
+        String refundMsg = Stargate.getString(Message.ECONOMY_REFUNDED);
         refundMsg = replacePlaceholders(refundMsg, portalName, -cost);
         Stargate.getMessageSender().sendSuccessMessage(player, refundMsg);
     }
@@ -131,7 +134,7 @@ public final class EconomyHelper {
      * @param destination <p>The destination portal</p>
      * @return <p>The cost of using the portal</p>
      */
-    public static int getUseCost(Player player, Portal source, Portal destination) {
+    public static int getUseCost(@NotNull Player player, @NotNull Portal source, @Nullable Portal destination) {
         EconomyConfig config = Stargate.getEconomyConfig();
         //No payment required
         if (!config.useEconomy() || source.getOptions().isFree()) {
@@ -161,7 +164,7 @@ public final class EconomyHelper {
      * @param cost   <p>The cost of the transaction</p>
      * @return <p>True if the player was charged successfully</p>
      */
-    public static boolean chargePlayerIfNecessary(Player player, UUID target, int cost) {
+    public static boolean chargePlayerIfNecessary(@NotNull Player player, @NotNull UUID target, int cost) {
         if (skipPayment(cost)) {
             return true;
         }
@@ -176,7 +179,7 @@ public final class EconomyHelper {
      * @param amount <p>The amount to charge</p>
      * @return <p>True if the payment succeeded, or if no payment was necessary</p>
      */
-    private static boolean chargePlayer(Player player, double amount) {
+    private static boolean chargePlayer(@NotNull Player player, double amount) {
         Economy economy = Stargate.getEconomyConfig().getEconomy();
         if (Stargate.getEconomyConfig().isEconomyEnabled() && economy != null) {
             if (!economy.has(player, amount)) {
@@ -198,7 +201,7 @@ public final class EconomyHelper {
      * @param cost    <p>The cost to transfer</p>
      */
     @SuppressWarnings("deprecation")
-    private static void transferFees(Economy economy, int cost) {
+    private static void transferFees(@NotNull Economy economy, int cost) {
         String accountName = Stargate.getEconomyConfig().getTaxAccount();
         if (accountName == null || accountName.isEmpty()) {
             return;
@@ -220,7 +223,7 @@ public final class EconomyHelper {
      * @param cost   <p>The cost of the transaction</p>
      * @return <p>True if the player was charged successfully</p>
      */
-    public static boolean chargePlayerIfNecessary(Player player, int cost) {
+    public static boolean chargePlayerIfNecessary(@NotNull Player player, int cost) {
         if (skipPayment(cost)) {
             return true;
         }
@@ -228,8 +231,9 @@ public final class EconomyHelper {
         boolean charged = chargePlayer(player, cost);
 
         // Transfer the charged amount to the tax account
-        if (charged) {
-            transferFees(Stargate.getEconomyConfig().getEconomy(), cost);
+        Economy economy = Stargate.getEconomyConfig().getEconomy();
+        if (charged && economy != null) {
+            transferFees(economy, cost);
         }
 
         return charged;
@@ -253,9 +257,10 @@ public final class EconomyHelper {
      * @param amount <p>The amount to charge</p>
      * @return <p>True if the payment succeeded, or if no payment was necessary</p>
      */
-    private static boolean chargePlayer(Player player, UUID target, double amount) {
+    private static boolean chargePlayer(@NotNull Player player, @NotNull UUID target, double amount) {
         Economy economy = Stargate.getEconomyConfig().getEconomy();
-        if (Stargate.getEconomyConfig().isEconomyEnabled() && player.getUniqueId().compareTo(target) != 0 && economy != null) {
+        if (Stargate.getEconomyConfig().isEconomyEnabled() && player.getUniqueId().compareTo(target) != 0 &&
+                economy != null) {
             if (!economy.has(player, amount)) {
                 return false;
             }
@@ -274,7 +279,8 @@ public final class EconomyHelper {
      * @param cost       <p>The cost for a given interaction</p>
      * @return <p>The same string with cost and portal variables replaced</p>
      */
-    private static String replacePlaceholders(String message, String portalName, int cost) {
+    @NotNull
+    private static String replacePlaceholders(@NotNull String message, @NotNull String portalName, int cost) {
         return StringFormatter.replacePlaceholders(message, new String[]{"%cost%", "%portal%"},
                 new String[]{Stargate.getEconomyConfig().format(cost), portalName});
     }

@@ -1,6 +1,7 @@
 package net.knarcraft.stargate.listener;
 
 import net.knarcraft.stargate.Stargate;
+import net.knarcraft.stargate.config.Message;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.teleporter.VehicleTeleporter;
@@ -13,6 +14,8 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class VehicleEventListener implements Listener {
      * @param event <p>The triggered move event</p>
      */
     @EventHandler
-    public void onVehicleMove(VehicleMoveEvent event) {
+    public void onVehicleMove(@NotNull VehicleMoveEvent event) {
         if (!Stargate.getGateConfig().handleVehicles()) {
             return;
         }
@@ -58,7 +61,8 @@ public class VehicleEventListener implements Listener {
      * @param entrancePortal <p>The portal the vehicle is entering</p>
      * @param vehicle        <p>The vehicle passing through</p>
      */
-    private static void teleportVehicle(List<Entity> passengers, Portal entrancePortal, Vehicle vehicle) {
+    private static void teleportVehicle(@NotNull List<Entity> passengers, @NotNull Portal entrancePortal,
+                                        @NotNull Vehicle vehicle) {
         String route = "VehicleEventListener::teleportVehicle";
 
         if (!passengers.isEmpty() && TeleportHelper.containsPlayer(passengers)) {
@@ -83,14 +87,72 @@ public class VehicleEventListener implements Listener {
      * @param entrancePortal <p>The portal the minecart entered</p>
      * @param vehicle        <p>The vehicle to teleport</p>
      */
-    private static void teleportPlayerAndVehicle(Portal entrancePortal, Vehicle vehicle) {
+    private static void teleportPlayerAndVehicle(@NotNull Portal entrancePortal, @NotNull Vehicle vehicle) {
         Entity rootEntity = vehicle;
         while (rootEntity.getVehicle() != null) {
             rootEntity = rootEntity.getVehicle();
         }
         List<Player> players = TeleportHelper.getPlayers(rootEntity.getPassengers());
-        Portal destinationPortal = null;
+        Portal destinationPortal = getDestinationPortal(players, entrancePortal);
 
+        //Cancel the teleport if no players activated the portal, or if any players are denied access
+        boolean cancelTeleportation = false;
+        for (Player player : players) {
+            if (destinationPortal == null) {
+                cancelTeleportation = true;
+                if (!entrancePortal.getOptions().isSilent()) {
+                    Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.INVALID_DESTINATION));
+                }
+            } else if (!TeleportHelper.playerCanTeleport(player, entrancePortal, destinationPortal)) {
+                cancelTeleportation = true;
+            }
+        }
+        if (cancelTeleportation || destinationPortal == null) {
+            return;
+        }
+
+        //Take payment from all players
+        if (!takePayment(players, entrancePortal, destinationPortal)) {
+            return;
+        }
+
+        // Perform the teleportation
+        teleportPlayerAndVehicle(players, vehicle, entrancePortal, destinationPortal);
+    }
+
+    /**
+     * Performs the teleportation of one or more players in a vehicle
+     *
+     * @param players           <p>The players to be teleported</p>
+     * @param vehicle           <p>The vehicle that triggered the teleportation</p>
+     * @param entrancePortal    <p>The portal the player(s) and vehicle entered from</p>
+     * @param destinationPortal <p>The portal the player(s) and vehicle are teleporting to</p>
+     */
+    private static void teleportPlayerAndVehicle(@NotNull List<Player> players, @NotNull Vehicle vehicle,
+                                                 @NotNull Portal entrancePortal, @NotNull Portal destinationPortal) {
+        //Teleport the vehicle and inform the user if the vehicle was teleported
+        boolean teleported = new VehicleTeleporter(destinationPortal, vehicle).teleportEntity(entrancePortal);
+        if (!teleported) {
+            return;
+        }
+
+        if (!entrancePortal.getOptions().isSilent()) {
+            for (Player player : players) {
+                Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.TELEPORTED));
+            }
+        }
+        entrancePortal.getPortalOpener().closePortal(false);
+    }
+
+    /**
+     * Tries to get the destination portal selected by one of the players included in the teleportation
+     *
+     * @param players        <p>The players to be teleported</p>
+     * @param entrancePortal <p>The portal the players are entering</p>
+     * @return <p>The destination portal, or null if not found</p>
+     */
+    @Nullable
+    private static Portal getDestinationPortal(@NotNull List<Player> players, @NotNull Portal entrancePortal) {
         for (Player player : players) {
             //The entrance portal must be open for one player for the teleportation to happen
             if (!entrancePortal.getPortalOpener().isOpenFor(player)) {
@@ -100,48 +162,36 @@ public class VehicleEventListener implements Listener {
             //Check if any of the players has selected the destination
             Portal possibleDestinationPortal = entrancePortal.getPortalActivator().getDestination(player);
             if (possibleDestinationPortal != null) {
-                destinationPortal = possibleDestinationPortal;
+                return possibleDestinationPortal;
             }
         }
 
-        //Cancel the teleport if no players activated the portal, or if any players are denied access
-        boolean cancelTeleport = false;
-        for (Player player : players) {
-            if (destinationPortal == null) {
-                cancelTeleport = true;
-                if (!entrancePortal.getOptions().isSilent()) {
-                    Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString("invalidMsg"));
-                }
-            } else if (!TeleportHelper.playerCanTeleport(player, entrancePortal, destinationPortal)) {
-                cancelTeleport = true;
-            }
-        }
-        if (cancelTeleport) {
-            return;
-        }
+        return null;
+    }
 
-        //Take payment from all players
+    /**
+     * Takes payment for the given players
+     *
+     * @param players           <p>The players to take payment from</p>
+     * @param entrancePortal    <p>The portal the players are travelling from</p>
+     * @param destinationPortal <p>The portal the players are travelling to</p>
+     * @return <p>True if payment was successfully taken, false otherwise</p>
+     */
+    private static boolean takePayment(@NotNull List<Player> players, @NotNull Portal entrancePortal,
+                                       @NotNull Portal destinationPortal) {
         for (Player player : players) {
             //To prevent the case where the first passenger pays and then the second passenger is denied, this has to be
-            // run after it has been confirmed that all passengers are able to pay
+            // run after it has been confirmed that all passengers are able to pay. Also note that some players might 
+            // not have to pay, and thus the cost check has to be in the loop,
             int cost = EconomyHelper.getUseCost(player, entrancePortal, destinationPortal);
             if (cost > 0) {
                 if (EconomyHelper.cannotPayTeleportFee(entrancePortal, player, cost)) {
-                    return;
+                    return false;
                 }
             }
         }
 
-        //Teleport the vehicle and inform the user if the vehicle was teleported
-        boolean teleported = new VehicleTeleporter(destinationPortal, vehicle).teleportEntity(entrancePortal);
-        if (teleported) {
-            if (!entrancePortal.getOptions().isSilent()) {
-                for (Player player : players) {
-                    Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString("teleportMsg"));
-                }
-            }
-            entrancePortal.getPortalOpener().closePortal(false);
-        }
+        return true;
     }
 
 }

@@ -1,12 +1,18 @@
 package net.knarcraft.stargate.utility;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-public class FileHelper {
+public final class FileHelper {
+
+    private FileHelper() {
+
+    }
 
     /**
      * Converts the stream directly into a string, includes the newline character
@@ -15,7 +21,8 @@ public class FileHelper {
      * @return <p> A String of the file read </p>
      * @throws IOException <p>If unable to read the stream</p>
      */
-    public static String readStreamToString(InputStream stream) throws IOException {
+    @NotNull
+    public static String readStreamToString(@NotNull InputStream stream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         BufferedReader reader = new BufferedReader(inputStreamReader);
         String line = reader.readLine();
