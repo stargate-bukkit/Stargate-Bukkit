@@ -54,7 +54,7 @@ public class PortalStorageHelper {
         }
         World world = Bukkit.getWorld(UUID.fromString(resultSet.getString("world")));
         // Avoid the use of unecessary queries if server is not this server
-        if (world == null && serverName != null) {
+        if (world == null && serverName == null) {
             Stargate.log(Level.FINE, "World does not exist for portal: " + networkName + ":" + name);
             throw new PortalLoadException(PortalLoadException.FailureType.WORLD);
         }
