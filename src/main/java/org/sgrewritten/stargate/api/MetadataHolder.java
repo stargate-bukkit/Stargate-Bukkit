@@ -6,6 +6,9 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.Stargate;
+
+import java.util.logging.Level;
 
 public interface MetadataHolder {
 
@@ -54,12 +57,14 @@ public interface MetadataHolder {
 
     private @NotNull JsonObject loadMetadata(){
         String metadataString = getMetadata();
-        JsonObject metadata;
         if (metadataString == null) {
-            metadata = new JsonObject();
+           return new JsonObject();
         } else {
-            metadata = JsonParser.parseString(metadataString).getAsJsonObject();
+            JsonElement element = JsonParser.parseString(metadataString);
+            if(!(element instanceof JsonObject)){
+                return new JsonObject();
+            }
+            return element.getAsJsonObject();
         }
-        return metadata;
     }
 }
