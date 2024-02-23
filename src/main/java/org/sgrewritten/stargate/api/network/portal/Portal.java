@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.api.network.portal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.network.StorageType;
@@ -174,7 +175,7 @@ public interface Portal {
      *
      * @return <p>The destination name specified for this portal</p>
      */
-    String getDestinationName();
+    @Nullable String getDestinationName();
 
     /**
      * Gets the unique identifier for this portal

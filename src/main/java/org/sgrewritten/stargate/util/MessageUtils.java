@@ -34,7 +34,10 @@ public class MessageUtils {
         }
     }
 
-    public static void sendMessage(Entity receiver, String message) {
+    public static void sendMessage(@Nullable Entity receiver, String message) {
+        if (receiver == null){
+            return;
+        }
         StargateComponent component = new StargateComponent(message);
         StargateMessageEvent event = new StargateMessageEvent(component);
         if (event.callEvent()) {
