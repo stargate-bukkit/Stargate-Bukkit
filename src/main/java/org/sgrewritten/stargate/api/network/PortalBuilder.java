@@ -74,6 +74,7 @@ public class PortalBuilder {
     private boolean adaptiveGatePositionGeneration = false;
     private String metaData;
     private Set<PortalFlag> flags;
+    private Player permissionTarget;
 
     /**
      * Construct an instance of a PortalBuilder
@@ -97,6 +98,7 @@ public class PortalBuilder {
     public PortalBuilder addPermissionCheck(@NotNull Player permissionTarget) {
         Objects.requireNonNull(permissionTarget);
         this.permissionManager = new StargatePermissionManager(permissionTarget, stargateAPI.getLanguageManager());
+        this.permissionTarget = permissionTarget;
         return this;
     }
 
@@ -279,15 +281,10 @@ public class PortalBuilder {
         Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
         if (!disallowedFlags.isEmpty() && messageTarget != null) {
             String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-            messageTarget.sendMessage(TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
+            MessageUtils.sendMessage(messageTarget, TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
         }
         flags.removeAll(disallowedFlags);
-        if (gateAPI == null) {
-            if (adaptiveGatePositionGeneration) {
-                gateBuilder.setGenerateButtonPositions(!flags.contains(PortalFlag.ALWAYS_ON));
-            }
-            gateAPI = gateBuilder.build();
-        }
+        gateAPI = getOrCreateGate();
         if (network == null) {
             network = stargateAPI.getNetworkManager().selectNetwork(networkString, permissionManager, owner, flags);
         }
@@ -320,7 +317,7 @@ public class PortalBuilder {
         return portal;
     }
 
-    private void setup(){
+    private void setup() {
         if (gateBuilder == null && gateAPI == null) {
             throw new IllegalStateException("Can not construct a portal without a valid gate or gate builder.");
         }
@@ -337,17 +334,29 @@ public class PortalBuilder {
         }
     }
 
-    private void finalChecks(RealPortal portal, Network network) {
-        if(messageTarget == null){
-            return;
+    private GateAPI getOrCreateGate() throws GateConflictException, InvalidStructureException, NoFormatFoundException {
+        try {
+            if (gateAPI == null) {
+                if (adaptiveGatePositionGeneration) {
+                    gateBuilder.setGenerateButtonPositions(!flags.contains(PortalFlag.ALWAYS_ON));
+                }
+                return gateBuilder.build();
+            }
+            return gateAPI;
+        } catch (GateConflictException e) {
+            MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+            throw e;
         }
+    }
+
+    private void finalChecks(RealPortal portal, Network network) {
         // Warn the player if their portal is interfering with spawn protection
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
-            messageTarget.sendMessage(stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
+            MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
         if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER)) {
             Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
-            messageTarget.sendMessage(TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
+            MessageUtils.sendMessage(messageTarget, TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
                     inflictingNetwork, stargateAPI.getLanguageManager()));
         }
     }
@@ -357,6 +366,7 @@ public class PortalBuilder {
         if (economyTarget != null && EconomyHelper.shouldChargePlayer(economyTarget, portal, BypassPermission.COST_CREATE) &&
                 !stargateAPI.getEconomyManager().chargePlayer(economyTarget, null, cost)) {
             String message = stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.LACKING_FUNDS);
+            MessageUtils.sendMessageFromPortal(portal, economyTarget, message, MessageType.DENY);
             throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }
     }
@@ -366,6 +376,7 @@ public class PortalBuilder {
         //Display an error if trying to create portals across servers while the feature is disabled
         if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
                 && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
+            MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.BUNGEE_DISABLED));
             throw new TranslatableException("Bungee is disabled") {
                 @Override
                 protected TranslatableMessage getTranslatableMessage() {
@@ -375,6 +386,7 @@ public class PortalBuilder {
         }
         if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(
                 ConfigurationOption.USING_REMOTE_DATABASE)) {
+            MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             throw new TranslatableException("Bungee networks are disabled") {
                 @Override
                 protected TranslatableMessage getTranslatableMessage() {
@@ -390,6 +402,7 @@ public class PortalBuilder {
             if (hasPermission) {
                 return;
             }
+            MessageUtils.sendMessage(permissionTarget, permissionManager.getDenyMessage());
             throw new LocalisedMessageException(permissionManager.getDenyMessage(), portal, MessageType.DENY);
         }
         String[] lines = new String[]{this.portalName, destinationName == null ? "" : destinationName, network.getName(), flagsString};
@@ -406,6 +419,7 @@ public class PortalBuilder {
             } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
                 message = portalCreateEvent.getDenyReason();
             }
+            MessageUtils.sendMessage(eventTarget, message);
             throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }
     }
