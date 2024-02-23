@@ -50,14 +50,14 @@ public class PlayerEventListener implements Listener {
     private final @NotNull LanguageManager languageManager;
     private final @NotNull BungeeManager bungeeManager;
     private final @NotNull RegistryAPI registry;
-    private final @NotNull BlockLoggingManager loggingCompatability;
+    private final @NotNull BlockLoggingManager loggingCompatibility;
     private final StorageAPI storageAPI;
 
-    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability, StorageAPI storageAPI) {
+    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatibility, StorageAPI storageAPI) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
-        this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
+        this.loggingCompatibility = Objects.requireNonNull(loggingCompatibility);
         this.storageAPI = storageAPI;
     }
 
@@ -106,7 +106,7 @@ public class PlayerEventListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }
-            loggingCompatability.logPlayerInteractEvent(event);
+            loggingCompatibility.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
@@ -116,7 +116,7 @@ public class PlayerEventListener implements Listener {
         }
         if (ButtonHelper.isButton(blockMaterial)) {
             portal.onButtonClick(event);
-            loggingCompatability.logPlayerInteractEvent(event);
+            loggingCompatibility.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
         }
 

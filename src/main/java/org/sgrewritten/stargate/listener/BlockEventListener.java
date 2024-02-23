@@ -190,20 +190,11 @@ public class BlockEventListener implements Listener {
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
             StargatePreCreatePortalEvent builderEvent = new StargatePreCreatePortalEvent(portalBuilder, gateBuilder, event.getLines(), player);
-            builderEvent.callEvent();
-            portalBuilder.build();
-        } catch (NoFormatFoundException noFormatFoundException) {
-            Stargate.log(Level.FINER, "No Gate format matches");
-        } catch (GateConflictException gateConflictException) {
-            event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-        } catch (LocalisedMessageException e) {
-            if (e.getPortal() != null) {
-                MessageUtils.sendMessageFromPortal(e.getPortal(), event.getPlayer(), e.getLocalisedMessage(languageManager), e.getMessageType());
-            } else {
-                MessageUtils.sendMessage(event.getPlayer(), e.getLocalisedMessage(languageManager));
+            if(builderEvent.callEvent()){
+                portalBuilder.build();
             }
-        } catch (TranslatableException e) {
-            event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
+        } catch (NoFormatFoundException | TranslatableException | GateConflictException silenced) {
+            Stargate.log(Level.FINEST, silenced);
         } catch (InvalidStructureException ignored) {
         }
     }

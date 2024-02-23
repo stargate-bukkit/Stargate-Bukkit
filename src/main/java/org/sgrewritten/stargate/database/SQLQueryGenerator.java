@@ -631,7 +631,7 @@ public class SQLQueryGenerator {
             statement.setString(1, world);
             return statement;
         } else {
-            PreparedStatement statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_WORLD));
+            PreparedStatement statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_INTER_WORLD));
             statement.setString(1, world);
             statement.setString(2, Stargate.getServerUUID());
             return statement;
