@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
 
 public class StargateSignFormatPortalEvent extends StargatePortalEvent {
     private static final HandlerList handlers = new HandlerList();

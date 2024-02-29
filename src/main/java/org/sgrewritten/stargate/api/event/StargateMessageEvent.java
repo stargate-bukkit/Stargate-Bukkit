@@ -4,7 +4,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
 public class StargateMessageEvent extends Event implements Cancellable {
 

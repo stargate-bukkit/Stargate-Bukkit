@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.api.event.portal.message;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.api.event.portal.CancellableStargatePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
 public abstract class StargateSendMessagePortalEvent extends CancellableStargatePortalEvent {
     private final MessageType type;

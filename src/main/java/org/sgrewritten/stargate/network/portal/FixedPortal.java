@@ -6,14 +6,13 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
-import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.format.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;
 import java.util.UUID;
@@ -36,26 +35,23 @@ public class FixedPortal extends AbstractPortal {
      * @param ownerUUID       <p>The UUID of the portal's owner</p>
      * @throws NameLengthException
      */
-    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate,
-                       UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
+    public FixedPortal(Network network, String name, String destinationName, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
         super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
         this.destinationName = destinationName;
         this.destination = network.getPortal(destinationName);
     }
 
     @Override
-    public SignLine[] getDrawnControlLines() {
-        SignLine[] lines = new SignLine[4];
-        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL);
-        lines[2] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()), network);
-        Portal destination = getDestination();
+    public LineData[] getDrawnControlLines() {
+        LineData[] lines = new LineData[4];
+        lines[0] = new PortalLineData(this, SignLineType.THIS_PORTAL);
+        lines[2] = new NetworkLineData(network);
         if (destination != null) {
-            lines[1] = new PortalLine(super.colorDrawer.formatPortalName(destination, HighlightingStyle.LESSER_GREATER_THAN), getDestination(), SignLineType.DESTINATION_PORTAL);
-            lines[3] = new TextLine();
+            lines[1] = new PortalLineData(destination, SignLineType.DESTINATION_PORTAL);
+            lines[3] = new TextLineData();
         } else {
-            lines[1] = new TextLine(super.colorDrawer.formatLine(destinationName), SignLineType.DESTINATION_PORTAL);
-            lines[3] = new TextLine(super.colorDrawer.formatErrorLine(super.languageManager.getString(
-                    TranslatableMessage.DISCONNECTED), HighlightingStyle.SQUARE_BRACKETS), SignLineType.ERROR);
+            lines[1] = new PortalLineData(destinationName, SignLineType.DESTINATION_PORTAL);
+            lines[3] = new TextLineData(super.languageManager.getString(TranslatableMessage.DISCONNECTED), SignLineType.ERROR);
         }
         return lines;
     }

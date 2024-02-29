@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.network.portal.format;
+package org.sgrewritten.stargate.api.network.portal.formatting;
 
 import net.md_5.bungee.api.ChatColor;
 import org.sgrewritten.stargate.api.network.Network;

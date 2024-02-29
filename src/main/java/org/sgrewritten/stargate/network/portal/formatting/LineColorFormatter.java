@@ -8,7 +8,16 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
+import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
 import org.sgrewritten.stargate.colors.ColorConverter;
 import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.colors.ColorSelector;
@@ -40,40 +49,50 @@ public class LineColorFormatter implements LineFormatter {
         pointerColor = this.getPointerColor();
     }
 
+
     @Override
-    public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
+    public SignLine convertToSignLine(LineData lineData) {
+        return switch (lineData.getType()) {
+            case ERROR ->
+                    new TextLine(formatErrorLine(lineData.getText(), HighlightingStyle.SQUARE_BRACKETS), SignLineType.ERROR);
+            case TEXT -> new TextLine(formatLine(lineData.getText()));
+            case NETWORK -> formatNetworkName((NetworkLineData) lineData);
+            case DESTINATION_PORTAL ->
+                    formatPortalName((PortalLineData) lineData, HighlightingStyle.LESSER_GREATER_THAN);
+            case THIS_PORTAL -> formatPortalName((PortalLineData) lineData, HighlightingStyle.MINUS_SIGN);
+            case PORTAL -> formatPortalName((PortalLineData) lineData, HighlightingStyle.NOTHING);
+        };
+    }
+
+    private SignLine formatPortalName(PortalLineData lineData, HighlightingStyle highlightingStyle) {
         ChatColor pointerColorTemp = this.pointerColor;
+        Portal portal = lineData.getPortal();
         if (ConfigurationHelper.getInteger(ConfigurationOption.POINTER_BEHAVIOR) == 2 && getFlagColor(portal) != null) {
             pointerColorTemp = getFlagColor(portal);
         }
-        String portalName = (portal != null) ? portal.getName() : "null";
-        return new ArrayList<>(List.of(
+        String portalName = (portal != null) ? portal.getName() : lineData.getText();
+        List<StargateComponent> components = new ArrayList<>(List.of(
                 new StargateComponent(pointerColorTemp + highlightingStyle.getPrefix()),
                 new StargateComponent(color + portalName),
                 new StargateComponent(pointerColorTemp + highlightingStyle.getSuffix())
         ));
+        return new PortalLine(components, portal, lineData.getType());
     }
 
-    @Override
-    public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
-        String networkName;
-        String bold;
-        if (network == null) {
-            networkName = "null";
-            bold = "";
-        } else {
-            networkName = network.getName();
-            bold = (network.getStorageType() == StorageType.INTER_SERVER) ? ChatColor.BOLD.toString() : "";
-        }
-        return new ArrayList<>(List.of(
+    private SignLine formatNetworkName(NetworkLineData networkLineData) {
+        Network network = networkLineData.getNetwork();
+        HighlightingStyle highlightingStyle = network.getHighlightingStyle();
+        String networkName = network.getName();
+        String bold = (network.getStorageType() == StorageType.INTER_SERVER) ? ChatColor.BOLD.toString() : "";
+        List<StargateComponent> components = new ArrayList<>(List.of(
                 new StargateComponent(pointerColor + bold + highlightingStyle.getPrefix()),
                 new StargateComponent(color + bold + networkName),
                 new StargateComponent(pointerColor + bold + highlightingStyle.getSuffix())
         ));
+        return new NetworkLine(components, network);
     }
 
-    @Override
-    public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
+    private List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(pointerColor + highlightingStyle.getPrefix()),
                 new StargateComponent(color + aString),
@@ -81,13 +100,11 @@ public class LineColorFormatter implements LineFormatter {
         ));
     }
 
-    @Override
-    public List<StargateComponent> formatLine(String line) {
+    private List<StargateComponent> formatLine(String line) {
         return new ArrayList<>(List.of(new StargateComponent(color + line)));
     }
 
-    @Override
-    public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
+    private List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
                 new StargateComponent(ERROR_COLOR + highlightingStyle.getPrefix()),
                 new StargateComponent(ERROR_COLOR + error),

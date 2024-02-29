@@ -10,7 +10,8 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StorageType;
@@ -25,11 +26,14 @@ public interface GateAPI {
 
     /**
      * Set button and draw sign
-     *
-     * @param signLines  <p>an array with 4 elements, representing each line of a sign</p>
-     * @param drawButton <p>whether or not include a button.</p>
      */
-    void drawControlMechanisms(SignLine[] signLines, boolean drawButton);
+    void drawControlMechanisms(LineData[] lines);
+
+    /**
+     * Update the state on the portal position according to its type
+     * @param portalPosition <p>The portal position to update</p>
+     */
+    void redrawPosition(PortalPosition portalPosition, @Nullable LineData[] lines);
 
     /**
      * Gets a copy of this gate's portal positions

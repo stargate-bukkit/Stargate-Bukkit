@@ -22,6 +22,7 @@ public class PortalPosition implements MetadataHolder {
     private boolean active;
     private @Nullable String metaData = null;
     private RealPortal portal;
+    private PortalPositionAttachment attachment;
 
     /**
      * Instantiates a new active portal position
@@ -141,5 +142,19 @@ public class PortalPosition implements MetadataHolder {
 
     public RealPortal getPortal() {
         return this.portal;
+    }
+
+    @ApiStatus.Internal
+    public @Nullable PortalPositionAttachment getAttachment(){
+        return this.attachment;
+    }
+
+    @ApiStatus.Internal
+    public void setAttachment(@NotNull PortalPositionAttachment attachment){
+        Objects.requireNonNull(attachment);
+        if(this.attachment != null && this.attachment.getType() != attachment.getType()){
+            throw new IllegalArgumentException("Can't change attachment type");
+        }
+        this.attachment = attachment;
     }
 }

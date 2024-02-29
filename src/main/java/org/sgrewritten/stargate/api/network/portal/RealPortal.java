@@ -7,7 +7,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 
 import java.util.List;
 
@@ -19,10 +20,9 @@ public interface RealPortal extends Portal, MetadataHolder {
 
     /**
      * Gets the line to be drawn for the signs
-     *
      * @return <p> Lines to be drawn for the gate owned by this portal</p>
      */
-    SignLine[] getDrawnControlLines();
+    LineData[] getDrawnControlLines();
 
     /**
      * Updates the color of this portal's sign
@@ -32,7 +32,7 @@ public interface RealPortal extends Portal, MetadataHolder {
      *
      * @param color <p>Color to change the sign text to. If null, then the default color will be used</p>
      */
-    void setSignColor(DyeColor color);
+    void setSignColor(DyeColor color, PortalPosition portalPosition);
 
     /**
      * The action to be run when this portal's button is clicked

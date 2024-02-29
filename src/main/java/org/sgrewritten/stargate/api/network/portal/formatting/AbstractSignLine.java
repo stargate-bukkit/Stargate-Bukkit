@@ -1,6 +1,4 @@
-package org.sgrewritten.stargate.api.network.portal.format;
-
-import org.sgrewritten.stargate.property.NonLegacyClass;
+package org.sgrewritten.stargate.api.network.portal.formatting;
 
 import java.util.List;
 

@@ -31,8 +31,10 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponentDeserialiser;
+import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponentDeserialiser;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -118,10 +120,16 @@ public class Gate implements GateAPI {
     }
 
     @Override
-    public void drawControlMechanisms(SignLine[] signLines, boolean drawButton) {
-        drawSigns(signLines);
-        if (drawButton) {
-            drawButtons();
+    public void drawControlMechanisms(LineData[] lines) {
+        portalPositions.forEach(portalPosition -> this.redrawPosition(portalPosition, lines));
+    }
+
+    @Override
+    public void redrawPosition(PortalPosition portalPosition, @Nullable LineData[] lines) {
+        if (portalPosition.getPositionType() == PositionType.SIGN) {
+            drawSign(portalPosition, Objects.requireNonNull(lines));
+        } else if (portalPosition.getPositionType() == PositionType.BUTTON) {
+            drawButton(portalPosition);
         }
     }
 
@@ -133,35 +141,30 @@ public class Gate implements GateAPI {
     /**
      * Draws this gate's signs
      *
-     * @param signLines <p>The lines to draw on the sign</p>
+     * @param lineData <p>The lines to draw on the sign</p>
      */
-    private void drawSigns(final SignLine[] signLines) {
-        StringBuilder builder = new StringBuilder("Drawing signs with lines:");
-        for (SignLine line : signLines) {
-            builder.append("\n");
-            builder.append(StargateComponentDeserialiser.getLegacyText(line));
+    private void drawSign(PortalPosition portalPosition, final LineData[] lineData) {
+        if(!(portalPosition.getAttachment() instanceof LineFormatter lineFormatter)){
+            throw new IllegalArgumentException("Expected attachment to be instance of line formatter");
         }
-        Stargate.log(Level.FINEST, builder.toString());
-        List<PortalPosition> activePortalPositions = getActivePortalPositions(PositionType.SIGN);
-        for (PortalPosition portalPosition : activePortalPositions) {
-            Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(signLocation){
-                @Override
-                public void run() {
-                    Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
-                    BlockState signState = signLocation.getBlock().getState();
-                    if (!(signState instanceof Sign sign)) {
-                        Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
-                        return;
-                    }
-                    StargateSignFormatPortalEvent event = new StargateSignFormatPortalEvent(portal, signLines, portalPosition, signLocation);
-                    Bukkit.getPluginManager().callEvent(event);
-                    SignLine[] newSignLines = event.getLines();
-                    setSignLines(sign, newSignLines);
-                    sign.update();
+        SignLine[] signLines = lineFormatter.formatLineData(lineData);
+        Location signLocation = getLocation(portalPosition.getRelativePositionLocation());
+        new StargateRegionTask(signLocation) {
+            @Override
+            public void run() {
+                Stargate.log(Level.FINER, "Drawing sign at location " + signLocation);
+                BlockState signState = signLocation.getBlock().getState();
+                if (!(signState instanceof Sign sign)) {
+                    Stargate.log(Level.FINE, "Could not find sign at position " + signLocation);
+                    return;
                 }
-            }.runNow();
-        }
+                StargateSignFormatPortalEvent event = new StargateSignFormatPortalEvent(portal, signLines, portalPosition, signLocation);
+                Bukkit.getPluginManager().callEvent(event);
+                SignLine[] newSignLines = event.getLines();
+                setSignLines(sign, newSignLines);
+                sign.update();
+            }
+        }.runNow();
     }
 
     private void setSignLines(Sign sign, SignLine[] signLines) {
@@ -179,27 +182,24 @@ public class Gate implements GateAPI {
     /**
      * Draws this gate's button
      */
-    private void drawButtons() {
-        for (PortalPosition portalPosition : getActivePortalPositions(PositionType.BUTTON)) {
-            Location buttonLocation = getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(buttonLocation) {
-                @Override
-                public void run() {
-                    Material blockType = buttonLocation.getBlock().getType();
-                    if (ButtonHelper.isButton(blockType)) {
-                        return;
-                    }
-                    Material buttonMaterial = ButtonHelper.getButtonMaterial(buttonLocation);
-                    Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
-                    Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
-                    buttonData.setFacing(facing);
-
-                    buttonLocation.getBlock().setBlockData(buttonData);
-                    BlockDropManager.disableBlockDrops(buttonLocation.getBlock());
+    private void drawButton(PortalPosition portalPosition) {
+        Location buttonLocation = getLocation(portalPosition.getRelativePositionLocation());
+        new StargateRegionTask(buttonLocation) {
+            @Override
+            public void run() {
+                Material blockType = buttonLocation.getBlock().getType();
+                if (ButtonHelper.isButton(blockType)) {
+                    return;
                 }
-            }.runNow();
+                Material buttonMaterial = ButtonHelper.getButtonMaterial(buttonLocation);
+                Stargate.log(Level.FINEST, "buttonMaterial: " + buttonMaterial);
+                Directional buttonData = (Directional) Bukkit.createBlockData(buttonMaterial);
+                buttonData.setFacing(facing);
 
-        }
+                buttonLocation.getBlock().setBlockData(buttonData);
+                BlockDropManager.disableBlockDrops(buttonLocation.getBlock());
+            }
+        }.runNow();
     }
 
     /**
@@ -322,7 +322,7 @@ public class Gate implements GateAPI {
 
     @Override
     public Location getLocation(@NotNull Vector vector) {
-        return VectorUtils.getLocation(topLeft,converter,vector);
+        return VectorUtils.getLocation(topLeft, converter, vector);
     }
 
     /**
@@ -403,7 +403,7 @@ public class Gate implements GateAPI {
             }
         }
 
-        if(!hasRegisteredAButton){
+        if (!hasRegisteredAButton) {
             throw new InvalidStructureException("Could not find a button position");
         }
     }

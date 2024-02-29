@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -14,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -32,9 +32,12 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.format.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.colors.ColorRegistry;
@@ -49,7 +52,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
-import org.sgrewritten.stargate.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.StargateConstant;
@@ -91,8 +93,6 @@ public abstract class AbstractPortal implements RealPortal {
     protected UUID openFor;
     protected Portal destination = null;
     protected Portal overriddenDestination = null;
-    protected LineFormatter colorDrawer;
-
     private long openTime = -1;
     private UUID ownerUUID;
     private final GateAPI gate;
@@ -134,8 +134,8 @@ public abstract class AbstractPortal implements RealPortal {
         if (NameHelper.isInvalidName(name)) {
             throw new NameLengthException("Invalid length of name '" + name + "' , name length must be above 0 and under " + StargateConstant.MAX_TEXT_LENGTH);
         }
-
-        colorDrawer = new NoLineColorFormatter();
+        gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
+                .forEach(portalPosition -> portalPosition.setAttachment(new NoLineColorFormatter()));
 
         if (gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
@@ -166,7 +166,8 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void updateState() {
-        setSignColor(null);
+        gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
+                .forEach(portalPosition -> this.setSignColor(null, portalPosition));
         if (getCurrentDestination() == null || this instanceof FixedPortal || hasFlag(PortalFlag.ALWAYS_ON)) {
             this.destination = getDestination();
         }
@@ -178,8 +179,7 @@ public abstract class AbstractPortal implements RealPortal {
         if (isOpen() && currentDestination == null) {
             close(true);
         }
-        SignLine[] lines = getDrawnControlLines();
-        this.getGate().drawControlMechanisms(lines, !this.hasFlag(PortalFlag.ALWAYS_ON));
+        this.getGate().drawControlMechanisms(getDrawnControlLines());
     }
 
     @Override
@@ -189,7 +189,7 @@ public abstract class AbstractPortal implements RealPortal {
 
     @Override
     public void open(Player actor) {
-        if(hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination() == null){
+        if (hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination() == null) {
             return;
         }
         getGate().open();
@@ -224,8 +224,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         Stargate.log(Level.FINE, "Closing the portal");
         getGate().close();
-        SignLine[] lines = getDrawnControlLines();
-        gate.drawControlMechanisms(lines, this.hasFlag(PortalFlag.ALWAYS_ON));
+        gate.drawControlMechanisms(getDrawnControlLines());
         openFor = null;
     }
 
@@ -252,7 +251,7 @@ public abstract class AbstractPortal implements RealPortal {
             throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()), false);
         }
         this.network = targetNetwork;
-        this.getDrawnControlLines();
+        updateState();
     }
 
     @Override
@@ -424,50 +423,36 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void setSignColor(@Nullable DyeColor changedColor) {
+    public void setSignColor(@Nullable DyeColor changedColor, @NotNull PortalPosition portalPosition) {
+        if (!(portalPosition.getAttachment() instanceof LineFormatter lineFormatter)) {
+            throw new IllegalArgumentException("Could not find line formatter");
+        }
         /* NoLineColorFormatter should only be used during startup, this means
          * that if it has already been changed, and if there's no color to change to,
          * then the line formatter does not need to be reinstated again
          *
          * Just avoids some unnecessary minute lag
          */
-        if (!(colorDrawer instanceof NoLineColorFormatter) && changedColor == null) {
+        if (!(lineFormatter instanceof NoLineColorFormatter) && changedColor == null) {
             return;
         }
-        for (PortalPosition portalPosition : gate.getPortalPositions()) {
-            if (portalPosition.getPositionType() != PositionType.SIGN) {
-                continue;
-            }
-            Location location = gate.getLocation(portalPosition.getRelativePositionLocation());
-            new StargateRegionTask(location) {
-                @Override
-                public void run() {
-                    updateColorDrawer(location, changedColor, portalPosition);
+        Location positionLocation = gate.getLocation(portalPosition.getRelativePositionLocation());
+        new StargateRegionTask(positionLocation) {
+            @Override
+            public void run() {
+                updateColorDrawer(positionLocation, changedColor, portalPosition);
+                Block signBlock = positionLocation.getBlock();
+                if (signBlock.getState() instanceof Sign sign) {
+                    sign.setColor(ColorRegistry.DEFAULT_DYE_COLOR);
+                    sign.update();
                 }
-            }.runNow();
-        }
-        // Has to be done one tick later to avoid a bukkit bug
-        if (changedColor == null) {
-            gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN).forEach(portalPosition -> {
-                final Block signBlock = gate.getLocation(portalPosition.getRelativePositionLocation()).getBlock();
-                new StargateRegionTask(signBlock.getLocation()) {
-                    @Override
-                    public void run() {
-                        if (Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
-                            Sign sign = (Sign) signBlock.getState();
-                            sign.setColor(ColorRegistry.DEFAULT_DYE_COLOR);
-                            sign.update();
-                        }
-                    }
-                }.runNow();
-            });
-        }
-
+            }
+        }.runNow();
+        LineData[] lineData = getDrawnControlLines();
         new StargateGlobalTask() {
             @Override
             public void run() {
-                SignLine[] lines = getDrawnControlLines();
-                getGate().drawControlMechanisms(lines, !hasFlag(PortalFlag.ALWAYS_ON));
+                getGate().redrawPosition(portalPosition, lineData);
             }
         }.runDelayed(2);
     }
@@ -487,12 +472,13 @@ public abstract class AbstractPortal implements RealPortal {
             Bukkit.getPluginManager().callEvent(event);
             color = changedColor;
         }
-
+        LineFormatter lineFormatter;
         if (NonLegacyClass.CHAT_COLOR.isImplemented()) {
-            colorDrawer = new LineColorFormatter(color, sign.getType());
+            lineFormatter = new LineColorFormatter(color, sign.getType());
         } else {
-            colorDrawer = new LegacyLineColorFormatter();
+            lineFormatter = new LegacyLineColorFormatter();
         }
+        portalPosition.setAttachment(lineFormatter);
     }
 
     @Override
@@ -504,8 +490,13 @@ public abstract class AbstractPortal implements RealPortal {
     public void destroy() {
         this.isDestroyed = true;
         // drawing the sign first is necessary, as the portal positions gets unregistered from the gate later on
-        SignLine[] lines = new SignLine[]{new TextLine(getName(), SignLineType.TEXT), new TextLine(), new TextLine(), new TextLine()};
-        getGate().drawControlMechanisms(lines, false);
+        LineData[] lineData = new LineData[] {
+                new TextLineData(this.getName(), SignLineType.TEXT),
+                new TextLineData(),
+                new TextLineData(),
+                new TextLineData()
+        };
+        getGate().drawControlMechanisms(lineData);
         this.close(true);
     }
 
@@ -555,7 +546,6 @@ public abstract class AbstractPortal implements RealPortal {
         }
 
         if (!event.getPlayer().isSneaking()) {
-            this.getDrawnControlLines();
             return;
         }
         PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
@@ -567,17 +557,16 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        SignLine[] lines = new SignLine[]{
-                new TextLine(this.colorDrawer.formatLine(languageManager.getString(TranslatableMessage.PREFIX).trim())),
-                new TextLine(this.colorDrawer
-                        .formatLine(languageManager.getString(TranslatableMessage.GATE_OWNED_BY))),
-                new TextLine(this.colorDrawer.formatLine(Bukkit.getOfflinePlayer(ownerUUID).getName())),
-                new TextLine(this.colorDrawer.formatLine(INTERNAL_FLAG.matcher(getAllFlagsString()).replaceAll("")))
+        LineData[] lineData = new LineData[]{
+                new TextLineData(languageManager.getString(TranslatableMessage.PREFIX).trim(), SignLineType.TEXT),
+                new TextLineData(languageManager.getString(TranslatableMessage.GATE_OWNED_BY).trim(), SignLineType.TEXT),
+                new TextLineData(Bukkit.getOfflinePlayer(ownerUUID).getName(), SignLineType.TEXT),
+                new TextLineData(INTERNAL_FLAG.matcher(getAllFlagsString()).replaceAll(""), SignLineType.TEXT)
         };
         new StargateGlobalTask() {
             @Override
             public void run() {
-                gate.drawControlMechanisms(lines, false);
+                gate.drawControlMechanisms(lineData);
             }
         }.runNow();
         activate(event.getPlayer());
@@ -627,8 +616,7 @@ public abstract class AbstractPortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        SignLine[] lines = getDrawnControlLines();
-        gate.drawControlMechanisms(lines, !flags.contains(PortalFlag.ALWAYS_ON));
+        gate.drawControlMechanisms(getDrawnControlLines());
     }
 
     @Override

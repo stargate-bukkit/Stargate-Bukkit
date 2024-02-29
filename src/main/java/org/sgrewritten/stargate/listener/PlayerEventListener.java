@@ -102,7 +102,7 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && dyePortalSignText(event, portal)) {
-                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
+                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()), registry.getPortalPosition(block.getLocation()));
                 event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }

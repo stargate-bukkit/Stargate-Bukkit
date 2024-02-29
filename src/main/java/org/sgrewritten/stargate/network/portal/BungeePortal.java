@@ -1,18 +1,19 @@
 package org.sgrewritten.stargate.network.portal;
 
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.format.TextLine;
-import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
@@ -90,14 +91,12 @@ public class BungeePortal extends AbstractPortal {
     }
 
     @Override
-    public SignLine[] getDrawnControlLines() {
-        Stargate.log(Level.FINEST, "serverDestination = " + serverDestination);
-
-        return new SignLine[]{
-                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL),
-                new PortalLine(super.colorDrawer.formatPortalName(getDestination(), HighlightingStyle.LESSER_GREATER_THAN), getDestination(), SignLineType.DESTINATION_PORTAL),
-                new TextLine(super.colorDrawer.formatStringWithHighlighting(serverDestination, HighlightingStyle.SQUARE_BRACKETS), SignLineType.TEXT),
-                new TextLine(bungeeString)
+    public LineData[] getDrawnControlLines() {
+        return new LineData[] {
+                new PortalLineData(this, SignLineType.THIS_PORTAL),
+                new PortalLineData(getDestination(), SignLineType.DESTINATION_PORTAL),
+                new TextLineData(serverDestination, HighlightingStyle.SQUARE_BRACKETS),
+                new TextLineData(bungeeString, SignLineType.TEXT)
         };
     }
 

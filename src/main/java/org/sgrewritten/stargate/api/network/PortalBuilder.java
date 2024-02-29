@@ -22,6 +22,7 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
@@ -301,7 +302,8 @@ public class PortalBuilder {
         getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
-        portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR);
+        gateAPI.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
+                        .forEach(portalPosition -> portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR, portalPosition));
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

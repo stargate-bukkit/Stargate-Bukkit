@@ -18,11 +18,15 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
-import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.format.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -200,13 +204,13 @@ public class NetworkedPortal extends AbstractPortal {
     }
 
     @Override
-    public SignLine[] getDrawnControlLines() {
-        SignLine[] lines = new SignLine[4];
-        lines[0] = new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL);
+    public LineData[] getDrawnControlLines() {
+        LineData[] lines = new LineData[4];
+        lines[0] = new PortalLineData(this, SignLineType.THIS_PORTAL);
         if (!this.isActive || this.getSelectedDestination() == NO_DESTINATION_SELECTED) {
-            lines[1] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK)));
-            lines[2] = new TextLine(super.colorDrawer.formatLine(super.languageManager.getString(TranslatableMessage.TO_USE)));
-            lines[3] = new NetworkLine(super.colorDrawer.formatNetworkName(network, network.getHighlightingStyle()), getNetwork());
+            lines[1] = new TextLineData(super.languageManager.getString(TranslatableMessage.RIGHT_CLICK), SignLineType.TEXT);
+            lines[2] = new TextLineData(super.languageManager.getString(TranslatableMessage.TO_USE), SignLineType.TEXT);
+            lines[3] = new NetworkLineData(getNetwork());
         } else {
             drawActiveSign(lines);
         }
@@ -226,14 +230,14 @@ public class NetworkedPortal extends AbstractPortal {
      *
      * @param lines <p>The sign lines to update</p>
      */
-    private void drawActiveSign(SignLine[] lines) {
+    private void drawActiveSign(LineData[] lines) {
         int destinationIndex = getSelectedDestination() % 3;
         int firstDestination = getSelectedDestination() - destinationIndex;
         int maxLength = destinations.size();
         for (int lineIndex = 0; lineIndex < 3; lineIndex++) {
             int destination = lineIndex + firstDestination;
             if (destination >= maxLength) {
-                lines[lineIndex + 1] = new TextLine();
+                lines[lineIndex + 1] = new TextLineData();
                 continue;
             }
             drawDestination(lineIndex, destination, destinationIndex, lines);
@@ -248,12 +252,12 @@ public class NetworkedPortal extends AbstractPortal {
      * @param destinationIndex <p>The modulo of the selected destination</p>
      * @param lines            <p>The sign lines to update</p>
      */
-    private void drawDestination(int lineIndex, int destination, int destinationIndex, SignLine[] lines) {
+    private void drawDestination(int lineIndex, int destination, int destinationIndex, LineData[] lines) {
         boolean isSelectedPortal = (destinationIndex == lineIndex);
         HighlightingStyle highlightingStyle = isSelectedPortal ? HighlightingStyle.LESSER_GREATER_THAN
                 : HighlightingStyle.NOTHING;
         Portal destinationPortal = destinations.get(destination);
-        lines[lineIndex + 1] = new PortalLine(super.colorDrawer.formatPortalName(destinationPortal, highlightingStyle), destinationPortal, isSelectedPortal ? SignLineType.DESTINATION_PORTAL : SignLineType.PORTAL);
+        lines[lineIndex + 1] = new PortalLineData(destinationPortal, isSelectedPortal ? SignLineType.DESTINATION_PORTAL : SignLineType.PORTAL);
     }
 
     /**

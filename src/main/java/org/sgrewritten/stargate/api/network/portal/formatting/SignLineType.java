@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.network.portal.format;
+package org.sgrewritten.stargate.api.network.portal.formatting;
 
 public enum SignLineType {
 

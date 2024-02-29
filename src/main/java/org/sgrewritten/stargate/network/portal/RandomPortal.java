@@ -8,11 +8,14 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.format.NetworkLine;
-import org.sgrewritten.stargate.api.network.portal.format.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.format.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
+import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
@@ -39,20 +42,17 @@ public class RandomPortal extends AbstractPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException
      */
-    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData)
-            throws NameLengthException {
+    public RandomPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyAPI, String metaData) throws NameLengthException {
         super(network, name, flags, unrecognisedFlags, gate, ownerUUID, languageManager, economyAPI, metaData);
     }
 
     @Override
-    public SignLine[] getDrawnControlLines() {
-        return new SignLine[]{
-                new PortalLine(super.colorDrawer.formatPortalName(this, HighlightingStyle.MINUS_SIGN), this, SignLineType.THIS_PORTAL),
-                new TextLine(super.colorDrawer.formatLine(HighlightingStyle.LESSER_GREATER_THAN.getHighlightedName(
-                        super.languageManager.getString(TranslatableMessage.RANDOM)))),
-                new NetworkLine(super.colorDrawer.formatNetworkName(getNetwork(), getNetwork().getHighlightingStyle()), getNetwork()),
-                new TextLine()
-        };
+    public LineData[] getDrawnControlLines() {
+        return new LineData[]{
+                new PortalLineData(this, SignLineType.THIS_PORTAL),
+                new TextLineData(super.languageManager.getString(TranslatableMessage.RANDOM),HighlightingStyle.LESSER_GREATER_THAN),
+                new NetworkLineData(getNetwork()),
+                new TextLineData()};
     }
 
     @Override

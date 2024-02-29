@@ -4,7 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
 public class AsyncStargateSendMessagePortalEvent extends StargateSendMessagePortalEvent {
     private static final HandlerList handlers = new HandlerList();
