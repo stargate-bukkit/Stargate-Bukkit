@@ -9,6 +9,7 @@ import be.seeseemelk.mockbukkit.entity.PoweredMinecartMock;
 import be.seeseemelk.mockbukkit.scheduler.BukkitSchedulerMock;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -17,11 +18,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -42,26 +47,33 @@ class TeleporterTest {
     private static PoweredMinecartMock furnaceMinecart;
     private ServerMock server;
     private BukkitSchedulerMock scheduler;
+    private StargateAPIMock stargateAPI;
 
     @BeforeEach
-    public void setup() throws TranslatableException, InvalidStructureException {
+    public void setup() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         this.server = StargateTestHelper.setup();
         this.scheduler = server.getScheduler();
         WorldMock world = server.addSimpleWorld("world");
         PlayerMock player = server.addPlayer();
-        PortalFactory fakePortalGenerator = new PortalFactory("Portal", "iPortal");
+        this.stargateAPI = new StargateAPIMock();
 
 
         horse = (HorseMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.HORSE);
         horse.addPassenger(player);
         Network network = new StargateNetwork("custom", NetworkType.CUSTOM, StorageType.LOCAL);
-        RealPortal origin = fakePortalGenerator.generateFakePortal(world, network, "origin", false);
-        RealPortal destination = fakePortalGenerator.generateFakePortal(world, network, "destination", false);
+        RealPortal origin = generatePortal(network, "origin", new Location(world, 0, 10, 0));
+        RealPortal destination = generatePortal(network, "destination", new Location(world, 0, 20, 0));
         populator = new SynchronousPopulator();
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
                 origin.getGate().getFacing(), 0, "empty", new LanguageManagerMock(), new StargateEconomyManagerMock());
         furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.MINECART_FURNACE);
 
+    }
+
+    private RealPortal generatePortal(Network network, String name, Location location) throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+        PortalBuilder builder = new PortalBuilder(stargateAPI, server.addPlayer(), name).setGateBuilder(location, "nether.gate")
+                .setNetwork(network);
+        return builder.build();
     }
 
     @AfterEach

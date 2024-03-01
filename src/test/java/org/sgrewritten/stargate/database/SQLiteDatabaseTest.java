@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -30,7 +32,7 @@ public class SQLiteDatabaseTest {
     private static TableNameConfiguration nameConfig;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, TranslatableException {
+    public static void setUp() throws SQLException, InvalidStructureException, TranslatableException, GateConflictException, NoFormatFoundException {
         Stargate.log(Level.FINE, "Setting up test data");
         SQLDatabaseAPI database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");

@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
@@ -25,17 +23,10 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.property.BlockEventType;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.UUID;
 
 class BlockEventHelperTest {
 
@@ -55,7 +46,7 @@ class BlockEventHelperTest {
         stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
         Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
-        portal = new PortalBuilder(stargateAPI, player,"name").setGateBuilder(new ImplicitGateBuilder(signBlock.getLocation(),registry)).setNetwork(network).build();
+        portal = new PortalBuilder(stargateAPI, player, "name").setGateBuilder(new ImplicitGateBuilder(signBlock.getLocation(), registry)).setNetwork(network).build();
 
     }
 

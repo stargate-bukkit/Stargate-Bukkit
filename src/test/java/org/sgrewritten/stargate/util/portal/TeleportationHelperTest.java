@@ -10,10 +10,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -21,7 +27,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.ArrayList;
@@ -35,11 +40,14 @@ class TeleportationHelperTest {
 
     private static WorldMock world;
     private static StargateNetwork network;
+    private ServerMock server;
+    private StargateAPI stargateAPI;
 
     @BeforeEach
     public void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
-        ServerMock server = StargateTestHelper.setup();
+        this.server = StargateTestHelper.setup();
         world = server.addSimpleWorld("world");
+        this.stargateAPI = new StargateAPIMock();
         network = new StargateNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL);
     }
 
@@ -108,19 +116,19 @@ class TeleportationHelperTest {
     }
 
     @Test
-    void getDirectionalConeLayerTest() throws NameLengthException, InvalidStructureException {
+    void getDirectionalConeLayerTest() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Location topLeft = new Location(world, -0, 7, -3);
-        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
         List<Location> irisLocations = new ArrayList<>();
-        fakePortal.getGate().getLocations(GateStructureType.IRIS).forEach(
+        RealPortal portal = generatePortal(topLeft);
+        portal.getGate().getLocations(GateStructureType.IRIS).forEach(
                 (blockLocation) -> irisLocations.add(blockLocation.getLocation()));
 
-        BlockVector forward = fakePortal.getExitFacing().getDirection().toBlockVector();
+        BlockVector forward = portal.getExitFacing().getDirection().toBlockVector();
         BlockVector left = forward.clone().rotateAroundY(Math.PI / 2).toBlockVector();
         BlockVector right = forward.clone().rotateAroundY(-Math.PI / 2).toBlockVector();
         BlockVector up = new BlockVector(0, 1, 0);
         BlockVector down = new BlockVector(0, -1, 0);
-        List<Location> locations = TeleportationHelper.getDirectionalConeLayer(irisLocations, forward, left, right, up, down, 0, fakePortal.getGate().getExit());
+        List<Location> locations = TeleportationHelper.getDirectionalConeLayer(irisLocations, forward, left, right, up, down, 0, portal.getGate().getExit());
         Location[] someExpectedLocations = {
                 new Location(world, -1, 7, -3),
                 new Location(world, -1, 3, -3),
@@ -138,29 +146,35 @@ class TeleportationHelperTest {
     }
 
     @Test
-    void findViableSpawnLocationTest_NotViable() throws NameLengthException, InvalidStructureException {
+    void findViableSpawnLocationTest_NotViable() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Location topLeft = new Location(world, -1, 20, -3);
-        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
-        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
+        RealPortal portal = generatePortal(topLeft);
+        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), portal);
         Assertions.assertNull(location);
     }
 
     @Test
-    void findViableSpawnLocationTest_Viable() throws NameLengthException, InvalidStructureException {
+    void findViableSpawnLocationTest_Viable() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Location topLeft = new Location(world, -1, 5, -3);
-        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, new HashSet<>(), new HashSet<>(), new RegistryMock());
-        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
+        RealPortal portal = generatePortal(topLeft);
+        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), portal);
         assertNotNull(location);
     }
 
     @Test
-    void findViableSpawnLocationTest_Backwards() throws NameLengthException, InvalidStructureException {
+    void findViableSpawnLocationTest_Backwards() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Location topLeft = new Location(world, -1, 5, -3);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BACKWARDS);
-        RealPortal fakePortal = PortalFactory.generateFakePortal(topLeft, network, "aName", false, flags, new HashSet<>(), new RegistryMock());
-        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), fakePortal);
+        PortalBuilder portalBuilder = new PortalBuilder(this.stargateAPI, server.addPlayer(), "aName");
+        RealPortal portal = portalBuilder.setGateBuilder(topLeft, "nether.gate").setNetwork(network).setFlags(flags).build();
+        Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), portal);
         assertNotNull(location);
         Assertions.assertTrue(topLeft.getX() < location.getX());
+    }
+
+    private RealPortal generatePortal(Location topLeft) throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+        PortalBuilder portalBuilder = new PortalBuilder(this.stargateAPI, server.addPlayer(), "aName");
+        return portalBuilder.setGateBuilder(topLeft, "nether.gate").setNetwork(network).build();
     }
 }

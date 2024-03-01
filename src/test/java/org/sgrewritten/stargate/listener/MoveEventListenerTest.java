@@ -29,10 +29,7 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.util.StargateTestHelper;
-
-import java.util.HashSet;
 
 class MoveEventListenerTest {
 
@@ -56,7 +53,7 @@ class MoveEventListenerTest {
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
         StargateAPI stargateAPI = new StargateAPIMock();
-        portal = new PortalBuilder(stargateAPI,player,"portal").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(), stargateAPI.getRegistry())).setNetwork("network").build();
+        portal = new PortalBuilder(stargateAPI, player, "portal").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(), stargateAPI.getRegistry())).setNetwork("network").build();
         listener = new MoveEventListener(stargateAPI.getRegistry());
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();

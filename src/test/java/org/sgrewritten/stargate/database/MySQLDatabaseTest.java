@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -31,7 +33,7 @@ public class MySQLDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, StargateInitializationException,
-            TranslatableException {
+            TranslatableException, GateConflictException, NoFormatFoundException {
         Stargate.log(Level.FINE, "Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         TestCredentialsManager credentialsManager = new TestCredentialsManager("mysql_credentials.secret");
@@ -354,7 +356,8 @@ public class MySQLDatabaseTest {
     void changeNamesTest() {
         try {
             tester.changeNames(StorageType.LOCAL);
-        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException |
+                 GateConflictException | NoFormatFoundException e) {
             fail();
         }
     }
@@ -364,7 +367,8 @@ public class MySQLDatabaseTest {
     void changeInterNamesTest() {
         try {
             tester.changeNames(StorageType.INTER_SERVER);
-        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException |
+                 GateConflictException | NoFormatFoundException e) {
             fail();
         }
     }

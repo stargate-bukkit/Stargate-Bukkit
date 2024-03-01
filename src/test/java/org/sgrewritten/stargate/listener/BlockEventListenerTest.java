@@ -43,24 +43,14 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 class BlockEventListenerTest {
@@ -195,7 +185,7 @@ class BlockEventListenerTest {
         stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
         Location location = new Location(world, 0, 5, 0);
         Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, StorageType.LOCAL, false);
-        PortalBuilder builder = new PortalBuilder(stargateAPI,player,"test");
+        PortalBuilder builder = new PortalBuilder(stargateAPI, player, "test");
         builder.setGateBuilder(location, GateFormatRegistry.getAllGateFormatNames().iterator().next());
         builder.setFlags(String.valueOf(flag));
         RealPortal portal = builder.build();

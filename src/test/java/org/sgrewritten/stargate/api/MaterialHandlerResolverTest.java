@@ -14,12 +14,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.database.StorageMock;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -29,7 +34,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
@@ -46,15 +50,16 @@ class MaterialHandlerResolverTest {
     private PlayerMock player;
     private WorldMock world;
     private Network network;
-    private StargateNetworkManager networkManager;
+    private NetworkManager networkManager;
+    private StargateAPIMock stargateAPI;
 
     @BeforeEach
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
         this.server = StargateTestHelper.setup();
         this.storage = new StorageMock();
         this.blockHandlerResolver = new BlockHandlerResolver(storage);
-        this.registry = new RegistryMock(storage, blockHandlerResolver);
-        this.networkManager = new StargateNetworkManager(registry, storage);
+        this.stargateAPI = new StargateAPIMock(blockHandlerResolver, storage);
+        this.networkManager = stargateAPI.getNetworkManager();
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
         this.network = networkManager.createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
@@ -68,15 +73,17 @@ class MaterialHandlerResolverTest {
     @ParameterizedTest
     @EnumSource(Priority.class)
     void registerPlacementUnregisterPlacement_matchingMaterial(Priority priority)
-            throws TranslatableException, InvalidStructureException {
+            throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Material testMaterial = Material.END_GATEWAY;
         Character testFlag = 'C';
         blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
-        Set<Character> flags = new HashSet<>();
-        flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
+        String flags = String.valueOf(testFlag);
+
+        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "test");
+        portalBuilder.setGateBuilder(location,"nether.gate").setNetwork(network).setFlags(flags);
+        RealPortal portal = portalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
                 plugin, priority, testFlag);
         BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
@@ -96,16 +103,17 @@ class MaterialHandlerResolverTest {
     @ParameterizedTest
     @EnumSource(Priority.class)
     void registerPlacement_materialMismatch(Priority priority)
-            throws TranslatableException, InvalidStructureException {
+            throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Material handlerMaterial = Material.END_GATEWAY;
         Material placedMaterial = Material.DIRT;
         char testFlag = 'C';
         blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
-        Set<Character> flags = new HashSet<>();
-        flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
+        String flags = String.valueOf(testFlag);
+        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "test");
+        portalBuilder.setGateBuilder(location,"nether.gate").setNetwork(network).setFlags(flags);
+        RealPortal portal = portalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         blockHandlerResolver.addBlockHandlerInterface(blockHandler);
@@ -117,15 +125,16 @@ class MaterialHandlerResolverTest {
 
     @Test
     void registerPlacement_priorityCheck()
-            throws TranslatableException, InvalidStructureException {
+            throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Material placedMaterial = Material.END_GATEWAY;
         char testFlag = 'C';
         blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
-        Set<Character> flags = new HashSet<>();
-        flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
+        String flags = String.valueOf(testFlag);
+        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "test");
+        portalBuilder.setGateBuilder(location,"nether.gate").setNetwork(network).setFlags(flags);
+        RealPortal portal = portalBuilder.build();
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);
         BlockHandlerInterfaceMock lowPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
@@ -141,15 +150,16 @@ class MaterialHandlerResolverTest {
     @ParameterizedTest
     @EnumSource(Priority.class)
     void registerPlacement_wrongFlag(Priority priority)
-            throws TranslatableException, InvalidStructureException {
+            throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Material handlerMaterial = Material.END_GATEWAY;
         char testFlag = 'C';
         blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
-        Set<Character> flags = new HashSet<>();
-        flags.add('D');
-        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
+        String flags = "D";
+        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "test");
+        portalBuilder.setGateBuilder(location,"nether.gate").setNetwork(network).setFlags(flags);
+        RealPortal portal = portalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
         BlockVector positionVector = portal.getGate().getRelativeVector(location).toBlockVector();
@@ -161,15 +171,16 @@ class MaterialHandlerResolverTest {
     }
 
     @Test
-    void registerPlacement_rejected() throws InvalidStructureException, NameLengthException {
+    void registerPlacement_rejected() throws InvalidStructureException, TranslatableException, GateConflictException, NoFormatFoundException {
         Material placedMaterial = Material.END_GATEWAY;
         Character testFlag = 'C';
         blockHandlerResolver.registerCustomFlag(testFlag);
         Plugin plugin = MockBukkit.createMockPlugin("Test");
         Location location = new Location(world, 0, 0, 0);
-        Set<Character> flags = new HashSet<>();
-        flags.add(testFlag);
-        RealPortal portal = PortalFactory.generateFakePortal(location, network, "test", true, new HashSet<>(), flags, registry);
+        String flags = String.valueOf(testFlag);
+        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "test");
+        portalBuilder.setGateBuilder(location,"nether.gate").setNetwork(network).setFlags(flags);
+        RealPortal portal = portalBuilder.build();
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);
         BlockHandlerInterfaceMock lowPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
