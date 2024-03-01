@@ -216,7 +216,7 @@ public enum PortalFlag {
     /**
      * @return <p>Whether this flag relates to how a portal selects destinations</p>
      */
-    public boolean isSelectorTypeFlag() {
+    public boolean isBehaviorFlag() {
         return this.isSelector;
     }
 }

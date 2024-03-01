@@ -11,10 +11,12 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.FixedPortal;
-import org.sgrewritten.stargate.network.portal.NetworkedPortal;
-import org.sgrewritten.stargate.network.portal.RandomPortal;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
+import org.sgrewritten.stargate.network.portal.behavior.FixedBehavior;
+import org.sgrewritten.stargate.network.portal.behavior.LegacyBungeeBehavior;
+import org.sgrewritten.stargate.network.portal.behavior.NetworkedBehavior;
+import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
+import org.sgrewritten.stargate.network.portal.behavior.RandomBehavior;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.NameHelper;
 
@@ -47,19 +49,23 @@ public final class PortalCreationHelper {
                                           Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
                                           StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
-
+        PortalBehavior portalBehavior;
         if (flags.contains(PortalFlag.BUNGEE)) {
             flags.add(PortalFlag.FIXED);
-            Network bungeeNetwork = stargateAPI.getNetworkManager().selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
-            return new BungeePortal(bungeeNetwork, name, destination, targetServer, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
+            // Override whatever network that was going to be used, as it should only be on the bungee network
+            network = stargateAPI.getNetworkManager().selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
+            portalBehavior = new LegacyBungeeBehavior(stargateAPI.getLanguageManager(), destination, targetServer);
         } else if (flags.contains(PortalFlag.RANDOM)) {
-            return new RandomPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
+            portalBehavior = new RandomBehavior(stargateAPI.getLanguageManager());
         } else if (flags.contains(PortalFlag.NETWORKED)) {
-            return new NetworkedPortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
+            portalBehavior = new NetworkedBehavior(stargateAPI.getLanguageManager());
         } else {
             flags.add(PortalFlag.FIXED);
-            return new FixedPortal(network, name, destination, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(), metaData);
+            portalBehavior = new FixedBehavior(stargateAPI.getLanguageManager(),destination);
         }
+        RealPortal portal = new StargatePortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(),metaData);
+        portal.setBehavior(portalBehavior);
+        return portal;
     }
 
     /**

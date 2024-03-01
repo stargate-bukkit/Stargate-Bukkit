@@ -132,11 +132,6 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
-    public void doTeleport(Entity player) {
-        // Nothing is currently done cross server, small actions like this seem unnecessary
-    }
-
-    @Override
     public boolean isOpen() {
         return false;
     }
@@ -159,16 +154,6 @@ public class VirtualPortal implements Portal {
     @Override
     public void updateState() {
         // Nothing is currently done cross server, small actions like this seem unnecessary
-    }
-
-    @Override
-    public Portal getDestination() {
-        return null;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return null;
     }
 
     /**
@@ -237,11 +222,6 @@ public class VirtualPortal implements Portal {
     @Override
     public void setName(String newName) {
         this.name = newName;
-    }
-
-    @Override
-    public void activate(Player player) {
-        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override

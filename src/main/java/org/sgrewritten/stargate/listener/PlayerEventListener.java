@@ -110,12 +110,12 @@ public class PlayerEventListener implements Listener {
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                portal.onSignClick(event);
+                portal.getBehavior().onSignClick(event);
                 return;
             }
         }
         if (ButtonHelper.isButton(blockMaterial)) {
-            portal.onButtonClick(event);
+            portal.getBehavior().onButtonClick(event);
             loggingCompatibility.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
         }

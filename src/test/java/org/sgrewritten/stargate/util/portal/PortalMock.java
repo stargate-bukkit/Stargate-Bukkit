@@ -6,6 +6,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -18,6 +20,7 @@ import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.gate.GateMock;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
 
 import java.util.List;
 import java.util.UUID;
@@ -119,16 +122,6 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public Portal getDestination() {
-        return null;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return null;
-    }
-
-    @Override
     public String getId() {
         return null;
     }
@@ -154,27 +147,27 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
+    public void doTeleport(@NotNull Entity target, @Nullable Portal destination) {
+
+    }
+
+    @Override
     public boolean isDestroyed() {
         return false;
     }
 
     @Override
-    public LineData[] getDrawnControlLines() {
-        return null;
+    public void open(@Nullable Portal destination, @Nullable Player actor) {
+
     }
 
     @Override
     public void setSignColor(DyeColor color, PortalPosition portalPosition) {
-
-    }
-
-    @Override
-    public void onButtonClick(PlayerInteractEvent event) {
-
-    }
-
-    @Override
-    public void onSignClick(PlayerInteractEvent event) {
 
     }
 
@@ -199,6 +192,16 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public UUID getActivatorUUID() {
+        return null;
+    }
+
+    @Override
+    public void deactivate() {
+
+    }
+
+    @Override
     public void setMetadata(String data) {
 
     }
@@ -211,5 +214,20 @@ public class PortalMock implements RealPortal {
     @Override
     public BlockFace getExitFacing() {
         return null;
+    }
+
+    @Override
+    public PortalBehavior getBehavior() {
+        return null;
+    }
+
+    @Override
+    public void setBehavior(PortalBehavior portalBehavior) {
+
+    }
+
+    @Override
+    public void redrawSigns() {
+
     }
 }

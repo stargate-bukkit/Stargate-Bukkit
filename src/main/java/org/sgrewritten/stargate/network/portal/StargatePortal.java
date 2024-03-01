@@ -3,15 +3,11 @@ package org.sgrewritten.stargate.network.portal;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Result;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,9 +16,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateAccessPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateDeactivatePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateOpenPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
@@ -33,13 +27,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
-import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
-import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -47,9 +36,9 @@ import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
@@ -58,7 +47,6 @@ import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
-import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
@@ -69,14 +57,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 /**
  * An abstract implementation of a real portal
  *
  * @author Thorin
  */
-public abstract class AbstractPortal implements RealPortal {
+public class StargatePortal implements RealPortal {
 
     /**
      * Used in bStats metrics
@@ -91,7 +78,6 @@ public abstract class AbstractPortal implements RealPortal {
     protected Network network;
     protected String name;
     protected UUID openFor;
-    protected Portal destination = null;
     protected Portal overriddenDestination = null;
     private long openTime = -1;
     private UUID ownerUUID;
@@ -104,9 +90,10 @@ public abstract class AbstractPortal implements RealPortal {
     protected final LanguageManager languageManager;
     private final StargateEconomyAPI economyManager;
     private static final int ACTIVE_DELAY = 15 * 20; // ticks
-    private static final Pattern INTERNAL_FLAG = Pattern.compile("\\d");
     private @Nullable String metaData;
     private boolean savedToStorage = false;
+    private PortalBehavior behavior;
+    private boolean active = false;
 
     /**
      * Instantiates a new abstract portal
@@ -117,8 +104,8 @@ public abstract class AbstractPortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    AbstractPortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate,
-                   UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, @Nullable String metaData)
+    public StargatePortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate,
+                          UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, @Nullable String metaData)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);
@@ -147,8 +134,8 @@ public abstract class AbstractPortal implements RealPortal {
         }
         Stargate.log(Level.FINER, msg.toString());
 
-        AbstractPortal.portalCount++;
-        AbstractPortal.allUsedFlags.addAll(flags);
+        StargatePortal.portalCount++;
+        StargatePortal.allUsedFlags.addAll(flags);
     }
 
     @Override
@@ -168,18 +155,15 @@ public abstract class AbstractPortal implements RealPortal {
     public void updateState() {
         gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
                 .forEach(portalPosition -> this.setSignColor(null, portalPosition));
-        if (getCurrentDestination() == null || this instanceof FixedPortal || hasFlag(PortalFlag.ALWAYS_ON)) {
-            this.destination = getDestination();
-        }
-
-        Portal currentDestination = getCurrentDestination();
+        this.behavior.update();
+        Portal currentDestination = getCurrentDestination(this.behavior.getDestination());
         if (hasFlag(PortalFlag.ALWAYS_ON) && currentDestination != null) {
             this.open(null);
         }
         if (isOpen() && currentDestination == null) {
             close(true);
         }
-        this.getGate().drawControlMechanisms(getDrawnControlLines());
+        this.redrawSigns();
     }
 
     @Override
@@ -188,8 +172,8 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void open(Player actor) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination() == null) {
+    public void open(@Nullable Portal destination, @Nullable Player actor) {
+        if (hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination(destination) == null) {
             return;
         }
         getGate().open();
@@ -208,6 +192,14 @@ public abstract class AbstractPortal implements RealPortal {
                 close(openTimeForAction);
             }
         }.runDelayed(OPEN_DELAY);
+        if (destination != null) {
+            destination.open(actor);
+        }
+    }
+
+    @Override
+    public void open(Player actor) {
+        this.open(null, actor);
     }
 
     @Override
@@ -224,7 +216,7 @@ public abstract class AbstractPortal implements RealPortal {
 
         Stargate.log(Level.FINE, "Closing the portal");
         getGate().close();
-        gate.drawControlMechanisms(getDrawnControlLines());
+        redrawSigns();
         openFor = null;
     }
 
@@ -290,9 +282,8 @@ public abstract class AbstractPortal implements RealPortal {
     }
 
     @Override
-    public void doTeleport(Entity target) {
-        Portal currentDestination = getCurrentDestination();
-        if (currentDestination == null) {
+    public void doTeleport(@NotNull Entity target, @Nullable Portal destination) {
+        if (destination == null) {
             Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                     0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), languageManager, economyManager);
             teleporter.teleport(target);
@@ -309,9 +300,14 @@ public abstract class AbstractPortal implements RealPortal {
             return;
         }
 
-        currentDestination.teleportHere(target, this);
-        currentDestination.close(false);
+        destination.teleportHere(target, this);
+        destination.close(false);
         close(false);
+    }
+
+    @Override
+    public void doTeleport(@NotNull Entity target) {
+        this.doTeleport(target, behavior.getDestination());
     }
 
     @Override
@@ -333,7 +329,7 @@ public abstract class AbstractPortal implements RealPortal {
     public void addFlag(Character flag) throws UnsupportedOperationException {
         try {
             PortalFlag portalFlag = PortalFlag.valueOf(flag);
-            if (portalFlag.isSelectorTypeFlag()) {
+            if (portalFlag.isBehaviorFlag()) {
                 throw new UnsupportedOperationException("Adding selector type flags is not currently implemented");
             }
             if (NetworkType.isNetworkTypeFlag(portalFlag)) {
@@ -349,7 +345,7 @@ public abstract class AbstractPortal implements RealPortal {
     public void removeFlag(Character flag) throws UnsupportedOperationException {
         try {
             PortalFlag portalFlag = PortalFlag.valueOf(flag);
-            if (portalFlag.isSelectorTypeFlag()) {
+            if (portalFlag.isBehaviorFlag()) {
                 throw new UnsupportedOperationException("Removing selector type flags is not currently implemented");
             }
             if (NetworkType.isNetworkTypeFlag(portalFlag)) {
@@ -373,53 +369,6 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public UUID getOwnerUUID() {
         return ownerUUID;
-    }
-
-    @Override
-    public void onButtonClick(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if (this.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Result.DENY) {
-            Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
-            if (exitBlock.getType() == Material.IRON_DOOR) {
-                BlockFace gateDirection = gate.getFacing();
-                Directional doorDirection = (Directional) exitBlock.getBlockData();
-                if (gateDirection == doorDirection.getFacing()) {
-                    return;
-                }
-            }
-        }
-
-        Portal selectedDestination = getDestination();
-        String message = null;
-        MessageType messageType = null;
-        boolean cancelled = false;
-
-        if (selectedDestination == null) {
-            message = languageManager.getErrorMessage(TranslatableMessage.INVALID);
-            messageType = MessageType.DESTINATION_EMPTY;
-            cancelled = true;
-        }
-        StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
-        if (!permissionManager.hasOpenPermissions(this, selectedDestination)) {
-            message = permissionManager.getDenyMessage();
-            messageType = MessageType.DENY;
-            cancelled = true;
-        }
-        StargateOpenPortalEvent stargateOpenEvent = new StargateOpenPortalEvent(player, this, selectedDestination, cancelled, false);
-        Bukkit.getPluginManager().callEvent(stargateOpenEvent);
-
-        if (stargateOpenEvent.isCancelled()) {
-            if (message != null) {
-                MessageUtils.sendMessageFromPortal(this, player, message, messageType);
-            }
-            return;
-        }
-
-        this.destination = stargateOpenEvent.getDestination();
-        open(player);
-        if (this.destination != null) {
-            this.destination.open(player);
-        }
     }
 
     @Override
@@ -448,7 +397,7 @@ public abstract class AbstractPortal implements RealPortal {
                 }
             }
         }.runNow();
-        LineData[] lineData = getDrawnControlLines();
+        LineData[] lineData = behavior.getLines();
         new StargateGlobalTask() {
             @Override
             public void run() {
@@ -489,14 +438,7 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public void destroy() {
         this.isDestroyed = true;
-        // drawing the sign first is necessary, as the portal positions gets unregistered from the gate later on
-        LineData[] lineData = new LineData[] {
-                new TextLineData(this.getName(), SignLineType.TEXT),
-                new TextLineData(),
-                new TextLineData(),
-                new TextLineData()
-        };
-        getGate().drawControlMechanisms(lineData);
+        behavior.onDestroy();
         this.close(true);
     }
 
@@ -512,21 +454,7 @@ public abstract class AbstractPortal implements RealPortal {
         return gate.getExit();
     }
 
-    @Override
-    public String getDestinationName() {
-        if (destination == null) {
-            return null;
-        } else {
-            return destination.getName();
-        }
-    }
-
-    /**
-     * Gets this portal's current destination
-     *
-     * @return <p>This portal's current destination</p>
-     */
-    private Portal getCurrentDestination() {
+    private Portal getCurrentDestination(Portal destination) {
         if (overriddenDestination == null) {
             return destination;
         } else {
@@ -537,39 +465,6 @@ public abstract class AbstractPortal implements RealPortal {
     @Override
     public String getId() {
         return NameHelper.getNormalizedName(name);
-    }
-
-    @Override
-    public void onSignClick(PlayerInteractEvent event) {
-        if ((this.activator != null && !event.getPlayer().getUniqueId().equals(this.activator))) {
-            return;
-        }
-
-        if (!event.getPlayer().isSneaking()) {
-            return;
-        }
-        PermissionManager permissionManager = new StargatePermissionManager(event.getPlayer(), languageManager);
-        StargateAccessPortalEvent accessEvent = new StargateAccessPortalEvent(event.getPlayer(), this, !permissionManager.hasAccessPermission(this),
-                permissionManager.getDenyMessage());
-        Bukkit.getPluginManager().callEvent(accessEvent);
-        if (accessEvent.getDeny()) {
-            MessageUtils.sendMessageFromPortal(this, event.getPlayer(), accessEvent.getDenyReason(), MessageType.DENY);
-            return;
-        }
-
-        LineData[] lineData = new LineData[]{
-                new TextLineData(languageManager.getString(TranslatableMessage.PREFIX).trim(), SignLineType.TEXT),
-                new TextLineData(languageManager.getString(TranslatableMessage.GATE_OWNED_BY).trim(), SignLineType.TEXT),
-                new TextLineData(Bukkit.getOfflinePlayer(ownerUUID).getName(), SignLineType.TEXT),
-                new TextLineData(INTERNAL_FLAG.matcher(getAllFlagsString()).replaceAll(""), SignLineType.TEXT)
-        };
-        new StargateGlobalTask() {
-            @Override
-            public void run() {
-                gate.drawControlMechanisms(lineData);
-            }
-        }.runNow();
-        activate(event.getPlayer());
     }
 
     @Override
@@ -585,6 +480,16 @@ public abstract class AbstractPortal implements RealPortal {
                 deactivate(activationTime);
             }
         }.runDelayed(ACTIVE_DELAY);
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    @Override
+    public UUID getActivatorUUID() {
+        return activator;
     }
 
 
@@ -603,10 +508,8 @@ public abstract class AbstractPortal implements RealPortal {
         deactivate();
     }
 
-    /**
-     * De-activates this portal
-     */
-    protected void deactivate() {
+    @Override
+    public void deactivate() {
         if (this.isDestroyed) {
             return;
         }
@@ -616,7 +519,8 @@ public abstract class AbstractPortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(event);
 
         this.activator = null;
-        gate.drawControlMechanisms(getDrawnControlLines());
+        this.active = false;
+        redrawSigns();
     }
 
     @Override
@@ -668,4 +572,27 @@ public abstract class AbstractPortal implements RealPortal {
         return this.isDestroyed;
     }
 
+    @Override
+    public PortalBehavior getBehavior() {
+        return this.behavior;
+    }
+
+    @Override
+    public void setBehavior(PortalBehavior portalBehavior) {
+        clearBehaviorFlags();
+        flags.add(portalBehavior.getAttachedFlag());
+        this.behavior = Objects.requireNonNull(portalBehavior);
+        this.behavior.assignPortal(this);
+    }
+
+    @Override
+    public void redrawSigns() {
+        LineData[] lineData = behavior.getLines();
+        getGate().getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
+                .forEach(portalPosition -> getGate().redrawPosition(portalPosition, lineData));
+    }
+
+    private void clearBehaviorFlags() {
+        flags.stream().filter(PortalFlag::isBehaviorFlag).forEach(flags::remove);
+    }
 }

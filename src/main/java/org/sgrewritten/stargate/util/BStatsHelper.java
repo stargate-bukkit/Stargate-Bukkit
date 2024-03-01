@@ -19,7 +19,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.AbstractPortal;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
 import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public final class BStatsHelper {
 
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatRegistry.formatsStored())));
 
-        metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
+        metrics.addCustomChart(new SingleLineChart("totalPortals", () -> StargatePortal.portalCount));
 
         metrics.addCustomChart(
                 new SimplePie("networksNumber", () -> String.valueOf(registry.getNetworkRegistry(StorageType.LOCAL).size()
@@ -152,7 +152,7 @@ public final class BStatsHelper {
     private static void registerFlagMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("flags", () -> {
             Map<String, Integer> flagStatus = new HashMap<>();
-            Set<PortalFlag> allUsedFlags = AbstractPortal.allUsedFlags;
+            Set<PortalFlag> allUsedFlags = StargatePortal.allUsedFlags;
             for (PortalFlag portalFlag : PortalFlag.values()) {
                 //Skip internal flag, as those are not specifiable
                 if (!portalFlag.isInternalFlag()) {

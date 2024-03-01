@@ -398,7 +398,7 @@ public class SQLQueryGenerator {
 
         statement.setString(1, portal.getNetwork().getId());
         statement.setString(2, portal.getName());
-        String destinationName = portal.getDestinationName();
+        String destinationName = portal.getBehavior().getDestinationName();
         if (destinationName == null) {
             destinationName = "";
         }

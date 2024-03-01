@@ -49,13 +49,6 @@ public interface Portal {
     void teleportHere(Entity target, RealPortal origin);
 
     /**
-     * Teleports the given entity to this portal's current destination
-     *
-     * @param target <p>The entity to teleport</p>
-     */
-    void doTeleport(Entity target);
-
-    /**
      * Closes this portal
      *
      * @param forceClose <p>Whether to force this portal to close, even if set to always on or similar</p>
@@ -162,22 +155,6 @@ public interface Portal {
     void updateState();
 
     /**
-     * Gets the currently selected destination portal
-     *
-     * @return <p>The currently selected destination portal</p>
-     */
-    Portal getDestination();
-
-    /**
-     * Gets the destination name as originally specified on this portal's creation sign
-     *
-     * <p>This will be null for any non-fixed portals.</p>
-     *
-     * @return <p>The destination name specified for this portal</p>
-     */
-    @Nullable String getDestinationName();
-
-    /**
      * Gets the unique identifier for this portal
      *
      * @return <p>The unique identifier for this portal</p>
@@ -206,13 +183,6 @@ public interface Portal {
      */
     @ApiStatus.Internal
     void setName(String newName);
-
-    /**
-     * Activates this portal for the given player during internally specified time
-     *
-     * @param player <p>The player to activate this portal for</p>
-     */
-    void activate(Player player);
 
     /**
      * @return <p>True if this portal has been destroyed</p>

@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
@@ -38,7 +39,7 @@ class NetworkedPortalTest {
 
     private @NotNull WorldMock world;
     private RegistryAPI registry;
-    private NetworkedPortal portal;
+    private RealPortal portal;
     private @NotNull PlayerMock player;
     private Block sign;
     private @NotNull MockPlugin plugin;
@@ -60,7 +61,7 @@ class NetworkedPortalTest {
         network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
         PortalBuilder builder = new PortalBuilder(stargateAPI,player,"networked").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry));
         builder.setNetwork(network).setFlags(flags);
-        portal = (NetworkedPortal) builder.build();
+        portal = builder.build();
     }
 
     @AfterEach
@@ -73,7 +74,7 @@ class NetworkedPortalTest {
     void onSignClickNoPermission(Action type) {
         player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @ParameterizedTest
@@ -82,14 +83,14 @@ class NetworkedPortalTest {
         player.setSneaking(true);
         player.addAttachment(plugin, "sg.use", false);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @ParameterizedTest
     @EnumSource
     void onSignClick(Action type) {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @ParameterizedTest
@@ -97,7 +98,7 @@ class NetworkedPortalTest {
     void onSignClickSneaking(Action type) {
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @ParameterizedTest
@@ -106,7 +107,7 @@ class NetworkedPortalTest {
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
         sign = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         new PortalBuilder(stargateAPI,player,"destination").setNetwork(network).setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry)).build();
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @ParameterizedTest
@@ -116,20 +117,20 @@ class NetworkedPortalTest {
         new PortalBuilder(stargateAPI,player,"destination").setNetwork(network).setGateBuilder(new ImplicitGateBuilder(sign.getLocation(),registry)).build();
         player.setSneaking(true);
         PlayerInteractEvent event = new PlayerInteractEvent(player, type, null, sign, ((Directional) sign.getBlockData()).getFacing());
-        Assertions.assertDoesNotThrow(() -> portal.onSignClick(event));
+        Assertions.assertDoesNotThrow(() -> portal.getBehavior().onSignClick(event));
     }
 
     @Test
     void activate() {
         portal.activate(player);
-        Assertions.assertEquals(player.getUniqueId(), portal.activator);
+        Assertions.assertEquals(player.getUniqueId(), portal.getActivatorUUID());
     }
 
     @Test
     void deactivate() {
         portal.activate(player);
         portal.deactivate();
-        Assertions.assertNotEquals(player.getUniqueId(), portal.activator);
+        Assertions.assertNotEquals(player.getUniqueId(), portal.getActivatorUUID());
     }
 
     @Test

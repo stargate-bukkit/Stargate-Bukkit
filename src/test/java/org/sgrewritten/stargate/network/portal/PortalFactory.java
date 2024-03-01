@@ -2,32 +2,24 @@ package org.sgrewritten.stargate.network.portal;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
-import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
-import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
-import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -147,7 +139,7 @@ public class PortalFactory {
      * @throws NameLengthException       <p>IF the length of the name is invalid</p>
      */
     public static RealPortal generateFakePortal(Location topLeft, Network network, String name,
-                                                boolean createInterServerPortal, Set<PortalFlag> flags, Set<Character> unknownFlags, RegistryAPI registry)
+                                                boolean createInterServerPortal, Set<PortalFlag> flags, Set<Character> unknownFlags, StargateAPI stargateAPI)
             throws InvalidStructureException, NameLengthException {
         if (createInterServerPortal) {
             flags.add(PortalFlag.FANCY_INTER_SERVER);
@@ -158,10 +150,12 @@ public class PortalFactory {
         String gateFileName = "nether.gate";
         GateData gateData = new GateData(GateFormatRegistry.getFormat(gateFileName), false, topLeft, facing);
 
-        Gate gate = new Gate(gateData, registry);
+        Gate gate = new Gate(gateData, stargateAPI.getRegistry());
 
         gate.addPortalPosition(new BlockVector(1, -2, 0), PositionType.BUTTON, "Stargate");
         gate.addPortalPosition(new BlockVector(1, -2, -3), PositionType.SIGN, "Stargate");
+        PortalBuilder builder = new PortalBuilder(stargateAPI, UUID.randomUUID(), name);
+
         return new FixedPortal(network, name, "", flags, unknownFlags, gate, UUID.randomUUID(), new LanguageManagerMock(), new StargateEconomyManagerMock(), null);
     }
 

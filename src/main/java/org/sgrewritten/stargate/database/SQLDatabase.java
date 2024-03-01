@@ -29,7 +29,7 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.AbstractPortal;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
@@ -148,8 +148,8 @@ public class SQLDatabase implements StorageAPI {
             connection.commit();
             connection.setAutoCommit(true);
             connection.close();
-            if (portal instanceof AbstractPortal abstractPortal) {
-                abstractPortal.setSavedToStorage();
+            if (portal instanceof StargatePortal stargatePortal) {
+                stargatePortal.setSavedToStorage();
             }
             return true;
         } catch (SQLException exception) {
@@ -324,8 +324,8 @@ public class SQLDatabase implements StorageAPI {
         if (!PortalHelper.portalValidityCheck(portal, stargateAPI.getNetworkManager())) {
             return;
         }
-        if (portal instanceof AbstractPortal abstractPortal) {
-            abstractPortal.setSavedToStorage();
+        if (portal instanceof StargatePortal stargatePortal) {
+            stargatePortal.setSavedToStorage();
         }
         gate.assignPortal(portal);
         network.addPortal(portal);

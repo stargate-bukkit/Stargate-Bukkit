@@ -4,13 +4,16 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A real portal with a physical sign that is located on this server
@@ -18,11 +21,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface RealPortal extends Portal, MetadataHolder {
 
-    /**
-     * Gets the line to be drawn for the signs
-     * @return <p> Lines to be drawn for the gate owned by this portal</p>
-     */
-    LineData[] getDrawnControlLines();
+    void open(@Nullable Portal destination, @Nullable Player actor);
 
     /**
      * Updates the color of this portal's sign
@@ -33,20 +32,6 @@ public interface RealPortal extends Portal, MetadataHolder {
      * @param color <p>Color to change the sign text to. If null, then the default color will be used</p>
      */
     void setSignColor(DyeColor color, PortalPosition portalPosition);
-
-    /**
-     * The action to be run when this portal's button is clicked
-     *
-     * @param event <p>The player interact event that triggered the button click</p>
-     */
-    void onButtonClick(PlayerInteractEvent event);
-
-    /**
-     * The action to be triggered if this portal sign is interacted with
-     *
-     * @param event <p>The triggered player interact event</p>
-     */
-    void onSignClick(PlayerInteractEvent event);
 
 
     /**
@@ -85,6 +70,10 @@ public interface RealPortal extends Portal, MetadataHolder {
      */
     List<Location> getPortalPosition(PositionType type);
 
+    UUID getActivatorUUID();
+
+    void deactivate();
+
     /**
      * Get the facing entities exit from this portal.
      *
@@ -92,5 +81,33 @@ public interface RealPortal extends Portal, MetadataHolder {
      */
     BlockFace getExitFacing();
 
+    PortalBehavior getBehavior();
 
+    void setBehavior(PortalBehavior portalBehavior);
+
+    void redrawSigns();
+
+    /**
+     * Activates this portal for the given player during internally specified time
+     *
+     * @param player <p>The player to activate this portal for</p>
+     */
+    void activate(Player player);
+
+    boolean isActive();
+
+
+    /**
+     * Teleports the given entity to given destination
+     *
+     * @param target <p>The entity to teleport</p>
+     */
+    void doTeleport(@NotNull Entity target, @Nullable Portal destination);
+
+    /**
+     * Teleports the given entity to stored destination
+     *
+     * @param target <p>The entity to teleport</p>
+     */
+    void doTeleport(@NotNull Entity target);
 }

@@ -20,7 +20,7 @@ import java.util.logging.Level;
 /**
  * A virtual portal compatible with the legacy BungeeCord behavior
  */
-class LegacyVirtualPortal extends VirtualPortal {
+public class LegacyVirtualPortal extends VirtualPortal {
 
     /**
      * Instantiates a new legacy virtual portal
