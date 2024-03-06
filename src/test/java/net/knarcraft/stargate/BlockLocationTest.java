@@ -4,7 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.WorldMock;
 import net.knarcraft.stargate.container.BlockLocation;
 import org.bukkit.Material;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ public class BlockLocationTest {
         mockWorld = new WorldMock(Material.DIRT, 5);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         MockBukkit.unmock();
     }

@@ -9,6 +9,7 @@ import net.knarcraft.stargate.portal.property.gate.Gate;
 import net.knarcraft.stargate.portal.property.gate.GateHandler;
 import net.knarcraft.stargate.portal.property.gate.GateLayout;
 import org.bukkit.Material;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,10 @@ public class GateLayoutTest {
 
     @AfterAll
     public static void tearDown() {
-        MockBukkit.getMock().getPluginManager().disablePlugins();
+        @Nullable ServerMock mock = MockBukkit.getMock();
+        if (mock != null) {
+            mock.getPluginManager().disablePlugins();
+        }
         MockBukkit.unmock();
     }
 

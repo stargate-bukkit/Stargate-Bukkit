@@ -65,23 +65,22 @@ public class ConfigTabCompleter implements TabCompleter {
     private List<String> getPossibleOptionValues(@NotNull ConfigOption selectedOption,
                                                  @NotNull String typedText) {
         switch (selectedOption) {
-            case LANGUAGE:
+            case LANGUAGE -> {
                 //Return available languages
                 return filterMatchingStartsWith(languages, typedText);
-            case GATE_FOLDER:
-            case PORTAL_FOLDER:
-            case DEFAULT_GATE_NETWORK:
+            }
+            case GATE_FOLDER, PORTAL_FOLDER, DEFAULT_GATE_NETWORK -> {
                 //Just return the default value as most values should be possible
                 if (typedText.trim().isEmpty()) {
                     return List.of((String) selectedOption.getDefaultValue());
                 } else {
                     return new ArrayList<>();
                 }
-            case MAIN_SIGN_COLOR:
-            case HIGHLIGHT_SIGN_COLOR:
-            case FREE_GATES_COLOR:
+            }
+            case MAIN_SIGN_COLOR, HIGHLIGHT_SIGN_COLOR, FREE_GATES_COLOR -> {
                 //Return all colors
                 return filterMatchingStartsWith(chatColors, typedText);
+            }
         }
 
         //If the config value is a boolean, show the two boolean values
