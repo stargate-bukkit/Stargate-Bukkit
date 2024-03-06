@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This listener listens to any player-related events related to stargates
@@ -176,16 +177,10 @@ public class PlayerEventListener implements Listener {
             return false;
         }
 
-        //Check if the player moved from a portal
-        Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
+        //Get the portal the player entered, if any
+        Portal entrancePortal = getEnteredPortal(toLocation, player);
         if (entrancePortal == null) {
-            //Check an additional block away for BungeeCord portals using END_PORTAL as its material
-            entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
-            if (entrancePortal == null || !entrancePortal.getOptions().isBungee() ||
-                    !MaterialHelper.specifiersToMaterials(
-                            entrancePortal.getGate().getPortalOpenMaterials()).contains(Material.END_PORTAL)) {
-                return false;
-            }
+            return false;
         }
 
         Portal destination = entrancePortal.getPortalActivator().getDestination(player);
@@ -210,6 +205,36 @@ public class PlayerEventListener implements Listener {
 
         //Make sure to check if the player has any leashed creatures, even though leashed teleportation is disabled
         return TeleportHelper.noLeashedCreaturesPreventTeleportation(player);
+    }
+
+    /**
+     * Gets the portal a player entered
+     *
+     * @param toLocation <p>The location the player moved to</p>
+     * @param player     <p>The player that moved</p>
+     * @return <p>The portal the player entered, or null if no portal was entered</p>
+     */
+    private Portal getEnteredPortal(@NotNull BlockLocation toLocation, @NotNull Player player) {
+        Portal entrancePortal = PortalHandler.getByEntrance(toLocation);
+        // Return if in an entrance
+        if (entrancePortal != null) {
+            return entrancePortal;
+        }
+
+        //Check an additional block away for special cases like BungeeCord portals using END_PORTAL as its material
+        entrancePortal = PortalHandler.getByAdjacentEntrance(toLocation);
+        if (entrancePortal == null) {
+            return null;
+        }
+
+        Set<Material> entranceMaterials = MaterialHelper.specifiersToMaterials(entrancePortal.getGate().getPortalOpenMaterials());
+
+        if ((player.getName().matches("^[a-zA-Z0-9_]{2,16}$") || !entranceMaterials.contains(Material.END_GATEWAY)) &&
+                (!entrancePortal.getOptions().isBungee() || !entranceMaterials.contains(Material.END_PORTAL))) {
+            return null;
+        }
+
+        return entrancePortal;
     }
 
     /**
