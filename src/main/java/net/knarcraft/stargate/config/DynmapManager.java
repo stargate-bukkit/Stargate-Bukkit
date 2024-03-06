@@ -132,6 +132,14 @@ public final class DynmapManager {
     }
 
     /**
+     * Disables Dynmap integration
+     */
+    public static void disable() {
+        markerSet = null;
+        portalIcon = null;
+    }
+
+    /**
      * Gets the id used for the given portal's marker
      *
      * @param portal <p>The portal to get a marker id for</p>
