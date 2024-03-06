@@ -103,6 +103,9 @@ public class PortalEventListener implements Listener {
     public void onRespawn(@NotNull PlayerRespawnEvent event) {
         Player respawningPlayer = event.getPlayer();
         FromTheEndTeleportation teleportation = playersFromTheEnd.remove(respawningPlayer);
+        if (teleportation == null) {
+            return;
+        }
         Portal exitPortal = teleportation.exitPortal();
 
         //Overwrite respawn location to respawn in front of the portal

@@ -36,10 +36,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.geysermc.geyser.api.GeyserApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -227,14 +229,39 @@ public class PlayerEventListener implements Listener {
             return null;
         }
 
+        // If END_GATEWAY and END_PORTAL cannot appear, skip further checks
         Set<Material> entranceMaterials = MaterialHelper.specifiersToMaterials(entrancePortal.getGate().getPortalOpenMaterials());
+        if (!entranceMaterials.contains(Material.END_GATEWAY) && !entranceMaterials.contains(Material.END_PORTAL)) {
+            return null;
+        }
 
-        if ((player.getName().matches("^[a-zA-Z0-9_]{2,16}$") || !entranceMaterials.contains(Material.END_GATEWAY)) &&
-                (!entrancePortal.getOptions().isBungee() || !entranceMaterials.contains(Material.END_PORTAL))) {
+        // Get the real materials in the entrance, as END_GATEWAY or END_PORTAL may be available, but not chosen
+        Set<Material> materialsInEntrance = new HashSet<>();
+        for (BlockLocation location : entrancePortal.getStructure().getEntrances()) {
+            materialsInEntrance.add(location.getType());
+        }
+
+        // Abort if not a special case
+        if ((!materialsInEntrance.contains(Material.END_GATEWAY) || !isGeyserPlayer(player)) &&
+                (!entrancePortal.getOptions().isBungee() || !materialsInEntrance.contains(Material.END_PORTAL))) {
             return null;
         }
 
         return entrancePortal;
+    }
+
+    /**
+     * Checks whether the given player is connected through Geyser
+     *
+     * @param player <p>The player to check</p>
+     * @return <p>True if the player is connected through Geyser</p>
+     */
+    private boolean isGeyserPlayer(@NotNull Player player) {
+        try {
+            return GeyserApi.api().connectionByUuid(player.getUniqueId()) != null;
+        } catch (NoClassDefFoundError error) {
+            return false;
+        }
     }
 
     /**
