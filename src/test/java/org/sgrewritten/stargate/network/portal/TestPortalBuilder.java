@@ -120,9 +120,9 @@ public class TestPortalBuilder {
             unrecognisedFlags = new HashSet<>();
         }
         if (storageType == StorageType.LOCAL) {
-            flags.remove(PortalFlag.INTER_SERVER);
+            flags.remove(PortalFlag.INTERSERVER);
         } else {
-            flags.add(PortalFlag.INTER_SERVER);
+            flags.add(PortalFlag.INTERSERVER);
         }
         flags.add(network.getType().getRelatedFlag());
         if (name == null) {

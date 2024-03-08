@@ -50,7 +50,7 @@ public final class PortalCreationHelper {
                                           StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
         PortalBehavior portalBehavior;
-        if (flags.contains(PortalFlag.BUNGEE)) {
+        if (flags.contains(PortalFlag.LEGACY_INTERSERVER)) {
             flags.add(PortalFlag.FIXED);
             // Override whatever network that was going to be used, as it should only be on the bungee network
             network = stargateAPI.getNetworkManager().selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);

@@ -364,9 +364,9 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The resulting network, or null if invalid</p>
      */
     private Network getNetwork(PortalData portalData, RegistryAPI registry, NetworkManager networkManager) {
-        StorageType storageType = portalData.flags().contains(PortalFlag.INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = portalData.flags().contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
         String targetNetwork = portalData.networkName();
-        if (portalData.flags().contains(PortalFlag.BUNGEE)) {
+        if (portalData.flags().contains(PortalFlag.LEGACY_INTERSERVER)) {
             targetNetwork = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
         }
         Stargate.log(Level.FINEST,

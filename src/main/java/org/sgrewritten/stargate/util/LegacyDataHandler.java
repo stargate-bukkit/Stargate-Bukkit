@@ -119,7 +119,7 @@ public class LegacyDataHandler {
         output.put(PortalFlag.FORCE_SHOW, 17);
         output.put(PortalFlag.HIDE_NETWORK, 18);
         output.put(PortalFlag.RANDOM, 19);
-        output.put(PortalFlag.BUNGEE, 20);
+        output.put(PortalFlag.LEGACY_INTERSERVER, 20);
         output.put(PortalFlag.SILENT, 21);
         output.put(PortalFlag.NO_SIGN, 22);
         return output;

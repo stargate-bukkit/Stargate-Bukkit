@@ -216,7 +216,7 @@ public class VirtualPortal implements Portal {
     }
 
     public StorageType getStorageType() {
-        return (flags.contains(PortalFlag.INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+        return (flags.contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }
 
     @Override

@@ -23,7 +23,7 @@ public enum PortalFlag {
     /**
      * An across-server stargate using the new and better protocol
      */
-    INTER_SERVER('I', true, false),
+    INTERSERVER('I', true, false),
 
     /**
      * A stargate which is always on and always open
@@ -63,7 +63,7 @@ public enum PortalFlag {
     /**
      * An across-server stargate using the legacy BungeeCord protocol
      */
-    BUNGEE('U', true, true),
+    LEGACY_INTERSERVER('U', true, true),
 
     /**
      * A silent stargate which doesn't output a teleportation message

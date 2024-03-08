@@ -107,7 +107,7 @@ public final class LegacyPortalStorageLoader {
         }
 
         Network network = stargateAPI.getRegistry().getNetwork(portalData.networkName(),
-                portalData.flags().contains(PortalFlag.INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+                portalData.flags().contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
         Stargate.log(Level.INFO, "fetched networkName: " + portalData.networkName());
 
         if (network == null) {

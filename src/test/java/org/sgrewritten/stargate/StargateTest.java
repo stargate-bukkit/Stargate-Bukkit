@@ -177,7 +177,7 @@ class StargateTest {
     private void createBungeePortal() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
         Set<PortalFlag> flags = new HashSet<>();
-        flags.add(PortalFlag.BUNGEE);
+        flags.add(PortalFlag.LEGACY_INTERSERVER);
         PortalBuilder portalBuilder = new PortalBuilder(plugin, player, PORTAL2).setGateBuilder(new ImplicitGateBuilder(signBlock2.getLocation(), plugin.getRegistry())).setFlags(flags);
         bungeePortal = portalBuilder.setDestinationServerName("server").setDestination("destination").build();
         plugin.reload();
