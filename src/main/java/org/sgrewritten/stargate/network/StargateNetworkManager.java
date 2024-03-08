@@ -58,7 +58,7 @@ public class StargateNetworkManager implements NetworkManager {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = NameHelper.getNormalizedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType, String> data;
-        StorageType storageType = flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = flags.contains(PortalFlag.INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
         if (flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
             data = new TwoTuple<>(NetworkType.TERMINAL, unHighlightedName);
@@ -185,7 +185,7 @@ public class StargateNetworkManager implements NetworkManager {
 
     @Override
     public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
     }
 
 

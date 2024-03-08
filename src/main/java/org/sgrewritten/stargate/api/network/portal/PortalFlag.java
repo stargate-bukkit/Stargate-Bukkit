@@ -23,7 +23,7 @@ public enum PortalFlag {
     /**
      * An across-server stargate using the new and better protocol
      */
-    FANCY_INTER_SERVER('I', true, false),
+    INTER_SERVER('I', true, false),
 
     /**
      * A stargate which is always on and always open

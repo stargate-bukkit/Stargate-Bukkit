@@ -312,7 +312,7 @@ public class PortalBuilder {
             String unformattedMessage = stargateAPI.getLanguageManager().getMessage(TranslatableMessage.CREATE);
             msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, network.getName());
         }
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER)) {
+        if (flags.contains(PortalFlag.INTER_SERVER)) {
             msg = msg + " " + stargateAPI.getLanguageManager().getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
         }
         MessageUtils.sendMessageFromPortal(portal, messageTarget, msg, MessageType.CREATE);
@@ -356,7 +356,7 @@ public class PortalBuilder {
         if (SpawnDetectionHelper.isInterferingWithSpawnProtection(gateAPI)) {
             MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.SPAWN_CHUNKS_CONFLICTING));
         }
-        if (portal.hasFlag(PortalFlag.FANCY_INTER_SERVER)) {
+        if (portal.hasFlag(PortalFlag.INTER_SERVER)) {
             Network inflictingNetwork = NetworkCreationHelper.getInterServerLocalConflict(network, stargateAPI.getRegistry());
             MessageUtils.sendMessage(messageTarget, TranslatableMessageFormatter.formatUnimplementedConflictMessage(network,
                     inflictingNetwork, stargateAPI.getLanguageManager()));
@@ -376,7 +376,7 @@ public class PortalBuilder {
 
     private void flagChecks(Set<PortalFlag> flags) throws TranslatableException {
         //Display an error if trying to create portals across servers while the feature is disabled
-        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.FANCY_INTER_SERVER))
+        if ((flags.contains(PortalFlag.BUNGEE) || flags.contains(PortalFlag.INTER_SERVER))
                 && !ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.BUNGEE_DISABLED));
             throw new TranslatableException("Bungee is disabled") {
@@ -386,7 +386,7 @@ public class PortalBuilder {
                 }
             };
         }
-        if (flags.contains(PortalFlag.FANCY_INTER_SERVER) && !ConfigurationHelper.getBoolean(
+        if (flags.contains(PortalFlag.INTER_SERVER) && !ConfigurationHelper.getBoolean(
                 ConfigurationOption.USING_REMOTE_DATABASE)) {
             MessageUtils.sendMessage(messageTarget, stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.INTER_SERVER_DISABLED));
             throw new TranslatableException("Bungee networks are disabled") {

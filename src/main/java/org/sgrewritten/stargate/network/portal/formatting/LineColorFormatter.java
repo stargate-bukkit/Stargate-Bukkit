@@ -163,7 +163,7 @@ public class LineColorFormatter implements LineFormatter {
             return null;
         }
         if (portal instanceof VirtualPortal) {
-            return ColorRegistry.FLAG_COLORS.get(PortalFlag.FANCY_INTER_SERVER);
+            return ColorRegistry.FLAG_COLORS.get(PortalFlag.INTER_SERVER);
         }
         for (PortalFlag flag : flagPriority) {
             if (portal.hasFlag(flag)) {
