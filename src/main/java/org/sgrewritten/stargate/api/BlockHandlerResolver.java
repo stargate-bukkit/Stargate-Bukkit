@@ -81,7 +81,7 @@ public class BlockHandlerResolver {
      * @param material The material of the block
      * @param player   The player that placed the block
      */
-    public void registerPlacement(RegistryAPI registry, Location location, List<RealPortal> portals, Material material, Player player) {
+    public void registerPlacement(@NotNull RegistryAPI registry,@NotNull Location location,@NotNull List<RealPortal> portals,@NotNull Material material, Player player) {
         if (!blockHandlerMap.containsKey(material)) {
             return;
         }

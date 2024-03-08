@@ -146,7 +146,7 @@ public class PortalBuilder {
     }
 
     /**
-     * Requires the constructor {@link PortalBuilder#PortalBuilder(StargateAPI, OfflinePlayer, String, String, GateBuilder)} to matter
+     * Requires the constructor {@link PortalBuilder#PortalBuilder(StargateAPI, OfflinePlayer, String)} to matter
      *
      * @param adaptiveGatePositionGeneration <p>Whether to generate portal positions for the gate</p>
      * @return <p>This portal builder</p>
@@ -262,7 +262,7 @@ public class PortalBuilder {
      * @return <p>This portal builder</p>
      */
     public PortalBuilder setFlags(@NotNull Set<PortalFlag> flags) {
-        this.flags = Objects.requireNonNull(flags);
+        this.flags = new HashSet<>(Objects.requireNonNull(flags));
         this.flagsString = null;
         return this;
     }
@@ -303,7 +303,7 @@ public class PortalBuilder {
         //Save the portal and inform the user
         stargateAPI.getNetworkManager().savePortal(portal, network);
         gateAPI.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
-                        .forEach(portalPosition -> portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR, portalPosition));
+                .forEach(portalPosition -> portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR, portalPosition));
         Stargate.log(Level.FINE, "Successfully created a new portal");
         String msg;
         if (flags.contains(PortalFlag.PERSONAL_NETWORK)) {

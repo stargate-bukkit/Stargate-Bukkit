@@ -262,7 +262,7 @@ public class MySQLDatabaseTest {
         try {
             tester.addFlags();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 

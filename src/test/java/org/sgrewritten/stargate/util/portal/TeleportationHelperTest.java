@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.util.BlockVector;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
@@ -27,6 +30,7 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.ArrayList;
@@ -166,15 +170,19 @@ class TeleportationHelperTest {
         Location topLeft = new Location(world, -1, 5, -3);
         Set<PortalFlag> flags = new HashSet<>();
         flags.add(PortalFlag.BACKWARDS);
-        PortalBuilder portalBuilder = new PortalBuilder(this.stargateAPI, server.addPlayer(), "aName");
-        RealPortal portal = portalBuilder.setGateBuilder(topLeft, "nether.gate").setNetwork(network).setFlags(flags).build();
+        TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world).setNetwork(network);
+        RealPortal portal = testPortalBuilder.setFlags(flags).build();
         Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), portal);
         assertNotNull(location);
         Assertions.assertTrue(topLeft.getX() < location.getX());
     }
 
     private RealPortal generatePortal(Location topLeft) throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
-        PortalBuilder portalBuilder = new PortalBuilder(this.stargateAPI, server.addPlayer(), "aName");
-        return portalBuilder.setGateBuilder(topLeft, "nether.gate").setNetwork(network).build();
+        TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), world);
+        ExplicitGateBuilder explicitGateBuilder = new ExplicitGateBuilder(stargateAPI.getRegistry(),topLeft, GateFormatRegistry.getFormat("nether.gate"));
+        explicitGateBuilder.setFacing(BlockFace.EAST);
+        testPortalBuilder.setName("aName").setGateBuilder(explicitGateBuilder);
+        testPortalBuilder.setNetwork(network);
+        return testPortalBuilder.build();
     }
 }

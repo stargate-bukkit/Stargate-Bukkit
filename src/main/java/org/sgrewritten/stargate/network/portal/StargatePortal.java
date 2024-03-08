@@ -52,6 +52,7 @@ import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -593,6 +594,7 @@ public class StargatePortal implements RealPortal {
     }
 
     private void clearBehaviorFlags() {
-        flags.stream().filter(PortalFlag::isBehaviorFlag).forEach(flags::remove);
+        List<PortalFlag> flagsToRemove = flags.stream().filter(PortalFlag::isBehaviorFlag).toList();
+        flags.removeAll(flagsToRemove);
     }
 }

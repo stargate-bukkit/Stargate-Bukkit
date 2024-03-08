@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
@@ -47,9 +48,10 @@ class InterServerMessageSenderTest {
         this.network = new StargateNetwork(NETWORK_ID, NetworkType.CUSTOM, StorageType.INTER_SERVER);
         this.stargateAPI = new StargateAPIMock();
         World world = server.addSimpleWorld("world");
-        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI,server.addPlayer(),PORTAL_NAME);
-        portalBuilder.setGateBuilder(new Location(world, 0, 10, 0),"nether.gate").setNetwork(network);
-        this.portal = portalBuilder.build();
+
+        TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world);
+        testPortalBuilder.setName(PORTAL_NAME).setNetwork(network);
+        this.portal = testPortalBuilder.build();
     }
 
     @AfterEach

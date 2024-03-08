@@ -350,7 +350,8 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     }
 
     @Override
-    public void assignPortal(RealPortal portal) {
+    public void assignPortal(@NotNull RealPortal portal) {
+        super.assignPortal(portal);
         if (!portal.hasFlag(PortalFlag.ALWAYS_ON)) {
             return;
         }

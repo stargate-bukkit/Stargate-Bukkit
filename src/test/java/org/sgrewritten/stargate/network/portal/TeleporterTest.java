@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
@@ -71,9 +72,10 @@ class TeleporterTest {
     }
 
     private RealPortal generatePortal(Network network, String name, Location location) throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
-        PortalBuilder builder = new PortalBuilder(stargateAPI, server.addPlayer(), name).setGateBuilder(location, "nether.gate")
-                .setNetwork(network);
-        return builder.build();
+        TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), location.getWorld());
+        testPortalBuilder.setGateBuilder(new ExplicitGateBuilder(stargateAPI.getRegistry(), location, GateFormatRegistry.getFormat("nether.gate")));
+        testPortalBuilder.setName(name).setNetwork(network);
+        return testPortalBuilder.build();
     }
 
     @AfterEach

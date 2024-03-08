@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Assertions;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
+import org.sgrewritten.stargate.api.gate.GateBuilder;
+import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -29,7 +32,9 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.SQLTestHelper;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
@@ -110,31 +115,18 @@ public class DatabaseTester {
         Network testNetwork = null;
         try {
             testNetwork = new StargateNetwork("test", NetworkType.CUSTOM, StorageType.LOCAL);
+            testNetwork.assignToRegistry(stargateAPI.getRegistry());
         } catch (InvalidNameException | NameLengthException | UnimplementedFlagException e) {
             Stargate.log(e);
             fail();
         }
-        this.interServerPortals = generatePortals(world, testNetwork, true, interServerPortalTestLength, server);
-        this.localPortals = generatePortals(world, testNetwork, false, localPortalTestLength,server);
-        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), "testPortal");
-        portalBuilder.setGateBuilder(new Location(world, 0, 200, 300), "nether.gate").setNetwork(testNetwork);
+        TestPortalBuilder portalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world);
+        portalBuilder.setNetwork(testNetwork).setStorageType(StorageType.INTER_SERVER).setName("iPortal");
+        this.interServerPortals = portalBuilder.buildMultiple(interServerPortalTestLength);
+        portalBuilder.setName("lPortal").setStorageType(StorageType.LOCAL);
+        this.localPortals = portalBuilder.buildMultiple(localPortalTestLength);
+        portalBuilder.setName("testPortal");
         this.testPortal = portalBuilder.build();
-    }
-
-    private Map<String, RealPortal> generatePortals(World world, Network network, boolean interserver, int amount, ServerMock serverMock) throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
-        String prefix = interserver ? INTER_PORTAL_NAME : LOCAL_PORTAL_NAME;
-        Map<String, RealPortal> output = new HashMap<>();
-        for (int i = 0; i < amount; i++) {
-            PortalBuilder builder = new PortalBuilder(stargateAPI, serverMock.addPlayer(), prefix + i);
-            Set<PortalFlag> flags = EnumSet.allOf(PortalFlag.class);
-            if(!interserver){
-                flags.remove(PortalFlag.FANCY_INTER_SERVER);
-            }
-            builder.setFlags(flags).setNetwork(network).setGateBuilder(new Location(world, i*5, 10, interserver ? 0 : 10),"nether.gate");
-            RealPortal portal = builder.build();
-            output.put(portal.getId(), portal);
-        }
-        return output;
     }
 
     void addPortalTableTest() throws SQLException {
@@ -337,19 +329,18 @@ public class DatabaseTester {
             rows++;
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 Stargate.log(Level.FINER, metaData.getColumnName(i + 1) + " = " + set.getObject(i + 1) + ", ");
-
-                String portalName = set.getString("name");
-                Portal targetPortal = portals.get(portalName);
-                Assertions.assertEquals(targetPortal.getOwnerUUID().toString(), set.getString("ownerUUID"));
-                Assertions.assertEquals(PortalFlag.parseFlags(targetPortal.getAllFlagsString()),
-                        PortalFlag.parseFlags(set.getString("flags")));
-
-                if (StorageType.INTER_SERVER == portalType
-                        && set.getString("homeServerId").equals(serverUUID.toString())) {
-                    Assertions.assertEquals(set.getString("serverName"), serverName);
-                }
             }
             Stargate.log(Level.FINER, "\n");
+            String portalName = set.getString("name");
+            Portal targetPortal = portals.get(NameHelper.getNormalizedName(portalName));
+            Assertions.assertEquals(targetPortal.getOwnerUUID().toString(), set.getString("ownerUUID"));
+            Assertions.assertEquals(PortalFlag.parseFlags(targetPortal.getAllFlagsString()),
+                    PortalFlag.parseFlags(set.getString("flags")));
+
+            if (StorageType.INTER_SERVER == portalType
+                    && set.getString("homeServerId").equals(serverUUID.toString())) {
+                Assertions.assertEquals(set.getString("serverName"), serverName);
+            }
         }
         Assertions.assertEquals(portals.size(), rows);
     }
@@ -524,12 +515,12 @@ public class DatabaseTester {
             Stargate.log(e);
             fail();
         }
-        Set<PortalFlag> portalFlags = portalType == StorageType.INTER_SERVER ? Set.of(PortalFlag.FANCY_INTER_SERVER) : Set.of();
-        PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, server.addPlayer(), initialName).setFlags(portalFlags)
-                        .setGateBuilder(new Location(world, 200, 150, 400), "nether.gate");
-        RealPortal portal = portalBuilder.build();
-
-
+        TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), world);
+        ExplicitGateBuilder gateBuilder = new ExplicitGateBuilder(stargateAPI.getRegistry(),new Location(world,200,100,400), GateFormatRegistry.getFormat("nether.gate"));
+        gateBuilder.setGenerateButtonPositions(true).setCalculatePortalPositions(true);
+        testPortalBuilder.setGateBuilder(gateBuilder).setNetwork(testNetwork);
+        testPortalBuilder.setName(initialName).setStorageType(portalType);
+        RealPortal portal = testPortalBuilder.build();
         Stargate.log(Level.FINER, portal.getName() + ", " + portal.getNetwork().getId());
         this.portalDatabaseAPI.savePortalToStorage(portal);
         SQLTestHelper.checkIfHas(table, initialName, initialNetworkName, connection);
