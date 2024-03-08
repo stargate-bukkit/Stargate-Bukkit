@@ -17,6 +17,6 @@ public abstract class AbstractSignLine implements SignLine {
 
     @Override
     public String toString(){
-        return this.getClass().getName() + getComponents();
+        return this.getClass().getSimpleName() + getComponents();
     }
 }

@@ -40,4 +40,9 @@ public class TextLineData implements LineData {
     public @Nullable HighlightingStyle getHighlightingStyle(){
         return this.highlightingStyle;
     }
+
+    @Override
+    public String toString(){
+        return "TextLineData(" + getText() + ")";
+    }
 }

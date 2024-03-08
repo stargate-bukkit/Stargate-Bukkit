@@ -32,6 +32,7 @@ import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,7 +42,6 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     private List<Portal> destinations;
     private int selectedDestination = NO_DESTINATION_SELECTED;
     private long previousDestinationSelectionTime;
-    private Portal destination;
     private String loadedDestination;
 
     public NetworkedBehavior(LanguageManager languageManager) {
@@ -115,7 +115,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
 
 
     @Override
-    public void onSignClick(PlayerInteractEvent event) {
+    public void onSignClick(@NotNull PlayerInteractEvent event) {
         super.onSignClick(event);
         if (event.getPlayer().isSneaking()) {
             return;
@@ -144,9 +144,6 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
 
         setSelectedDestination(selectNewDestination(event.getAction(), previouslyActivated));
         portal.updateState();
-        if (portal.hasFlag(PortalFlag.ALWAYS_ON)) {
-            this.destination = getDestination();
-        }
     }
 
     /**
@@ -227,7 +224,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
         Bukkit.getPluginManager().callEvent(event);
 
         this.destinations = getPortals(event.getDestinations());
-        this.destination = portal.getNetwork().getPortal(event.getDestination());
+        // TODO: Modify the destination based on event outcome
         return true;
     }
 

@@ -27,4 +27,9 @@ public class NetworkLineData implements LineData {
     public @NotNull String getText() {
         return network.getName();
     }
+
+    @Override
+    public String toString(){
+        return "NetworkLineData(" + getText() + ")";
+    }
 }

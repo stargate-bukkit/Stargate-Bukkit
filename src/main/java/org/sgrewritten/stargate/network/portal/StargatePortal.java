@@ -51,6 +51,7 @@ import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +129,8 @@ public class StargatePortal implements RealPortal {
         if (gate.getFormat().isIronDoorBlockable()) {
             flags.add(PortalFlag.IRON_DOOR);
         }
-
+        gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.BUTTON)
+                .forEach(portalPosition -> gate.redrawPosition(portalPosition,null));
         StringBuilder msg = new StringBuilder("Selected with flags ");
         for (PortalFlag flag : flags) {
             msg.append(flag.getCharacterRepresentation());
@@ -159,7 +161,7 @@ public class StargatePortal implements RealPortal {
         this.behavior.update();
         Portal currentDestination = getCurrentDestination(this.behavior.getDestination());
         if (hasFlag(PortalFlag.ALWAYS_ON) && currentDestination != null) {
-            this.open(null);
+            this.open(currentDestination,null);
         }
         if (isOpen() && currentDestination == null) {
             close(true);
@@ -398,10 +400,10 @@ public class StargatePortal implements RealPortal {
                 }
             }
         }.runNow();
-        LineData[] lineData = behavior.getLines();
         new StargateGlobalTask() {
             @Override
             public void run() {
+                LineData[] lineData = behavior.getLines();
                 getGate().redrawPosition(portalPosition, lineData);
             }
         }.runDelayed(2);
@@ -469,10 +471,15 @@ public class StargatePortal implements RealPortal {
     }
 
     @Override
-    public void activate(Player player) {
-        this.activator = player.getUniqueId();
+    public void activate(@Nullable Player player) {
+        if(player != null) {
+            this.activator = player.getUniqueId();
+        } else {
+            this.activator = null;
+        }
         long activationTime = System.currentTimeMillis();
         this.activatedTime = activationTime;
+        this.active = true;
 
         //Schedule for deactivation
         new StargateGlobalTask() {
@@ -514,7 +521,6 @@ public class StargatePortal implements RealPortal {
         if (this.isDestroyed) {
             return;
         }
-
         //Call the deactivate event to notify add-ons
         StargateDeactivatePortalEvent event = new StargateDeactivatePortalEvent(this);
         Bukkit.getPluginManager().callEvent(event);
@@ -584,6 +590,10 @@ public class StargatePortal implements RealPortal {
         flags.add(portalBehavior.getAttachedFlag());
         this.behavior = Objects.requireNonNull(portalBehavior);
         this.behavior.assignPortal(this);
+        Portal destination = this.behavior.getDestination();
+        if(hasFlag(PortalFlag.ALWAYS_ON) && destination != null){
+            open(destination, null);
+        }
     }
 
     @Override
@@ -595,6 +605,6 @@ public class StargatePortal implements RealPortal {
 
     private void clearBehaviorFlags() {
         List<PortalFlag> flagsToRemove = flags.stream().filter(PortalFlag::isBehaviorFlag).toList();
-        flags.removeAll(flagsToRemove);
+        flagsToRemove.forEach(flags::remove);
     }
 }

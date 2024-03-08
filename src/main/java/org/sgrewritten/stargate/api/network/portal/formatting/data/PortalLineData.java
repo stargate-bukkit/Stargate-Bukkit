@@ -37,4 +37,9 @@ public class PortalLineData implements LineData {
     public @NotNull String getText() {
         return portalName;
     }
+
+    @Override
+    public String toString(){
+        return "PortalLineData(" + getText() + ")";
+    }
 }
