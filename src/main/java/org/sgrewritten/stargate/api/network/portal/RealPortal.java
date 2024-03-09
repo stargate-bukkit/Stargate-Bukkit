@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 
 import java.util.List;
 import java.util.UUID;

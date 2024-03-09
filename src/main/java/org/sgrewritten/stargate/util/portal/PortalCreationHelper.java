@@ -13,11 +13,11 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.StargatePortal;
-import org.sgrewritten.stargate.network.portal.behavior.FixedBehavior;
-import org.sgrewritten.stargate.network.portal.behavior.LegacyBungeeBehavior;
-import org.sgrewritten.stargate.network.portal.behavior.NetworkedBehavior;
-import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
-import org.sgrewritten.stargate.network.portal.behavior.RandomBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.FixedBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.LegacyBungeeBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.NetworkedBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.RandomBehavior;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.NameHelper;
 

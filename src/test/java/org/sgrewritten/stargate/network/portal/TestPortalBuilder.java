@@ -20,14 +20,13 @@ import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.behavior.NetworkedBehavior;
-import org.sgrewritten.stargate.network.portal.behavior.PortalBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.NetworkedBehavior;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;

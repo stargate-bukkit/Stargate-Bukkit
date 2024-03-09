@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.network.portal.behavior;
+package org.sgrewritten.stargate.api.network.portal.behavior;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
