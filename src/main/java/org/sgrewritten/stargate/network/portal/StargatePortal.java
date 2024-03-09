@@ -22,10 +22,11 @@ import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
@@ -46,12 +47,12 @@ import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
-import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class StargatePortal implements RealPortal {
     /**
      * Used for bStats metrics, this is every flag that has been used by all portals
      */
-    public static final Set<PortalFlag> allUsedFlags = EnumSet.noneOf(PortalFlag.class);
+    public static final Set<PortalFlag> allUsedFlags = new HashSet<>();
 
     private static final int OPEN_DELAY = 20 * 20; // ticks
     protected Network network;
@@ -83,7 +84,6 @@ public class StargatePortal implements RealPortal {
     private UUID ownerUUID;
     private final GateAPI gate;
     private final Set<PortalFlag> flags;
-    private final Set<Character> unrecognisedFlags;
     protected long activatedTime;
     protected UUID activator;
     protected boolean isDestroyed = false;
@@ -104,14 +104,13 @@ public class StargatePortal implements RealPortal {
      * @param ownerUUID <p>The UUID of the portal's owner</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
-    public StargatePortal(Network network, String name, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate,
+    public StargatePortal(Network network, String name, Set<PortalFlag> flags, GateAPI gate,
                           UUID ownerUUID, LanguageManager languageManager, StargateEconomyAPI economyManager, @Nullable String metaData)
             throws NameLengthException {
         this.ownerUUID = Objects.requireNonNull(ownerUUID);
         this.network = Objects.requireNonNull(network);
         this.name = Objects.requireNonNull(name);
         this.flags = Objects.requireNonNull(flags);
-        this.unrecognisedFlags = Objects.requireNonNull(unrecognisedFlags);
         this.gate = Objects.requireNonNull(gate);
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
@@ -125,10 +124,10 @@ public class StargatePortal implements RealPortal {
                 .forEach(portalPosition -> portalPosition.setAttachment(new NoLineColorFormatter()));
 
         if (gate.getFormat().isIronDoorBlockable()) {
-            flags.add(PortalFlag.IRON_DOOR);
+            flags.add(StargateFlag.IRON_DOOR);
         }
         gate.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.BUTTON)
-                .forEach(portalPosition -> gate.redrawPosition(portalPosition,null));
+                .forEach(portalPosition -> gate.redrawPosition(portalPosition, null));
         StringBuilder msg = new StringBuilder("Selected with flags ");
         for (PortalFlag flag : flags) {
             msg.append(flag.getCharacterRepresentation());
@@ -158,8 +157,8 @@ public class StargatePortal implements RealPortal {
                 .forEach(portalPosition -> this.setSignColor(null, portalPosition));
         this.behavior.update();
         Portal currentDestination = getCurrentDestination(this.behavior.getDestination());
-        if (hasFlag(PortalFlag.ALWAYS_ON) && currentDestination != null) {
-            this.open(currentDestination,null);
+        if (hasFlag(StargateFlag.ALWAYS_ON) && currentDestination != null) {
+            this.open(currentDestination, null);
         }
         if (isOpen() && currentDestination == null) {
             close(true);
@@ -174,14 +173,14 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void open(@Nullable Portal destination, @Nullable Player actor) {
-        if (hasFlag(PortalFlag.ALWAYS_ON) && getCurrentDestination(destination) == null) {
+        if (hasFlag(StargateFlag.ALWAYS_ON) && getCurrentDestination(destination) == null) {
             return;
         }
         getGate().open();
         if (actor != null) {
             this.openFor = actor.getUniqueId();
         }
-        if (hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (hasFlag(StargateFlag.ALWAYS_ON)) {
             return;
         }
         final long openTimeForAction = System.currentTimeMillis();
@@ -205,7 +204,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (!isOpen() || (hasFlag(PortalFlag.ALWAYS_ON) && !forceClose) || this.isDestroyed) {
+        if (!isOpen() || (hasFlag(StargateFlag.ALWAYS_ON) && !forceClose) || this.isDestroyed) {
             return;
         }
         StargateClosePortalEvent closeEvent = new StargateClosePortalEvent(this, forceClose);
@@ -252,12 +251,11 @@ public class StargatePortal implements RealPortal {
         this.ownerUUID = targetPlayer;
     }
 
-
     @Override
     public void teleportHere(Entity target, RealPortal origin) {
 
         BlockFace portalFacing = gate.getFacing().getOppositeFace();
-        if (flags.contains(PortalFlag.BACKWARDS)) {
+        if (flags.contains(StargateFlag.BACKWARDS)) {
             portalFacing = portalFacing.getOppositeFace();
         }
 
@@ -271,7 +269,7 @@ public class StargatePortal implements RealPortal {
                 entranceFace = entranceFace.getOppositeFace();
             }
 
-            boolean shouldCharge = !(this.hasFlag(PortalFlag.FREE) || origin.hasFlag(PortalFlag.FREE))
+            boolean shouldCharge = !(this.hasFlag(StargateFlag.FREE) || origin.hasFlag(StargateFlag.FREE))
                     && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
@@ -322,49 +320,30 @@ public class StargatePortal implements RealPortal {
     }
 
     @Override
-    public boolean hasFlag(char flag) {
-        return unrecognisedFlags.contains(Character.toUpperCase(flag)) || (ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)));
+    public void addFlag(PortalFlag flag) throws UnsupportedOperationException {
+        if (flag.isBehaviorFlag()) {
+            throw new UnsupportedOperationException("Adding selector type flags is not currently implemented");
+        }
+        if (NetworkType.isNetworkTypeFlag(flag)) {
+            throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
+        }
+        this.flags.add(flag);
     }
 
     @Override
-    public void addFlag(Character flag) throws UnsupportedOperationException {
-        try {
-            PortalFlag portalFlag = PortalFlag.valueOf(flag);
-            if (portalFlag.isBehaviorFlag()) {
-                throw new UnsupportedOperationException("Adding selector type flags is not currently implemented");
-            }
-            if (NetworkType.isNetworkTypeFlag(portalFlag)) {
-                throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
-            }
-            this.flags.add(portalFlag);
-        } catch (IllegalArgumentException e) {
-            unrecognisedFlags.add(flag);
+    public void removeFlag(PortalFlag flag) throws UnsupportedOperationException {
+        if (flag.isBehaviorFlag()) {
+            throw new UnsupportedOperationException("Removing selector type flags is not currently implemented");
         }
-    }
-
-    @Override
-    public void removeFlag(Character flag) throws UnsupportedOperationException {
-        try {
-            PortalFlag portalFlag = PortalFlag.valueOf(flag);
-            if (portalFlag.isBehaviorFlag()) {
-                throw new UnsupportedOperationException("Removing selector type flags is not currently implemented");
-            }
-            if (NetworkType.isNetworkTypeFlag(portalFlag)) {
-                throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
-            }
-            flags.remove(portalFlag);
-        } catch (IllegalArgumentException e) {
-            unrecognisedFlags.remove(flag);
+        if (NetworkType.isNetworkTypeFlag(flag)) {
+            throw new UnsupportedOperationException("Network deciding flags change is not currently implemented");
         }
+        flags.remove(flag);
     }
 
     @Override
     public String getAllFlagsString() {
-        StringBuilder builder = new StringBuilder();
-        for (Character flagChar : this.unrecognisedFlags) {
-            builder.append(flagChar);
-        }
-        return PortalHelper.flagsToString(flags) + builder;
+        return PortalHelper.flagsToString(flags);
     }
 
     @Override
@@ -470,7 +449,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void activate(@Nullable Player player) {
-        if(player != null) {
+        if (player != null) {
             this.activator = player.getUniqueId();
         } else {
             this.activator = null;
@@ -556,7 +535,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public StorageType getStorageType() {
-        return (flags.contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+        return (flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }
 
     @Override
@@ -565,7 +544,7 @@ public class StargatePortal implements RealPortal {
     }
 
     public BlockFace getExitFacing() {
-        return flags.contains(PortalFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
+        return flags.contains(StargateFlag.BACKWARDS) ? getGate().getFacing() : getGate().getFacing().getOppositeFace();
     }
 
     public void setSavedToStorage() {
@@ -589,7 +568,7 @@ public class StargatePortal implements RealPortal {
         this.behavior = Objects.requireNonNull(portalBehavior);
         this.behavior.assignPortal(this);
         Portal destination = this.behavior.getDestination();
-        if(hasFlag(PortalFlag.ALWAYS_ON) && destination != null){
+        if (hasFlag(StargateFlag.ALWAYS_ON) && destination != null) {
             open(destination, null);
         }
     }

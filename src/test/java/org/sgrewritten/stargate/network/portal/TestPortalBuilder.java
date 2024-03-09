@@ -9,7 +9,9 @@ import org.sgrewritten.stargate.api.gate.GateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.CustomFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -25,6 +27,7 @@ import org.sgrewritten.stargate.util.LanguageManagerMock;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -47,7 +50,7 @@ public class TestPortalBuilder {
     private PortalBehavior behavior;
     private StorageType storageType = StorageType.LOCAL;
     private String name;
-    private Set<Character> unrecognisedFlags;
+    private Set<PortalFlag> customFlags;
 
     public TestPortalBuilder(RegistryAPI registryAPI, World world) {
         this.registryAPI = registryAPI;
@@ -59,13 +62,13 @@ public class TestPortalBuilder {
         return this;
     }
 
-    public TestPortalBuilder setFlags(Set<PortalFlag> flags) {
+    public TestPortalBuilder setFlags(Set<StargateFlag> flags) {
         this.flags = new HashSet<>(Objects.requireNonNull(flags));
         return this;
     }
 
-    public TestPortalBuilder setUnrecognisedFlags(Set<Character> flags) {
-        this.unrecognisedFlags = new HashSet<>(Objects.requireNonNull(flags));
+    public TestPortalBuilder setCustomFlags(Set<Character> flags) {
+        this.customFlags = new HashSet<>(flags.stream().map(CustomFlag::getOrCreate).toList());
         return this;
     }
 
@@ -116,13 +119,13 @@ public class TestPortalBuilder {
         if (flags == null) {
             flags = new HashSet<>();
         }
-        if (unrecognisedFlags == null) {
-            unrecognisedFlags = new HashSet<>();
+        if(customFlags != null) {
+            flags.addAll(customFlags);
         }
         if (storageType == StorageType.LOCAL) {
-            flags.remove(PortalFlag.INTERSERVER);
+            flags.remove(StargateFlag.INTERSERVER);
         } else {
-            flags.add(PortalFlag.INTERSERVER);
+            flags.add(StargateFlag.INTERSERVER);
         }
         flags.add(network.getType().getRelatedFlag());
         if (name == null) {
@@ -131,7 +134,7 @@ public class TestPortalBuilder {
         if (ownerUUID == null) {
             ownerUUID = UUID.randomUUID();
         }
-        RealPortal output = new StargatePortal(network, findPortalName(name), new HashSet<>(flags), unrecognisedFlags, gate, ownerUUID,
+        RealPortal output = new StargatePortal(network, findPortalName(name), new HashSet<>(flags), gate, ownerUUID,
                 new LanguageManagerMock(), new StargateEconomyManagerMock(), null);
         output.setBehavior(behavior);
         return output;

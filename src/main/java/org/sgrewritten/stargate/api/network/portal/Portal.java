@@ -3,8 +3,9 @@ package org.sgrewritten.stargate.api.network.portal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
@@ -110,26 +111,16 @@ public interface Portal {
     boolean hasFlag(PortalFlag flag);
 
     /**
-     * Checks whether this portal has the given portal flag enabled
-     *
-     * @param flag <p>The portal flag to check for</p>
-     * @return <p>True if this portal has the given portal flag enabled</p>
+     * Remove a flag from this portal (does not do so from storage)
+     * @param flag <p>Flag to remove</p>
      */
-    boolean hasFlag(char flag);
+    void removeFlag(PortalFlag flag);
 
     /**
-     * Temporary add a flag, does not save to storage
-     *
-     * @param flag
+     * Add a flag from this portal (does not do so to storage)
+     * @param flag <p>Flag to add</p>
      */
-    void addFlag(Character flag) throws UnsupportedOperationException;
-
-    /**
-     * Temporary remove a flag, does not save to storage
-     *
-     * @param flag
-     */
-    void removeFlag(Character flag) throws UnsupportedOperationException;
+    void addFlag(PortalFlag flag);
 
     /**
      * Gets all of this portal's portal flags in the form of a string

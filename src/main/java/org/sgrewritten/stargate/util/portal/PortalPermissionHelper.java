@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -40,13 +40,13 @@ public final class PortalPermissionHelper {
             return new ArrayList<>();
         }
         List<String> permissionList = generateDefaultPortalPermissionList(portal, SG_USE);
-        if (portal.hasFlag(PortalFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
+        if (portal.hasFlag(StargateFlag.PRIVATE) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permissionList.add(BypassPermission.PRIVATE.getPermissionString());
         }
-        if (portal.hasFlag(PortalFlag.FIXED)) {
+        if (portal.hasFlag(StargateFlag.FIXED)) {
             permissionList.add(SG_USE + ".type.fixed");
         }
-        if (portal.hasFlag(PortalFlag.NETWORKED)) {
+        if (portal.hasFlag(StargateFlag.NETWORKED)) {
             permissionList.add(SG_USE + ".type.networked");
         }
         return permissionList;
@@ -65,7 +65,7 @@ public final class PortalPermissionHelper {
         }
         String identifier = "sg.create";
         List<String> permList = generateDefaultPortalPermissionList(portal, identifier);
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
+        if (portal.hasFlag(StargateFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         return permList;
@@ -84,7 +84,7 @@ public final class PortalPermissionHelper {
         }
         String identifier = "sg.destroy";
         List<String> permList = generateDefaultPortalPermissionList(portal, identifier);
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
+        if (portal.hasFlag(StargateFlag.PERSONAL_NETWORK) && !actor.getUniqueId().equals(portal.getOwnerUUID())) {
             permList.add(BypassPermission.PRIVATE.getPermissionString());
         }
         return permList;
@@ -125,7 +125,7 @@ public final class PortalPermissionHelper {
         String identifier = SG_USE;
 
         List<String> permList;
-        if (entrance.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (entrance.hasFlag(StargateFlag.ALWAYS_ON)) {
             permList = generateDefaultPortalPermissionList(entrance, identifier);
         } else {
             permList = new ArrayList<>();
@@ -137,7 +137,7 @@ public final class PortalPermissionHelper {
                 Stargate.log(Level.FINER, " Adding the .follow constraint");
                 permList.add(identifier + ".follow");
             }
-            if (entrance.hasFlag(PortalFlag.PRIVATE) && !entrance.getOwnerUUID().equals(target.getUniqueId())) {
+            if (entrance.hasFlag(StargateFlag.PRIVATE) && !entrance.getOwnerUUID().equals(target.getUniqueId())) {
                 Stargate.log(Level.FINER, " Adding a bypass constraint for private portals");
                 permList.add(BypassPermission.PRIVATE.getPermissionString());
             }
@@ -155,8 +155,8 @@ public final class PortalPermissionHelper {
      */
     private static List<String> compileFlagPerms(Portal portal, String permissionIdentifier) {
         List<String> permissionList = new ArrayList<>();
-        Set<PortalFlag> flags = PortalFlag.parseFlags(portal.getAllFlagsString());
-        for (PortalFlag flag : flags) {
+        Set<StargateFlag> flags = StargateFlag.parseFlags(portal.getAllFlagsString());
+        for (StargateFlag flag : flags) {
             String identifier;
             if (flag.isInternalFlag()) {
                 continue;
@@ -174,7 +174,7 @@ public final class PortalPermissionHelper {
      * @param permissionIdentifier <p>The permission root node for this plugin</p>
      */
     private static String generateNetworkPermission(Portal portal, String permissionIdentifier) {
-        if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+        if (portal.hasFlag(StargateFlag.PERSONAL_NETWORK)) {
             return permissionIdentifier + ".network.personal";
         }
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
@@ -182,7 +182,7 @@ public final class PortalPermissionHelper {
         }
         if (portal.getNetwork().getName().equals(ConfigurationHelper.getString(
                 ConfigurationOption.LEGACY_BUNGEE_NETWORK))) {
-            if (!portal.hasFlag(PortalFlag.LEGACY_INTERSERVER)) {
+            if (!portal.hasFlag(StargateFlag.LEGACY_INTERSERVER)) {
                 //A creation of a non-bungee portal on the legacy bungee network should never be allowed
                 return "r5j4k2l4l7o9l7.j5k6k6k3kf03kv";
             } else {

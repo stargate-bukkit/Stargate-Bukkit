@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 
 /**
  * This event should be called whenever a stargate is created
@@ -53,16 +54,16 @@ public class StargateCreatePortalEvent extends DeniableStargatePortalEvent {
      *
      * @param flag <p>The flag to add</p>
      */
-    public void addFlag(Character flag) throws UnsupportedOperationException {
+    public void addFlag(PortalFlag flag) throws UnsupportedOperationException {
         this.getPortal().addFlag(flag);
     }
 
     /**
      * Remove flag to related portal and save to storage
      *
-     * @param flag
+     * @param flag <p>The flag to remove</p>
      */
-    public void removeFlag(Character flag) throws UnsupportedOperationException {
+    public void removeFlag(PortalFlag flag) throws UnsupportedOperationException {
         this.getPortal().removeFlag(flag);
     }
 

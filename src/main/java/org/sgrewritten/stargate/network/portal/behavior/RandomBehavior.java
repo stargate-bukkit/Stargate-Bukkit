@@ -6,7 +6,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
@@ -53,7 +53,7 @@ public class RandomBehavior extends AbstractPortalBehavior {
     }
 
     @Override
-    public @NotNull PortalFlag getAttachedFlag() {
-        return PortalFlag.RANDOM;
+    public @NotNull StargateFlag getAttachedFlag() {
+        return StargateFlag.RANDOM;
     }
 }

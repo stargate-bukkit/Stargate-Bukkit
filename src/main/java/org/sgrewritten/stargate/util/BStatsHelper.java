@@ -15,7 +15,8 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
@@ -94,11 +95,11 @@ public final class BStatsHelper {
             while (iterator.hasNext()) {
                 Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
-                    if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+                    if (portal.hasFlag(StargateFlag.PERSONAL_NETWORK)) {
                         personal++;
-                    } else if (portal.hasFlag(PortalFlag.DEFAULT_NETWORK)) {
+                    } else if (portal.hasFlag(StargateFlag.DEFAULT_NETWORK)) {
                         defaultNetwork++;
-                    } else if (portal.hasFlag(PortalFlag.TERMINAL_NETWORK)) {
+                    } else if (portal.hasFlag(StargateFlag.TERMINAL_NETWORK)) {
                         terminal++;
                     } else {
                         nonPersonal++;
@@ -129,9 +130,9 @@ public final class BStatsHelper {
             while (iterator.hasNext()) {
                 Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
-                    if (portal.hasFlag(PortalFlag.FIXED)) {
+                    if (portal.hasFlag(StargateFlag.FIXED)) {
                         fixed++;
-                    } else if (portal.hasFlag(PortalFlag.NETWORKED)) {
+                    } else if (portal.hasFlag(StargateFlag.NETWORKED)) {
                         networked++;
                     }
                 }
@@ -153,10 +154,10 @@ public final class BStatsHelper {
         metrics.addCustomChart(new AdvancedPie("flags", () -> {
             Map<String, Integer> flagStatus = new HashMap<>();
             Set<PortalFlag> allUsedFlags = StargatePortal.allUsedFlags;
-            for (PortalFlag portalFlag : PortalFlag.values()) {
+            for (StargateFlag portalFlag : StargateFlag.values()) {
                 //Skip internal flag, as those are not specifiable
                 if (!portalFlag.isInternalFlag()) {
-                    flagStatus.put(portalFlag.getCharacterRepresentation().toString(),
+                    flagStatus.put(String.valueOf(portalFlag.getCharacterRepresentation()),
                             allUsedFlags.contains(portalFlag) ? 1 : 0);
                 }
             }

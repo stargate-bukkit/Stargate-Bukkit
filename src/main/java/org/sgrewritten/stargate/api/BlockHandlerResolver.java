@@ -9,7 +9,9 @@ import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Metadata;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.CustomFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -29,7 +31,7 @@ public class BlockHandlerResolver {
     private final Map<Material, List<BlockHandlerInterface>> blockHandlerMap = new EnumMap<>(Material.class);
     private final Map<BlockLocation, BlockHandlerInterface> blockBlockHandlerMap = new HashMap<>();
     private final StorageAPI storageAPI;
-    private final Set<Character> customFlags = new HashSet<>();
+    private final Set<PortalFlag> customFlags = new HashSet<>();
 
     public BlockHandlerResolver(@NotNull StorageAPI storageAPI) {
         this.storageAPI = Objects.requireNonNull(storageAPI);
@@ -42,8 +44,8 @@ public class BlockHandlerResolver {
      * @throws IllegalStateException <p>If the flag of the BlockHandlerInterface has not been registered</p>
      */
     public void addBlockHandlerInterface(@NotNull BlockHandlerInterface blockHandlerInterface) {
-        Character flag = blockHandlerInterface.getFlag();
-        if (flag != null && !(customFlags.contains(flag) || ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)))) {
+        PortalFlag flag = blockHandlerInterface.getFlag();
+        if (flag != null && !(customFlags.contains(flag))) {
             throw new IllegalStateException("Unregistered flag: " + flag);
         }
         List<BlockHandlerInterface> blockHandlerInterfaceList = this.blockHandlerMap.computeIfAbsent(blockHandlerInterface.getHandledMaterial(), k -> new ArrayList<>());
@@ -133,25 +135,21 @@ public class BlockHandlerResolver {
      * @param flagCharacter <p> The character of the custom flag</p>
      */
     public void registerCustomFlag(char flagCharacter) throws IllegalArgumentException {
-        if (Character.isLowerCase(flagCharacter)) {
-            throw new IllegalArgumentException("Character can't be lowercase");
-        }
-
-        for (PortalFlag flag : PortalFlag.values()) {
+        for (StargateFlag flag : StargateFlag.values()) {
             if (flagCharacter == flag.getCharacterRepresentation()) {
                 throw new IllegalArgumentException("Flag conflict with core flags");
             }
         }
 
-        for (Character character : customFlags) {
-            if (flagCharacter == character) {
+        for (PortalFlag flag : customFlags) {
+            if (flagCharacter == flag.getCharacterRepresentation()) {
                 throw new IllegalArgumentException("Custom flag conflicts with another custom flag");
             }
         }
 
         try {
+            customFlags.add(CustomFlag.getOrCreate(flagCharacter));
             storageAPI.addFlagType(flagCharacter);
-            customFlags.add(flagCharacter);
         } catch (StorageWriteException ignored) {
         }
     }

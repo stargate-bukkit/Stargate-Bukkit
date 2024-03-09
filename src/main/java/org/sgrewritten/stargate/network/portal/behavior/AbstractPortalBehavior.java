@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
@@ -44,7 +44,7 @@ public abstract class AbstractPortalBehavior implements PortalBehavior {
     @Override
     public void onButtonClick(@NotNull PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (portal.hasFlag(PortalFlag.IRON_DOOR) && event.useInteractedBlock() == Event.Result.DENY) {
+        if (portal.hasFlag(StargateFlag.IRON_DOOR) && event.useInteractedBlock() == Event.Result.DENY) {
             GateAPI gate = portal.getGate();
             Block exitBlock = gate.getExit().add(gate.getFacing().getDirection()).getBlock();
             if (exitBlock.getType() == Material.IRON_DOOR) {

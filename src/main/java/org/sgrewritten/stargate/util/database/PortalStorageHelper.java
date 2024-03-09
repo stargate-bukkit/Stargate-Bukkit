@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -62,7 +63,6 @@ public class PortalStorageHelper {
 
         String flagString = resultSet.getString("flags");
         Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
-        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagString);
         UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
         String gateFileName = resultSet.getString("gateFileName");
         boolean flipZ = resultSet.getBoolean("flipZ");
@@ -75,7 +75,7 @@ public class PortalStorageHelper {
             throw new PortalLoadException(PortalLoadException.FailureType.GATE_FORMAT);
         }
         GateData gateData = new GateData(format, flipZ, topLeft, facing);
-        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, serverUUID, serverName, portalType, metadata);
+        return new PortalData(gateData, name, networkName, destination, flags, ownerUUID, serverUUID, serverName, portalType, metadata);
     }
 
     public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
@@ -132,24 +132,23 @@ public class PortalStorageHelper {
         String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
         UUID ownerUUID = LegacyDataHandler.getPlayerUUID(ownerString);
         Set<PortalFlag> flags = LegacyDataHandler.parseFlags(portalProperties);
-        Set<Character> unrecognisedFlags = new HashSet<>();
         if (destination == null || destination.trim().isEmpty()) {
-            flags.add(PortalFlag.NETWORKED);
+            flags.add(StargateFlag.NETWORKED);
         }
 
         if (portalProperties.length <= 9 || networkName.equalsIgnoreCase(defaultNetworkName)) {
-            flags.add(PortalFlag.DEFAULT_NETWORK);
+            flags.add(StargateFlag.DEFAULT_NETWORK);
             networkName = StargateConstant.DEFAULT_NETWORK_ID;
         } else if (!ownerString.isEmpty()) {
             String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
             if (playerName != null && playerName.equals(networkName)) {
-                flags.add(PortalFlag.PERSONAL_NETWORK);
+                flags.add(StargateFlag.PERSONAL_NETWORK);
                 networkName = ownerUUID.toString();
             } else {
-                flags.add(PortalFlag.CUSTOM_NETWORK);
+                flags.add(StargateFlag.CUSTOM_NETWORK);
             }
         } else {
-            flags.add(PortalFlag.CUSTOM_NETWORK);
+            flags.add(StargateFlag.CUSTOM_NETWORK);
         }
         GateFormatAPI format = GateFormatRegistry.getFormat(gateFileName);
         if (format == null) {
@@ -158,7 +157,7 @@ public class PortalStorageHelper {
             throw new IllegalArgumentException("Could not find gate format");
         }
         GateData gateData = new GateData(format, false, topLeft, facing);
-        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, null, null, StorageType.LOCAL, null);
+        return new PortalData(gateData, name, networkName, destination, flags, ownerUUID, null, null, StorageType.LOCAL, null);
     }
 
     /**

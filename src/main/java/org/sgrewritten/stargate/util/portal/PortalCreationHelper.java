@@ -4,7 +4,8 @@ import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.TranslatableException;
@@ -46,24 +47,24 @@ public final class PortalCreationHelper {
      * @throws TranslatableException <p>If the portal's name is invalid</p>
      */
     public static RealPortal createPortal(Network network, String name, String destination, String targetServer,
-                                          Set<PortalFlag> flags, Set<Character> unrecognisedFlags, GateAPI gate, UUID ownerUUID,
+                                          Set<PortalFlag> flags, GateAPI gate, UUID ownerUUID,
                                           StargateAPI stargateAPI, String metaData) throws TranslatableException {
         name = NameHelper.getTrimmedName(name);
         PortalBehavior portalBehavior;
-        if (flags.contains(PortalFlag.LEGACY_INTERSERVER)) {
-            flags.add(PortalFlag.FIXED);
+        if (flags.contains(StargateFlag.LEGACY_INTERSERVER)) {
+            flags.add(StargateFlag.FIXED);
             // Override whatever network that was going to be used, as it should only be on the bungee network
             network = stargateAPI.getNetworkManager().selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
             portalBehavior = new LegacyBungeeBehavior(stargateAPI.getLanguageManager(), destination, targetServer);
-        } else if (flags.contains(PortalFlag.RANDOM)) {
+        } else if (flags.contains(StargateFlag.RANDOM)) {
             portalBehavior = new RandomBehavior(stargateAPI.getLanguageManager());
-        } else if (flags.contains(PortalFlag.NETWORKED)) {
+        } else if (flags.contains(StargateFlag.NETWORKED)) {
             portalBehavior = new NetworkedBehavior(stargateAPI.getLanguageManager());
         } else {
-            flags.add(PortalFlag.FIXED);
+            flags.add(StargateFlag.FIXED);
             portalBehavior = new FixedBehavior(stargateAPI.getLanguageManager(),destination);
         }
-        RealPortal portal = new StargatePortal(network, name, flags, unrecognisedFlags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(),metaData);
+        RealPortal portal = new StargatePortal(network, name, flags, gate, ownerUUID, stargateAPI.getLanguageManager(), stargateAPI.getEconomyManager(),metaData);
         portal.setBehavior(portalBehavior);
         return portal;
     }
@@ -79,7 +80,7 @@ public final class PortalCreationHelper {
      */
     public static RealPortal createPortal(Network network, PortalData portalData, Gate gate,
                                           StargateAPI stargateAPI) throws TranslatableException {
-        return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), portalData.unrecognisedFlags(), gate, portalData.ownerUUID(), stargateAPI, portalData.metaData());
+        return createPortal(network, portalData.name(), portalData.destination(), portalData.networkName(), portalData.flags(), gate, portalData.ownerUUID(), stargateAPI, portalData.metaData());
     }
 
 

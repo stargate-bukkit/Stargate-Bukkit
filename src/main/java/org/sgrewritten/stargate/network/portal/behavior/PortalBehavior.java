@@ -4,7 +4,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 
@@ -22,7 +22,7 @@ public interface PortalBehavior {
 
     @NotNull LineData @NotNull[] getLines();
 
-    @NotNull PortalFlag getAttachedFlag();
+    @NotNull StargateFlag getAttachedFlag();
 
     void assignPortal(@NotNull RealPortal portal);
 

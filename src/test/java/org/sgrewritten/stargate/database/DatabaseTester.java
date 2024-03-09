@@ -3,18 +3,15 @@ package org.sgrewritten.stargate.database;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.junit.jupiter.api.Assertions;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
-import org.sgrewritten.stargate.api.gate.GateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
@@ -46,11 +43,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -334,8 +328,8 @@ public class DatabaseTester {
             String portalName = set.getString("name");
             Portal targetPortal = portals.get(NameHelper.getNormalizedName(portalName));
             Assertions.assertEquals(targetPortal.getOwnerUUID().toString(), set.getString("ownerUUID"));
-            Assertions.assertEquals(PortalFlag.parseFlags(targetPortal.getAllFlagsString()),
-                    PortalFlag.parseFlags(set.getString("flags")));
+            Assertions.assertEquals(StargateFlag.parseFlags(targetPortal.getAllFlagsString()),
+                    StargateFlag.parseFlags(set.getString("flags")));
 
             if (StorageType.INTER_SERVER == portalType
                     && set.getString("homeServerId").equals(serverUUID.toString())) {

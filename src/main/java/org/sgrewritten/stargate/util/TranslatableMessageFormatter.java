@@ -3,7 +3,8 @@ package org.sgrewritten.stargate.util;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.network.NetworkType;
 
 import javax.annotation.Nullable;
@@ -103,7 +104,7 @@ public final class TranslatableMessageFormatter {
      * @return <p>A string listing the flags</p>
      */
     private static String formatFlagsString(List<PortalFlag> flags) {
-        String characterRepresentation = flags.get(0).getCharacterRepresentation().toString();
+        String characterRepresentation = String.valueOf(flags.get(0).getCharacterRepresentation());
         if (flags.size() < 2) {
             return characterRepresentation;
         } else if (flags.size() == 2) {

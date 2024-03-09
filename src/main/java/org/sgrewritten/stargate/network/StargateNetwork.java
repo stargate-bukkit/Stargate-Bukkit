@@ -9,7 +9,8 @@ import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
@@ -179,7 +180,7 @@ public class StargateNetwork implements Network {
         Set<String> removeList = new HashSet<>();
         for (String portalName : output) {
             Portal target = getPortal(portalName);
-            boolean deny = (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
+            boolean deny = (target.hasFlag(StargateFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
             StargateListPortalEvent event = new StargateListPortalEvent(requester, player, target, deny);
             Bukkit.getPluginManager().callEvent(event);
             if (event.getDeny()) {

@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
@@ -32,7 +32,6 @@ import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.MessageUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,7 +50,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     @Override
     public void update() {
         Portal destination;
-        if (portal.hasFlag(PortalFlag.ALWAYS_ON) && this.loadedDestination != null) {
+        if (portal.hasFlag(StargateFlag.ALWAYS_ON) && this.loadedDestination != null) {
             destination = portal.getNetwork().getPortal(this.loadedDestination);
             this.loadedDestination = null;
         } else {
@@ -73,7 +72,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
      */
     private int reloadSelectedDestination(Portal destination) {
         Player player;
-        if (portal.getActivatorUUID() == null || portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (portal.getActivatorUUID() == null || portal.hasFlag(StargateFlag.ALWAYS_ON)) {
             player = null;
         } else {
             player = Bukkit.getPlayer(portal.getActivatorUUID());
@@ -122,7 +121,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
         }
         Player actor = event.getPlayer();
         if ((portal.getActivatorUUID() != null && !actor.getUniqueId().equals(portal.getActivatorUUID()))
-                || (portal.isOpen() && !portal.hasFlag(PortalFlag.ALWAYS_ON))) {
+                || (portal.isOpen() && !portal.hasFlag(StargateFlag.ALWAYS_ON))) {
             return;
         }
 
@@ -253,7 +252,7 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     }
 
     private void setSelectedDestination(int selectedDestination) {
-        if (portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (portal.hasFlag(StargateFlag.ALWAYS_ON)) {
             final long currentTime = System.currentTimeMillis();
             this.previousDestinationSelectionTime = currentTime;
             /**
@@ -342,14 +341,14 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     }
 
     @Override
-    public @NotNull PortalFlag getAttachedFlag() {
-        return PortalFlag.NETWORKED;
+    public @NotNull StargateFlag getAttachedFlag() {
+        return StargateFlag.NETWORKED;
     }
 
     @Override
     public void assignPortal(@NotNull RealPortal portal) {
         super.assignPortal(portal);
-        if (!portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+        if (!portal.hasFlag(StargateFlag.ALWAYS_ON)) {
             return;
         }
         JsonElement destinationElement = portal.getMetadata(MetadataType.DESTINATION.name());

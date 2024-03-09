@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -107,7 +107,7 @@ public final class LegacyPortalStorageLoader {
         }
 
         Network network = stargateAPI.getRegistry().getNetwork(portalData.networkName(),
-                portalData.flags().contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+                portalData.flags().contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
         Stargate.log(Level.INFO, "fetched networkName: " + portalData.networkName());
 
         if (network == null) {
@@ -123,7 +123,7 @@ public final class LegacyPortalStorageLoader {
             Stargate.log(Level.FINEST, "signLocation=" + signLocation);
             gate.addPortalPosition(signLocation, PositionType.SIGN, "Stargate");
         }
-        if (buttonLocation != null && !portalData.flags().contains(PortalFlag.ALWAYS_ON)) {
+        if (buttonLocation != null && !portalData.flags().contains(StargateFlag.ALWAYS_ON)) {
             Stargate.log(Level.FINEST, "buttonLocation=" + buttonLocation);
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON, "Stargate");
         }

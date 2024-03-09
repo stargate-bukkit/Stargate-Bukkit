@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.exception;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 
 import java.io.Serial;
@@ -17,9 +17,9 @@ public class UnimplementedFlagException extends TranslatableException {
      */
     @Serial
     private static final long serialVersionUID = -8052738578093828433L;
-    private final @NotNull PortalFlag flag;
+    private final @NotNull StargateFlag flag;
 
-    public UnimplementedFlagException(String msg, @NotNull PortalFlag flag) {
+    public UnimplementedFlagException(String msg, @NotNull StargateFlag flag) {
         super(msg);
         this.flag = Objects.requireNonNull(flag);
     }

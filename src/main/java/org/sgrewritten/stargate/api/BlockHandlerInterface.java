@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.Metadata;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 
 public interface BlockHandlerInterface {
 
@@ -35,7 +36,7 @@ public interface BlockHandlerInterface {
     /**
      * @return The flag related to this type of block interface
      */
-    @Nullable Character getFlag();
+    @Nullable PortalFlag getFlag();
 
     /**
      * <p>Called if a Stargate is created or a block is placed, and the result of

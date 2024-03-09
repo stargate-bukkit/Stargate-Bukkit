@@ -1,4 +1,4 @@
-package org.sgrewritten.stargate.api.network.portal;
+package org.sgrewritten.stargate.api.network.portal.flag;
 
 import org.sgrewritten.stargate.util.ExceptionHelper;
 
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Represents a portal flag which defines an enabled behavior for a stargate
  */
-public enum PortalFlag {
+public enum StargateFlag implements PortalFlag {
 
     /**
      * A random stargate which teleports to a random destination in its network
@@ -118,7 +118,7 @@ public enum PortalFlag {
 
     private final boolean isUserSpecifiable;
     private final char characterRepresentation;
-    private static final Map<Character, PortalFlag> map = new HashMap<>();
+    private static final Map<Character, StargateFlag> map = new HashMap<>();
     private final boolean isSelector;
 
     private static final Pattern NON_FLAG_STRING = Pattern.compile("(\\{.*?\\})");
@@ -129,29 +129,18 @@ public enum PortalFlag {
      * @param characterRepresentation <p>The character used to identify this portal flag in flag strings</p>
      * @param isUserSpecifiable       <p>Whether a user can specify whether this flag is enabled for a portal</p>
      */
-    PortalFlag(char characterRepresentation, boolean isUserSpecifiable, boolean isSelector) {
+    StargateFlag(char characterRepresentation, boolean isUserSpecifiable, boolean isSelector) {
         this.characterRepresentation = characterRepresentation;
         this.isUserSpecifiable = isUserSpecifiable;
         this.isSelector = isSelector;
     }
 
-    /**
-     * Gets the character representing this portal flag
-     *
-     * @return <p>The character representing this portal flag</p>
-     */
-    public Character getCharacterRepresentation() {
+    @Override
+    public char getCharacterRepresentation() {
         return this.characterRepresentation;
     }
 
-    /**
-     * Gets whether this flag is an internal flag
-     *
-     * <p>User specifiable flags are flags like backwards or always on, which the user specifies upon creation.
-     * Internal flags are the flags that are implicitly set to some value based on the Stargate created.</p>
-     *
-     * @return <p>True if this flag is user specifiable</p>
-     */
+    @Override
     public boolean isInternalFlag() {
         return !isUserSpecifiable;
     }
@@ -161,13 +150,13 @@ public enum PortalFlag {
      *
      * @return <p>A set of all found portal flags</p>
      */
-    public static Set<PortalFlag> parseFlags(String flagString) {
-        Set<PortalFlag> foundFlags = EnumSet.noneOf(PortalFlag.class);
+    public static Set<StargateFlag> parseFlags(String flagString) {
+        Set<StargateFlag> foundFlags = EnumSet.noneOf(StargateFlag.class);
         Matcher matcher = NON_FLAG_STRING.matcher(flagString.toUpperCase());
         char[] charArray = matcher.replaceAll("").toCharArray();
         for (char character : charArray) {
             try {
-                foundFlags.add(PortalFlag.valueOf(character));
+                foundFlags.add(StargateFlag.valueOf(character));
             } catch (IllegalArgumentException ignored) {
             }
         }
@@ -181,14 +170,14 @@ public enum PortalFlag {
      * @return <p>The portal flag represented by the character</p>
      * @throws IllegalArgumentException <p>If unable to find a matching flag</p>
      */
-    public static PortalFlag valueOf(char label) throws IllegalArgumentException {
+    public static StargateFlag valueOf(char label) throws IllegalArgumentException {
         if (map.isEmpty()) {
-            for (PortalFlag flag : values()) {
+            for (StargateFlag flag : values()) {
                 map.put(flag.characterRepresentation, flag);
             }
         }
 
-        PortalFlag flag = map.get(label);
+        StargateFlag flag = map.get(label);
         if (flag != null) {
             return flag;
         } else {
@@ -206,16 +195,14 @@ public enum PortalFlag {
         Set<Character> unrecognisedFlags = new HashSet<>();
         Matcher matcher = NON_FLAG_STRING.matcher(flagString.toUpperCase());
         for (char flag : matcher.replaceAll("").toCharArray()) {
-            if (!ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag))) {
+            if (!ExceptionHelper.doesNotThrow(() -> StargateFlag.valueOf(flag))) {
                 unrecognisedFlags.add(flag);
             }
         }
         return unrecognisedFlags;
     }
 
-    /**
-     * @return <p>Whether this flag relates to how a portal selects destinations</p>
-     */
+    @Override
     public boolean isBehaviorFlag() {
         return this.isSelector;
     }

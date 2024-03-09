@@ -2,19 +2,15 @@ package org.sgrewritten.stargate.network.portal.behavior;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
-
-import java.util.Arrays;
-import java.util.logging.Level;
 
 public class FixedBehavior extends AbstractPortalBehavior{
     private final String destinationName;
@@ -51,7 +47,7 @@ public class FixedBehavior extends AbstractPortalBehavior{
     }
 
     @Override
-    public @NotNull PortalFlag getAttachedFlag() {
-        return PortalFlag.FIXED;
+    public @NotNull StargateFlag getAttachedFlag() {
+        return StargateFlag.FIXED;
     }
 }

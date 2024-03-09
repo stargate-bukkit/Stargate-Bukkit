@@ -10,6 +10,8 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Metadata;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.flag.CustomFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.container.TwoTuple;
 
 import java.util.HashMap;
@@ -21,7 +23,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
     private final Material handledMaterial;
     private final Plugin plugin;
     private final Priority priority;
-    private final Character flag;
+    private final PortalFlag flag;
     private final Map<BlockLocation, TwoTuple<Player, Portal>> registeredBlocks = new HashMap<>();
     private boolean isRegisterPlacedBlock = true;
 
@@ -30,7 +32,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
         this.handledMaterial = handledMaterial;
         this.plugin = plugin;
         this.priority = priority;
-        this.flag = flag;
+        this.flag = CustomFlag.getOrCreate(flag);
     }
 
 
@@ -55,7 +57,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
     }
 
     @Override
-    public @Nullable Character getFlag() {
+    public @Nullable PortalFlag getFlag() {
         return flag;
     }
 

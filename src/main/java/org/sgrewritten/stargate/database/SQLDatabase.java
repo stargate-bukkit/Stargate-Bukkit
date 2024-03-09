@@ -8,7 +8,7 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -282,7 +282,7 @@ public class SQLDatabase implements StorageAPI {
         }
 
         if (portalData.destination() == null || portalData.destination().trim().isEmpty()) {
-            portalData.flags().add(PortalFlag.NETWORKED);
+            portalData.flags().add(StargateFlag.NETWORKED);
         }
 
         final List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
@@ -342,7 +342,7 @@ public class SQLDatabase implements StorageAPI {
      */
     private boolean registerVirtualPortal(StorageType portalType, PortalData portalData, Network network) {
         if (portalType == StorageType.INTER_SERVER && !portalData.serverUUID().equals(Stargate.getServerUUID())) {
-            Portal virtualPortal = new VirtualPortal(portalData.serverName(), portalData.name(), network, portalData.flags(), portalData.unrecognisedFlags(),
+            Portal virtualPortal = new VirtualPortal(portalData.serverName(), portalData.name(), network, portalData.flags(),
                     portalData.ownerUUID());
             try {
                 network.addPortal(virtualPortal);
@@ -364,15 +364,15 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The resulting network, or null if invalid</p>
      */
     private Network getNetwork(PortalData portalData, RegistryAPI registry, NetworkManager networkManager) {
-        StorageType storageType = portalData.flags().contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = portalData.flags().contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
         String targetNetwork = portalData.networkName();
-        if (portalData.flags().contains(PortalFlag.LEGACY_INTERSERVER)) {
+        if (portalData.flags().contains(StargateFlag.LEGACY_INTERSERVER)) {
             targetNetwork = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
         }
         Stargate.log(Level.FINEST,
                 "Trying to add portal " + portalData.name() + ", on network " + targetNetwork + ",storageType = " + storageType);
         try {
-            boolean isForced = portalData.flags().contains(PortalFlag.DEFAULT_NETWORK);
+            boolean isForced = portalData.flags().contains(StargateFlag.DEFAULT_NETWORK);
             Network network = networkManager.createNetwork(targetNetwork, portalData.flags(), isForced);
 
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {

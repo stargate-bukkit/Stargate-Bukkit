@@ -15,7 +15,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.GateConflictException;
@@ -72,7 +72,7 @@ class StargateBungeeManagerTest {
 
         Network bungeeNetwork = networkManager.createNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL,
                 false);
-        testPortalBuilder.setNetwork(bungeeNetwork).setStorageType(StorageType.LOCAL).setFlags(Set.of(PortalFlag.LEGACY_INTERSERVER));
+        testPortalBuilder.setNetwork(bungeeNetwork).setStorageType(StorageType.LOCAL).setFlags(Set.of(StargateFlag.LEGACY_INTERSERVER));
         bungeePortal = testPortalBuilder.build();
         bungeeNetwork.addPortal(bungeePortal);
 

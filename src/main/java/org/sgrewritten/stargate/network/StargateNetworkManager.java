@@ -13,7 +13,8 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -49,7 +50,7 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
 
-        if (flags.contains(PortalFlag.LEGACY_INTERSERVER)) {
+        if (flags.contains(StargateFlag.LEGACY_INTERSERVER)) {
             return selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
         }
 
@@ -58,7 +59,7 @@ public class StargateNetworkManager implements NetworkManager {
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = NameHelper.getNormalizedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType, String> data;
-        StorageType storageType = flags.contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
         if (flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
             data = new TwoTuple<>(NetworkType.TERMINAL, unHighlightedName);
@@ -95,7 +96,7 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public @NotNull Network selectNetwork(String name, NetworkType type, StorageType storageType) throws TranslatableException {
         if (type == NetworkType.TERMINAL) {
-            throw new UnimplementedFlagException("Terminal networks aare not implemented", PortalFlag.TERMINAL_NETWORK);
+            throw new UnimplementedFlagException("Terminal networks aare not implemented", StargateFlag.TERMINAL_NETWORK);
         }
         name = NameHelper.getTrimmedName(name);
         try {
@@ -185,7 +186,7 @@ public class StargateNetworkManager implements NetworkManager {
 
     @Override
     public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
     }
 
 

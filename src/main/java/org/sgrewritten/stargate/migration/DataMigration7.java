@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -126,7 +127,7 @@ public class DataMigration7 extends DataMigration {
         SQLQueryGenerator queryGenerator = new SQLQueryGenerator(nameConfiguration,
                 database.getDriver());
         try (Connection connection = database.getConnection()) {
-            Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags = getNetworkTypeFlags(queryGenerator, connection,
+            Map<GlobalPortalId, StargateFlag> portalNetworkTypeFlags = getNetworkTypeFlags(queryGenerator, connection,
                     storageType);
             insertNetworkTypeFlags(connection, queryGenerator, portalNetworkTypeFlags, storageType);
         }
@@ -142,11 +143,11 @@ public class DataMigration7 extends DataMigration {
      * @throws SQLException <p>If unable to insert any of the flags</p>
      */
     private void insertNetworkTypeFlags(Connection connection, SQLQueryGenerator queryGenerator,
-                                        Map<GlobalPortalId, PortalFlag> portalNetworkTypeFlags,
+                                        Map<GlobalPortalId, StargateFlag> portalNetworkTypeFlags,
                                         StorageType type) throws SQLException {
         SQLQueryExecutor executor = new SQLQueryExecutor(connection, queryGenerator);
-        for (Map.Entry<GlobalPortalId, PortalFlag> entry : portalNetworkTypeFlags.entrySet()) {
-            Set<PortalFlag> flagSet = new HashSet<>();
+        for (Map.Entry<GlobalPortalId, StargateFlag> entry : portalNetworkTypeFlags.entrySet()) {
+            Set<StargateFlag> flagSet = new HashSet<>();
             flagSet.add(entry.getValue());
             executor.executeAddFlagRelation(type, entry.getKey(), flagSet);
         }
@@ -161,9 +162,9 @@ public class DataMigration7 extends DataMigration {
      * @return <p>A map between portal identifiers, and network type flags</p>
      * @throws SQLException <p>If unable to get the flags</p>
      */
-    private Map<GlobalPortalId, PortalFlag> getNetworkTypeFlags(SQLQueryGenerator sqlQueryGenerator,
-                                                                Connection connection, StorageType type) throws SQLException {
-        Map<GlobalPortalId, PortalFlag> output = new HashMap<>();
+    private Map<GlobalPortalId, StargateFlag> getNetworkTypeFlags(SQLQueryGenerator sqlQueryGenerator,
+                                                                  Connection connection, StorageType type) throws SQLException {
+        Map<GlobalPortalId, StargateFlag> output = new HashMap<>();
         try (PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, type)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet == null) {
@@ -176,7 +177,7 @@ public class DataMigration7 extends DataMigration {
                 }
 
                 String networkId = resultSet.getString("network");
-                PortalFlag flag = determineNetworkFlagFromNetworkName(networkId);
+                StargateFlag flag = determineNetworkFlagFromNetworkName(networkId);
                 GlobalPortalId id = new GlobalPortalId(resultSet.getString("name"), networkId);
                 output.put(id, flag);
             }
@@ -190,15 +191,15 @@ public class DataMigration7 extends DataMigration {
      * @param networkName <p>The name to check</p>
      * @return <p>The portal flag corresponding to the network's type</p>
      */
-    private PortalFlag determineNetworkFlagFromNetworkName(String networkName) {
+    private StargateFlag determineNetworkFlagFromNetworkName(String networkName) {
         if (ExceptionHelper.doesNotThrow(IllegalArgumentException.class, () -> Stargate.log(Level.FINEST,
                 "Found personal network " + UUID.fromString(networkName)))) {
-            return PortalFlag.PERSONAL_NETWORK;
+            return StargateFlag.PERSONAL_NETWORK;
         }
         if (networkName.equalsIgnoreCase(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return PortalFlag.DEFAULT_NETWORK;
+            return StargateFlag.DEFAULT_NETWORK;
         }
-        return PortalFlag.CUSTOM_NETWORK;
+        return StargateFlag.CUSTOM_NETWORK;
     }
 
     @Override

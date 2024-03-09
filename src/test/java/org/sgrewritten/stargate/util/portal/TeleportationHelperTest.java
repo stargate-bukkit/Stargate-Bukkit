@@ -16,8 +16,7 @@ import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
-import org.sgrewritten.stargate.api.network.PortalBuilder;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -27,7 +26,6 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
@@ -168,8 +166,8 @@ class TeleportationHelperTest {
     @Test
     void findViableSpawnLocationTest_Backwards() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Location topLeft = new Location(world, -1, 5, -3);
-        Set<PortalFlag> flags = new HashSet<>();
-        flags.add(PortalFlag.BACKWARDS);
+        Set<StargateFlag> flags = new HashSet<>();
+        flags.add(StargateFlag.BACKWARDS);
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world).setNetwork(network);
         RealPortal portal = testPortalBuilder.setFlags(flags).build();
         Location location = TeleportationHelper.findViableSpawnLocation(world.spawnEntity(topLeft, EntityType.BAT), portal);

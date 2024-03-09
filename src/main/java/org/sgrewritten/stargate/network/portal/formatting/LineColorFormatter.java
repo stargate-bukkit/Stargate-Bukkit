@@ -7,7 +7,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
 import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
@@ -156,16 +156,16 @@ public class LineColorFormatter implements LineFormatter {
      * @return <p> A color corresponding to a portals flag. </p>
      */
     private ChatColor getFlagColor(Portal portal) {
-        PortalFlag[] flagPriority = new PortalFlag[]{PortalFlag.PRIVATE, PortalFlag.FREE, PortalFlag.HIDDEN,
-                PortalFlag.FORCE_SHOW, PortalFlag.BACKWARDS};
+        StargateFlag[] flagPriority = new StargateFlag[]{StargateFlag.PRIVATE, StargateFlag.FREE, StargateFlag.HIDDEN,
+                StargateFlag.FORCE_SHOW, StargateFlag.BACKWARDS};
 
         if (portal == null) {
             return null;
         }
         if (portal instanceof VirtualPortal) {
-            return ColorRegistry.FLAG_COLORS.get(PortalFlag.INTERSERVER);
+            return ColorRegistry.FLAG_COLORS.get(StargateFlag.INTERSERVER);
         }
-        for (PortalFlag flag : flagPriority) {
+        for (StargateFlag flag : flagPriority) {
             if (portal.hasFlag(flag)) {
                 return ColorRegistry.FLAG_COLORS.get(flag);
             }

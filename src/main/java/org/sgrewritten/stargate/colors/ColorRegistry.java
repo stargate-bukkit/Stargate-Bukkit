@@ -8,7 +8,7 @@ import org.bukkit.DyeColor;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 
@@ -28,7 +28,7 @@ public class ColorRegistry {
 
     public static final Map<DyeColor, ChatColor> TEXT_COLORS = loadColors(false, "/colors/colorTable.json");
     public static final Map<DyeColor, ChatColor> POINTER_COLORS = loadColors(true, "/colors/colorTable.json");
-    public static final Map<PortalFlag, ChatColor> FLAG_COLORS = loadFlagColors("/colors/flagColorTable.json");
+    public static final Map<StargateFlag, ChatColor> FLAG_COLORS = loadFlagColors("/colors/flagColorTable.json");
     public static final Map<ColorSelector, ChatColor> DEFAULT_COLORS = loadDefaultColors();
     public static org.bukkit.ChatColor LEGACY_SIGN_COLOR = org.bukkit.ChatColor.BLACK;
     public static DyeColor DEFAULT_DYE_COLOR = DyeColor.BLACK;
@@ -66,18 +66,18 @@ public class ColorRegistry {
         }
     }
 
-    private static Map<PortalFlag, ChatColor> loadFlagColors(@NotNull String fileName) {
+    private static Map<StargateFlag, ChatColor> loadFlagColors(@NotNull String fileName) {
         try (InputStream inputStream = Stargate.class.getResourceAsStream(fileName)) {
             if (inputStream == null) {
                 throw new IOException("Could not find internal file: " + fileName);
             }
             try (Reader reader = new InputStreamReader(inputStream)) {
                 JsonElement jsonData = JsonParser.parseReader(reader);
-                Map<PortalFlag, ChatColor> output = new EnumMap<>(PortalFlag.class);
+                Map<StargateFlag, ChatColor> output = new EnumMap<>(StargateFlag.class);
                 for (JsonElement jsonElement : jsonData.getAsJsonArray()) {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     DyeColor dyeColor = DyeColor.valueOf(jsonObject.get("dyeColor").getAsString());
-                    PortalFlag portalFlag = PortalFlag.valueOf(jsonObject.get("flag").getAsString());
+                    StargateFlag portalFlag = StargateFlag.valueOf(jsonObject.get("flag").getAsString());
                     output.put(portalFlag, POINTER_COLORS.get(dyeColor));
                 }
                 return Collections.unmodifiableMap(output);

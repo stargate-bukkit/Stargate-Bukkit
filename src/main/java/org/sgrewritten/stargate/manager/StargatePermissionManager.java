@@ -10,8 +10,10 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
@@ -22,6 +24,7 @@ import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalPermissionHelper;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -65,7 +68,7 @@ public class StargatePermissionManager implements PermissionManager {
 
     @Override
     public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {
-        Set<PortalFlag> disallowed = EnumSet.noneOf(PortalFlag.class);
+        Set<PortalFlag> disallowed = new HashSet<>();
         for (PortalFlag flag : flags) {
             if (flag.isInternalFlag()) {
                 continue;
@@ -171,7 +174,7 @@ public class StargatePermissionManager implements PermissionManager {
         Stargate.log(Level.CONFIG, "Checking create permissions");
         List<String> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
         boolean hasPermission = hasPermissions(target, relatedPerms);
-        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && target instanceof Player) {
+        if (hasPermission && portal.hasFlag(StargateFlag.PERSONAL_NETWORK) && target instanceof Player) {
             return !isNetworkFull(portal.getNetwork());
         }
         return hasPermission;
@@ -237,8 +240,8 @@ public class StargatePermissionManager implements PermissionManager {
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
             }
             if (permissionNode.contains("type")) {
-                PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1].charAt(0));
-                if (flag == PortalFlag.LEGACY_INTERSERVER || flag == PortalFlag.INTERSERVER) {
+                StargateFlag flag = StargateFlag.valueOf(permissionNode.split(".type.")[1].charAt(0));
+                if (flag == StargateFlag.LEGACY_INTERSERVER || flag == StargateFlag.INTERSERVER) {
                     return languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DENY);
                 }
             }

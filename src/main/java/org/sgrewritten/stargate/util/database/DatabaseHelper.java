@@ -2,7 +2,7 @@ package org.sgrewritten.stargate.util.database;
 
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
@@ -105,7 +105,7 @@ public class DatabaseHelper {
         while (resultSet.next()) {
             knownFlags.add(resultSet.getString("character"));
         }
-        for (PortalFlag flag : PortalFlag.values()) {
+        for (StargateFlag flag : StargateFlag.values()) {
             if (!knownFlags.contains(String.valueOf(flag.getCharacterRepresentation()))) {
                 addStatement.setString(1, String.valueOf(flag.getCharacterRepresentation()));
                 addStatement.execute();

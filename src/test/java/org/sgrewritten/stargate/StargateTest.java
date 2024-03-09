@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.database.TestCredential;
@@ -176,8 +176,8 @@ class StargateTest {
 
     private void createBungeePortal() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
-        Set<PortalFlag> flags = new HashSet<>();
-        flags.add(PortalFlag.LEGACY_INTERSERVER);
+        Set<StargateFlag> flags = new HashSet<>();
+        flags.add(StargateFlag.LEGACY_INTERSERVER);
         PortalBuilder portalBuilder = new PortalBuilder(plugin, player, PORTAL2).setGateBuilder(new ImplicitGateBuilder(signBlock2.getLocation(), plugin.getRegistry())).setFlags(flags);
         bungeePortal = portalBuilder.setDestinationServerName("server").setDestination("destination").build();
         plugin.reload();

@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockVector;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
-import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
@@ -82,7 +80,7 @@ class MaterialHandlerResolverTest {
         Set<Character> flags = Set.of(testFlag);
 
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world);
-        testPortalBuilder.setNetwork(network).setUnrecognisedFlags(flags).setName("test");
+        testPortalBuilder.setNetwork(network).setCustomFlags(flags).setName("test");
         RealPortal portal = testPortalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, testMaterial,
                 plugin, priority, testFlag);
@@ -112,7 +110,7 @@ class MaterialHandlerResolverTest {
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = Set.of(testFlag);
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(),world);
-        testPortalBuilder.setNetwork(network).setUnrecognisedFlags(flags).setName("test");
+        testPortalBuilder.setNetwork(network).setCustomFlags(flags).setName("test");
         RealPortal portal = testPortalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
@@ -133,7 +131,7 @@ class MaterialHandlerResolverTest {
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = Set.of(testFlag);
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), world);
-        testPortalBuilder.setName("test").setNetwork(network).setUnrecognisedFlags(flags);
+        testPortalBuilder.setName("test").setNetwork(network).setCustomFlags(flags);
         RealPortal portal = testPortalBuilder.build();
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);
@@ -158,7 +156,7 @@ class MaterialHandlerResolverTest {
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = Set.of('D');
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), world);
-        testPortalBuilder.setNetwork(network).setUnrecognisedFlags(flags).setName("test");
+        testPortalBuilder.setNetwork(network).setCustomFlags(flags).setName("test");
         RealPortal portal = testPortalBuilder.build();
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, handlerMaterial,
                 plugin, priority, testFlag);
@@ -179,7 +177,7 @@ class MaterialHandlerResolverTest {
         Location location = new Location(world, 0, 0, 0);
         Set<Character> flags = Set.of(testFlag);
         TestPortalBuilder testPortalBuilder = new TestPortalBuilder(stargateAPI.getRegistry(), world);
-        testPortalBuilder.setNetwork(network).setUnrecognisedFlags(flags);
+        testPortalBuilder.setNetwork(network).setCustomFlags(flags);
         RealPortal portal = testPortalBuilder.build();
         BlockHandlerInterfaceMock highPriority = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 plugin, Priority.HIGH, testFlag);

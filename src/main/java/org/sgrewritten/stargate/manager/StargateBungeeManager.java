@@ -14,7 +14,8 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -89,7 +90,6 @@ public class StargateBungeeManager implements BungeeManager {
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
         String flagString = json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString();
         Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
-        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagString);
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
@@ -104,7 +104,7 @@ public class StargateBungeeManager implements BungeeManager {
                 Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
                 return;
             }
-            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, unrecognisedFlags, ownerUUID);
+            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
             switch (requestType) {
                 case PORTAL_ADD -> {
                     targetNetwork.addPortal(portal);

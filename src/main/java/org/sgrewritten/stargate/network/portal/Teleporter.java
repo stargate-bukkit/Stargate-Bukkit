@@ -17,7 +17,7 @@ import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
@@ -379,7 +379,7 @@ public class Teleporter {
             target.teleport(exitPoint);
         }
         boatsTeleporting.remove(target);
-        if (origin != null && !origin.hasFlag(PortalFlag.SILENT)) {
+        if (origin != null && !origin.hasFlag(StargateFlag.SILENT)) {
             MessageUtils.sendMessageFromPortal(origin, target, teleportMessage, MessageType.DENY);
         }
     }
