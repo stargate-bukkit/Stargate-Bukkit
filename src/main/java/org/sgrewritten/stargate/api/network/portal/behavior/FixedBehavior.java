@@ -50,4 +50,9 @@ public class FixedBehavior extends AbstractPortalBehavior{
     public @NotNull StargateFlag getAttachedFlag() {
         return StargateFlag.FIXED;
     }
+
+    @Override
+    public String getDestinationName(){
+        return destinationName;
+    }
 }
