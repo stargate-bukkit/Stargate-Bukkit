@@ -43,6 +43,10 @@ public interface PortalFlag {
     char getCharacterRepresentation();
 
     /**
+     * @return <p>True if this flag is custom</p>
+     */
+    boolean isCustom();
+    /**
      *
      * @param flagString <p>The flag string to parse</p>
      * @return <p>A mutable set of PortalFlags</p>

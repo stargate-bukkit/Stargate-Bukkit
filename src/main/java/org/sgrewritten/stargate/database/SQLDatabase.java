@@ -4,6 +4,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.event.portal.StargatePortalLoadEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -329,6 +330,7 @@ public class SQLDatabase implements StorageAPI {
         }
         gate.assignPortal(portal);
         network.addPortal(portal);
+        new StargatePortalLoadEvent(portal).callEvent();
         Stargate.log(Level.FINEST, "Added as normal portal: " + network.getId() + ":" + portal.getName());
     }
 

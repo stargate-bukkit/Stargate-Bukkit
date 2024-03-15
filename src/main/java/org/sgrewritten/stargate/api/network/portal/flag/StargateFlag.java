@@ -141,6 +141,11 @@ public enum StargateFlag implements PortalFlag {
     }
 
     @Override
+    public boolean isCustom() {
+        return false;
+    }
+
+    @Override
     public boolean isInternalFlag() {
         return !isUserSpecifiable;
     }

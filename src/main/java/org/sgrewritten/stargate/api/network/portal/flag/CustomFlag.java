@@ -11,7 +11,6 @@ public class CustomFlag implements PortalFlag {
     private final char characterRepresentation;
     private boolean behaviorFlag;
     private boolean internalFlag;
-    private String pluginName;
     private boolean modified;
 
     private CustomFlag(char characterRepresentation) {
@@ -40,14 +39,13 @@ public class CustomFlag implements PortalFlag {
 
     /**
      *
-     * @param pluginName <p>The name of the plugin this flag belongs to</p>
      * @param internalFlag <p>Whether this flag should be hidden for the user</p>
      * @param behaviorFlag <p>Whether this is a selector/behavior flag</p>
      * @return <p>This flag</p>
      */
     public CustomFlag modify(boolean internalFlag, boolean behaviorFlag){
         if(this.modified){
-            throw new IllegalStateException("Flag has already been modified by another plugin: " + this.pluginName);
+            throw new IllegalStateException("Flag has already been modified by another plugin");
         }
         this.modified = true;
         this.internalFlag = internalFlag;
@@ -58,6 +56,11 @@ public class CustomFlag implements PortalFlag {
     @Override
     public char getCharacterRepresentation() {
         return characterRepresentation;
+    }
+
+    @Override
+    public boolean isCustom() {
+        return true;
     }
 
     @Override

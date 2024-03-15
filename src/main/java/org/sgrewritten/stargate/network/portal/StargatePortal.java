@@ -25,6 +25,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
@@ -39,7 +40,6 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 import org.sgrewritten.stargate.network.portal.formatting.LegacyLineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargate.network.portal.formatting.NoLineColorFormatter;
@@ -580,7 +580,7 @@ public class StargatePortal implements RealPortal {
     }
 
     private void clearBehaviorFlags() {
-        List<PortalFlag> flagsToRemove = flags.stream().filter(PortalFlag::isBehaviorFlag).toList();
+        List<PortalFlag> flagsToRemove = flags.stream().filter(flag -> flag.isBehaviorFlag() && !flag.isCustom()).toList();
         flagsToRemove.forEach(flags::remove);
     }
 }
