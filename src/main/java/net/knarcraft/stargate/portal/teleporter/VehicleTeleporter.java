@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The portal teleporter takes care of the actual portal teleportation for any vehicles
@@ -169,7 +170,8 @@ public class VehicleTeleporter extends EntityTeleporter {
             return;
         }
         //Spawn a new vehicle
-        Vehicle newVehicle = vehicleWorld.spawn(exit, teleportingVehicle.getClass());
+        Vehicle newVehicle = (Vehicle) vehicleWorld.spawn(exit,
+                Objects.requireNonNull(teleportingVehicle.getType().getEntityClass()));
         if (teleportingVehicle instanceof Boat boat) {
             ((Boat) newVehicle).setBoatType(boat.getBoatType());
         }
