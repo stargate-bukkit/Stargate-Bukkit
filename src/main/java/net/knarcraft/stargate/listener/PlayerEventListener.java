@@ -36,6 +36,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.api.GeyserApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +53,8 @@ import java.util.Set;
 public class PlayerEventListener implements Listener {
 
     private static final Map<Player, Long> previousEventTimes = new HashMap<>();
+    private boolean hasGeyser = true;
+    private boolean hasFloodgate = true;
 
     /**
      * This event handler handles detection of any player teleporting through a bungee gate
@@ -257,11 +260,30 @@ public class PlayerEventListener implements Listener {
      * @return <p>True if the player is connected through Geyser</p>
      */
     private boolean isGeyserPlayer(@NotNull Player player) {
-        try {
-            return GeyserApi.api().connectionByUuid(player.getUniqueId()) != null;
-        } catch (NoClassDefFoundError error) {
+        // Prevent unnecessary checking for non-geyser and floodgate servers
+        if (!hasGeyser && !hasFloodgate) {
             return false;
         }
+
+        // Use Geyser API to get connection status
+        if (hasGeyser) {
+            try {
+                return GeyserApi.api().connectionByUuid(player.getUniqueId()) != null;
+            } catch (NoClassDefFoundError error1) {
+                hasGeyser = false;
+            }
+        }
+
+        // Use Floodgate API to get connection status
+        if (hasFloodgate) {
+            try {
+                return FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
+            } catch (NoClassDefFoundError error2) {
+                hasFloodgate = false;
+            }
+        }
+
+        return false;
     }
 
     /**
