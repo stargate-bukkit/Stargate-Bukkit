@@ -1,18 +1,38 @@
 # General Styling
+prefix=[Stargate] 
 
 # Sign Formatting
+signNonFixedL2=Right click
+signNonFixedL3=to use gate
+signRandom=Random
+signDisconnected=Disconnected
 
 # Gate Actions
+gateDestroy=Portal destruido.
+gateCreatePersonal=Criando portal em rede pessoal.
 
 # Gate Construction Problems
+faultNetwork=Voce nao tem acesso a essa rede.
+faultLayout=Voce nao tem acesso a esse portal layout.
+faultLength=Nome muito curto ou muito grande.
+faultExists=Já existe um portal com esse nome.
+faultFull=Esta rede esta cheia.
+faultConflict=Portal em conflito com um portal ja existente.
 
 # Bungee Problems
 
 # Gate Usage
+tpSuccess=Voce foi teleportado.
+tpDestInvalid=Destino Nao conectado/invalido.
+tpEmptyNet=Lista de destino vazia.
 
 # Access
+conflictPerms=Acesso negado. Voce nao tem permissao.
 
 # Economy
+ecoDeduct=O teleporte custou: R$ %cost%.
+ecoObtain=Foi obtido R$ %cost% do portal %portal%.
+ecoInsolvent=Fundos insuficientes.
 
 #Terminology
 
@@ -21,3 +41,4 @@
 #Parity
 
 #Admin
+translatedBy=TheProbleemm

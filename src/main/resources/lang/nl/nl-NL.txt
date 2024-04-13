@@ -76,4 +76,4 @@ unimplementedFlag=De %flags% markeringen zijn nog niet geïmplementeerd.
 adminReload=Configuratie herladen!
 adminInfo=Uitvoeren van versie %version%. Changelog: https://git.io/JD4Qo
 adminHelp=De documentatie van StarGate kan gevonden worden op https://git.io/JDclf
-translatedBy=Matriarch!
+translatedBy=Grovert11 & Matriarch!

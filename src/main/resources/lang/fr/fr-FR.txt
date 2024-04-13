@@ -26,6 +26,7 @@ faultExists=Un portail portant ce nom existe déjà !
 faultFull=Ce réseau est plein !
 faultWorldDeny=Vous n'avez pas accès au monde %world%!
 faultConflict=Ce portail entre en conflit avec un portail existant.
+faultConflictNetwork=Impossible de forcer la spécification du type de réseau ; cela entrerait en conflit avec le réseau %type% du même nom !
 faultFlag=Vous n'avez pas la permission d'utiliser l'option %flags% ; votre portail a été créé sans lui !
 faultControls=Le design de ce portail a trop peu de blocs de contrôle pour accommoder les options que vous avez sélectionnées !
 faultAddon=Un module vous a empêché de faire ça !

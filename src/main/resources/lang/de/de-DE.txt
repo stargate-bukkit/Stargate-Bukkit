@@ -76,4 +76,4 @@ unimplementedFlag=Die %flags% Flags sind noch nicht implementiert.
 adminReload=Konfiguration wurde neu geladen!
 adminInfo=Version %version%wird ausgeführt. Changelog: https://git.io/JD4Q
 adminHelp=StarGate's Dokumentation finden Sie unter https://git.io/JDclf
-translatedBy=Matriarch!
+translatedBy=EduardBaer & Matriarch!

@@ -26,6 +26,7 @@ faultExists=En port med det namnet existerar redan.
 faultFull=Det nätverket är redan fullt!
 faultWorldDeny=Du har inte tillgång till världen %world%!
 faultConflict=Denna port står i konflikt med en befintlig port.
+faultConflictNetwork=Det gick inte att kraftfullt ange nätverkstyp, det skulle strida mot %type% nätverket med samma namn!
 faultFlag=Du saknar behörighet att använda markeringarna %flags%; din portal har skapats utan dem!
 faultControls=Portens design har för få kontrollblock för att ackommodera de flaggor du har valt!
 faultAddon=Ett tillägg har hindrat dig från att göra detta!
@@ -58,10 +59,21 @@ ecoInsolvent=Inte tillräckligt med pengar.
 
 #Terminology
 gate=Port
+network=Nätverk
+interserver=Inter-server
+default=Standard
+terminal=Terminal
+personal=Personligt
+custom=Egendefinerad
+local=Lokalt
 
 #Temporary
+unimplementedInterserver=Interserver grindar är fortfarande i aktiv utveckling och har bara delvis implementerats.
+unimplementedIConflict=De lokala och inter-server %name% nätverken är för närvarande frånskiljande; i en framtida uppdatering kommer de att slås samman. \nAlla stargates för närvarande på inter-servernätverket %name% kommer att flyttas till det lokala nätverket med samma namn.
+unimplementedFlag=%flags% flaggorna har ännu inte implementerats.
 
 #Parity
+parityCommand=Installera modulen %modules% automatiskt! Detta kan ta några minuter.
 
 #Admin
 adminReload=Konfigurationen laddades om!

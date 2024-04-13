@@ -77,4 +77,4 @@ unimplementedFlag=Las banderas %flags% aún no se han implementado.
 adminReload=¡Configuración cargada!
 adminInfo=Ejecutando la versión %version%. Registro de cambios: https://git.io/JD4Qo
 adminHelp=La documentación de StarGate se puede encontrar en https://git.io/JDclf
-translatedBy=Translated s.r.l.
+translatedBy=Manuestaire & Translated s.r.l.
