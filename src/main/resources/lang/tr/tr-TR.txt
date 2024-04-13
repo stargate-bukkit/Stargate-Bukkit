@@ -46,7 +46,7 @@ tpSuccess=Işınlanıldı!
 tpDestInvalid=Geçersiz Hedef!
 tpEmptyNet=Hedef listesi boş!
 tpOccupied=Şu anda bu portalı başka bir oyuncu kullanıyor; birkaç dakika sonra tekrar deneyin.
-tpPastBorder=Varış noktası Worldborder dışında!
+tpPastBorder=Varış noktası dünya sınırları dışında!
 
 # Access
 conflictPerms=Erişim reddedildi!
