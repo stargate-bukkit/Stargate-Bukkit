@@ -238,7 +238,8 @@ public final class PortalFileHelper {
 
         //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
         for (Portal portal : PortalRegistry.getAllPortals()) {
-            if (portal.isRegistered()) {
+            if (portal.isRegistered() && portal.getWorld() != null && portal.getWorld().equals(world) &&
+                    world.getWorldBorder().isInside(portal.getSignLocation())) {
                 portal.drawSign();
                 updatePortalButton(portal);
             }
@@ -261,7 +262,7 @@ public final class PortalFileHelper {
     private static boolean loadPortal(@NotNull String[] portalData, @NotNull World world, int lineIndex) {
         //Load min. required portal data
         String name = portalData[0];
-        BlockLocation button = (portalData[2].length() > 0) ? new BlockLocation(world, portalData[2]) : null;
+        BlockLocation button = (!portalData[2].isEmpty()) ? new BlockLocation(world, portalData[2]) : null;
 
         //Load the portal's location
         PortalLocation portalLocation = new PortalLocation();
