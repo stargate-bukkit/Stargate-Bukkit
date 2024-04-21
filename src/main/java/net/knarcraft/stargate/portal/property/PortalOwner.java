@@ -3,10 +3,11 @@ package net.knarcraft.stargate.portal.property;
 import net.knarcraft.stargate.Stargate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -14,6 +15,7 @@ import java.util.UUID;
  */
 public class PortalOwner {
 
+    private static final Map<String, OfflinePlayer> fetchedPlayers = new HashMap<>();
     private UUID ownerUUID;
     private String ownerName;
 
@@ -23,7 +25,13 @@ public class PortalOwner {
      * @param ownerIdentifier <p>A UUID, or a username for legacy support</p>
      */
     public PortalOwner(@NotNull String ownerIdentifier) {
-        parseIdentifier(ownerIdentifier);
+        if (fetchedPlayers.containsKey(ownerIdentifier)) {
+            OfflinePlayer player = fetchedPlayers.get(ownerIdentifier);
+            this.ownerUUID = player.getUniqueId();
+            this.ownerName = player.getName();
+        } else {
+            parseIdentifier(ownerIdentifier);
+        }
     }
 
     /**
@@ -31,7 +39,7 @@ public class PortalOwner {
      *
      * @param player <p>The player which is the owner of the portal</p>
      */
-    public PortalOwner(@NotNull Player player) {
+    public PortalOwner(@NotNull OfflinePlayer player) {
         this.ownerUUID = player.getUniqueId();
         this.ownerName = player.getName();
     }
@@ -106,6 +114,7 @@ public class PortalOwner {
             try {
                 ownerUUID = UUID.fromString(ownerIdentifier);
                 OfflinePlayer offlineOwner = Bukkit.getServer().getOfflinePlayer(ownerUUID);
+                fetchedPlayers.put(ownerIdentifier, offlineOwner);
                 ownerName = offlineOwner.getName();
             } catch (IllegalArgumentException exception) {
                 //Invalid as UUID and username, so just keep it as owner name and hope the server owner fixes it
