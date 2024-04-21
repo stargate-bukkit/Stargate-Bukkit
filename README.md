@@ -344,7 +344,7 @@ Other special characters include the following:
 
 - Spaces/blank characters (` `) will not be checked, and as such, represent any block.
 - Periods (`.`) represent the portal's *iris* (i.e. the part that opens and closes)
-- An asterix (`*`) represents the portals's "exit point" (i.e. the block the player will teleport in front of).
+- An asterix (`*`) represents the portals' "exit point" (i.e. the block the player will teleport in front of).
 
 ##### Underwater Portals
 
@@ -377,7 +377,7 @@ Gates are not limited to the shape of a standard nether portal -- they can be th
 In this case, a simple 5x5 square has been used as a gate.
 
 Gates are also not limited to [materials](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html) (such
-as `OBSIDIAN`); they may also use [tags](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Tag.html)) (such
+as `OBSIDIAN`); they may also use [tags](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Tag.html) (such
 as `#WOOL`).<br>
 Note that all tags must be prefaced with a hashtag (`#`), as in `#WOOL`.
 

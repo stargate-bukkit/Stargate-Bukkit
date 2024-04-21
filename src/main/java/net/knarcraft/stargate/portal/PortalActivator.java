@@ -74,7 +74,7 @@ public class PortalActivator {
         if (portal.getOptions().isRandom()) {
             //Find possible destinations
             List<String> destinations = PortalHandler.getDestinations(portal, player, portalNetwork);
-            if (destinations.size() == 0) {
+            if (destinations.isEmpty()) {
                 return null;
             }
             //Get one random destination
@@ -217,7 +217,7 @@ public class PortalActivator {
      * @return <p>Whether this portal activator's portal is active</p>
      */
     public boolean isActive() {
-        return portal.getOptions().isFixed() || (destinations.size() > 0);
+        return portal.getOptions().isFixed() || (!destinations.isEmpty());
     }
 
     /**
@@ -255,7 +255,7 @@ public class PortalActivator {
         }
 
         //If no destinations are available, just tell the player and quit
-        if (destinations.size() == 0) {
+        if (destinations.isEmpty()) {
             if (!portal.getOptions().isSilent()) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.NO_DESTINATION));
             }

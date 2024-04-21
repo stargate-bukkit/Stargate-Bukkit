@@ -54,7 +54,7 @@ public class Portal {
         this.network = portalStrings.network();
         this.name = portalStrings.name();
         this.portalOwner = portalOwner;
-        this.options = new PortalOptions(options, portalStrings.destination().length() > 0);
+        this.options = new PortalOptions(options, !portalStrings.destination().isEmpty());
         this.signDrawer = new PortalSignDrawer(this);
         this.portalOpener = new PortalOpener(this, portalStrings.destination());
         this.structure = new PortalStructure(this, gate, button);

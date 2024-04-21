@@ -255,7 +255,7 @@ public class PortalRegistry {
      * @param portal <p>The portal to register</p>
      */
     public static void registerPortal(@NotNull Portal portal) {
-        portal.getOptions().setFixed(portal.getDestinationName().length() > 0 || portal.getOptions().isRandom() ||
+        portal.getOptions().setFixed(!portal.getDestinationName().isEmpty() || portal.getOptions().isRandom() ||
                 portal.getOptions().isBungee());
 
         String portalName = portal.getCleanName();

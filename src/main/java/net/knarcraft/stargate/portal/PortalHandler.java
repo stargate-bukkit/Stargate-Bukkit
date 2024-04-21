@@ -251,7 +251,7 @@ public class PortalHandler {
         }
 
         //Can not create a non-fixed always-on portal
-        if (portalOptions.get(PortalOption.ALWAYS_ON) && destinationName.length() == 0) {
+        if (portalOptions.get(PortalOption.ALWAYS_ON) && destinationName.isEmpty()) {
             portalOptions.put(PortalOption.ALWAYS_ON, false);
         }
 

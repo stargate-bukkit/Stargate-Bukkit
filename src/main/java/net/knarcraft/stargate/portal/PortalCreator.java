@@ -171,7 +171,7 @@ public class PortalCreator {
         String route = "PortalCreator::getNetworkName";
 
         //Use default network if a proper alternative is not set
-        if (portalStrings.network().length() < 1 || portalStrings.network().length() > getMaxNameNetworkLength()) {
+        if (portalStrings.network().isEmpty() || portalStrings.network().length() > getMaxNameNetworkLength()) {
             network = Stargate.getDefaultNetwork();
         }
 
@@ -207,7 +207,7 @@ public class PortalCreator {
         }
 
         //Check if the user can create portals to this world.
-        if (!bungee && destinationName.length() > 0) {
+        if (!bungee && !destinationName.isEmpty()) {
             Portal destinationPortal = PortalHandler.getByName(destinationName, network);
             if (destinationPortal != null && destinationPortal.getWorld() != null) {
                 String world = destinationPortal.getWorld().getName();
@@ -294,7 +294,7 @@ public class PortalCreator {
         String route = "PortalCreator::checkIfNewPortalIsValid";
 
         //Check if the portal name can fit on the sign with padding (>name<)
-        if (portal.getCleanName().length() < 1 || portal.getCleanName().length() > getMaxNameNetworkLength()) {
+        if (portal.getCleanName().isEmpty() || portal.getCleanName().length() > getMaxNameNetworkLength()) {
             Stargate.debug(route, String.format("Name length error. %s is too long.",
                     portal.getCleanName()));
             Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NAME_LENGTH));

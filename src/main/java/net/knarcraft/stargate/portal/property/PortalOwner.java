@@ -6,8 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -15,7 +13,6 @@ import java.util.UUID;
  */
 public class PortalOwner {
 
-    private static final Map<String, OfflinePlayer> fetchedPlayers = new HashMap<>();
     private UUID ownerUUID;
     private String ownerName;
 
@@ -25,13 +22,7 @@ public class PortalOwner {
      * @param ownerIdentifier <p>A UUID, or a username for legacy support</p>
      */
     public PortalOwner(@NotNull String ownerIdentifier) {
-        if (fetchedPlayers.containsKey(ownerIdentifier)) {
-            OfflinePlayer player = fetchedPlayers.get(ownerIdentifier);
-            this.ownerUUID = player.getUniqueId();
-            this.ownerName = player.getName();
-        } else {
-            parseIdentifier(ownerIdentifier);
-        }
+        parseIdentifier(ownerIdentifier);
     }
 
     /**
@@ -77,6 +68,12 @@ public class PortalOwner {
      */
     @NotNull
     public String getName() {
+        if (this.ownerUUID != null && this.ownerName == null) {
+            this.ownerName = fetchName();
+            if (this.ownerName == null) {
+                this.ownerName = "UNKNOWN!";
+            }
+        }
         return ownerName;
     }
 
@@ -108,14 +105,11 @@ public class PortalOwner {
      */
     private void parseIdentifier(@NotNull String ownerIdentifier) {
         UUID ownerUUID = null;
-        String ownerName;
+        String ownerName = null;
         if (ownerIdentifier.length() > 16) {
             //If more than 16 characters, the string cannot be a username, so it's probably a UUID
             try {
                 ownerUUID = UUID.fromString(ownerIdentifier);
-                OfflinePlayer offlineOwner = Bukkit.getServer().getOfflinePlayer(ownerUUID);
-                fetchedPlayers.put(ownerIdentifier, offlineOwner);
-                ownerName = offlineOwner.getName();
             } catch (IllegalArgumentException exception) {
                 //Invalid as UUID and username, so just keep it as owner name and hope the server owner fixes it
                 ownerName = ownerIdentifier;
@@ -127,6 +121,16 @@ public class PortalOwner {
         }
         this.ownerName = ownerName;
         this.ownerUUID = ownerUUID;
+    }
+
+    /**
+     * Gets the name of a player
+     *
+     * @return <p>The player to get the name of</p>
+     */
+    @Nullable
+    private String fetchName() {
+        return Bukkit.getServer().getOfflinePlayer(ownerUUID).getName();
     }
 
 }
