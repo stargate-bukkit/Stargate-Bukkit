@@ -196,6 +196,15 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets whether to destroy portals when any blocks are broken by explosions
+     *
+     * @return <p>Whether to destroy portals when any blocks are broken by explosions</p>
+     */
+    public boolean applyStartupFixes() {
+        return (boolean) configOptions.get(ConfigOption.APPLY_STARTUP_FIXES);
+    }
+
+    /**
      * Gets the default portal network to use if no other network is given
      *
      * @return <p>The default portal network</p>

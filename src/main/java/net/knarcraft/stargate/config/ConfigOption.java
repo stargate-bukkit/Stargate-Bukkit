@@ -67,6 +67,11 @@ public enum ConfigOption {
     DESTROYED_BY_EXPLOSION("gates.integrity.destroyedByExplosion", "Whether stargates should be destroyed by explosions", false),
 
     /**
+     * Whether to fix incorrect signs, buttons or openings during startup
+     */
+    APPLY_STARTUP_FIXES("gates.integrity.applyStartupFixes", "Whether Stargates should fix incorrect signs, buttons or openings during startup", true),
+
+    /**
      * Whether to verify each portal's gate layout after each load
      */
     VERIFY_PORTALS("gates.integrity.verifyPortals", "Whether to verify that portals match their gate layout on load", false),

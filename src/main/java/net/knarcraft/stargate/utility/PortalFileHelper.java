@@ -236,16 +236,19 @@ public final class PortalFileHelper {
         Stargate.logInfo(String.format("{%s} Loaded %d stargates with %d set as always-on", world.getName(),
                 portalCount, openCount));
 
-        //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
-        Stargate.debug("PortalFileHelper::doPostLoadTasks::update",
-                String.format("Updating portal signs/buttons for %s", world));
-        for (Portal portal : PortalRegistry.getAllPortals()) {
-            if (portal.isRegistered() && portal.getWorld() != null && portal.getWorld().equals(world) &&
-                    world.getWorldBorder().isInside(portal.getSignLocation())) {
-                portal.drawSign();
-                updatePortalButton(portal);
-                Stargate.debug("UpdateSignsButtons", String.format("Updated sign and button for portal %s",
-                        portal.getName()));
+
+        if (Stargate.getGateConfig().applyStartupFixes()) {
+            //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
+            Stargate.debug("PortalFileHelper::doPostLoadTasks::update",
+                    String.format("Updating portal signs/buttons for %s", world));
+            for (Portal portal : PortalRegistry.getAllPortals()) {
+                if (portal.isRegistered() && portal.getWorld() != null && portal.getWorld().equals(world) &&
+                        world.getWorldBorder().isInside(portal.getSignLocation())) {
+                    portal.drawSign();
+                    updatePortalButton(portal);
+                    Stargate.debug("UpdateSignsButtons", String.format("Updated sign and button for portal %s",
+                            portal.getName()));
+                }
             }
         }
         //Save the portals to disk to update with any changes
@@ -299,7 +302,9 @@ public final class PortalFileHelper {
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         boolean buttonLocationChanged = updateButtonVector(portal);
         PortalHandler.registerPortal(portal);
-        portal.getPortalOpener().closePortal(true);
+        if (Stargate.getGateConfig().applyStartupFixes()) {
+            portal.getPortalOpener().closePortal(true);
+        }
         return buttonLocationChanged;
     }
 
