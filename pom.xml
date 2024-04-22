@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
+            <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>net.knarcraft</groupId>
             <artifactId>knarlib</artifactId>
-            <version>1.1</version>
+            <version>1.2.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
