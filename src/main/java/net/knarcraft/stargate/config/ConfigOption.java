@@ -67,11 +67,6 @@ public enum ConfigOption {
     DESTROYED_BY_EXPLOSION("gates.integrity.destroyedByExplosion", "Whether stargates should be destroyed by explosions", false),
 
     /**
-     * Whether to fix incorrect signs, buttons or openings during startup
-     */
-    APPLY_STARTUP_FIXES("gates.integrity.applyStartupFixes", "Whether Stargates should fix incorrect signs, buttons or openings during startup", true),
-
-    /**
      * Whether to verify each portal's gate layout after each load
      */
     VERIFY_PORTALS("gates.integrity.verifyPortals", "Whether to verify that portals match their gate layout on load", false),
@@ -203,7 +198,14 @@ public enum ConfigOption {
      * Whether to hide Dynmap icons by default
      */
     DYNMAP_ICONS_DEFAULT_HIDDEN("dynmap.dynmapIconsHiddenByDefault",
-            "Whether to hide Stargate's Dynmap icons by default, requiring the user to enable them.", true);
+            "Whether to hide Stargate's Dynmap icons by default, requiring the user to enable them.", true),
+
+    /**
+     * The amount of ticks to wait when processing the Stargate control update queue
+     */
+    CONTROL_UPDATE_QUEUE_DELAY("gates.integrity.controlUpdateDelay",
+            "The delay between each time a Stargate's controls are updated after startup", 3),
+    ;
 
     private final String configNode;
     private final String description;

@@ -100,7 +100,7 @@ public class PortalOpener {
 
         //Change the entrance blocks to the correct type
         for (BlockLocation inside : portal.getStructure().getEntrances()) {
-            Stargate.addBlockChangeRequest(new BlockChangeRequest(inside, openType, axis));
+            Stargate.addControlBlockUpdateRequest(new BlockChangeRequest(inside, openType, axis));
         }
 
         //Update the portal state to make is actually open
@@ -183,7 +183,7 @@ public class PortalOpener {
         Axis axis = (closedType.createBlockData() instanceof Orientable) ? portal.getLocation().getRotationAxis() : null;
 
         for (BlockLocation entrance : portal.getStructure().getEntrances()) {
-            Stargate.addBlockChangeRequest(new BlockChangeRequest(entrance, closedType, axis));
+            Stargate.addControlBlockUpdateRequest(new BlockChangeRequest(entrance, closedType, axis));
         }
 
         //Update the portal state to make it actually closed

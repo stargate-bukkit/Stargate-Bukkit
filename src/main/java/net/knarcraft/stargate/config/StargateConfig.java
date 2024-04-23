@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -232,10 +233,10 @@ public final class StargateConfig {
 
         //Perform all block change requests to prevent mismatch if a gate's open-material changes. Changing the 
         // closed-material still requires a restart.
-        BlockChangeRequest firstElement = Stargate.getBlockChangeRequestQueue().peek();
+        BlockChangeRequest firstElement = Stargate.getControlBlockUpdateRequestQueue().peek();
         while (firstElement != null) {
             BlockChangeThread.pollQueue();
-            firstElement = Stargate.getBlockChangeRequestQueue().peek();
+            firstElement = Stargate.getControlBlockUpdateRequestQueue().peek();
         }
 
         //Store the old enable bungee state in case it changes
@@ -516,16 +517,24 @@ public final class StargateConfig {
         //Load old and new configuration
         Stargate.getInstance().reloadConfig();
         FileConfiguration oldConfiguration = Stargate.getInstance().getConfig();
+        InputStream configStream = FileHelper.getInputStreamForInternalFile("/config.yml");
+        if (configStream == null) {
+            Stargate.logSevere("Could not migrate the configuration, as the internal configuration could not be read!");
+            return;
+        }
         YamlConfiguration newConfiguration = StargateYamlConfiguration.loadConfiguration(
-                FileHelper.getBufferedReaderFromInputStream(
-                        FileHelper.getInputStreamForInternalFile("/config.yml")));
+                FileHelper.getBufferedReaderFromInputStream(configStream));
 
         //Read all available config migrations
         Map<String, String> migrationFields;
         try {
-            migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(
-                            FileHelper.getInputStreamForInternalFile("/config-migrations.txt")), "=",
-                    ColorConversion.NORMAL);
+            InputStream migrationStream = FileHelper.getInputStreamForInternalFile("/config-migrations.txt");
+            if (migrationStream == null) {
+                Stargate.logSevere("Could not migrate the configuration, as the internal migration paths could not be read!");
+                return;
+            }
+            migrationFields = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(migrationStream),
+                    "=", ColorConversion.NORMAL);
         } catch (IOException exception) {
             Stargate.debug(debugPath, "Unable to load config migration file");
             return;

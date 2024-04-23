@@ -102,6 +102,17 @@ public final class StargateGateConfig {
     }
 
     /**
+     * Gets the delay to wait between each update of a Stargate's control block
+     *
+     * <p>This only affects the queued control updates during startup. It does not affect normal gameplay.</p>
+     *
+     * @return <p>The amount of ticks to delay control updates by</p>
+     */
+    public int controlUpdateDelay() {
+        return (int) configOptions.get(ConfigOption.CONTROL_UPDATE_QUEUE_DELAY);
+    }
+
+    /**
      * Gets whether vehicles containing a creature, but not a player should be handled
      *
      * <p>The handle vehicles option, and the handle creature transportation option, override this option if disabled.
@@ -193,15 +204,6 @@ public final class StargateGateConfig {
      */
     public boolean destroyedByExplosion() {
         return (boolean) configOptions.get(ConfigOption.DESTROYED_BY_EXPLOSION);
-    }
-
-    /**
-     * Gets whether to destroy portals when any blocks are broken by explosions
-     *
-     * @return <p>Whether to destroy portals when any blocks are broken by explosions</p>
-     */
-    public boolean applyStartupFixes() {
-        return (boolean) configOptions.get(ConfigOption.APPLY_STARTUP_FIXES);
     }
 
     /**

@@ -3,6 +3,7 @@ package net.knarcraft.stargate.utility;
 import net.knarcraft.stargate.Stargate;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.BlockLocation;
+import net.knarcraft.stargate.container.ControlBlockUpdateRequest;
 import net.knarcraft.stargate.container.RelativeBlockVector;
 import net.knarcraft.stargate.portal.Portal;
 import net.knarcraft.stargate.portal.PortalHandler;
@@ -237,18 +238,15 @@ public final class PortalFileHelper {
                 portalCount, openCount));
 
 
-        if (Stargate.getGateConfig().applyStartupFixes()) {
-            //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
-            Stargate.debug("PortalFileHelper::doPostLoadTasks::update",
-                    String.format("Updating portal signs/buttons for %s", world));
-            for (Portal portal : PortalRegistry.getAllPortals()) {
-                if (portal.isRegistered() && portal.getWorld() != null && portal.getWorld().equals(world) &&
-                        world.getWorldBorder().isInside(portal.getSignLocation())) {
-                    portal.drawSign();
-                    updatePortalButton(portal);
-                    Stargate.debug("UpdateSignsButtons", String.format("Updated sign and button for portal %s",
-                            portal.getName()));
-                }
+        //Re-draw the signs in case a bug in the config prevented the portal from loading and has been fixed since
+        Stargate.debug("PortalFileHelper::doPostLoadTasks::update",
+                String.format("Queueing portal sign/button updates for %s", world));
+        for (Portal portal : PortalRegistry.getAllPortals()) {
+            if (portal.isRegistered() && portal.getWorld() != null && portal.getWorld().equals(world) &&
+                    world.getWorldBorder().isInside(portal.getSignLocation())) {
+                Stargate.addControlBlockUpdateRequest(new ControlBlockUpdateRequest(portal));
+                Stargate.debug("UpdateSignsButtons", String.format("Queued sign and button updates for portal %s",
+                        portal.getName()));
             }
         }
         //Save the portals to disk to update with any changes
@@ -302,35 +300,8 @@ public final class PortalFileHelper {
         //Register the portal, and close it in case it wasn't properly closed when the server stopped
         boolean buttonLocationChanged = updateButtonVector(portal);
         PortalHandler.registerPortal(portal);
-        if (Stargate.getGateConfig().applyStartupFixes()) {
-            portal.getPortalOpener().closePortal(true);
-        }
+        portal.getPortalOpener().closePortal(true);
         return buttonLocationChanged;
-    }
-
-    /**
-     * Updates a portal's button if it does not match the correct material
-     *
-     * @param portal <p>The portal update the button of</p>
-     */
-    private static void updatePortalButton(@NotNull Portal portal) {
-        BlockLocation buttonLocation = getButtonLocation(portal);
-        if (buttonLocation == null) {
-            return;
-        }
-
-        if (portal.getOptions().isAlwaysOn()) {
-            //Clear button if it exists
-            if (MaterialHelper.isButtonCompatible(buttonLocation.getType())) {
-                Material newMaterial = decideRemovalMaterial(buttonLocation, portal);
-                Stargate.addBlockChangeRequest(new BlockChangeRequest(buttonLocation, newMaterial, null));
-            }
-        } else {
-            //Replace button if the material is not a button
-            if (!MaterialHelper.isButtonCompatible(buttonLocation.getType())) {
-                generatePortalButton(portal, DirectionHelper.getBlockFaceFromYaw(portal.getYaw()));
-            }
-        }
     }
 
     /**
@@ -388,7 +359,7 @@ public final class PortalFileHelper {
 
                 BlockLocation oldButtonLocation = portal.getStructure().getButton();
                 if (oldButtonLocation != null && !oldButtonLocation.equals(buttonLocation)) {
-                    Stargate.addBlockChangeRequest(new BlockChangeRequest(oldButtonLocation, Material.AIR, null));
+                    Stargate.addControlBlockUpdateRequest(new BlockChangeRequest(oldButtonLocation, Material.AIR, null));
                     portal.getStructure().setButton(buttonLocation);
                     return true;
                 }
@@ -431,7 +402,7 @@ public final class PortalFileHelper {
      * @return <p>The location of the portal's button</p>
      */
     @Nullable
-    private static BlockLocation getButtonLocation(@NotNull Portal portal) {
+    public static BlockLocation getButtonLocation(@NotNull Portal portal) {
         BlockLocation topLeft = portal.getTopLeft();
         RelativeBlockVector buttonVector = portal.getLocation().getButtonVector();
 

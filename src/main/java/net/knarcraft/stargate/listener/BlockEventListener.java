@@ -91,7 +91,7 @@ public class BlockEventListener implements Listener {
         if (portal.getOptions().hasNoSign()) {
             Material replaceMaterial = PortalFileHelper.decideRemovalMaterial(portal.getSignLocation(), portal);
             BlockChangeRequest request = new BlockChangeRequest(portal.getSignLocation(), replaceMaterial, null);
-            Stargate.addBlockChangeRequest(request);
+            Stargate.addControlBlockUpdateRequest(request);
         }
 
         Stargate.getMessageSender().sendSuccessMessage(player, Stargate.getString(Message.CREATED));

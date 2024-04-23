@@ -11,6 +11,7 @@ import net.knarcraft.stargate.config.StargateGateConfig;
 import net.knarcraft.stargate.config.StargateYamlConfiguration;
 import net.knarcraft.stargate.container.BlockChangeRequest;
 import net.knarcraft.stargate.container.ChunkUnloadRequest;
+import net.knarcraft.stargate.container.ControlBlockUpdateRequest;
 import net.knarcraft.stargate.listener.BlockEventListener;
 import net.knarcraft.stargate.listener.EntityEventListener;
 import net.knarcraft.stargate.listener.EntitySpawnListener;
@@ -24,6 +25,7 @@ import net.knarcraft.stargate.portal.PortalHandler;
 import net.knarcraft.stargate.portal.PortalRegistry;
 import net.knarcraft.stargate.thread.BlockChangeThread;
 import net.knarcraft.stargate.thread.ChunkUnloadThread;
+import net.knarcraft.stargate.thread.ControlBlocksUpdateThread;
 import net.knarcraft.stargate.thread.StarGateThread;
 import net.knarcraft.stargate.utility.BStatsHelper;
 import org.bukkit.Bukkit;
@@ -78,7 +80,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 public class Stargate extends JavaPlugin {
 
     private static final String CONFIG_FILE_NAME = "config.yml";
-    private static final Queue<BlockChangeRequest> blockChangeRequestQueue = new LinkedList<>();
+    private static final Queue<BlockChangeRequest> controlBlockUpdateRequestQueue = new LinkedList<>();
+    private static final Queue<ControlBlockUpdateRequest> CONTROL_BLOCK_UPDATE_REQUEST_QUEUE = new LinkedList<>();
     private static final Queue<ChunkUnloadRequest> chunkUnloadQueue = new PriorityQueue<>();
 
     private static Logger logger;
@@ -144,20 +147,41 @@ public class Stargate extends JavaPlugin {
      *
      * @param request <p>The request to add</p>
      */
-    public static void addBlockChangeRequest(@Nullable BlockChangeRequest request) {
+    public static void addControlBlockUpdateRequest(@Nullable BlockChangeRequest request) {
         if (request != null) {
-            blockChangeRequestQueue.add(request);
+            controlBlockUpdateRequestQueue.add(request);
         }
     }
 
     /**
-     * Gets the queue containing block change requests
+     * Gets the queue containing control block update requests
      *
-     * @return <p>A block change request queue</p>
+     * @return <p>A control block update request queue</p>
      */
     @NotNull
-    public static Queue<BlockChangeRequest> getBlockChangeRequestQueue() {
-        return blockChangeRequestQueue;
+    public static Queue<BlockChangeRequest> getControlBlockUpdateRequestQueue() {
+        return controlBlockUpdateRequestQueue;
+    }
+
+    /**
+     * Adds a control block update request to the request queue
+     *
+     * @param request <p>The request to add</p>
+     */
+    public static void addControlBlockUpdateRequest(@Nullable ControlBlockUpdateRequest request) {
+        if (request != null) {
+            CONTROL_BLOCK_UPDATE_REQUEST_QUEUE.add(request);
+        }
+    }
+
+    /**
+     * Gets the queue containing button update requests
+     *
+     * @return <p>A button update request queue</p>
+     */
+    @NotNull
+    public static Queue<ControlBlockUpdateRequest> getButtonUpdateRequestQueue() {
+        return CONTROL_BLOCK_UPDATE_REQUEST_QUEUE;
     }
 
     /**
@@ -448,6 +472,8 @@ public class Stargate extends JavaPlugin {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.runTaskTimer(this, new StarGateThread(), 0L, 100L);
         scheduler.runTaskTimer(this, new BlockChangeThread(), 0L, 1L);
+        scheduler.runTaskTimer(this, new ControlBlocksUpdateThread(), 0L,
+                getStargateConfig().getStargateGateConfig().controlUpdateDelay());
         scheduler.runTaskTimer(this, new ChunkUnloadThread(), 0L, 100L);
     }
 

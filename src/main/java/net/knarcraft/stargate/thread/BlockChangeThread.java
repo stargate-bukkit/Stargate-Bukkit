@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This thread changes gate blocks to display a gate as open or closed
  *
- * <p>This thread fetches some entries from blockPopulateQueue each time it's called.</p>
+ * <p>This thread fetches some entries from blockChangeRequestQueue each time it's called.</p>
  */
 public class BlockChangeThread implements Runnable {
 
@@ -35,7 +35,7 @@ public class BlockChangeThread implements Runnable {
      */
     public static boolean pollQueue() {
         //Abort if there's no work to be done
-        BlockChangeRequest blockChangeRequest = Stargate.getBlockChangeRequestQueue().poll();
+        BlockChangeRequest blockChangeRequest = Stargate.getControlBlockUpdateRequestQueue().poll();
         if (blockChangeRequest == null) {
             return true;
         }

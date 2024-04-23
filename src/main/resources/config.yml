@@ -107,10 +107,11 @@ gates:
     # Or if using an easily destroyable open/closed material.
     protectEntrance: false
     
-    # Should things like outdated signs, invalid button materials and not properly closed Stargates be fixed at startup?
-    # It is generally recommended to enable this, but for huge servers, the amount of chunks loaded might require way
-    # too much RAM.
-    applyStartupFixes: true
+    # How many ticks should go between each Stargate control update? This process updates any signs that have incorrect
+    # information, and buttons that are missing. While a value of one works fine for small servers with few Stargates,
+    # it has been known to cause lag and high initial RAM usage for huge servers. A value of 20 is one second, which
+    # should work no matter how many Stargates the server has.
+    controlUpdateDelay: 3
   
   # +----------------------------------------------------------------------------------------------+ #
   # |                                       Aesthetic Tweaks                                       | #

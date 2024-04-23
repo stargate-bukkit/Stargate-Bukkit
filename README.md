@@ -434,6 +434,7 @@ gates:
     destroyedByExplosion - Whether to destroy a stargate with explosions, or stop an explosion if it contains a gates controls.
     verifyPortals - Whether or not all the non-sign blocks are checked to match the gate layout when an old stargate is loaded at startup.
     protectEntrance - If true, will protect from users breaking gate entrance blocks (This is more resource intensive than the usual check, and should only be enabled for servers that use solid open/close blocks)
+    controlUpdateDelay - The amount of ticks to wait between each Stargate control block update after startup. Increase this if Stargate loads too many chunks during startup.
   functionality:
     enableBungee - Enable this for BungeeCord support. This allows portals across Bungee servers.
     handleVehicles - Whether or not to handle vehicles going through gates. Set to false to disallow vehicles (Manned or not) going through gates.
