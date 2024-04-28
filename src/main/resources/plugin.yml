@@ -6,7 +6,7 @@ author: EpicKnarvik97
 authors: [ Drakia, PseudoKnight, EpicKnarvik97 ]
 website: https://sgrewritten.org/legacygit
 api-version: 1.16
-softdepend: [ Vault, dynmap ]
+softdepend: [ Vault, dynmap, Geyser-Spigot, floodgate ]
 commands:
   stargate:
     aliases:
