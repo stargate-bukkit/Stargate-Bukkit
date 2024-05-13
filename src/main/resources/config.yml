@@ -20,7 +20,7 @@
 # +----------------------------------------------------------------------------------------------+ #
 
 # What language will stargate use when communicating with your users?
-# Supported values: [de, en, es, fr, hu, it, ja, nb-no, nl, nn-no, pt-br, ru, zh-cn]
+# Supported values: [cs, de, en, es, fr, hu, it, ja, nb, nl, nn, pt, ru, sv, tr, uk, zh]
 #  
 # If SG isn't yet available in your language, please consider adding a translation:
 # https://sgrewritten.org/translate
