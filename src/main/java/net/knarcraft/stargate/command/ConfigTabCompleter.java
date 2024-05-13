@@ -209,6 +209,7 @@ public class ConfigTabCompleter implements TabCompleter {
      */
     private void initializeLanguages() {
         languages = new ArrayList<>();
+        languages.add("cs");
         languages.add("de");
         languages.add("en");
         languages.add("es");
@@ -216,12 +217,15 @@ public class ConfigTabCompleter implements TabCompleter {
         languages.add("hu");
         languages.add("it");
         languages.add("ja");
-        languages.add("nb-no");
+        languages.add("nb");
         languages.add("nl");
-        languages.add("nn-no");
-        languages.add("pt-br");
+        languages.add("nn");
+        languages.add("pt");
         languages.add("ru");
-        languages.add("zh_cn");
+        languages.add("sv");
+        languages.add("tr");
+        languages.add("uk");
+        languages.add("zh");
         //TODO: Generate this list dynamically by listing the language files in the jar and adding the user's custom 
         // language files
     }

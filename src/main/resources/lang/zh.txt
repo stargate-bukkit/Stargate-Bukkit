@@ -1,0 +1,42 @@
+# Stargate Legacy Localisation File: Chinese
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=YK_DZ
+blockMsg=目的地被阻挡
+bungeeDeny=你没有创建跨服星门的权限!
+bungeeDisabled=跨服功能未启用.
+bungeeEmpty=传统跨服星门需要指定目的地和服务器名.
+bungeeSign=传送到
+createConflict=这个星门与现有星门冲突.
+createExists=本星门网络中已存在一个同名星门!
+createFull=该星门网络已满!
+createGateDeny=你没有这个星门结构的使用许可!
+createMsg=星门已创建
+createNameLength=名称太短或太长!
+createNetDeny=你没有这个星门网络的访问许可!
+createPersonal=在私人网络中创建了星门.
+createWorldDeny=你没有链接这个世界的权限
+denyMsg=访问被拒绝!
+destEmpty=目的地列表为空!
+destroyMsg=星门已被摧毁!
+ecoDeduct=花费了 %cost%.
+ecoInFunds=存款不足!
+ecoLoad=Vault 已加载, 但未检测到合适的经济插件
+ecoObtain=从星门 %portal% 赚取了 %cost%!
+ecoRefund=退款 %cost%
+invalidMsg=无效的目的地!
+portalInfoDestination=目的地: %destination%
+portalInfoName=名称: %name%
+portalInfoNetwork=星门网络: %network%
+portalInfoServer=服务器: %server%
+portalInfoTitle=[星门信息]
+prefix=[星门] 
+reloaded=配置文件已重载!
+signDisconnected=断开连接
+signInvalidGate=未知星门
+signRandom=随机
+signRightClick=右键
+signToUse=以使用星门
+teleportMsg=已传送!
+vaultLoadError=未检测到Vault. 经济模块已禁用
+vaultLoaded=检测到 Vault v%version%

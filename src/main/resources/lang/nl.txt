@@ -1,28 +1,32 @@
-author=Grovert11
-prefix=[Stargate] 
-teleportMsg=Je bent geteleporteerd.
-destroyMsg=Gate kapot gemaakt
-invalidMsg=Ongeldige bestemming
+# Stargate Legacy Localisation File: Dutch
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=Grovert11 & Matriarch!
 blockMsg=Bestemming geblokkeerd
-destEmpty=Bestemmingslijst leeg
-denyMsg=Toegang geweigerd
-
-ecoDeduct=%cost% afgeschreven
-ecoRefund=%cost% terug gekregen
-ecoObtain=%cost% gekregen van Stargate %portal%
-ecoInFunds=Saldo niet toereikend
-
+bungeeDeny=Je hebt geen toestemming om bungee poorten te maken!
+bungeeDisabled=Bungeecord ondersteuning is niet ingeschakeld.
+bungeeEmpty=de verouderde Bungee gates vereisen dat je een specifieke bestemming naar poort en server opgeeft
+createConflict=Deze poort conflicteert met een bestaande poort.
+createExists=Er bestaat al een poort met die naam!
+createFull=Er is geen ruimte op dat netwerk!
+createGateDeny=U heeft geen toegang tot deze poort lay-out!
 createMsg=Gate gemaakt
-createNetDeny=Je hebt geen toegang tot dat netwerk.
-createGateDeny=Je mag die Gate-Layout niet gebruiken
-createPersonal=Gate op persoonlijk netwerk gemaakt.
-createNameLength=Naam te chosenLanguage of te kort.
-createExists=Er bestaat al een gate met die naam
-createFull=Dit netwerk is vol.
+createNameLength=Naam te kort of te lang!
+createNetDeny=Je hebt geen toegang tot dat netwerk!
+createPersonal=Poort aanmaken op een persoonlijk netwerk.
 createWorldDeny=Je mag niet in die wereld komen.
-createConflict=Gate maakt een conflict met een bestaande gate.
-
-signRightClick=Right click
-signToUse=to use gate
-signRandom=Random
-signDisconnected=Disconnected
+denyMsg=Toegang geweigerd
+destEmpty=Bestemming lijst is leeg!
+destroyMsg=Poort vernietigd!
+ecoDeduct=%cost% afgetrokken
+ecoInFunds=Onvoldoende saldo!
+ecoObtain=%cost% ontvangen van StarGate %portal%!
+ecoRefund=%cost% terug gekregen
+invalidMsg=Ongeldige bestemming!
+prefix=[Stargate] 
+reloaded=Configuratie herladen!
+signDisconnected=Verbinding verbroken
+signRandom=Willekeurig
+signRightClick=Rechter muis click
+signToUse=Poort gebruiken
+teleportMsg=Geteleporteerd!

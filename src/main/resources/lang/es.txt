@@ -1,28 +1,32 @@
-author=Manuestaire
-prefix=[Stargate] 
-teleportMsg=Teletransportado
-destroyMsg=Portal Destruído
-invalidMsg=Elige Destino
+# Stargate Legacy Localisation File: Spanish
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=	Manuestaire & Translated s.r.l.
 blockMsg=Destino Bloqueado
-destEmpty=La lista de destinos está vacía
-denyMsg=Acceso denegado
-
-ecoDeduct=Pagaste %cost%
-ecoRefund=Reembolsado %cost%
-ecoObtain=Obtenido %cost% del Portal %portal%
-ecoInFunds=No tienes suficiente dinero
-
+bungeeDeny=¡No tienes permiso para hacer puertas bungee!
+bungeeDisabled=El soporte de Bungeecord no está habilitado.
+bungeeEmpty=Las puertas bungee antiguas requieren que especifiques una puerta de destino y un servidor.
+createConflict=Esta puerta entra en conflicto con una puerta existente.
+createExists=¡Ya existe una puerta con ese nombre!
+createFull=¡Esa red está llena!
+createGateDeny=¡No tienes acceso a ese diseño de puerta!
 createMsg=Portal creado
-createNetDeny=No tienes acceso a esta red
-createGateDeny=No tienes acceso a este diseño de portal
-createPersonal=Creando el portal en una red personal
-createNameLength=Nombre demasiado largo o demasiado corto
-createExists=Ya existe una puerta con este nombre
-createFull=Esta red está llena
+createNameLength=¡Nombre demasiado corto o demasiado largo!
+createNetDeny=¡No tienes acceso a esa red!
+createPersonal=Creando puerta en la red personal.
 createWorldDeny=No tienes permisos para acceder a ese mundo
-createConflict=El portal entra en conflicto con un portal ya existente
-
-signRightClick=Click derecho
-signToUse=para usar
-signRandom=Aleatorio
+denyMsg=¡Acceso denegado!
+destEmpty=¡Lista de destinos vacía!
+destroyMsg=¡Puerta destruida!
+ecoDeduct=Se han restado %cost%.
+ecoInFunds=¡Fondos insuficientes!
+ecoObtain=¡Has obtenido %cost% del portal %portal% de StarGate!
+ecoRefund=Reembolsado %cost%
+invalidMsg=¡Destino no válido!
+prefix=[Stargate] 
+reloaded=¡Configuración cargada!
 signDisconnected=Desconectado
+signRandom=Aleatorio
+signRightClick=Clic derecho
+signToUse=y usa la puerta
+teleportMsg=¡Teletransportación completada!

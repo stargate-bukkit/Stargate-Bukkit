@@ -1,28 +1,28 @@
+# Stargate Legacy Localisation File: Russian
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
 author=ckr@jk
-prefix=[Портал] 
-teleportMsg=Вы перемещены
-destroyMsg=Портал уничтожен
-invalidMsg=Недопустимый пункт назначения
-blockMsg=Пункт назначения заблокирован
-destEmpty=Список пунктов назначения пуст
-denyMsg=Доступ запрещен
-
-ecoDeduct=Вычтено %cost%
-ecoRefund=Возвращено %cost%
-ecoObtain=Получено %cost% с портала %portal%
-ecoInFunds=Недостаточно средств
-
+blockMsg=Пункт назначения заблокирован!
+createConflict=Портал конфликтует с уже существующим порталом.
+createExists=Портал с таким именем уже существует!
+createFull=Эта сеть порталов заполнена!
+createGateDeny=У вас нет доступа к размещению портала!
 createMsg=Портал создан
-createNetDeny=У вас нет доступа к этой сети порталов
-createGateDeny=У вас нет доступа к размещению портала
-createPersonal=Создание портала с персональной сетью
-createNameLength=Имя слишком короткое или слишком длинное
-createExists=Портал с таким именем уже существует
-createFull=Эта сеть порталов заполнена
-createWorldDeny=У вас нет доступа к этому миру
-createConflict=Портал конфликтует с уже существующим порталом
-
+createNameLength=Имя слишком короткое или слишком длинное!
+createNetDeny=У вас нет доступа к этой сети порталов!
+createPersonal=Создание портала с персональной сетью.
+createWorldDeny=У вас нет доступа к этому миру!
+denyMsg=Доступ запрещен!
+destEmpty=Список пунктов назначения пуст!
+destroyMsg=Портал уничтожен!
+ecoDeduct=Вычтено %cost%.
+ecoInFunds=Недостаточно средств!
+ecoObtain=Получено %cost% с портала %portal%!
+ecoRefund=Возвращено %cost%.
+invalidMsg=Недопустимый пункт назначения!
+prefix=[Портал] 
+signDisconnected=Disconnected
+signRandom=Random
 signRightClick=Right click
 signToUse=to use gate
-signRandom=Random
-signDisconnected=Disconnected
+teleportMsg=Вы перемещены!

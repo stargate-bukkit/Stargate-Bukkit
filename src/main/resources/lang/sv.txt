@@ -1,0 +1,42 @@
+# Stargate Legacy Localisation File: Swedish
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=Thorinwasher
+blockMsg=Destination är blockerad
+bungeeDeny=Du har inte behörighet att bygga bungee-portar!
+bungeeDisabled=Stöd för bungeecord är inte aktiverat.
+bungeeEmpty=Äldre bungee gates kräver att du anger en destination gate och server.
+bungeeSign=Teleportera till
+createConflict=Denna port står i konflikt med en befintlig port.
+createExists=En port med det namnet existerar redan.
+createFull=Det nätverket är redan fullt!
+createGateDeny=Du har inte tillgång till den port-sorten!
+createMsg=Port skapad
+createNameLength=Namnet är för kort eller för långt!
+createNetDeny=Du har inte tillgång till det nätverket!
+createPersonal=Port skapad på personligt nätverk.
+createWorldDeny=Du har inte tillgång till den världen
+denyMsg=Åtkomst nekad!
+destEmpty=Destinationslistan är tom!
+destroyMsg=Port förstörd!
+ecoDeduct=Avdrog %cost%.
+ecoInFunds=Inte tillräckligt med pengar.
+ecoLoad=Vault laddades, men inget ekonomi-plugin kunde fästas in i
+ecoObtain=Erhöll %cost% från StarGate %portal%!
+ecoRefund=Återbetald %cost%
+invalidMsg=Ogiltig destination!
+portalInfoDestination=Destination: %destination%
+portalInfoName=Namn: %name%
+portalInfoNetwork=Nätverk: %network%
+portalInfoServer=Server: %server%
+portalInfoTitle=[STARGATE INFO]
+prefix=[Stargate] 
+reloaded=Konfigurationen laddades om!
+signDisconnected=Frånkopplad
+signInvalidGate=Ogiltig port
+signRandom=Slumpad
+signRightClick=Högerklicka för
+signToUse=att aktivera port
+teleportMsg=Teleporterad!
+vaultLoadError=Ekonomi är aktiverat men Vault kunde inte laddas. Ekonomi inaktiverat
+vaultLoaded=Vault v%version% hittades

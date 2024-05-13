@@ -1,0 +1,28 @@
+# Stargate Legacy Localisation File: Portuguese
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=TheProbleemm
+blockMsg=Destino bloqueado.
+createConflict=Portal em conflito com um portal ja existente.
+createExists=Já existe um portal com esse nome.
+createFull=Esta rede esta cheia.
+createGateDeny=Voce nao tem acesso a esse portal layout.
+createMsg=Portal criado.
+createNameLength=Nome muito curto ou muito grande.
+createNetDeny=Voce nao tem acesso a essa rede.
+createPersonal=Criando portal em rede pessoal.
+createWorldDeny=Voce nao tem acesso a esse mundo.
+denyMsg=Acesso negado. Voce nao tem permissao.
+destEmpty=Lista de destino vazia.
+destroyMsg=Portal destruido.
+ecoDeduct=O teleporte custou: R$ %cost%.
+ecoInFunds=Fundos insuficientes.
+ecoObtain=Foi obtido R$ %cost% do portal %portal%.
+ecoRefund=Voce foi reembolsado: R$ %cost%.
+invalidMsg=Destino Nao conectado/invalido.
+prefix=[Stargate] 
+signDisconnected=Disconnected
+signRandom=Random
+signRightClick=Right click
+signToUse=to use gate
+teleportMsg=Voce foi teleportado.

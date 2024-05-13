@@ -1,0 +1,42 @@
+# Stargate Legacy Localisation File: Turkish
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=yugurr & axolotlagatsuma
+blockMsg=İstikamet engellenmiş.
+bungeeDeny=Bungee geçitleri yapmak için yetkiniz yok!
+bungeeDisabled=Bungeecord desteği aktif değil.
+bungeeEmpty=Eski bungee geçitleri senden sunucunun ve geçitin hedefini belirlemeni gerektirir.
+bungeeSign=Işınlan
+createConflict=Bu geçit var olan geçitle çakışmaktadır.
+createExists=Bu isimde zaten bir geçit mevcut.
+createFull=Bu ağ dolu!
+createGateDeny=Bu geçit düzenine erişim izniniz yok!
+createMsg=Geçit Oluşturuldu
+createNameLength=İsim çok kısa ya da çok uzun!
+createNetDeny=Bu ağa erişim izniniz yok.
+createPersonal=Kişisel ağda geçit yaratılıyor.
+createWorldDeny=Bu dünyaya erişim izniniz yok.
+denyMsg=Erişim reddedildi!
+destEmpty=Hedef listesi boş!
+destroyMsg=Geçit yıkıldı!
+ecoDeduct=Düşürülmüş %cost%.
+ecoInFunds=Yetersiz Bakiye!
+ecoLoad=Vault yüklendi ama bağlanabileceği bir ekonomi eklentisi bulunamadı.
+ecoObtain=Stargarte %portal% 'ından %cost% elde edildi!
+ecoRefund=%cost% iade edildi
+invalidMsg=Geçersiz Hedef!
+portalInfoDestination=İstikamet: %destination%
+portalInfoName=Ad: %name%
+portalInfoNetwork=Ağ: %network%
+portalInfoServer=Sunucu: %server%
+portalInfoTitle=[STARGATE BİLGİ]
+prefix=[Stargate] 
+reloaded=Yapılandırma yeniden yüklendi!
+signDisconnected=Bağlantı Kesildi
+signInvalidGate=Geçersiz geçit
+signRandom=Rastgele
+signRightClick=Sağ tık
+signToUse=geçiti kullanmak için
+teleportMsg=Işınlanıldı!
+vaultLoadError=Ekonomi aktif ama Vault yüklenemedi. Ekonomi pasif
+vaultLoaded=Vault v%version% bulundu
