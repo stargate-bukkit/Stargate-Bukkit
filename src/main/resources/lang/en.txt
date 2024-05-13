@@ -1,43 +1,41 @@
-prefix=[Stargate] 
-teleportMsg=Teleported
-destroyMsg=Gate Destroyed
-invalidMsg=Invalid Destination
+# Stargate Legacy Localisation File: English
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
 blockMsg=Destination Blocked
-destEmpty=Destination List Empty
-denyMsg=Access Denied
-reloaded=Stargate Reloaded
-
-ecoDeduct=Deducted %cost%
-ecoRefund=Refunded %cost%
-ecoObtain=Obtained %cost% from Stargate %portal%
-ecoInFunds=Insufficient Funds
-ecoLoadError=Vault was loaded, but no economy plugin could be hooked into
-vaultLoadError=Economy is enabled but Vault could not be loaded. Economy disabled
-vaultLoaded=Vault v%version% found
-
-createMsg=Gate Created
-createNetDeny=You do not have access to that network
-createGateDeny=You do not have access to that gate layout
-createPersonal=Creating gate on personal network
-createNameLength=Name too short or too long.
-createExists=A gate by that name already exists
-createFull=This network is full
-createWorldDeny=You do not have access to that world
-createConflict=Gate conflicts with existing gate
-
-signRightClick=Right click
-signToUse=to use gate
-signRandom=Random
-signDisconnected=Disconnected
-signInvalidGate=Invalid gate
-
-bungeeDisabled=BungeeCord support is disabled.
 bungeeDeny=You do not have permission to create BungeeCord gates.
+bungeeDisabled=BungeeCord support is disabled.
 bungeeEmpty=BungeeCord gates require both a destination and network.
 bungeeSign=Teleport to
-
-portalInfoTitle=[STARGATE INFO]
-portalInfoName=Name: %name%
+createConflict=Gate conflicts with existing gate
+createExists=A gate by that name already exists
+createFull=This network is full
+createGateDeny=You do not have access to that gate layout
+createMsg=Gate Created
+createNameLength=Name too short or too long.
+createNetDeny=You do not have access to that network
+createPersonal=Creating gate on personal network
+createWorldDeny=You do not have access to that world
+denyMsg=Access Denied
+destEmpty=Destination List Empty
+destroyMsg=Gate Destroyed
+ecoDeduct=Deducted %cost%
+ecoInFunds=Insufficient Funds
+ecoLoadError=Vault was loaded, but no economy plugin could be hooked into
+ecoObtain=Obtained %cost% from Stargate %portal%
+ecoRefund=Refunded %cost%
+invalidMsg=Invalid Destination
 portalInfoDestination=Destination: %destination%
+portalInfoName=Name: %name%
 portalInfoNetwork=Network: %network%
 portalInfoServer=Server: %server%
+portalInfoTitle=[STARGATE INFO]
+prefix=[Stargate] 
+reloaded=Stargate Reloaded
+signDisconnected=Disconnected
+signInvalidGate=Invalid gate
+signRandom=Random
+signRightClick=Right click
+signToUse=to use gate
+teleportMsg=Teleported
+vaultLoadError=Economy is enabled but Vault could not be loaded. Economy disabled
+vaultLoaded=Vault v%version% found

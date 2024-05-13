@@ -1,0 +1,28 @@
+# Stargate Legacy Localisation File: Czech
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=Domavatus 
+bungeeDeny=Nemáte oprávnění vytvářet bungee brány!
+bungeeDisabled=Podpora Bungeecord není povolena.
+bungeeEmpty=Starší bungee brány vyžadují určení cílové brány a server.
+createConflict=Tato brána je v konfliktu s existující branou.
+createExists=Brána se stejným názvem již existuje.
+createFull=Tato síť je plná!
+createGateDeny=Nemáte přístup k tomuto schématu brány!
+createNameLength=Název je příliš krátký nebo příliš dlouhý!
+createNetDeny=Nemáte přístup k této síti!
+createPersonal=Vytváření brány v osobní síti.
+denyMsg=Přístup zamítnut!
+destEmpty=Seznam cílů je prázdný!
+destroyMsg=Brána zničena!
+ecoDeduct=Odečteno %cost%.
+ecoInFunds=Nedostatek prostředků!
+ecoObtain=Získáno %cost% od Hvězdné brány %portal%.!
+invalidMsg=Neplatný cíl!
+prefix=[Stargate] 
+reloaded=Konfigurace obnovena!
+signDisconnected=Odpojeno
+signRandom=Náhodná
+signRightClick=Pravý klik
+signToUse=k použití brány
+teleportMsg=Teleportován!

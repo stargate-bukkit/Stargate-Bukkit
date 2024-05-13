@@ -1,28 +1,32 @@
-author=fr33soul
-prefix=[Stargate] 
-teleportMsg=Teletrasporto
-destroyMsg=Portale distrutto
-invalidMsg=Destinazione invalida
+# Stargate Legacy Localisation File: Italian
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=fr33soul & herbie_23
 blockMsg=Destinazione bloccata
-destEmpty=Lista destinazioni vuota
-denyMsg=Accesso Negato
-
-ecoDeduct=%cost% pagato
-ecoRefund=%cost% rimborsato
-ecoObtain=%cost% ottenuto dal portale %portal%
-ecoInFunds=Credito insufficiente
-
+bungeeDeny=Non sei autorizzato a creare portali Bungee!
+bungeeDisabled=Il supporto a Bungeecord non è abilitato.
+bungeeEmpty=I portali Bungee ereditari ti richiedono di specificare un portale e server di destinazione.
+createConflict=Questo portale è in conflitto con un portale esistente.
+createExists=Un portale con quel nome esiste già!
+createFull=Quella rete è al completo!
+createGateDeny=Non hai accesso a quella disposizione del portale!
 createMsg=Portale creato
-createNetDeny=Non hai accesso a questa rete
-createGateDeny=Non hai accesso a questo portale speciale
-createPersonal=Creazione di un portale sulla rete personale
-createNameLength=Nome troppo corto o troppo lungo.
-createExists=Questo nome gia' esiste
-createFull=Questa rete e' piena
+createNameLength=Nome troppo breve o troppo lungo!
+createNetDeny=Non hai accesso a quella rete!
+createPersonal=Creazione del portale sulla rete personale.
 createWorldDeny=Non hai accesso a questo mondo
-createConflict=Il portale crea conflitti con uno gia' esistente
-
-signRightClick=Right click
-signToUse=to use gate
-signRandom=Random
-signDisconnected=Disconnected
+denyMsg=Accesso negato!
+destEmpty=Elenco delle destinazioni vuoto!
+destroyMsg=Portale distrutto!
+ecoDeduct=%cost% detratto.
+ecoInFunds=Fondi Insufficienti!
+ecoObtain=%cost% ottenuto dallo StarGate %portal%!
+ecoRefund=%cost% rimborsato
+invalidMsg=Destinazione non valida!
+prefix=[Stargate] 
+reloaded=Configurazione ricaricata!
+signDisconnected=Disconnesso
+signRandom=Casuale
+signRightClick=Click destro
+signToUse=usare portale
+teleportMsg=Teletrasportato!

@@ -1,28 +1,32 @@
-author=EduardBaer
-prefix=[Stargate] 
-teleportMsg=Du wurdest Teleportiert.
-destroyMsg=Gate zerstört
-invalidMsg=Ungültiges Ziel
+# Stargate Legacy Localisation File: German
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=EduardBaer & Matriarch!
 blockMsg=Ziel blockiert
-destEmpty=Zielliste leer
-denyMsg=Zugriff verweigert
-
-ecoDeduct=%cost% abgezogen
-ecoRefund=%cost% zurückerstattet
-ecoObtain=%cost% von Stargate %portal% erhalten
-ecoInFunds=Das kannst du dir nicht leisten.
-
+bungeeDeny=Du hast keine Berechtigung, Bungee-Tore zu erstellen!
+bungeeDisabled=Bungeecord-Unterstützung ist nicht aktiviert.
+bungeeEmpty=Legacy-Bungee-Gates erfordern, dass Sie ein Zieltor und einen Server angeben.
+createConflict=Dieses Tor steht im Widerspruch zu einem bestehenden Tor.
+createExists=Es existiert schon ein Portal mit diesem Namen.
+createFull=Dieses Netzwerk ist voll !
+createGateDeny=Du hast kein Zugang zu dieses Portal format!
 createMsg=Gate erstellt.
-createNetDeny=Du hast keinen Zugriff auf dieses Netzwerk.
-createGateDeny=Du hast keinen Zugriff auf dieses Gate-Layout.
-createPersonal=Gate im persönlichen Netzwerk erstellt.
-createNameLength=Name zu kurz oder zu lang.
-createExists=Ein Gate mit diesem Name existiert bereits.
-createFull=Dieses Netzwerk ist voll.
+createNameLength=Name zu kurz oder zu lang!
+createNetDeny=Du hast kein Zugang zu dieses Netzwerk!
+createPersonal=Erstelle Tor im persönlichen Netzwerk.
 createWorldDeny=Du hast keinen Zugriff auf diese Welt.
-createConflict=Dieses Gate steht im Konflikt mit einem bereits existierenden.
-
-signRightClick=Right click
-signToUse=to use gate
-signRandom=Random
-signDisconnected=Disconnected
+denyMsg=Zugang verweigert!
+destEmpty=Zielliste ist leer!
+destroyMsg=Tor zerstört
+ecoDeduct=%cost% abgezogen .
+ecoInFunds=Unzureichende Mittel
+ecoObtain=%cost% von StarGate %portal% erhalten!
+ecoRefund=%cost% zurückerstattet
+invalidMsg=Ungültiger Ziel!
+prefix=[Stargate] 
+reloaded=Konfiguration wurde neu geladen!
+signDisconnected=Verbindung getrennt
+signRandom=Willkürlich
+signRightClick=Rechtsklick
+signToUse=um Tor zu benutzen
+teleportMsg=Teleportiert!
