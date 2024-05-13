@@ -86,7 +86,15 @@ public final class DynmapManager {
         } else {
             location = portal.getBlockAt(exit);
         }
-        Marker marker = markerSet.createMarker(getPortalMarkerId(portal), portal.getName(), world.getName(),
+
+        String markerId = getPortalMarkerId(portal);
+        if (markerSet.findMarker(markerId) != null) {
+            Stargate.debug("DynmapManager::addPortalMarker", "Skipped marker creation, as the portal " +
+                    "marker " + markerId + " already exists");
+            return;
+        }
+
+        Marker marker = markerSet.createMarker(markerId, portal.getName(), world.getName(),
                 location.getX(), location.getY(), location.getZ(), portalIcon, false);
         if (marker == null) {
             Stargate.logWarning(String.format(
@@ -96,7 +104,7 @@ public final class DynmapManager {
                             Portal name: %s
                             Portal world: %s
                             Portal location: %s,%s,%s""",
-                    getPortalMarkerId(portal), portal.getName(), world.getName(), location.getX(), location.getY(),
+                    markerId, portal.getName(), world.getName(), location.getX(), location.getY(),
                     location.getZ()));
             return;
         }
