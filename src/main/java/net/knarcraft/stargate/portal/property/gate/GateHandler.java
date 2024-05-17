@@ -213,6 +213,7 @@ public class GateHandler {
         
         if (gate.getLayout().getExit() == null) {
             Stargate.logSevere(String.format(failString, "Gates must have one specified exit point"));
+            return false;
         }
 
         if (checkMaterialPredicateFail(gate.getPortalButtonMaterials(), MaterialHelper::isButtonCompatible)) {
