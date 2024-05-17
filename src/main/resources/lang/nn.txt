@@ -1,0 +1,42 @@
+# Stargate Legacy Localisation File: Norwegian Nynorsk
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=EpicKnarvik97 (Kristian Knarvik)
+blockMsg=Destinasjon Blokkert
+bungeeDeny=Du har ikkje tilgang til å oppretta bungee-portar!
+bungeeDisabled=BungeeCord støtte er ikkje skrudd på.
+bungeeEmpty=Forelda bungee portar krev at du spesifiserer ein destinasjons-port og ein tenarmaskin.
+bungeeSign=Teleporter til
+createConflict=Denne porten er i konflikt med ein eksisterande port.
+createExists=Ein port ved det namnet eksisterer allereie!
+createFull=Det nettverket er fullt!
+createGateDeny=Du har ikkje tilgang til det port-formatet!
+createMsg=Port opprettet
+createNameLength=Namnet er for kort eller for langt!
+createNetDeny=Du har ikkje tilgang til det nettverket!
+createPersonal=Opprettar port på personleg nettverk.
+createWorldDeny=Du har ikkje tilgang til den verda
+denyMsg=Tilgang avslått!
+destEmpty=Det finnast ingen tilgjengelege mål!
+destroyMsg=Port Øydelagd!
+ecoDeduct=%cost% vart trekt frå din konto.
+ecoInFunds=Manglande midlar!
+ecoLoad=Vault vart lasta inn men inga brukbar økonomi-utviding vart funnen
+ecoObtain=%cost% vart tilført din konto frå Stjerne-port %portal%!
+ecoRefund=Refundert %cost%
+invalidMsg=Ugyldig mål!
+portalInfoDestination=Destinasjon: %destination%
+portalInfoName=%name%
+portalInfoNetwork=Nettverk: %network%
+portalInfoServer=Server: %server%
+portalInfoTitle=[STJERNEPORT INFO]
+prefix=[Stjerneport] 
+reloaded=Konfigurasjonen vart lasta inn på nytt!
+signDisconnected=Fråkopla
+signInvalidGate=Ugyldig gate
+signRandom=Tilfeldig
+signRightClick=Høgre-klikk
+signToUse=for å bruka port
+teleportMsg=Teleporterte!
+vaultLoadError=Økonomi er skrudd på, men Vault kunne ikkje lastas inn. Økonomi er skrudd av
+vaultLoaded=Vault v%version% funnen

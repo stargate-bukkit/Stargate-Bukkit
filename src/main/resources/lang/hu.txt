@@ -1,28 +1,28 @@
+# Stargate Legacy Localisation File: Hungarian
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
 author=HPoltergeist
-prefix=[Stargate] 
-teleportMsg=Teleportálás
-destroyMsg=Kapu törölve
-invalidMsg=Nincs ilyen cél
 blockMsg=Cél blokkolva
-destEmpty=A cél lista üres
-denyMsg=Hozzáférés megtagadva
-
-ecoDeduct=%cost% levonva
-ecoRefund=%cost% visszatérítve
-ecoObtain=%cost% bevétel a következő kapuból: %portal%
-ecoInFunds=Nincs elég pénzed
-
+createConflict=Ez a kapu ütközik egy meglévö kapuval.
+createExists=Már van ilyen nevű kapu!
+createFull=Ez a hálózat tele van!
+createGateDeny=Nincs hozzáférésed ahhoz a kapucsoporthoz!
 createMsg=Kapu elkészült
-createNetDeny=Nincs hozzáférésed ahhoz a hálózathoz
-createGateDeny=Nincs hozzáférésed ahhoz a kapucsoporthoz
-createPersonal=Kapu készítése magán hálózaton
-createNameLength=A név túl rövid vagy túl hosszú
-createExists=Már van ilyen nevű kapu
-createFull=Ez a hálózat tele van
+createNameLength=A név túl rövid vagy túl hosszú!
+createNetDeny=Nincs hozzáférésed ahhoz a hálózathoz!
+createPersonal=Kapu készítése magán hálózaton.
 createWorldDeny=Nincs hozzáférésed ahhoz a világhoz
-createConflict=Ez a kapu ütközik egy meglévö kapuval
-
+denyMsg=Hozzáférés megtagadva!
+destEmpty=A cél lista üres!
+destroyMsg=Kapu törölve!
+ecoDeduct=%cost% levonva.
+ecoInFunds=Nincs elég pénzed!
+ecoObtain=%cost% bevétel a következő kapuból: %portal%!
+ecoRefund=%cost% visszatérítve
+invalidMsg=Nincs ilyen cél!
+prefix=[Stargate] 
+signDisconnected=Szétkapcsolva
+signRandom=Random
 signRightClick=Jobb katt a
 signToUse=használathoz
-signRandom=Random
-signDisconnected=Szétkapcsolva
+teleportMsg=Teleportálás!

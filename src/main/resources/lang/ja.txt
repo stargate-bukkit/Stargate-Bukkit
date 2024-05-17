@@ -1,44 +1,42 @@
-author=furplag
-prefix=[Stargate]
-teleportMsg=テレポート
-destroyMsg=ゲートが破壊されました
-invalidMsg=無効な行き先
+# Stargate Legacy Localisation File: Japanese
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=Furplag & Translated s.r.l.
 blockMsg=ブロックされた行き先
-destEmpty=行き先リストが空です
-denyMsg=アクセスが拒否されました
-reloaded= Stargate をリロードしました
-
-ecoDeduct=％cost％ の値引き
-ecoRefund=％cost％ の返金
-ecoObtain= Stargate ％portal％ から ％cost％ を得ました
-ecoInFunds=資金の不足
-ecoLoadError= Vault が読み込まれましたが、Economy プラグインをフックできませんでした
-vaultLoadError=Economy は有効になっていますが、Vault をロードできないため Economy は無効化されました
-vaultLoaded= Vault v％version％ が見つかりました
-
+bungeeDeny=バンジーゲートを作る権限がありません！
+bungeeDisabled=Bungeecordサポートが有効になっていません。
+bungeeEmpty=従来のバンジーゲートでは、宛先ゲートとサーバーを指定する必要があります。
+bungeeSign=テレポート先:
+createConflict=このゲートは既存のゲートと競合します。
+createExists=その名前のゲートはすでに存在しています！
+createFull=ネットワークがいっぱいです！
+createGateDeny=そのゲートレイアウトへのアクセス権を持っていません！
 createMsg=ゲートが作成されました
-createNetDeny=対象のネットワークにアクセスできません
-createGateDeny=対象のゲートレイアウトにアクセスできません
-createPersonal=パーソナルネットワーク上にゲートを作成する
-createNameLength=ゲート名が短すぎるか長すぎます
-createExists=すでに存在するゲート名です
-createFull=対象のネットワークはいっぱいです
+createNameLength=名前が短すぎるか、長すぎます！
+createNetDeny=そのネットワークへのアクセス権を持っていません！
+createPersonal=パーソナルネットワーク上にゲートを作成します。
 createWorldDeny=あなたはその世界にアクセスできません
-createConflict=ゲートが既存のゲートと競合しています
-
-signRightClick=右クリック
-signToUse=ゲートを使用する
-signRandom=ランダム
+denyMsg=アクセスが拒否されました！
+destEmpty=目的地リストが空です！
+destroyMsg=ゲートが破壊されました！
+ecoDeduct=%cost%を差し引きました。
+ecoInFunds=お金が足りません！
+ecoLoad=Vault が読み込まれましたが、Economy プラグインをフックできませんでした
+ecoObtain=StarGate%portal%から%cost%を入手しました！
+ecoRefund=%cost% の返金
+invalidMsg=目的地が無効です！
+portalInfoDestination=行き先: %destination%
+portalInfoName=ゲート名: %name%
+portalInfoNetwork=ネットワーク: %network%
+portalInfoServer=サーバー: %server%
+portalInfoTitle=[STARGATE INFO]
+prefix=[スターゲイト]
+reloaded=設定をリロードしました！
 signDisconnected=切断
 signInvalidGate=無効なゲート
-
-bungeeDisabled=BungeeCord サポートは無効になっています
-bungeeDeny=BungeeCord ゲートを作成する権限がありません
-bungeeEmpty=BungeeCord ゲートには、行き先とネットワークの両方が必要です
-bungeeSign=テレポート先:
-
-portalInfoTitle=[STARGATE INFO]
-portalInfoName=ゲート名: ％name％
-portalInfoDestination=行き先: ％destination％
-portalInfoNetwork=ネットワーク: ％network％
-portalInfoServer=サーバー: ％server％
+signRandom=ランダム
+signRightClick=右クリック
+signToUse=ゲートの使用方法
+teleportMsg=瞬間移動しました！
+vaultLoadError=Economy は有効になっていますが、Vault をロードできないため Economy は無効化されました
+vaultLoaded=Vault v%version% が見つかりました

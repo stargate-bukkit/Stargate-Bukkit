@@ -1,0 +1,28 @@
+# Stargate Legacy Localisation File: Ukrainian
+# For a more intuitive interface, please use https://translate.sgrewritten.org
+
+author=Veydzher
+bungeeDeny=Ви не маєте дозволу робити шлюзи Bungee!
+bungeeDisabled=Підтримка Bungeecord не ввімкнена.
+bungeeEmpty=Застарілі шлюзи Bungee вимагають, щоб ви вказали шлюз призначення та сервер.
+createConflict=Цей шлюз конфліктує з наявним шлюзом.
+createExists=Шлюз з такою назвою вже існує!
+createFull=Ця мережа повна!
+createGateDeny=Ви не маєте доступу до цього макета шлюзу!
+createNameLength=Назва занадто коротка або довга!
+createNetDeny=Ви не маєте доступу до цієї мережі!
+createPersonal=Створення шлюзу в персональній мережі.
+denyMsg=У доступі відмовлено!
+destEmpty=Список пунктів призначення порожній!
+destroyMsg=Шлюз знищено!
+ecoDeduct=Вираховано %cost%.
+ecoInFunds=Недостатньо коштів!
+ecoObtain=Отримано %cost% на StarGate %portal%!
+invalidMsg=Недійсний пункт призначення!
+prefix=[Stargate] 
+reloaded=Конфігурацію перезавантажено!
+signDisconnected=Відключено
+signRandom=Випадковий
+signRightClick=ПКМ, щоб
+signToUse=використов. шлюз
+teleportMsg=Телепортовано!
