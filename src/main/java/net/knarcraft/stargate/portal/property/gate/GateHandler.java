@@ -210,6 +210,10 @@ public class GateHandler {
             Stargate.logSevere(String.format(failString, "Gates must have exactly 2 control points."));
             return false;
         }
+        
+        if (gate.getLayout().getExit() == null) {
+            Stargate.logSevere(String.format(failString, "Gates must have one specified exit point"));
+        }
 
         if (checkMaterialPredicateFail(gate.getPortalButtonMaterials(), MaterialHelper::isButtonCompatible)) {
             Stargate.logSevere(String.format(failString, "Gate button must be a type of button."));
