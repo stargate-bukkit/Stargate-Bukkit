@@ -523,6 +523,21 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+#### \[Version 0.11.5.8] Unified Legacy Fork
+
+- Cleaned up handling of invalid gate files during both migration and startup.
+- Backported the rewrite's translation system to legacy: to add new localisations, please use [this page](https://sgrewritten.org/translate).
+- Updated various dependencies.
+- Optimisations in the migrator as to mitigate issues associated with importing large past deployments.
+- Improved handling of some potential error states involving Floodgate and Geyser.
+
+#### \[Version 0.11.5.7] Unified Legacy Fork
+
+- Added support for multiple materials and tags (comma separated).
+- Fixed an issue wherein dynmap crashes would cascade to Stargate
+- Backported the Rewrite's workaround for unexpected `END_GATEWAY` behaviour impacting geyser players.
+- Materials and tags are now handled agnostically; buttons and other generations are now less aggressive.
+
 #### \[Version 0.11.5.6] Unified Legacy Fork
 
 - Fixed a potential stack trace experienced when disabling Dynmap
