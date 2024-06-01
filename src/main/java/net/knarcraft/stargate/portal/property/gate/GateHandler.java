@@ -210,7 +210,7 @@ public class GateHandler {
             Stargate.logSevere(String.format(failString, "Gates must have exactly 2 control points."));
             return false;
         }
-        
+
         if (gate.getLayout().getExit() == null) {
             Stargate.logSevere(String.format(failString, "Gates must have one specified exit point"));
             return false;

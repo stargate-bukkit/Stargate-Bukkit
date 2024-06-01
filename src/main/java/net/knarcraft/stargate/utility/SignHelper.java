@@ -18,6 +18,23 @@ public final class SignHelper {
     }
 
     /**
+     * Gets the lines of the given sign
+     *
+     * @param sign <p>The sign to get lines from</p>
+     * @return <p>The lines of the sign</p>
+     */
+    @NotNull
+    public static String[] getLines(@NotNull Sign sign) {
+        if (HAS_SIGN_SIDES) {
+            return sign.getSide(Side.FRONT).getLines();
+        } else {
+            // Note: This is depreciated, but is currently necessary for pre-1.19.4 support
+            //noinspection deprecation
+            return sign.getLines();
+        }
+    }
+
+    /**
      * Gets the dye color of the given sign
      *
      * @param sign <p>The sign to check</p>

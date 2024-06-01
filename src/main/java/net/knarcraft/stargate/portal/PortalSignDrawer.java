@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.block.sign.Side;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -184,7 +183,8 @@ public class PortalSignDrawer {
      */
     private void updateSign(@NotNull Sign sign, @NotNull String[] lines) {
         boolean updateNecessary = false;
-        String[] oldLines = sign.getSide(Side.FRONT).getLines();
+
+        String[] oldLines = SignHelper.getLines(sign);
         for (int i = 0; i < 4; i++) {
             if (!oldLines[i].equals(lines[i])) {
                 updateNecessary = true;
