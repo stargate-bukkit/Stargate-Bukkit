@@ -408,7 +408,7 @@ public class PortalBuilder {
             throw new LocalisedMessageException(permissionManager.getDenyMessage(), portal, MessageType.DENY);
         }
         String[] lines = new String[]{this.portalName, destinationName == null ? "" : destinationName, network.getName(), flagsString};
-        StargateCreatePortalEvent portalCreateEvent = new StargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, permissionManager == null ? "" : permissionManager.getDenyMessage(), cost);
+        StargateCreatePortalEvent portalCreateEvent = new StargateCreatePortalEvent(eventTarget, portal, lines, !hasPermission, hasPermission ? "" : permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(portalCreateEvent);
         Stargate.log(Level.CONFIG, " player has permission = " + hasPermission);
 
