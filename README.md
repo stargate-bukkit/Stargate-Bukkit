@@ -523,6 +523,12 @@ portalInfoServer=Server: %server%
 
 # Changes
 
+# 
+
+#### \[Version 0.11.5.9] Unified Legacy Fork
+
+- Hotfix for the previous release, which accidently broke backwards compatibility for older servers (1.17-1.19).
+
 #### \[Version 0.11.5.8] Unified Legacy Fork
 
 - Cleaned up handling of invalid gate files during both migration and startup.
