@@ -92,6 +92,7 @@ public class DataMigration6 extends DataMigration {
         try {
             String portalFolderName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[]{"portal-folder", "folders.portalFolder"}, oldConfig));
+            portalFolderName = STARGATE_FOLDER.matcher(portalFolderName).replaceAll("");
             String defaultName = (String) oldConfig.get(LegacyDataHandler
                     .findConfigKey(new String[]{"gates.defaultGateNetwork", "default-gate-network"}, oldConfig));
             migratePortals(portalFolderName, defaultName, stargateAPI);
@@ -270,7 +271,7 @@ public class DataMigration6 extends DataMigration {
     }
 
     @Override
-    public boolean willPopulateRegistry(){
+    public boolean willPopulateRegistry() {
         return true;
     }
 
