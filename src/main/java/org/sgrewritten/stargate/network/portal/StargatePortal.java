@@ -50,13 +50,9 @@ import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An abstract implementation of a real portal
@@ -203,7 +199,11 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void close(boolean forceClose) {
-        if (!isOpen() || (hasFlag(StargateFlag.ALWAYS_ON) && !forceClose) || this.isDestroyed) {
+        if (!isOpen() || (hasFlag(StargateFlag.ALWAYS_ON) && !forceClose)) {
+            return;
+        }
+        if(this.isDestroyed){
+            getGate().close();
             return;
         }
         StargateClosePortalEvent closeEvent = new StargateClosePortalEvent(this, forceClose);
@@ -214,7 +214,6 @@ public class StargatePortal implements RealPortal {
         }
 
         Stargate.log(Level.FINE, "Closing the portal");
-        getGate().close();
         redrawSigns();
         openFor = null;
     }
