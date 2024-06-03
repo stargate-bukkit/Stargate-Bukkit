@@ -305,6 +305,10 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void doTeleport(@NotNull Entity target) {
+        if(overriddenDestination != null){
+            this.doTeleport(target, overriddenDestination);
+            return;
+        }
         this.doTeleport(target, behavior.getDestination());
     }
 
