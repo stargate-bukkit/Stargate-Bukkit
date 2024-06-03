@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
     private final Plugin plugin;
     private final Priority priority;
     private final PortalFlag flag;
-    private final Map<BlockLocation, TwoTuple<Player, Portal>> registeredBlocks = new HashMap<>();
+    private final Map<BlockLocation, TwoTuple<OfflinePlayer, Portal>> registeredBlocks = new HashMap<>();
     private boolean isRegisterPlacedBlock = true;
 
     public BlockHandlerInterfaceMock(PositionType interfaceType, Material handledMaterial, Plugin plugin, Priority priority, Character flag) {
@@ -62,7 +63,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
     }
 
     @Override
-    public boolean registerBlock(Location blockLocation, @Nullable Player player, Portal portal, Metadata data) {
+    public boolean registerBlock(Location blockLocation, @Nullable OfflinePlayer player, Portal portal, Metadata data) {
         if (isRegisterPlacedBlock) {
             registeredBlocks.put(new BlockLocation(blockLocation), new TwoTuple<>(player, portal));
         }
@@ -74,7 +75,7 @@ public class BlockHandlerInterfaceMock implements BlockHandlerInterface {
         registeredBlocks.remove(new BlockLocation(blockLocation));
     }
 
-    public boolean blockIsRegistered(Location blockLocation, @Nullable Player player, Portal portal) {
+    public boolean blockIsRegistered(Location blockLocation, @Nullable OfflinePlayer player, Portal portal) {
         BlockLocation key = new BlockLocation(blockLocation);
         return registeredBlocks.containsKey(key) && registeredBlocks.get(key).getFirstValue() == player
                 && registeredBlocks.get(key).getSecondValue() == portal;

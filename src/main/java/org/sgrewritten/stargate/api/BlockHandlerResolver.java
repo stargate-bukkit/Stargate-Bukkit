@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.api;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +84,7 @@ public class BlockHandlerResolver {
      * @param material The material of the block
      * @param player   The player that placed the block
      */
-    public void registerPlacement(@NotNull RegistryAPI registry,@NotNull Location location,@NotNull List<RealPortal> portals,@NotNull Material material, Player player) {
+    public void registerPlacement(@NotNull RegistryAPI registry,@NotNull Location location,@NotNull List<RealPortal> portals,@NotNull Material material, OfflinePlayer player) {
         if (!blockHandlerMap.containsKey(material)) {
             return;
         }

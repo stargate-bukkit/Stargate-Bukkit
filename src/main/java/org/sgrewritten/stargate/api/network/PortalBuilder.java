@@ -70,7 +70,7 @@ public class PortalBuilder {
     private double cost = 0;
     private @Nullable String destinationName;
     private @Nullable String serverName;
-    private @Nullable Player eventTarget;
+    private @Nullable OfflinePlayer eventTarget;
     private @Nullable Entity messageTarget;
     private @Nullable Player economyTarget;
     private boolean adaptiveGatePositionGeneration = false;
@@ -123,7 +123,7 @@ public class PortalBuilder {
      * @param eventTarget <p>The target of the event</p>
      * @return <p>This portal builder</p>
      */
-    public PortalBuilder addEventHandling(@Nullable Player eventTarget) {
+    public PortalBuilder addEventHandling(@Nullable OfflinePlayer eventTarget) {
         this.eventTarget = eventTarget;
         return this;
     }
@@ -421,7 +421,9 @@ public class PortalBuilder {
             } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
                 message = portalCreateEvent.getDenyReason();
             }
-            MessageUtils.sendMessage(eventTarget, message);
+            if(eventTarget instanceof Player player) {
+                MessageUtils.sendMessage(player, message);
+            }
             throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }
     }
