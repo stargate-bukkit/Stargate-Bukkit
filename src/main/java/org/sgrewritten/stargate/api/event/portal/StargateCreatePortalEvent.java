@@ -21,6 +21,7 @@ public class StargateCreatePortalEvent extends StargatePortalEvent{
     private boolean deny;
     private String denyReason;
     private double cost;
+    private final OfflinePlayer player;
 
     /**
      * Instantiates a new stargate creation event
@@ -41,6 +42,7 @@ public class StargateCreatePortalEvent extends StargatePortalEvent{
         this.cost = cost;
         this.deny = deny;
         this.denyReason = denyReason;
+        this.player = player;
     }
 
     /**
@@ -143,5 +145,9 @@ public class StargateCreatePortalEvent extends StargatePortalEvent{
      */
     public void setDenyReason(String denyReason) {
         this.denyReason = denyReason;
+    }
+
+    public OfflinePlayer getPlayer(){
+        return this.player;
     }
 }
