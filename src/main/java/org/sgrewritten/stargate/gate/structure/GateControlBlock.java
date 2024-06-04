@@ -1,5 +1,7 @@
 package org.sgrewritten.stargate.gate.structure;
 
+import com.cryptomorin.xseries.XMaterial;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -50,6 +52,7 @@ public class GateControlBlock extends GateStructure {
 
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
+        material = material.isLegacy() ? XMaterial.matchXMaterial(material).parseMaterial() : material;
         if (Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)) {
             return true;
         }
