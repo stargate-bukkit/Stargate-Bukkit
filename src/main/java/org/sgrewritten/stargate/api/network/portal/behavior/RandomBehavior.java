@@ -44,6 +44,11 @@ public class RandomBehavior extends AbstractPortalBehavior {
     }
 
     @Override
+    public String getDestinationName() {
+        return null;
+    }
+
+    @Override
     public @NotNull LineData @NotNull [] getLines() {
         return new LineData[]{
                 new PortalLineData(portal, SignLineType.THIS_PORTAL),
