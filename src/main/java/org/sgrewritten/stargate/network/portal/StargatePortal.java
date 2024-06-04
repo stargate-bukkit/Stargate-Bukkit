@@ -215,6 +215,7 @@ public class StargatePortal implements RealPortal {
 
         Stargate.log(Level.FINE, "Closing the portal");
         redrawSigns();
+        getGate().close();
         openFor = null;
     }
 
