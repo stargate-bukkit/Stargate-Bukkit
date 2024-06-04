@@ -8,9 +8,9 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -76,7 +76,11 @@ public final class LegacyPortalStorageLoader {
                     Stargate.log(Level.WARNING, "Ignoring world...");
                     continue;
                 }
-                portals.add(readPortal(line, world, stargateAPI, defaultNetworkName));
+                try {
+                    portals.add(readPortal(line, world, stargateAPI, defaultNetworkName));
+                } catch (Exception e) {
+                    Stargate.log(e);
+                }
                 line = reader.readLine();
             }
             reader.close();
