@@ -9,25 +9,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFertilizeEvent;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.block.SpongeAbsorbEvent;
-import org.bukkit.event.block.TNTPrimeEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -53,7 +35,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -190,12 +171,16 @@ public class BlockEventListener implements Listener {
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
             StargatePreCreatePortalEvent builderEvent = new StargatePreCreatePortalEvent(portalBuilder, gateBuilder, event.getLines(), player);
-            if(builderEvent.callEvent()){
+            if (builderEvent.callEvent()) {
                 portalBuilder.build();
             }
-        } catch (NoFormatFoundException | TranslatableException | GateConflictException silenced) {
-            Stargate.log(Level.FINEST, silenced);
-        } catch (InvalidStructureException ignored) {
+        } catch (NoFormatFoundException ignored) {
+
+        } catch (GateConflictException e){
+            MessageUtils.sendMessage(player, languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
+        } catch(TranslatableException e) {
+            MessageUtils.sendMessage(player, e.getLocalisedMessage(languageManager));
+        }  catch(InvalidStructureException ignored){
         }
     }
 
@@ -207,8 +192,7 @@ public class BlockEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         onPistonEvent(event.getBlocks(), event.getDirection(), BlockEventType.BLOCK_PISTON_EXTEND, event);
-        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlock()
-                .getRelative(event.getDirection()).getLocation(), stargateAPI);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlock().getRelative(event.getDirection()).getLocation(), stargateAPI);
     }
 
     /**
