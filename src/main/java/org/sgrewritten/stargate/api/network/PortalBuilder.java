@@ -328,6 +328,7 @@ public class PortalBuilder {
         }
         //Prevent the player from explicitly setting any internal flags
         flags.removeIf(PortalFlag::isInternalFlag);
+        flags.removeIf((flag) -> flag.isCustom() && !stargateAPI.getMaterialHandlerResolver().hasRegisteredCustomFlag(flag));
         if (destinationName == null || destinationName.isEmpty()) {
             flags.add(StargateFlag.NETWORKED);
         }

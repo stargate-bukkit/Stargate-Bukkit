@@ -3,30 +3,20 @@ package org.sgrewritten.stargate.api;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Metadata;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.flag.CustomFlag;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
-import org.sgrewritten.stargate.util.ExceptionHelper;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class BlockHandlerResolver {
     private final Map<Material, List<BlockHandlerInterface>> blockHandlerMap = new EnumMap<>(Material.class);
@@ -84,7 +74,7 @@ public class BlockHandlerResolver {
      * @param material The material of the block
      * @param player   The player that placed the block
      */
-    public void registerPlacement(@NotNull RegistryAPI registry,@NotNull Location location,@NotNull List<RealPortal> portals,@NotNull Material material, OfflinePlayer player) {
+    public void registerPlacement(@NotNull RegistryAPI registry, @NotNull Location location, @NotNull List<RealPortal> portals, @NotNull Material material, OfflinePlayer player) {
         if (!blockHandlerMap.containsKey(material)) {
             return;
         }
@@ -153,5 +143,9 @@ public class BlockHandlerResolver {
             storageAPI.addFlagType(flagCharacter);
         } catch (StorageWriteException ignored) {
         }
+    }
+
+    public boolean hasRegisteredCustomFlag(PortalFlag portalFlag) {
+        return customFlags.contains(portalFlag);
     }
 }
