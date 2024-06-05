@@ -566,18 +566,24 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void setBehavior(PortalBehavior portalBehavior) {
+        if(isDestroyed){
+            return;
+        }
         clearBehaviorFlags();
         flags.add(portalBehavior.getAttachedFlag());
         this.behavior = Objects.requireNonNull(portalBehavior);
         this.behavior.assignPortal(this);
         Portal destination = this.behavior.getDestination();
-        if (hasFlag(StargateFlag.ALWAYS_ON) && destination != null) {
+        if (hasFlag(StargateFlag.ALWAYS_ON) && destination != null && savedToStorage) {
             open(destination, null);
         }
     }
 
     @Override
     public void redrawSigns() {
+        if(isDestroyed || !savedToStorage){
+            return;
+        }
         LineData[] lineData = behavior.getLines();
         getGate().getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
                 .forEach(portalPosition -> getGate().redrawPosition(portalPosition, lineData));
