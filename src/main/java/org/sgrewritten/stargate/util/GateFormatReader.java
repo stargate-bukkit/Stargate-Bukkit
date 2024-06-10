@@ -27,10 +27,11 @@ public final class GateFormatReader {
 
     private static final String TAG_IDENTIFIER = "#";
     private static final String SPLIT_IDENTIFIER = ",";
-    private static final Material[] allAirTypes = new Material[]{
+    private static final Material[] ALL_AIR_TYPES = new Material[]{
             Material.AIR,
             Material.CAVE_AIR,
             Material.VOID_AIR,
+            Material.LIGHT
     };
     private static final Map<Material, Material> materialEdgeCases = loadMaterialEdgeCases();
     private static Map<String, String> legacyMaterialConversions = null;
@@ -85,7 +86,7 @@ public final class GateFormatReader {
             Material id = Material.getMaterial(stringId.toUpperCase().trim());
 
             if (id == Material.AIR) {
-                foundIDs.addAll(Arrays.asList(allAirTypes));
+                foundIDs.addAll(Arrays.asList(ALL_AIR_TYPES));
                 continue;
             }
 

@@ -56,7 +56,7 @@ public class GateControlBlock extends GateStructure {
         if (Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)) {
             return true;
         }
-        return material.isAir() || material == Material.WATER;
+        return material.isAir() || material == Material.WATER || material == Material.LIGHT;
     }
 
     public void generateStructure(VectorOperation converter, Location topLeft) {

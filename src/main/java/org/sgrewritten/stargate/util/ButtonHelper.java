@@ -41,7 +41,7 @@ public final class ButtonHelper {
      */
     public static Material getButtonMaterial(Location locationToGenerateButton) {
         Material typeToReplace = locationToGenerateButton.getBlock().getType();
-        if (typeToReplace.isAir()) {
+        if (typeToReplace.isAir() || typeToReplace == Material.LIGHT) {
             return getOverWaterButtonMaterial();
         }
         if (typeToReplace == Material.WATER) {
