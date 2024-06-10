@@ -40,7 +40,8 @@ public class MessageUtils {
         }
         StargateComponent component = new StargateComponent(message);
         StargateMessageEvent event = new StargateMessageEvent(component);
-        if (event.callEvent()) {
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
             sendMessageWithoutCheck(receiver, event.getMessage());
         }
     }

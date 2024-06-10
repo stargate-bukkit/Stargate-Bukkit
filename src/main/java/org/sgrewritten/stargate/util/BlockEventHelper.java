@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,7 +21,7 @@ import java.util.logging.Level;
 
 public class BlockEventHelper {
 
-    private BlockEventHelper(){
+    private BlockEventHelper() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -39,7 +40,8 @@ public class BlockEventHelper {
         }
         if (type.canDestroyPortal()) {
             StargateDestroyPortalEvent stargateDestroyPortalEvent = new StargateDestroyPortalEvent(portal, type);
-            if(stargateDestroyPortalEvent.callEvent()) {
+            Bukkit.getPluginManager().callEvent(stargateDestroyPortalEvent);
+            if (!stargateDestroyPortalEvent.isCancelled()) {
                 stargateAPI.getNetworkManager().destroyPortal(portal);
                 return true;
             }
@@ -65,14 +67,14 @@ public class BlockEventHelper {
     /**
      * Does event handling for any event that changes multiple block
      *
-     * @param event      <p>The event to possibly cancel</p>
-     * @param type       <p>The type of event</p>
-     * @param blocks     <p>The blocks affected</p>
+     * @param event  <p>The event to possibly cancel</p>
+     * @param type   <p>The type of event</p>
+     * @param blocks <p>The blocks affected</p>
      */
     public static void onAnyMultiBlockChangeEvent(Cancellable event, BlockEventType type, List<Block> blocks, StargateAPI stargateAPI) {
         Set<RealPortal> affectedPortals = new HashSet<>();
         boolean canDestroy = type.canDestroyPortal();
-        if(type == BlockEventType.BLOCK_EXPLODE || type == BlockEventType.ENTITY_EXPLODE){
+        if (type == BlockEventType.BLOCK_EXPLODE || type == BlockEventType.ENTITY_EXPLODE) {
             canDestroy = ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION);
         }
         for (Block block : blocks) {

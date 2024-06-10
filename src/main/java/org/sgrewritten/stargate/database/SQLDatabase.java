@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -327,7 +328,9 @@ public class SQLDatabase implements StorageAPI {
         }
         gate.assignPortal(portal);
         network.addPortal(portal);
-        new StargatePortalLoadEvent(portal).callEvent();
+        StargatePortalLoadEvent event = new StargatePortalLoadEvent(portal);
+        Bukkit.getPluginManager().callEvent(event);
+
         Stargate.log(Level.FINEST, "Added as normal portal: " + network.getId() + ":" + portal.getName());
     }
 

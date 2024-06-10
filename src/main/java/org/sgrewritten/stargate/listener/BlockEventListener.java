@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -171,16 +172,17 @@ public class BlockEventListener implements Listener {
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
             portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
             StargatePreCreatePortalEvent builderEvent = new StargatePreCreatePortalEvent(portalBuilder, gateBuilder, event.getLines(), player);
-            if (builderEvent.callEvent()) {
+            Bukkit.getPluginManager().callEvent(builderEvent);
+            if (!builderEvent.isCancelled()) {
                 portalBuilder.build();
             }
         } catch (NoFormatFoundException ignored) {
 
-        } catch (GateConflictException e){
+        } catch (GateConflictException e) {
             MessageUtils.sendMessage(player, languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-        } catch(TranslatableException e) {
+        } catch (TranslatableException e) {
             MessageUtils.sendMessage(player, e.getLocalisedMessage(languageManager));
-        }  catch(InvalidStructureException ignored){
+        } catch (InvalidStructureException ignored) {
         }
     }
 
