@@ -9,18 +9,15 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
 import org.sgrewritten.stargate.database.property.StoredProperty;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.PortalLoadException;
-import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.*;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -30,8 +27,8 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.StargatePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
@@ -286,7 +283,7 @@ public class SQLDatabase implements StorageAPI {
             portalData.flags().add(StargateFlag.NETWORKED);
         }
 
-        final List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
+        final List<PortalPosition> portalPositions = getPortalPositions(portalData, portalData.flags().contains(PortalFlag.LEGACY_INTERSERVER) ? portalData.networkName() : network.getId());
 
         //Actually register the gate and its positions
         new StargateRegionTask(portalData.gateData().topLeft()) {

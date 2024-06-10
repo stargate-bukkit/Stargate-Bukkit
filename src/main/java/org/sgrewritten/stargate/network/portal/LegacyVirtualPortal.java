@@ -5,9 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
@@ -51,7 +50,7 @@ public class LegacyVirtualPortal extends VirtualPortal {
             msgData.writeUTF(PluginChannel.LEGACY_BUNGEE.getChannel());
             String msg = BungeeHelper.generateLegacyTeleportMessage(player.getName(), this);
             msgData.writeUTF(msg);
-            Stargate.log(Level.FINEST, bao.toString());
+            Stargate.log(Level.FINEST, "Sending plugin message: " + bao);
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
         } catch (IOException e) {
             Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord teleport packet");
@@ -64,6 +63,7 @@ public class LegacyVirtualPortal extends VirtualPortal {
             DataOutputStream msgData = new DataOutputStream(bao);
             msgData.writeUTF(PluginChannel.PLAYER_CONNECT.getChannel());
             msgData.writeUTF(server);
+            Stargate.log(Level.FINEST, "Sending plugin message: " + bao);
             player.sendPluginMessage(plugin, PluginChannel.BUNGEE.getChannel(), bao.toByteArray());
         } catch (IOException e) {
             Stargate.log(Level.WARNING, "[Stargate] Error sending BungeeCord connect packet");

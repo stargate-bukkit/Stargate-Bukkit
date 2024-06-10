@@ -6,6 +6,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
@@ -14,6 +15,7 @@ import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.BungeeNameException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
@@ -88,5 +90,15 @@ public class LegacyBungeeBehavior extends AbstractPortalBehavior {
     @Override
     public @NotNull StargateFlag getAttachedFlag() {
         return StargateFlag.LEGACY_INTERSERVER;
+    }
+
+    @Override
+    public void assignPortal(@NotNull RealPortal portal){
+        super.assignPortal(portal);
+        try {
+            portal.setNetwork(fakeNetwork);
+        } catch (NameConflictException e) {
+            Stargate.log(e);
+        }
     }
 }

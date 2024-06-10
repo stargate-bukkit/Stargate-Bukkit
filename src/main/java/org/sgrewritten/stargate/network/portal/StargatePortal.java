@@ -52,7 +52,6 @@ import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract implementation of a real portal
@@ -202,7 +201,7 @@ public class StargatePortal implements RealPortal {
         if (!isOpen() || (hasFlag(StargateFlag.ALWAYS_ON) && !forceClose)) {
             return;
         }
-        if(this.isDestroyed){
+        if (this.isDestroyed) {
             getGate().close();
             return;
         }
@@ -238,7 +237,8 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void setNetwork(Network targetNetwork) throws NameConflictException {
-        if (targetNetwork.getPortal(this.name) != null) {
+        Portal conflictingPortal = targetNetwork.getPortal(this.name);
+        if (conflictingPortal != null && conflictingPortal != this) {
             throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()), false);
         }
         this.network = targetNetwork;
@@ -305,7 +305,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void doTeleport(@NotNull Entity target) {
-        if(overriddenDestination != null){
+        if (overriddenDestination != null) {
             this.doTeleport(target, overriddenDestination);
             return;
         }
@@ -566,7 +566,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void setBehavior(PortalBehavior portalBehavior) {
-        if(isDestroyed){
+        if (isDestroyed) {
             return;
         }
         clearBehaviorFlags();
@@ -581,7 +581,7 @@ public class StargatePortal implements RealPortal {
 
     @Override
     public void redrawSigns() {
-        if(isDestroyed || !savedToStorage){
+        if (isDestroyed || !savedToStorage) {
             return;
         }
         LineData[] lineData = behavior.getLines();
