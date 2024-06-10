@@ -82,7 +82,7 @@ public class PlayerEventListener implements Listener {
             handleRelevantClickEvent(block, portalPosition, event);
             return;
         }
-        if (isNonInteractablePortalPart(block.getType()) && registry.getPortal(block.getLocation()) != null) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && isNonInteractablePortalPart(block.getType()) && registry.getPortal(block.getLocation()) != null) {
             event.setCancelled(true);
         }
     }
