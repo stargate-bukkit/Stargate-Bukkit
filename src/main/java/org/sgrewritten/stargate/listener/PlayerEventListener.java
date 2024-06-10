@@ -78,11 +78,13 @@ public class PlayerEventListener implements Listener {
         }
 
         PortalPosition portalPosition = registry.getPortalPosition(block.getLocation());
-        if (portalPosition == null) {
+        if (portalPosition != null) {
+            handleRelevantClickEvent(block, portalPosition, event);
             return;
         }
-
-        handleRelevantClickEvent(block, portalPosition, event);
+        if(Tag.ANVIL.isTagged(block.getType()) && registry.getPortal(block.getLocation()) != null){
+            event.setCancelled(true);
+        }
     }
 
     /**
