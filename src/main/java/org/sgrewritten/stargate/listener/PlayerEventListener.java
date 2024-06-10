@@ -82,9 +82,16 @@ public class PlayerEventListener implements Listener {
             handleRelevantClickEvent(block, portalPosition, event);
             return;
         }
-        if(Tag.ANVIL.isTagged(block.getType()) && registry.getPortal(block.getLocation()) != null){
+        if (isNonInteractablePortalPart(block.getType()) && registry.getPortal(block.getLocation()) != null) {
             event.setCancelled(true);
         }
+    }
+
+    private boolean isNonInteractablePortalPart(Material type) {
+        if (Tag.ANVIL.isTagged(type)) {
+            return true;
+        }
+        return Material.RESPAWN_ANCHOR == type;
     }
 
     /**
@@ -202,7 +209,7 @@ public class PlayerEventListener implements Listener {
         new StargateGlobalTask() {
             @Override
             public void run() {
-                if(Bukkit.getServer().getOnlinePlayers().isEmpty()){
+                if (Bukkit.getServer().getOnlinePlayers().isEmpty()) {
                     return;
                 }
                 try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
@@ -215,7 +222,7 @@ public class PlayerEventListener implements Listener {
                 }
                 this.cancel();
             }
-        }.runTaskTimer(0,20);
+        }.runTaskTimer(0, 20);
 
 
         //Update the server name in the database once it's known
