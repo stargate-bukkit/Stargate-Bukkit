@@ -243,7 +243,7 @@ public class BlockEventListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block toBlock = event.getToBlock();
         Block fromBlock = event.getBlock();
-        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null) || (registry.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
+        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null) || (registry.getPortal(fromBlock.getLocation()) != null)) {
             event.setCancelled(true);
             return;
         }
