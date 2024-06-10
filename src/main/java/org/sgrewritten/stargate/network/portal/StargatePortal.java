@@ -282,9 +282,7 @@ public class StargatePortal implements RealPortal {
     @Override
     public void doTeleport(@NotNull Entity target, @Nullable Portal destination) {
         if (destination == null) {
-            Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), languageManager, economyManager);
-            teleporter.teleport(target);
+            denyTeleportOperation(languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED), target);
             return;
         }
 
@@ -292,9 +290,7 @@ public class StargatePortal implements RealPortal {
         Bukkit.getPluginManager().callEvent(accessEvent);
         if (accessEvent.getDeny()) {
             Stargate.log(Level.CONFIG, " Access event was canceled by an external plugin");
-            Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
-                    0, accessEvent.getDenyReason(), languageManager, economyManager);
-            teleporter.teleport(target);
+            denyTeleportOperation(accessEvent.getDenyReason(), target);
             return;
         }
 
@@ -303,13 +299,24 @@ public class StargatePortal implements RealPortal {
         close(false);
     }
 
+    private void denyTeleportOperation(String message, Entity target){
+        Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
+                0, message, languageManager, economyManager);
+        teleporter.teleport(target);
+    }
+
     @Override
     public void doTeleport(@NotNull Entity target) {
         if (overriddenDestination != null) {
             this.doTeleport(target, overriddenDestination);
             return;
         }
-        this.doTeleport(target, behavior.getDestination());
+        Portal destination = behavior.getDestination();
+        if(target instanceof Player player && !network.canSeePortal(destination, this, player)){
+            denyTeleportOperation(languageManager.getErrorMessage(TranslatableMessage.DENY), player);
+            return;
+        }
+        this.doTeleport(target, destination);
     }
 
     @Override

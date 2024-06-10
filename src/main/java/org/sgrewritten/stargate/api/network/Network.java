@@ -102,6 +102,15 @@ public interface Network {
 
 
     /**
+     * Whether the origin portal can list / choose the portal to see.
+     * @param portalToSee <p>The portal to see</p>
+     * @param origin <p>The requesting portal</p>
+     * @param player <p>The actor initiating this request</p>
+     * @return <p>True if the origin portal and player has permission</p>
+     */
+    boolean canSeePortal(Portal portalToSee, Portal origin, Player player);
+
+    /**
      * Gets the style this network should be highlighted with by default
      *
      * @return <p>The highlighting style of this network</p>

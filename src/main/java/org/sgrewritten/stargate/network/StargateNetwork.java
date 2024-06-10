@@ -180,10 +180,7 @@ public class StargateNetwork implements Network {
         Set<String> removeList = new HashSet<>();
         for (String portalName : output) {
             Portal target = getPortal(portalName);
-            boolean deny = (target.hasFlag(StargateFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
-            StargateListPortalEvent event = new StargateListPortalEvent(requester, player, target, deny);
-            Bukkit.getPluginManager().callEvent(event);
-            if (event.getDeny()) {
+            if (!canSeePortal(target, requester, player)) {
                 removeList.add(portalName);
             }
         }
@@ -194,6 +191,14 @@ public class StargateNetwork implements Network {
     private boolean playerCanSeePrivatePortal(Portal portalToSee, Player player) {
         return player != null && (player.hasPermission(BypassPermission.PRIVATE.getPermissionString())
                 || player.getUniqueId().equals(portalToSee.getOwnerUUID()));
+    }
+
+    @Override
+    public boolean canSeePortal(Portal portalToSee, Portal origin, Player player){
+        boolean deny = (portalToSee.hasFlag(StargateFlag.PRIVATE) && !playerCanSeePrivatePortal(portalToSee, player));
+        StargateListPortalEvent event = new StargateListPortalEvent(origin, player, portalToSee, deny);
+        Bukkit.getPluginManager().callEvent(event);
+        return !event.getDeny();
     }
 
     @Override
