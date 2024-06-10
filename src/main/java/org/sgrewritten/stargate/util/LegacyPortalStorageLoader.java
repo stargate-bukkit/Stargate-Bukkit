@@ -18,7 +18,9 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
@@ -66,6 +68,7 @@ public final class LegacyPortalStorageLoader {
 
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
+            List<GlobalPortalId> invalidPortals = new ArrayList<>();
             while (line != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
@@ -78,12 +81,25 @@ public final class LegacyPortalStorageLoader {
                 }
                 try {
                     portals.add(readPortal(line, world, stargateAPI, defaultNetworkName));
+                } catch (InvalidStructureException e) {
+                    String[] portalProperties = line.split(":");
+                    invalidPortals.add(new GlobalPortalId(portalProperties[0], (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID) );
                 } catch (Exception e) {
                     Stargate.log(e);
                 }
                 line = reader.readLine();
             }
             reader.close();
+            if(!invalidPortals.isEmpty()){
+                final StringBuilder stringBuilder = new StringBuilder("Could not load the following gate formats:");
+                invalidPortals.forEach(globalPortalId -> {
+                    stringBuilder.append("\n");
+                    stringBuilder.append(globalPortalId.toString());
+                });
+                stringBuilder.append("\n\n");
+                stringBuilder.append("This has most likely been caused by an invalid or absent gate format");
+                Stargate.log(Level.WARNING, stringBuilder.toString());
+            }
         }
         return portals;
     }
