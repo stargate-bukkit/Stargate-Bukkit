@@ -13,7 +13,7 @@ public class NetworkLine extends AbstractSignLine {
     private final Network network;
 
     public NetworkLine(List<StargateComponent> components, Network network) {
-        super(components);
+        super(new ArrayList<>(components));
         this.network = network;
     }
 
