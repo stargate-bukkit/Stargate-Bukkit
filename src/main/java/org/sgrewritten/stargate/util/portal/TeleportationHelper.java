@@ -36,7 +36,7 @@ public class TeleportationHelper {
      * @return <p>A possible spawn location, or null if no viable location could be found</p>
      */
     public static Location findViableSpawnLocation(Entity entity, RealPortal destinationPortal) {
-        BlockVector forward = destinationPortal.getExitFacing().getDirection().toBlockVector();
+        BlockVector forward = destinationPortal.getExitFacing().getOppositeFace().getDirection().toBlockVector();
         BlockVector left = forward.clone().rotateAroundY(Math.PI / 2).toBlockVector();
         BlockVector right = forward.clone().rotateAroundY(-Math.PI / 2).toBlockVector();
         BlockVector up = new BlockVector(0, 1, 0);

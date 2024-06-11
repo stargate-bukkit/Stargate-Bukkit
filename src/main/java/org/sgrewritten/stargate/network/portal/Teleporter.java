@@ -17,8 +17,8 @@ import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
@@ -29,11 +29,7 @@ import org.sgrewritten.stargate.util.MessageUtils;
 import org.sgrewritten.stargate.util.VectorUtils;
 import org.sgrewritten.stargate.util.portal.TeleportationHelper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -133,6 +129,10 @@ public class Teleporter {
             String worldBorderInterfereMessage = languageManager.getErrorMessage(TranslatableMessage.OUTSIDE_WORLD_BORDER);
             entitiesToTeleport.forEach(entity -> entity.sendMessage(worldBorderInterfereMessage));
             return;
+        }
+        // Avoid collisions by teleporting the entity to a free location
+        if (origin == null || !origin.getExit().getWorld().equals(world)) {
+            exit = TeleportationHelper.findViableSpawnLocation(baseEntity, destination);
         }
         new StargateEntityTask(baseEntity) {
             @Override
