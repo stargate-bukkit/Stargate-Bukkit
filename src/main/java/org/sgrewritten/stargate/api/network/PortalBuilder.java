@@ -14,43 +14,26 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
-import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.gate.GateBuilder;
-import org.sgrewritten.stargate.api.gate.GateFormatAPI;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.*;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
-import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.LocalisedMessageException;
-import org.sgrewritten.stargate.exception.NoFormatFoundException;
-import org.sgrewritten.stargate.exception.TranslatableException;
+import org.sgrewritten.stargate.exception.*;
+import org.sgrewritten.stargate.exception.name.NameConflictException;
+import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.manager.UnrestrictedPermissionManager;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.util.EconomyHelper;
-import org.sgrewritten.stargate.util.MessageUtils;
-import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.util.SpawnDetectionHelper;
-import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
-import org.sgrewritten.stargate.util.VectorUtils;
+import org.sgrewritten.stargate.util.*;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -278,45 +261,50 @@ public class PortalBuilder {
      * @throws InvalidStructureException
      */
     public RealPortal build() throws TranslatableException, GateConflictException, NoFormatFoundException, InvalidStructureException {
-        setup();
-        Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
-        if (!disallowedFlags.isEmpty() && messageTarget != null) {
-            String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
-            MessageUtils.sendMessage(messageTarget, TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
-        }
-        flags.removeAll(disallowedFlags);
-        gateAPI = getOrCreateGate();
-        if (network == null) {
-            network = stargateAPI.getNetworkManager().selectNetwork(networkString, permissionManager, owner, flags);
-        }
-        NetworkType.removeNetworkTypeRelatedFlags(flags);
-        flags.add(network.getType().getRelatedFlag());
-        UUID ownerUUID = network.getType() == NetworkType.PERSONAL ? UUID.fromString(network.getId()) : owner.getUniqueId();
-        RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, gateAPI, ownerUUID, stargateAPI, metaData);
-        gateAPI.assignPortal(portal);
-        permissionAndEventHandling(portal, network);
+        try {
+            setup();
+            Set<PortalFlag> disallowedFlags = permissionManager.returnDisallowedFlags(flags);
+            if (!disallowedFlags.isEmpty() && messageTarget != null) {
+                String unformattedMessage = stargateAPI.getLanguageManager().getWarningMessage(TranslatableMessage.LACKING_FLAGS_PERMISSION);
+                MessageUtils.sendMessage(messageTarget, TranslatableMessageFormatter.formatFlags(unformattedMessage, disallowedFlags));
+            }
+            flags.removeAll(disallowedFlags);
+            gateAPI = getOrCreateGate();
+            if (network == null) {
+                network = stargateAPI.getNetworkManager().selectNetwork(networkString, permissionManager, owner, flags);
+            }
+            NetworkType.removeNetworkTypeRelatedFlags(flags);
+            flags.add(network.getType().getRelatedFlag());
+            UUID ownerUUID = network.getType() == NetworkType.PERSONAL ? UUID.fromString(network.getId()) : owner.getUniqueId();
+            RealPortal portal = PortalCreationHelper.createPortal(network, portalName, destinationName, serverName, flags, gateAPI, ownerUUID, stargateAPI, metaData);
+            gateAPI.assignPortal(portal);
+            permissionAndEventHandling(portal, network);
 
-        flagChecks(flags);
-        economyCheck(portal);
-        finalChecks(portal, network);
-        getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
-        //Save the portal and inform the user
-        stargateAPI.getNetworkManager().savePortal(portal, network);
-        gateAPI.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
-                .forEach(portalPosition -> portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR, portalPosition));
-        Stargate.log(Level.FINE, "Successfully created a new portal");
-        String msg;
-        if (flags.contains(StargateFlag.PERSONAL_NETWORK)) {
-            msg = stargateAPI.getLanguageManager().getMessage(TranslatableMessage.CREATE_PERSONAL);
-        } else {
-            String unformattedMessage = stargateAPI.getLanguageManager().getMessage(TranslatableMessage.CREATE);
-            msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, network.getName());
+            flagChecks(flags);
+            economyCheck(portal);
+            finalChecks(portal, network);
+            getLocationsAdjacentToPortal(gateAPI).forEach(position -> stargateAPI.getMaterialHandlerResolver().registerPlacement(stargateAPI.getRegistry(), position, List.of(portal), position.getBlock().getType(), eventTarget));
+            //Save the portal and inform the user
+            stargateAPI.getNetworkManager().savePortal(portal, network);
+            gateAPI.getPortalPositions().stream().filter(portalPosition -> portalPosition.getPositionType() == PositionType.SIGN)
+                    .forEach(portalPosition -> portal.setSignColor(ColorRegistry.DEFAULT_DYE_COLOR, portalPosition));
+            Stargate.log(Level.FINE, "Successfully created a new portal");
+            String msg;
+            if (flags.contains(StargateFlag.PERSONAL_NETWORK)) {
+                msg = stargateAPI.getLanguageManager().getMessage(TranslatableMessage.CREATE_PERSONAL);
+            } else {
+                String unformattedMessage = stargateAPI.getLanguageManager().getMessage(TranslatableMessage.CREATE);
+                msg = TranslatableMessageFormatter.formatNetwork(unformattedMessage, network.getName());
+            }
+            if (flags.contains(StargateFlag.INTERSERVER)) {
+                msg = msg + " " + stargateAPI.getLanguageManager().getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
+            }
+            MessageUtils.sendMessageFromPortal(portal, messageTarget, msg, MessageType.CREATE);
+            return portal;
+        } catch (NameLengthException | NameConflictException e) {
+            MessageUtils.sendMessage(messageTarget, e.getLocalisedMessage(stargateAPI.getLanguageManager()));
+            throw e;
         }
-        if (flags.contains(StargateFlag.INTERSERVER)) {
-            msg = msg + " " + stargateAPI.getLanguageManager().getString(TranslatableMessage.UNIMPLEMENTED_INTER_SERVER);
-        }
-        MessageUtils.sendMessageFromPortal(portal, messageTarget, msg, MessageType.CREATE);
-        return portal;
     }
 
     private void setup() {
@@ -421,9 +409,6 @@ public class PortalBuilder {
                 message = stargateAPI.getLanguageManager().getErrorMessage(TranslatableMessage.ADDON_INTERFERE);
             } else if (!portalCreateEvent.getDenyReason().isEmpty()) {
                 message = portalCreateEvent.getDenyReason();
-            }
-            if(eventTarget instanceof Player player) {
-                MessageUtils.sendMessage(player, message);
             }
             throw new LocalisedMessageException(message, portal, MessageType.DENY);
         }

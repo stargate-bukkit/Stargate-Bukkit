@@ -176,13 +176,9 @@ public class BlockEventListener implements Listener {
             if (!builderEvent.isCancelled()) {
                 portalBuilder.build();
             }
-        } catch (NoFormatFoundException ignored) {
-
-        } catch (GateConflictException e) {
-            MessageUtils.sendMessage(player, languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-        } catch (TranslatableException e) {
-            MessageUtils.sendMessage(player, e.getLocalisedMessage(languageManager));
-        } catch (InvalidStructureException ignored) {
+        } catch (GateConflictException | TranslatableException suppressed) {
+            Stargate.log(Level.FINEST, suppressed);
+        } catch (InvalidStructureException | NoFormatFoundException ignored) {
         }
     }
 
