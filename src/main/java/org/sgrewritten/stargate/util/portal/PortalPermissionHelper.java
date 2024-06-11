@@ -6,15 +6,17 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -48,6 +50,12 @@ public final class PortalPermissionHelper {
         }
         if (portal.hasFlag(StargateFlag.NETWORKED)) {
             permissionList.add(SG_USE + ".type.networked");
+        }
+        if (portal.getNetwork().getType() == NetworkType.PERSONAL && actor instanceof Player player) {
+            UUID networkOwnerUUID = UUID.fromString(portal.getNetwork().getId());
+            if (!networkOwnerUUID.equals(player.getUniqueId())) {
+                permissionList.add(SG_USE + ".personal.other");
+            }
         }
         return permissionList;
     }
@@ -99,7 +107,7 @@ public final class PortalPermissionHelper {
      * @return <p> A list with related permissions </p>
      */
     public static List<String> getOpenPermissions(RealPortal entrance, Portal exit, Entity actor) {
-        if (!(actor instanceof Player)) {
+        if (!(actor instanceof Player player)) {
             return new ArrayList<>();
         }
         List<String> permList = generateDefaultPortalPermissionList(entrance, SG_USE);
@@ -109,6 +117,13 @@ public final class PortalPermissionHelper {
         }
         if (exit instanceof RealPortal realPortal) {
             permList.add(generateWorldPermission(realPortal, SG_USE));
+        }
+
+        if (entrance.getNetwork().getType() == NetworkType.PERSONAL) {
+            UUID networkOwnerUUID = UUID.fromString(entrance.getNetwork().getId());
+            if (!networkOwnerUUID.equals(player.getUniqueId())) {
+                permList.add(SG_USE + ".personal.other");
+            }
         }
         return permList;
     }
@@ -140,6 +155,12 @@ public final class PortalPermissionHelper {
             if (entrance.hasFlag(StargateFlag.PRIVATE) && !entrance.getOwnerUUID().equals(target.getUniqueId())) {
                 Stargate.log(Level.FINER, " Adding a bypass constraint for private portals");
                 permList.add(BypassPermission.PRIVATE.getPermissionString());
+            }
+            if (entrance.getNetwork().getType() == NetworkType.PERSONAL) {
+                UUID networkOwnerUUID = UUID.fromString(entrance.getNetwork().getId());
+                if (!networkOwnerUUID.equals(target.getUniqueId())) {
+                    permList.add(identifier + ".personal.other");
+                }
             }
         }
 
