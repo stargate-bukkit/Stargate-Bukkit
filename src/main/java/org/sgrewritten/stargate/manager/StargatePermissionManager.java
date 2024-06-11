@@ -223,6 +223,9 @@ public class StargatePermissionManager implements PermissionManager {
         if (permissionNode.equals("sg.use.follow")) {
             return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
+        if(permissionNode.equals("sg.admin.bypass.private")){
+            return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
+        }
 
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
             if (permissionNode.contains("world")) {
