@@ -47,6 +47,7 @@ import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
+import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.portal.PortalHelper;
 
@@ -268,8 +269,10 @@ public class StargatePortal implements RealPortal {
                 entranceFace = entranceFace.getOppositeFace();
             }
 
-            boolean shouldCharge = !(this.hasFlag(StargateFlag.FREE) || origin.hasFlag(StargateFlag.FREE))
-                    && target instanceof Player && !target.hasPermission(BypassPermission.COST_USE.getPermissionString());
+            boolean shouldCharge = false;
+            if(target instanceof Player player){
+                shouldCharge = EconomyHelper.shouldChargePlayer(player, origin, BypassPermission.COST_USE);
+            }
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
         }
 
