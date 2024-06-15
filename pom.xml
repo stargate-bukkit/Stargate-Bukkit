@@ -4,7 +4,7 @@
 
     <groupId>org.sgrewritten</groupId>
     <artifactId>stargate</artifactId>
-    <version>1.0.0.16-NIGHTLY-3</version>
+    <version>1.0.0.16-NIGHTLY</version>
     <name>StarGate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
     <url>https://sgrewitten.org</url>
@@ -182,7 +182,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>Stargate-${project.version}</finalName>
+        <finalName>Stargate-${project.version}-${git.commit.id.abbrev}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -301,6 +301,28 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
             </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>9.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.commit.id.abbrev</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -308,6 +330,8 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>**</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>
