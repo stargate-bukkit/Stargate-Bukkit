@@ -328,19 +328,18 @@ public class StargatePermissionManager implements PermissionManager {
             //It's not possible to create a non-bungee portal on this network
             return false;
         }
-        switch (type) {
-            case DEFAULT:
-                return hasPermission(target, NETWORK_CREATE_PERMISSION + ".default");
-            case TERMINAL:
-                return false; //NOT TET IMPLEMENTED
-            case PERSONAL:
+        return switch (type) {
+            case DEFAULT -> hasPermission(target, NETWORK_CREATE_PERMISSION + ".default");
+            case TERMINAL -> false; //NOT YET IMPLEMENTED
+            case PERSONAL -> {
                 if (target.getName().equals(networkName) || networkName.isBlank()) {
-                    return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.own");
+                    yield hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.own");
                 }
-                return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);
-            default:
-                return hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
-        }
+                yield hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);
+            }
+            default ->
+                    hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
+        };
     }
 
     @Override
