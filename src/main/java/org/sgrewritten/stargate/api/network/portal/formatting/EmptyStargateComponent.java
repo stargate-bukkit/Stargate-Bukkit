@@ -1,12 +1,13 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
+import com.drew.lang.annotations.NotNull;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 
 final class EmptyStargateComponent implements StargateComponent {
 
     @Override
-    public void setSignLine(int index, Sign sign) {
+    public void setSignLine(int index, @NotNull Sign sign) {
         sign.setLine(index, "");
     }
 

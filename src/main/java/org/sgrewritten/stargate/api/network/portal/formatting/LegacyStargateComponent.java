@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
+import com.drew.lang.annotations.NotNull;
 import com.drew.lang.annotations.Nullable;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.block.Sign;
@@ -23,7 +24,7 @@ public final class LegacyStargateComponent implements StargateComponent {
     }
 
     @Override
-    public void setSignLine(int index, Sign sign) {
+    public void setSignLine(int index,@NotNull Sign sign) {
         if(text != null) {
             sign.setLine(index, text);
         }

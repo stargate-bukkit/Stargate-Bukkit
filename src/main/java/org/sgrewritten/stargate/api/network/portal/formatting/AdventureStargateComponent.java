@@ -22,12 +22,12 @@ public final class AdventureStargateComponent implements StargateComponent {
         return text;
     }
 
-    public static Holder<StargateComponent> of(Component text) {
+    public static Holder<StargateComponent> of(@NotNull Component text) {
         return new Holder<>(new AdventureStargateComponent(text));
     }
 
     @Override
-    public void setSignLine(int index, Sign sign) {
+    public void setSignLine(int index,@NotNull  Sign sign) {
         sign.line(index, text);
     }
 
