@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.api.container.Holder;
@@ -39,5 +40,10 @@ public final class LegacyStargateComponent implements StargateComponent {
             return new LegacyStargateComponent(this.getText());
         }
         throw new IllegalArgumentException("Can not combine with AdventureComponent");
+    }
+
+    @Override
+    public String plainText() {
+        return ChatColor.stripColor(text);
     }
 }

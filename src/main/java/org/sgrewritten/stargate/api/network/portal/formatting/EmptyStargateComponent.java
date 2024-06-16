@@ -22,4 +22,9 @@ final class EmptyStargateComponent implements StargateComponent {
         }
         return new EmptyStargateComponent();
     }
+
+    @Override
+    public String plainText() {
+        return "";
+    }
 }

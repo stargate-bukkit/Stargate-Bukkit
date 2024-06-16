@@ -17,4 +17,6 @@ public sealed interface StargateComponent permits LegacyStargateComponent, Adven
     void sendMessage(Entity receiver);
 
     StargateComponent append(StargateComponent value);
+
+    String plainText();
 }
