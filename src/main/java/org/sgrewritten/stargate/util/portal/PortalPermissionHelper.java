@@ -13,10 +13,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -25,10 +22,11 @@ import java.util.logging.Level;
 public final class PortalPermissionHelper {
 
     private PortalPermissionHelper() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     private static final String SG_USE = "sg.use";
+    private static final String USE_PERSONAL_OTHER = "sg.use.personal.other";
 
     /**
      * Generate access permissions
@@ -38,7 +36,7 @@ public final class PortalPermissionHelper {
      * @return <p> A list with related permissions </p>
      */
     public static List<String> getAccessPermissions(RealPortal portal, Entity actor) {
-        if (!(actor instanceof Player)) {
+        if (!(actor instanceof Player player)) {
             return new ArrayList<>();
         }
         List<String> permissionList = generateDefaultPortalPermissionList(portal, SG_USE);
@@ -51,10 +49,10 @@ public final class PortalPermissionHelper {
         if (portal.hasFlag(StargateFlag.NETWORKED)) {
             permissionList.add(SG_USE + ".type.networked");
         }
-        if (portal.getNetwork().getType() == NetworkType.PERSONAL && actor instanceof Player player) {
+        if (portal.getNetwork().getType() == NetworkType.PERSONAL) {
             UUID networkOwnerUUID = UUID.fromString(portal.getNetwork().getId());
             if (!networkOwnerUUID.equals(player.getUniqueId())) {
-                permissionList.add(SG_USE + ".personal.other");
+                permissionList.add(USE_PERSONAL_OTHER + "." + networkOwnerUUID.toString().toLowerCase(Locale.ROOT));
             }
         }
         return permissionList;
@@ -122,7 +120,7 @@ public final class PortalPermissionHelper {
         if (entrance.getNetwork().getType() == NetworkType.PERSONAL) {
             UUID networkOwnerUUID = UUID.fromString(entrance.getNetwork().getId());
             if (!networkOwnerUUID.equals(player.getUniqueId())) {
-                permList.add(SG_USE + ".personal.other");
+                permList.add(USE_PERSONAL_OTHER + "." + networkOwnerUUID.toString().toLowerCase(Locale.ROOT));
             }
         }
         return permList;
@@ -159,7 +157,7 @@ public final class PortalPermissionHelper {
             if (entrance.getNetwork().getType() == NetworkType.PERSONAL) {
                 UUID networkOwnerUUID = UUID.fromString(entrance.getNetwork().getId());
                 if (!networkOwnerUUID.equals(target.getUniqueId())) {
-                    permList.add(identifier + ".personal.other");
+                    permList.add(USE_PERSONAL_OTHER + "." + networkOwnerUUID.toString().toLowerCase(Locale.ROOT));
                 }
             }
         }
