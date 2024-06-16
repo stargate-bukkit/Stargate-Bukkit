@@ -9,6 +9,8 @@ import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.formatting.AdventureStargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.LegacyStargateComponent;
 import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 import org.sgrewritten.stargate.property.NonLegacyClass;
 
@@ -21,7 +23,7 @@ public class MessageUtils {
         if (message == null || message.isBlank() || receiver == null) {
             return;
         }
-        StargateComponent component = new StargateComponent(message);
+        StargateComponent component = new LegacyStargateComponent(message);
         StargateSendMessagePortalEvent event;
         if (Bukkit.isPrimaryThread()) {
             event = new SyncStargateSendMessagePortalEvent(portal, receiver, type, component);
@@ -30,7 +32,7 @@ public class MessageUtils {
         }
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            sendMessageWithoutCheck(receiver, event.getMessage());
+            event.getMessage().value.sendMessage(receiver);
         }
     }
 
@@ -38,19 +40,11 @@ public class MessageUtils {
         if (receiver == null){
             return;
         }
-        StargateComponent component = new StargateComponent(message);
+        StargateComponent component = new LegacyStargateComponent(message);
         StargateMessageEvent event = new StargateMessageEvent(component);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            sendMessageWithoutCheck(receiver, event.getMessage());
-        }
-    }
-
-    private static void sendMessageWithoutCheck(Entity target, StargateComponent message) {
-        if (NonLegacyClass.COMPONENT.isImplemented()) {
-            target.sendMessage(message.getText());
-        } else {
-            target.sendMessage(message.getLegacyText());
+            event.getMessage().sendMessage(receiver);
         }
     }
 }

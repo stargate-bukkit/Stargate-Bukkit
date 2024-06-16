@@ -1,17 +1,18 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
+import org.sgrewritten.stargate.api.container.Holder;
 import java.util.List;
 
 public abstract class AbstractSignLine implements SignLine {
 
-    private final List<StargateComponent> components;
+    private final List<Holder<StargateComponent>> components;
 
-    protected AbstractSignLine(List<StargateComponent> components) {
+    protected AbstractSignLine(List<Holder<StargateComponent>> components) {
         this.components = components;
     }
 
     @Override
-    public List<StargateComponent> getComponents() {
+    public List<Holder<StargateComponent>> getComponents() {
         return components;
     }
 

@@ -2,13 +2,7 @@ package org.sgrewritten.stargate.network.portal.formatting;
 
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
-import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
-import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
@@ -38,12 +32,12 @@ public class NoLineColorFormatter implements LineFormatter {
     private SignLine getNetworkSignLine(NetworkLineData lineData){
         Network network = lineData.getNetwork();
         HighlightingStyle highlightingStyle = network.getHighlightingStyle();
-        return new NetworkLine(List.of(new StargateComponent(highlightingStyle.getHighlightedName(network.getName()))),network);
+        return new NetworkLine(List.of(LegacyStargateComponent.of(highlightingStyle.getHighlightedName(network.getName()))),network);
     }
 
     private SignLine getPortalSignLine(PortalLineData lineData, HighlightingStyle highlightingStyle){
         Portal portal = lineData.getPortal();
         String portalName = portal == null ? lineData.getText() : portal.getName();
-        return new PortalLine(List.of(new StargateComponent(highlightingStyle.getHighlightedName(portalName))),portal,lineData.getType());
+        return new PortalLine(List.of(LegacyStargateComponent.of(highlightingStyle.getHighlightedName(portalName))),portal,lineData.getType());
     }
 }

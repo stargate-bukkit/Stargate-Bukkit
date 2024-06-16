@@ -33,7 +33,8 @@ import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponentDeserialiser;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponentCombiner;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.vectorlogic.MatrixVectorOperation;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
@@ -165,13 +166,8 @@ public class Gate implements GateAPI {
 
     private void setSignLines(Sign sign, SignLine[] signLines) {
         for (int i = 0; i < 4; i++) {
-            if (NonLegacyClass.COMPONENT.isImplemented()) {
-                Component line = StargateComponentDeserialiser.getComponent(signLines[i]);
-                sign.line(i, line);
-            } else {
-                String line = StargateComponentDeserialiser.getLegacyText(signLines[i]);
-                sign.setLine(i, line);
-            }
+            StargateComponent line = StargateComponentCombiner.getComponent(signLines[i]);
+            line.setSignLine(i, sign);
         }
     }
 

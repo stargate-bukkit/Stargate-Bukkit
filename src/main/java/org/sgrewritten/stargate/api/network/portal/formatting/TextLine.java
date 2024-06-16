@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.api.network.portal.formatting;
 import net.md_5.bungee.api.ChatColor;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
+import org.sgrewritten.stargate.api.container.Holder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class TextLine extends AbstractSignLine {
     private final SignLineType type;
 
-    public TextLine(List<StargateComponent> components, SignLineType type) {
+    public TextLine(List<Holder<StargateComponent>> components, SignLineType type) {
         super(components);
         this.type = type;
     }
@@ -27,22 +28,22 @@ public class TextLine extends AbstractSignLine {
      */
     public TextLine(HighlightingStyle style, String text, ChatColor textColor, ChatColor pointerColor, SignLineType type) {
         this(new ArrayList<>(), type);
-        getComponents().add(new StargateComponent(pointerColor + style.getPrefix()));
-        getComponents().add(new StargateComponent(textColor + text));
-        getComponents().add(new StargateComponent(pointerColor + style.getSuffix()));
+        getComponents().add(LegacyStargateComponent.of(pointerColor + style.getPrefix()));
+        getComponents().add(LegacyStargateComponent.of(textColor + text));
+        getComponents().add(LegacyStargateComponent.of(pointerColor + style.getSuffix()));
     }
 
     public TextLine(String text, SignLineType type) {
         this(new ArrayList<>(), type);
-        getComponents().add(new StargateComponent(text));
+        getComponents().add(LegacyStargateComponent.of(text));
     }
 
     public TextLine(String text) {
         this(new ArrayList<>(), SignLineType.TEXT);
-        getComponents().add(new StargateComponent(text));
+        getComponents().add(LegacyStargateComponent.of(text));
     }
 
-    public TextLine(List<StargateComponent> components) {
+    public TextLine(List<Holder<StargateComponent>> components) {
         this(components, SignLineType.TEXT);
     }
 

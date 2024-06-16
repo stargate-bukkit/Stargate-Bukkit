@@ -8,13 +8,7 @@ import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
-import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
-import org.sgrewritten.stargate.api.network.portal.formatting.NetworkLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.PortalLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
-import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
-import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
-import org.sgrewritten.stargate.api.network.portal.formatting.TextLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
@@ -25,6 +19,7 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 
+import org.sgrewritten.stargate.api.container.Holder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -71,10 +66,10 @@ public class LineColorFormatter implements LineFormatter {
             pointerColorTemp = getFlagColor(portal);
         }
         String portalName = (portal != null) ? portal.getName() : lineData.getText();
-        List<StargateComponent> components = new ArrayList<>(List.of(
-                new StargateComponent(pointerColorTemp + highlightingStyle.getPrefix()),
-                new StargateComponent(color + portalName),
-                new StargateComponent(pointerColorTemp + highlightingStyle.getSuffix())
+        List<Holder<StargateComponent>> components = new ArrayList<>(List.of(
+                LegacyStargateComponent.of(pointerColorTemp + highlightingStyle.getPrefix()),
+                LegacyStargateComponent.of(color + portalName),
+                LegacyStargateComponent.of(pointerColorTemp + highlightingStyle.getSuffix())
         ));
         return new PortalLine(components, portal, lineData.getType());
     }
@@ -84,31 +79,31 @@ public class LineColorFormatter implements LineFormatter {
         HighlightingStyle highlightingStyle = network.getHighlightingStyle();
         String networkName = network.getName();
         String bold = (network.getStorageType() == StorageType.INTER_SERVER) ? ChatColor.BOLD.toString() : "";
-        List<StargateComponent> components = new ArrayList<>(List.of(
-                new StargateComponent(pointerColor + bold + highlightingStyle.getPrefix()),
-                new StargateComponent(color + bold + networkName),
-                new StargateComponent(pointerColor + bold + highlightingStyle.getSuffix())
+        List<Holder<StargateComponent>> components = new ArrayList<>(List.of(
+                LegacyStargateComponent.of(pointerColor + bold + highlightingStyle.getPrefix()),
+                LegacyStargateComponent.of(color + bold + networkName),
+                LegacyStargateComponent.of(pointerColor + bold + highlightingStyle.getSuffix())
         ));
         return new NetworkLine(components, network);
     }
 
-    private List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
+    private List<Holder<StargateComponent>> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
-                new StargateComponent(pointerColor + highlightingStyle.getPrefix()),
-                new StargateComponent(color + aString),
-                new StargateComponent(pointerColor + highlightingStyle.getSuffix())
+                LegacyStargateComponent.of(pointerColor + highlightingStyle.getPrefix()),
+                LegacyStargateComponent.of(color + aString),
+                LegacyStargateComponent.of(pointerColor + highlightingStyle.getSuffix())
         ));
     }
 
-    private List<StargateComponent> formatLine(String line) {
-        return new ArrayList<>(List.of(new StargateComponent(color + line)));
+    private List<Holder<StargateComponent>> formatLine(String line) {
+        return new ArrayList<>(List.of(LegacyStargateComponent.of(color + line)));
     }
 
-    private List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
+    private List<Holder<StargateComponent>> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
         return new ArrayList<>(List.of(
-                new StargateComponent(ERROR_COLOR + highlightingStyle.getPrefix()),
-                new StargateComponent(ERROR_COLOR + error),
-                new StargateComponent(ERROR_COLOR + highlightingStyle.getSuffix())
+                LegacyStargateComponent.of(ERROR_COLOR + highlightingStyle.getPrefix()),
+                LegacyStargateComponent.of(ERROR_COLOR + error),
+                LegacyStargateComponent.of(ERROR_COLOR + highlightingStyle.getSuffix())
         ));
     }
 

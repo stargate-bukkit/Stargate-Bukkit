@@ -5,10 +5,12 @@ import org.sgrewritten.stargate.api.event.portal.CancellableStargatePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
+import org.sgrewritten.stargate.api.container.Holder;
+
 public abstract class StargateSendMessagePortalEvent extends CancellableStargatePortalEvent {
     private final MessageType type;
     private final Entity entity;
-    private StargateComponent message;
+    private Holder<StargateComponent> message;
 
     /**
      * Instantiates a new stargate player event
@@ -23,7 +25,7 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
         super(portal, async);
         this.type = type;
         this.entity = entity;
-        this.message = message;
+        this.message = new Holder<>(message);
     }
 
     /**
@@ -43,7 +45,7 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
     /**
      * @return <p>The message that will be sent</p>
      */
-    public StargateComponent getMessage() {
+    public Holder<StargateComponent> getMessage() {
         return this.message;
     }
 
@@ -51,6 +53,6 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
      * @param message <p>The message that will be sent</p>
      */
     public void setMessage(StargateComponent message) {
-        this.message = message;
+        this.message.value = message;
     }
 }
