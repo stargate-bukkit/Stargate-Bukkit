@@ -27,7 +27,7 @@ public class RandomBehavior extends AbstractPortalBehavior {
 
     @Override
     public void update() {
-
+        // Nothing needs to be done here
     }
 
     @Override
