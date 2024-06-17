@@ -126,8 +126,13 @@ public class LegacyDataHandler {
         return output;
     }
 
-
-    public static String findConfigKey(String[] possibleKeys, Map<String, Object> oldConfig) {
+    /**
+     * Utility method to find any of the given possible keys in the config
+     * @param possibleKeys <p>name variations of possible keys</p>
+     * @param oldConfig <p>The config to fetch data from</p>
+     * @return <p>The key that had a value in the config, or null if none matched</p>
+     */
+    public static @Nullable String findConfigKey(String[] possibleKeys, Map<String, Object> oldConfig) {
         for (String possibleKey : possibleKeys) {
             if (oldConfig.get(possibleKey) != null) {
                 return possibleKey;

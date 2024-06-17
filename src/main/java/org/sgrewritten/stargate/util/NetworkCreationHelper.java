@@ -19,12 +19,19 @@ public final class NetworkCreationHelper {
 
     }
 
+    /**
+     * Get banned network names
+     * @return <p>All banned network names</p>
+     */
     public static Set<String> getBannedNames() {
         Set<String> output = new HashSet<>();
         output.add(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK).toLowerCase());
         return output;
     }
 
+    /**
+     * @return <p>All names taken upp by the default networks</p>
+     */
     public static Set<String> getDefaultNamesTaken() {
         Set<String> output = new HashSet<>();
         output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase());

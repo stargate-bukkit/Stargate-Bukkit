@@ -39,7 +39,7 @@ public final class FileHelper {
     private static final String UTF8_BOM = "\uFEFF";
 
     private FileHelper() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     /**

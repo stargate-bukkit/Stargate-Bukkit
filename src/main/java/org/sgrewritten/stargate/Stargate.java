@@ -57,19 +57,8 @@ import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
-import org.sgrewritten.stargate.listener.BKCommonLibListener;
-import org.sgrewritten.stargate.listener.BlockEventListener;
-import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
-import org.sgrewritten.stargate.listener.MoveEventListener;
-import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
-import org.sgrewritten.stargate.listener.PlayerEventListener;
-import org.sgrewritten.stargate.listener.PluginEventListener;
-import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
-import org.sgrewritten.stargate.manager.BlockLoggingManager;
-import org.sgrewritten.stargate.manager.CoreProtectManager;
-import org.sgrewritten.stargate.manager.BlockDropManager;
-import org.sgrewritten.stargate.manager.StargateBungeeManager;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.listener.*;
+import org.sgrewritten.stargate.manager.*;
 import org.sgrewritten.stargate.migration.DataMigrator;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
@@ -174,7 +163,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-            if(NonLegacyClass.BLOCK_UTIL.isImplemented()) {
+            if (NonLegacyClass.BLOCK_UTIL.isImplemented()) {
                 RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
                 BlockDropManager.setProvider(blockUtilProvider);
             }
@@ -484,10 +473,21 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         servicesManager.unregisterAll(this);
     }
 
+    /**
+     * Log an exception at the WARNING level
+     *
+     * @param throwable <p>THe exception to log</p>
+     */
     public static void log(Throwable throwable) {
         Stargate.log(Level.WARNING, throwable);
     }
 
+    /**
+     * Log an exception at the given level
+     *
+     * @param logLevel  <p>The level to log on</p>
+     * @param throwable <p>The exception to log</p>
+     */
     public static void log(Level logLevel, Throwable throwable) {
         if (throwable == null) {
             return;
@@ -511,6 +511,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return builder.toString();
     }
 
+    /**
+     * Log any message at the given level
+     *
+     * @param priorityLevel <p>The log level to log the message on</p>
+     * @param message       <p>The message to log</p>
+     */
     public static void log(Level priorityLevel, String message) {
         if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
             return;
@@ -540,6 +546,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return instance;
     }
 
+    /**
+     * Log any message at the given level
+     *
+     * @param priorityLevel <p>The log level to log the message on</p>
+     * @param message       <p>The message to log</p>
+     */
     public void logMessage(Level priorityLevel, String message) {
         if (priorityLevel.intValue() < logLevel.intValue()) {
             return;
@@ -551,6 +563,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    /**
+     * @return <p>Get the configuration of stargate, or an empty config</p>
+     */
     public static FileConfiguration getFileConfiguration() {
         if (instance != null) {
             return instance.getConfig();
@@ -570,6 +585,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    /**
+     * Static access of the database interface, will throw null pointer exception if stargate has not been initialized
+     * @return <p>A storage API instance</p>
+     */
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
     }

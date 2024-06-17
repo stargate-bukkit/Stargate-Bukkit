@@ -19,6 +19,13 @@ public class MessageUtils {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Send a message from this portal; triggers a {@link StargateSendMessagePortalEvent}
+     * @param portal <p>The portal that relates to this message</p>
+     * @param receiver <p>The receiving entity of this message</p>
+     * @param message <p>The legacy serialized message to send</p>
+     * @param type <p>The type of the message (see {@link MessageType})</p>
+     */
     public static void sendMessageFromPortal(Portal portal, @Nullable Entity receiver, String message, MessageType type) {
         if (message == null || message.isBlank() || receiver == null) {
             return;
@@ -36,6 +43,11 @@ public class MessageUtils {
         }
     }
 
+    /**
+     * Send a message that does not belong to any portal, will trigger a {@link StargateMessageEvent}
+     * @param receiver <p>The receiver of the message</p>
+     * @param message <p>The legacy serialized message</p>
+     */
     public static void sendMessage(@Nullable Entity receiver, String message) {
         if (receiver == null){
             return;
