@@ -80,5 +80,8 @@ public abstract class GateStructure {
      */
     public abstract void generateStructure(VectorOperation converter, Location topLeft);
 
+    /**
+     * @return <p>The smallest box wherein this gate fits</p>
+     */
     public abstract BoundingBox getBoundingBox();
 }

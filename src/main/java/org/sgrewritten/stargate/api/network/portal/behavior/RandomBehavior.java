@@ -21,6 +21,9 @@ import java.util.logging.Level;
 public class RandomBehavior extends AbstractPortalBehavior {
     private static final Random RANDOM = new Random();
 
+    /**
+     * @param languageManager <p>Any language manager able to provide translations</p>
+     */
     public RandomBehavior(LanguageManager languageManager) {
         super(languageManager);
     }

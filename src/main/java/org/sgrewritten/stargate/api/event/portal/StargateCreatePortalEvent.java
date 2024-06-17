@@ -147,6 +147,10 @@ public class StargateCreatePortalEvent extends StargatePortalEvent{
         this.denyReason = denyReason;
     }
 
+    /**
+     * Get the player that is creating the portal
+     * @return <p>The player that is creating the portal</p>
+     */
     public OfflinePlayer getPlayer(){
         return this.player;
     }

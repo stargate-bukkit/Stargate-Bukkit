@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal.flag;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class CustomFlag implements PortalFlag {
         this.characterRepresentation = characterRepresentation;
     }
 
+    /**
+     * Clear all registered flags
+     */
+    @ApiStatus.Internal
     static void clear() {
         existingFlags.clear();
     }

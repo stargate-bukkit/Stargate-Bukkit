@@ -70,6 +70,10 @@ public class PortalPosition implements MetadataHolder {
         return this.relativePositionLocation;
     }
 
+    /**
+     *
+     * @param portal <p>The portal to assign to this portal position</p>
+     */
     @ApiStatus.Internal
     public void assignPortal(RealPortal portal) {
         this.portal = Objects.requireNonNull(portal);
@@ -140,6 +144,9 @@ public class PortalPosition implements MetadataHolder {
         }
     }
 
+    /**
+     * @return <p>The portal owning this portal position</p>
+     */
     public RealPortal getPortal() {
         return this.portal;
     }

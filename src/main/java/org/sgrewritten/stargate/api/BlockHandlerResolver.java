@@ -145,6 +145,11 @@ public class BlockHandlerResolver {
         }
     }
 
+    /**
+     *
+     * @param portalFlag <p>The flag to check for</p>
+     * @return <p>True if the specified flag has been re</p>
+     */
     public boolean hasRegisteredCustomFlag(PortalFlag portalFlag) {
         return customFlags.contains(portalFlag);
     }

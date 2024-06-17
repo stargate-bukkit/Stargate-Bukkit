@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.api.database;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -170,10 +171,33 @@ public interface StorageAPI {
     void removePortalPosition(RealPortal portal, StorageType portalType,
                               PortalPosition portalPosition) throws StorageWriteException;
 
+    /**
+     * Update the network name in the database
+     * @param newName <p>The new name of the network</p>
+     * @param networkName <p>The previous name of the network</p>
+     * @param portalType <p>The storage type of the network</p>
+     * @throws StorageWriteException <p>If unable to modify the database</p>
+     */
+    @ApiStatus.Internal
     void updateNetworkName(String newName, String networkName, StorageType portalType) throws StorageWriteException;
 
+    /**
+     * Update the name of a portal
+     * @param newName <p>The name of the portal</p>
+     * @param portalId <p>A portal id representing this portal</p>
+     * @param portalType <p>How the portal is stored</p>
+     * @throws StorageWriteException <p>If unable to modify the database</p>
+     */
+    @ApiStatus.Internal
     void updatePortalName(String newName, GlobalPortalId portalId, StorageType portalType) throws StorageWriteException;
 
+    /**
+     * Check if the networks exists in the database
+     * @param netName <p>Network name</p>
+     * @param portalType <p>The storage type of the network</p>
+     * @return <p>True if exists</p>
+     * @throws StorageReadException <p>If unable to read the database</p>
+     */
     boolean netWorkExists(String netName, StorageType portalType) throws StorageReadException;
 
     /**

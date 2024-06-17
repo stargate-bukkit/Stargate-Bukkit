@@ -21,6 +21,12 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public interface RealPortal extends Portal, MetadataHolder {
 
+    /**
+     * Open this portal without any checks
+     *
+     * @param destination <p>The destination to open to</p>
+     * @param actor       <p>The player which opened this portal</p>
+     */
     void open(@Nullable Portal destination, @Nullable Player actor);
 
     /**
@@ -70,8 +76,15 @@ public interface RealPortal extends Portal, MetadataHolder {
      */
     List<Location> getPortalPosition(PositionType type);
 
+    /**
+     * @return <p>The uuid activator or null if portal is not active (or always on)</p>
+     */
+    @Nullable
     UUID getActivatorUUID();
 
+    /**
+     * Deactivate this portal
+     */
     void deactivate();
 
     /**
@@ -81,10 +94,21 @@ public interface RealPortal extends Portal, MetadataHolder {
      */
     BlockFace getExitFacing();
 
+    /**
+     * @return <p>The behavior which defines this portal destination selection and sign text</p>
+     */
     PortalBehavior getBehavior();
 
+    /**
+     * Modify the behavior this portal uses
+     *
+     * @param portalBehavior <p>New behavior this portal should follow</p>
+     */
     void setBehavior(PortalBehavior portalBehavior);
 
+    /**
+     * Redraw all signs in this portal
+     */
     void redrawSigns();
 
     /**
@@ -94,8 +118,11 @@ public interface RealPortal extends Portal, MetadataHolder {
      */
     void activate(Player player);
 
-    boolean isActive();
 
+    /**
+     * @return <p>True if this portal is active</p>
+     */
+    boolean isActive();
 
     /**
      * Teleports the given entity to given destination

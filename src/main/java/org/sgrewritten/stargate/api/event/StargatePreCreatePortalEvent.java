@@ -40,10 +40,16 @@ public class StargatePreCreatePortalEvent extends Event implements Cancellable {
         this.player = player;
     }
 
+    /**
+     * @return <p>The portal builder that is going to be used to try and build the portal</p>
+     */
     public @NotNull PortalBuilder getPortalBuilder() {
         return this.portalBuilder;
     }
 
+    /**
+     * @return <p>The gate builder that is going to be used to try and build the portal</p>
+     */
     public @NotNull GateBuilder getGateBuilder() {
         return this.gateBuilder;
     }

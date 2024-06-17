@@ -273,6 +273,9 @@ public enum TranslatableMessage {
      */
     CUSTOM_NETWORK("custom"),
 
+    /**
+     * The message to send when installing parity modules
+     */
     PARITY_UPGRADE("parityCommand");
 
     /*

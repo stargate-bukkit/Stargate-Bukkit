@@ -139,6 +139,12 @@ public class GateFormatRegistry {
 
     }
 
+    /**
+     * Load all gate formats from the specified plugin data folder
+     * @param pluginDataFolder <p>The folder where gate formats reside</p>
+     * @throws IOException <p>If unable to load one gate format</p>
+     * @throws URISyntaxException <p>Should not be thrown really</p>
+     */
     public static void loadGateFormats(File pluginDataFolder) throws IOException, URISyntaxException {
         String gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
         saveDefaultGates(pluginDataFolder, gateFolder);

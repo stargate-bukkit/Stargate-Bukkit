@@ -12,14 +12,24 @@ public class StargateMessageEvent extends Event implements Cancellable {
     private StargateComponent message;
     private boolean cancelled;
 
+    /**
+     * @param message <p>The message to be sent</p>
+     */
     public StargateMessageEvent(StargateComponent message){
         this.message = message;
     }
 
+    /**
+     * @return <p>The message that is going to be sent</p>
+     */
     public StargateComponent getMessage(){
         return message;
     }
 
+    /**
+     * Change the message that is going to be sent
+     * @param message <p>New message to send</p>
+     */
     public void setMessage(StargateComponent message){
         this.message = message;
     }

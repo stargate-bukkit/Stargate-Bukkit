@@ -34,6 +34,12 @@ public class LegacyBungeeBehavior extends AbstractPortalBehavior {
     private StargateNetwork fakeNetwork;
     private final String bungeeString;
 
+    /**
+     * @param languageManager <p>Any language manager able to provide translations</p>
+     * @param destination <p>The destination portal on the other server</p>
+     * @param destinationServer <p>The destination server</p>
+     * @throws BungeeNameException <p>If information is lacking to determine a destination server and portal</p>
+     */
     public LegacyBungeeBehavior(LanguageManager languageManager, String destination, String destinationServer) throws BungeeNameException {
         super(languageManager);
         destination = NameHelper.getTrimmedName(destination);

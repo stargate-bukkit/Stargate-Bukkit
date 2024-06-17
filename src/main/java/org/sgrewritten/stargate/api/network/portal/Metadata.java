@@ -9,6 +9,9 @@ import org.sgrewritten.stargate.api.MetadataHolder;
 public class Metadata implements MetadataHolder {
     private String metaDataString;
 
+    /**
+     * @param metaDataString <p>A json serialized string representing this metadata</p>
+     */
     public Metadata(String metaDataString) {
         this.metaDataString = metaDataString;
     }

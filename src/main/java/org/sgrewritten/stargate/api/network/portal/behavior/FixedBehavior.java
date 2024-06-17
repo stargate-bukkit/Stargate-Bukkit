@@ -12,10 +12,14 @@ import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineDa
 import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.TextLineData;
 
-public class FixedBehavior extends AbstractPortalBehavior{
+public class FixedBehavior extends AbstractPortalBehavior {
     private final String destinationName;
     private Portal destination;
 
+    /**
+     * @param languageManager <p>Any language manager able to get translations</p>
+     * @param destinationName <p>The name of the destination portal</p>
+     */
     public FixedBehavior(LanguageManager languageManager, @NotNull String destinationName) {
         super(languageManager);
         this.destinationName = destinationName;
@@ -52,7 +56,7 @@ public class FixedBehavior extends AbstractPortalBehavior{
     }
 
     @Override
-    public String getDestinationName(){
+    public String getDestinationName() {
         return destinationName;
     }
 }

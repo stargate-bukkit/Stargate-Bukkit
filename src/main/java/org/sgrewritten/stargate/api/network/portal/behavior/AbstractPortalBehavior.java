@@ -37,6 +37,9 @@ public abstract class AbstractPortalBehavior implements PortalBehavior {
     protected final LanguageManager languageManager;
     private static final Pattern INTERNAL_FLAG = Pattern.compile("\\d");
 
+    /**
+     * @param languageManager <p>Any language manager able to get translations</p>
+     */
     protected AbstractPortalBehavior(LanguageManager languageManager) {
         this.languageManager = languageManager;
     }

@@ -43,6 +43,9 @@ public class NetworkedBehavior extends AbstractPortalBehavior {
     private long previousDestinationSelectionTime;
     private String loadedDestination;
 
+    /**
+     * @param languageManager <p>Any language manager able to provide translations</p>
+     */
     public NetworkedBehavior(LanguageManager languageManager) {
         super(languageManager);
     }

@@ -54,6 +54,9 @@ public enum OptionDataType {
      */
     REMOTE_DATABASE_DRIVER(generateDrivers()),
 
+    /**
+     * How to handle invalid portals
+     */
     PORTAL_VALIDITY(Arrays.stream(PortalValidity.values()).map(Enum::name).toArray(String[]::new));
 
     private final String[] values;
