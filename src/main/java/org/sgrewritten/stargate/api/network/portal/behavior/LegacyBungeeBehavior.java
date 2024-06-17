@@ -67,7 +67,7 @@ public class LegacyBungeeBehavior extends AbstractPortalBehavior {
          * and can not be found (should not) in any network anywhere.
          */
         this.targetPortal = new LegacyVirtualPortal(destinationServer, destination, fakeNetwork,
-                Set.of(), new HashSet<>(), UUID.randomUUID());
+                Set.of(), UUID.randomUUID());
         this.serverDestination = destinationServer;
         String possibleBungeeString = super.languageManager.getString(TranslatableMessage.BUNGEE_SIGN_LINE_4);
         this.bungeeString = (possibleBungeeString == null) ? "[PlaceHolder]" : possibleBungeeString;
