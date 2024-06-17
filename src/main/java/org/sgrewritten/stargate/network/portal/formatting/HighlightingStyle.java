@@ -104,7 +104,10 @@ public enum HighlightingStyle {
      */
     public static String getNameFromHighlightedText(String highlightedName) {
         HighlightingStyle highlight = getHighlightType(highlightedName);
-        return highlightedName.substring(highlight.prefix.length(),
-                highlightedName.length() - highlight.suffix.length());
+        if (highlight == NOTHING) {
+            return highlightedName;
+        }
+        return getNameFromHighlightedText(highlightedName.substring(highlight.prefix.length(),
+                highlightedName.length() - highlight.suffix.length()));
     }
 }

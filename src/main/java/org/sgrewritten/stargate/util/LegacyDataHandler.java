@@ -4,19 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class LegacyDataHandler {
 
-    private LegacyDataHandler(){
+    private LegacyDataHandler() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -98,7 +94,7 @@ public class LegacyDataHandler {
      */
     public static Set<PortalFlag> parseFlags(String[] splitLine) {
         Set<PortalFlag> flags = new HashSet<>();
-        for(Map.Entry<StargateFlag,Integer> entry: LEGACY_FLAG_INDICES.entrySet()) {
+        for (Map.Entry<StargateFlag, Integer> entry : LEGACY_FLAG_INDICES.entrySet()) {
             int position = entry.getValue();
             if (splitLine.length > position && splitLine[position].equalsIgnoreCase("true")) {
                 flags.add(entry.getKey());
@@ -128,8 +124,9 @@ public class LegacyDataHandler {
 
     /**
      * Utility method to find any of the given possible keys in the config
+     *
      * @param possibleKeys <p>name variations of possible keys</p>
-     * @param oldConfig <p>The config to fetch data from</p>
+     * @param oldConfig    <p>The config to fetch data from</p>
      * @return <p>The key that had a value in the config, or null if none matched</p>
      */
     public static @Nullable String findConfigKey(String[] possibleKeys, Map<String, Object> oldConfig) {
