@@ -1,5 +1,15 @@
 package org.sgrewritten.stargate.colors;
 
+import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+
 public enum ColorSelector {
-    POINTER, TEXT
+    /**
+     * Always two opposite symbols that wrap around text in a sign, see {@link HighlightingStyle}
+     */
+    POINTER,
+
+    /**
+     * Text in a sign
+     */
+    TEXT
 }

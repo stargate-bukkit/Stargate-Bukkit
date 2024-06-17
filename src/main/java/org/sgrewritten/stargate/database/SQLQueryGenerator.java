@@ -526,6 +526,15 @@ public class SQLQueryGenerator {
         return connection.prepareStatement(query);
     }
 
+    /**
+     * Generate statement to fetch the data on specified portal
+     *
+     * @param connection <p>A sql connection</p>
+     * @param portal     <p>the portal to fetch data from</p>
+     * @param portalType <p>The type of the portal</p>
+     * @return <p>A prepared statement to fetch data on specified portal</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateGetPortalStatement(Connection connection, Portal portal, StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
@@ -538,6 +547,14 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     * @param connection <p>A sql connection to the database</p>
+     * @param portal     <p>The portal to modify in the database</p>
+     * @param meta       <p>The meta to set</p>
+     * @param portalType <p>how the portal is being stored</p>
+     * @return <p>A prepared statement that can modify the metadata of a portal</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateSetPortalMetaStatement(Connection connection, Portal portal, String meta, StorageType portalType) throws SQLException {
         PreparedStatement statement;
         if (portalType == StorageType.LOCAL) {
@@ -551,6 +568,15 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     * @param connection     <p>A sql connection to the database</p>
+     * @param portal         <p>The portal owning the portal position</p>
+     * @param portalPosition <p>The portal position to change the metadata on</p>
+     * @param meta           <p>The meta to apply to the portal position</p>
+     * @param portalType     <p>How the porta lis being stored</p>
+     * @return <p>A prepared statement able to set the metadata on a portal position</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateSetPortalPositionMeta(Connection connection, RealPortal portal, PortalPosition portalPosition,
                                                            String meta, StorageType portalType) throws SQLException {
         PreparedStatement statement;
@@ -569,6 +595,14 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     * @param connection <p>A sql connection to the database</p>
+     * @param portal <p>The portal owning the portal position</p>
+     * @param portalPosition <p>The portal position to get data on</p>
+     * @param portalType <p>How the portal is stored</p>
+     * @return <p>A prepared statement able to modify fetch data on the portal position</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateGetPortalPositionStatement(Connection connection, Portal portal,
                                                                 PortalPosition portalPosition, StorageType portalType) throws SQLException {
         PreparedStatement statement;
@@ -586,6 +620,15 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     *
+     * @param connection <p>A sql database connection</p>
+     * @param newName <p>The new name of the network</p>
+     * @param networkName <p>The previous name of the network</p>
+     * @param portalType <p>How the portals in the network are being stored</p>
+     * @return <p>A prepared statement able to modify the network name of all portals with the specified network</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateUpdateNetworkNameStatement(Connection connection, String newName, String networkName,
                                                                 StorageType portalType) throws SQLException {
         PreparedStatement statement;
@@ -599,6 +642,16 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     *
+     * @param connection <p>A sql database connection</p>
+     * @param newName <p>The new name of the portal to modify</p>
+     * @param portalName <p>The previous portal name</p>
+     * @param networkName <p>The network name of the portal</p>
+     * @param portalType <p>How the portal is being stored</p>
+     * @return <p>A prepared statement able to change the name of a portal</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateUpdatePortalNameStatement(Connection connection, String newName, String portalName, String networkName,
                                                                StorageType portalType) throws SQLException {
         PreparedStatement statement;
@@ -613,6 +666,14 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     *
+     * @param connection <p>A sql connection to the database</p>
+     * @param netName <p>The name of the network to get all portals from</p>
+     * @param portalType <p>how the portals in the network is being stored</p>
+     * @return <p>A prepared statement able to fetch all portals in specified network</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateGetAllPortalsOfNetwork(Connection connection, String netName,
                                                             StorageType portalType) throws SQLException {
         PreparedStatement statement;
@@ -625,6 +686,14 @@ public class SQLQueryGenerator {
         return statement;
     }
 
+    /**
+     *
+     * @param connection <p>A sql connection to the database</p>
+     * @param world <p>The world uuid to remove all portals from</p>
+     * @param storageType <p>How the portals in the world is being stored</p>
+     * @return <p>A prepared statement able to delete all data on portals in specified world</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateDeleteWorldStatement(Connection connection, String world, StorageType storageType) throws SQLException {
         if (storageType == StorageType.LOCAL) {
             PreparedStatement statement = prepareQuery(connection, getQuery(SQLQuery.DELETE_WORLD));
@@ -638,6 +707,13 @@ public class SQLQueryGenerator {
         }
     }
 
+    /**
+     * @param connection <p>A sql connection to the database</p>
+     * @param gateFormat <p>The file name of the gate format to remove all portals of</p>
+     * @param storageType <p>How the portals are being stored</p>
+     * @return <p>A prepared statement able to remove all portals of specified gate format</p>
+     * @throws SQLException <p>If the syntax is incorrect or any other sql faults</p>
+     */
     public PreparedStatement generateRemoveGateStatement(Connection connection, String gateFormat, StorageType storageType) throws SQLException {
         PreparedStatement statement;
         if (storageType == StorageType.LOCAL) {

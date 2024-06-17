@@ -72,6 +72,10 @@ public final class ConfigurationHelper {
         }
     }
 
+    /**
+     * @param configurationOption <p>The configuration option to get the data from</p>
+     * @return <p>A list of strings from the configuration option</p>
+     */
     @SuppressWarnings("unchecked")
     public static @NotNull List<String> getStringList(ConfigurationOption configurationOption) {
         if (Stargate.getFileConfiguration().isSet(configurationOption.getConfigNode())) {

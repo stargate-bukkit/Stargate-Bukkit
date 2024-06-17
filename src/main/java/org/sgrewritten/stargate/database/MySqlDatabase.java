@@ -163,6 +163,7 @@ public class MySqlDatabase implements SQLDatabaseAPI {
         return builder.toString();
     }
 
+    @Override
     public DatabaseDriver getDriver() {
         return driver;
     }

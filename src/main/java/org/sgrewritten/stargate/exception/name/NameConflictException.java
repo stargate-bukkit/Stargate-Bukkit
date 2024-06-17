@@ -13,6 +13,10 @@ public class NameConflictException extends TranslatableException {
     private static final long serialVersionUID = -183581478633277966L;
     private final boolean isNetwork;
 
+    /**
+     * @param message <p>The message to display on the stacktrace for this exception</p>
+     * @param isNetwork <p>Whether this is a network or portal name conflict</p>
+     */
     public NameConflictException(String message, boolean isNetwork) {
         super(message);
         this.isNetwork = isNetwork;

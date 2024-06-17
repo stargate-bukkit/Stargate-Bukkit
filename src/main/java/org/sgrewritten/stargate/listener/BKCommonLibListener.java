@@ -20,6 +20,11 @@ public class BKCommonLibListener implements Listener {
     private final RegistryAPI registry;
     private final NetworkManager networkManager;
 
+    /**
+     *
+     * @param registryAPI <p>A stargate registry</p>
+     * @param networkManager <p>A network manager</p>
+     */
     public BKCommonLibListener(RegistryAPI registryAPI, NetworkManager networkManager) {
         this.registry = registryAPI;
         this.networkManager = networkManager;

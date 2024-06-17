@@ -14,6 +14,10 @@ public class StargateInitializationException extends Exception {
         super(message);
     }
 
+    /**
+     *
+     * @param exception <p>The real cause of this exception</p>
+     */
     public StargateInitializationException(Throwable exception) {
         super(exception);
     }

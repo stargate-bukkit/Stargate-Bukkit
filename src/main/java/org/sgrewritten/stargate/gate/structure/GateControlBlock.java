@@ -59,6 +59,7 @@ public class GateControlBlock extends GateStructure {
         return material.isAir() || material == Material.WATER || material == Material.LIGHT;
     }
 
+    @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
         if (parts.stream().map(position -> topLeft.clone().add(converter.performToRealSpaceOperation(position)).getBlock().getType())
                 .anyMatch(Tag.WALL_SIGNS::isTagged)) {

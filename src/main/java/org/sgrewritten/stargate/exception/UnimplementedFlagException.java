@@ -19,6 +19,10 @@ public class UnimplementedFlagException extends TranslatableException {
     private static final long serialVersionUID = -8052738578093828433L;
     private final @NotNull StargateFlag flag;
 
+    /**
+     * @param msg <p>The message to provide in the stacktrace</p>
+     * @param flag <p>The flag that was unimplemented</p>
+     */
     public UnimplementedFlagException(String msg, @NotNull StargateFlag flag) {
         super(msg);
         this.flag = Objects.requireNonNull(flag);

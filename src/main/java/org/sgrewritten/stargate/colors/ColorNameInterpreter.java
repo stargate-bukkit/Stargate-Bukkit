@@ -13,6 +13,10 @@ public class ColorNameInterpreter {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * @param defaultString <p>A string representation of the default color</p>
+     * @return <p>The resulting color from the string representation</p>
+     */
     public static ChatColor getDefaultPointerColor(String defaultString) {
         try {
             DyeColor dyeColor = DyeColor.valueOf(defaultString.toUpperCase());
@@ -23,6 +27,11 @@ public class ColorNameInterpreter {
         }
     }
 
+    /**
+     *
+     * @param defaultString <p>A string representation of the default color</p>
+     * @return <p>The default color based on the string representation</p>
+     */
     public static ChatColor getDefaultTextColor(String defaultString) {
         try {
             DyeColor dyeColor = DyeColor.valueOf(defaultString.toUpperCase());
@@ -32,7 +41,12 @@ public class ColorNameInterpreter {
         }
     }
 
-
+    /**
+     *
+     * @param dyeColor <p>Any dye color</p>
+     * @param isPointer <p>Whether this is the color for a pointer or text</p>
+     * @return <p>A chat color representation of the dye color</p>
+     */
     private static ChatColor fetchDefaultColorFromDyeColor(DyeColor dyeColor, boolean isPointer) {
         ChatColor output;
         if (isPointer) {

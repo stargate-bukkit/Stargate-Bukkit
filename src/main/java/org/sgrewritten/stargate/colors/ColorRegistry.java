@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -26,11 +27,34 @@ public class ColorRegistry {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * A dye color to chat color conversion table for sign text
+     */
     public static final Map<DyeColor, ChatColor> TEXT_COLORS = loadColors(false, "/colors/colorTable.json");
+
+    /**
+     * A dye color to chat color conversion table for sign text pointers
+     */
     public static final Map<DyeColor, ChatColor> POINTER_COLORS = loadColors(true, "/colors/colorTable.json");
+
+    /**
+     * A stargate flag to chat color conversion
+     */
     public static final Map<StargateFlag, ChatColor> FLAG_COLORS = loadFlagColors("/colors/flagColorTable.json");
+
+    /**
+     * The default color depending on the color selector
+     */
     public static final Map<ColorSelector, ChatColor> DEFAULT_COLORS = loadDefaultColors();
+
+    /**
+     * Legacy default color
+     */
     public static org.bukkit.ChatColor LEGACY_SIGN_COLOR = org.bukkit.ChatColor.BLACK;
+
+    /**
+     * The default dye color
+     */
     public static DyeColor DEFAULT_DYE_COLOR = DyeColor.BLACK;
 
     private static Map<ColorSelector, ChatColor> loadDefaultColors() {
@@ -87,6 +111,10 @@ public class ColorRegistry {
         }
     }
 
+    /**
+     * Load default colors from config
+     */
+    @ApiStatus.Internal
     public static void loadDefaultColorsFromConfig() {
         try {
             if (!NonLegacyClass.CHAT_COLOR.isImplemented()) {

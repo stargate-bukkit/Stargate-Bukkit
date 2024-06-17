@@ -16,6 +16,10 @@ public class EntityInsideBlockEventListener implements Listener {
 
     private final RegistryAPI registry;
 
+    /**
+     * 
+     * @param registry
+     */
     public EntityInsideBlockEventListener(RegistryAPI registry) {
         this.registry = registry;
     }
