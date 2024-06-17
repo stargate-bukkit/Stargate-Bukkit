@@ -44,7 +44,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * Register of all portals and networks
+ * Registry of all portals and networks
  *
  * @author Thorin (idea from EpicKnarvik)
  */
@@ -257,6 +257,9 @@ public class StargateRegistry implements RegistryAPI {
         }
     }
 
+    /**
+     * Clear this registry
+     */
     public void clear() {
         portalFromStructureTypeMap.clear();
         portalPositionMap.clear();

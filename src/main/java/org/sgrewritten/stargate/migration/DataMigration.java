@@ -65,10 +65,19 @@ public abstract class DataMigration {
      */
     protected abstract TwoTuple<String, Object> getNewConfigPair(TwoTuple<String, Object> oldPair);
 
+    /**
+     * @return <p>The version this migrator is migrating from</p>
+     */
     public abstract String getVersionFrom();
 
+    /**
+     * @return <p>The version this migrator is migrating to</p>
+     */
     public abstract String getVersionTo();
 
+    /**
+     * @return Whether the manager will add portals / networks to the registry
+     */
     public boolean willPopulateRegistry() {
         return false;
     }

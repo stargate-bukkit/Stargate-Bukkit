@@ -11,6 +11,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
+/**
+ * A wrapper to the bungeecord plugin message sender
+ */
 public class BukkitPluginMessageInterface implements PluginMessageInterface {
 
     @Override

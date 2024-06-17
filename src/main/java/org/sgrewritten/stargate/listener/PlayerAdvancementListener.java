@@ -13,6 +13,9 @@ public class PlayerAdvancementListener implements Listener {
 
     private final RegistryAPI registry;
 
+    /**
+     * @param registry <p>The registry containing all portal information</p>
+     */
     public PlayerAdvancementListener(RegistryAPI registry) {
         this.registry = registry;
     }

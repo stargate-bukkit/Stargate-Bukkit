@@ -39,6 +39,13 @@ public class DatabaseHelper {
         statement.close();
     }
 
+    /**
+     * Create all tables used by the sql database
+     * @param database <p>SQL database</p>
+     * @param sqlQueryGenerator <p>Something that generates SQL queries</p>
+     * @param useInterServerNetworks <p>Whether to create tables for inter server portals</p>
+     * @throws SQLException <p>IF anything went wrong with creating the tables</p>
+     */
     public static void createTables(SQLDatabaseAPI database, SQLQueryGenerator sqlQueryGenerator, boolean useInterServerNetworks) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement localPortalsStatement = sqlQueryGenerator.generateCreatePortalTableStatement(connection, StorageType.LOCAL);
@@ -176,12 +183,20 @@ public class DatabaseHelper {
         }
     }
 
+    /**
+     * @param usingRemoteDatabase <p>Whether the database is remote or not</p>
+     * @return <p>A new sql query generator</p>
+     */
     public static SQLQueryGenerator getSQLGenerator(boolean usingRemoteDatabase) {
         TableNameConfiguration config = DatabaseHelper.getTableNameConfiguration(usingRemoteDatabase);
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         return new SQLQueryGenerator(config, databaseEnum);
     }
 
+    /**
+     * @param usingRemoteDatabase <p>Whether the database is remote or not</p>
+     * @return <p>A new table name configuration</p>
+     */
     public static TableNameConfiguration getTableNameConfiguration(boolean usingRemoteDatabase) {
         String prefix = usingRemoteDatabase ? ConfigurationHelper.getString(ConfigurationOption.BUNGEE_INSTANCE_NAME)
                 : "";

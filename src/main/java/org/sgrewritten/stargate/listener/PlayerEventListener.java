@@ -53,6 +53,13 @@ public class PlayerEventListener implements Listener {
     private final @NotNull BlockLoggingManager loggingCompatibility;
     private final StorageAPI storageAPI;
 
+    /**
+     * @param languageManager <p>A localized message provider</p>
+     * @param registry <p>A registry containing all portal information</p>
+     * @param bungeeManager <p>A manager that deals with bungee related messages</p>
+     * @param loggingCompatibility <p>Block logger interface</p>
+     * @param storageAPI <p>An interface to the database containing all info about portals</p>
+     */
     public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatibility, StorageAPI storageAPI) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);

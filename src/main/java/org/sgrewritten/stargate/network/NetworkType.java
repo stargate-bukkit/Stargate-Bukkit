@@ -125,6 +125,10 @@ public enum NetworkType {
         return null;
     }
 
+    /**
+     * @param flag <p>A portal flag</p>
+     * @return <p>True if the specified flag relates to a network flag</p>
+     */
     public static boolean isNetworkTypeFlag(PortalFlag flag) {
         for (NetworkType type : NetworkType.values()) {
             if (flag == type.getRelatedFlag()) {

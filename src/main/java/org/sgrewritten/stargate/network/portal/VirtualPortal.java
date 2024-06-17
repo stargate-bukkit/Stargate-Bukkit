@@ -205,10 +205,14 @@ public class VirtualPortal implements Portal {
         return GlobalPortalId.getFromPortal(this);
     }
 
+    /**
+     * @return <p>The server this portal is contained within</p>
+     */
     public String getServer() {
         return server;
     }
 
+    @Override
     public StorageType getStorageType() {
         return (flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }

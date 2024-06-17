@@ -5,6 +5,9 @@ import org.sgrewritten.stargate.Stargate;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Runs tasks asynchronously
+ */
 public abstract class StargateAsyncTask extends StargateTask {
 
     private final Stargate plugin;

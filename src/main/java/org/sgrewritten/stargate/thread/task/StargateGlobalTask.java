@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
+/**
+ * Runs task on the global thread (Folia) or on the main thread (paper)
+ */
 public abstract class StargateGlobalTask extends StargateTask {
     private final Stargate plugin;
     private boolean bungee = false;

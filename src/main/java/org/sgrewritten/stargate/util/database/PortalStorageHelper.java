@@ -35,7 +35,14 @@ public class PortalStorageHelper {
         throw new IllegalStateException("Utility class");
     }
 
-
+    /**
+     * Load portal data from sql result set
+     * @param resultSet <p>Sql result set representing one row in the portals table</p>
+     * @param portalType <p>How the portal is stored</p>
+     * @return <p>Portal data which can be used to create a portal</p>
+     * @throws SQLException <p>If any sql problem</p>
+     * @throws PortalLoadException <p>See {@link PortalLoadException.FailureType} for causes</p>
+     */
     public static @NotNull PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException, PortalLoadException {
         String name = resultSet.getString("name");
         String networkName = resultSet.getString("network");
@@ -78,6 +85,13 @@ public class PortalStorageHelper {
         return new PortalData(gateData, name, networkName, destination, flags, ownerUUID, serverUUID, serverName, portalType, metadata);
     }
 
+    /**
+     * Load a portal position from sql result set
+     * @param resultSet <p>Sql row in table</p>
+     * @return <p>A portal position based from the row in the table</p>
+     * @throws NumberFormatException <p>IF unable to parse integer</p>
+     * @throws SQLException <p>if any sql error</p>
+     */
     public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
         int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
         int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));

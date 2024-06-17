@@ -93,10 +93,13 @@ public class StargatePortal implements RealPortal {
     /**
      * Instantiates a new abstract portal
      *
-     * @param network   <p>The network the portal belongs to</p>
-     * @param name      <p>The name of the portal</p>
-     * @param flags     <p>The flags enabled for the portal</p>
-     * @param ownerUUID <p>The UUID of the portal's owner</p>
+     * @param network         <p>The network the portal belongs to</p>
+     * @param name            <p>The name of the portal</p>
+     * @param flags           <p>The flags enabled for the portal</p>
+     * @param gate            <p>The gate belonging to this portal</p>
+     * @param ownerUUID       <p>The UUID of the portal's owner</p>
+     * @param languageManager <p>A manager able to provide localized messages</p>
+     * @param economyManager  <p>A manager able to deal with server economy</p>
      * @throws NameLengthException <p>If the portal name is invalid</p>
      */
     public StargatePortal(Network network, String name, Set<PortalFlag> flags, GateAPI gate,
@@ -270,7 +273,7 @@ public class StargatePortal implements RealPortal {
             }
 
             boolean shouldCharge = false;
-            if(target instanceof Player player){
+            if (target instanceof Player player) {
                 shouldCharge = EconomyHelper.shouldChargePlayer(player, origin, BypassPermission.COST_USE);
             }
             useCost = shouldCharge ? ConfigurationHelper.getInteger(ConfigurationOption.USE_COST) : 0;
@@ -302,7 +305,7 @@ public class StargatePortal implements RealPortal {
         close(false);
     }
 
-    private void denyTeleportOperation(String message, Entity target){
+    private void denyTeleportOperation(String message, Entity target) {
         Teleporter teleporter = new Teleporter(this, this, gate.getFacing().getOppositeFace(), gate.getFacing(),
                 0, message, languageManager, economyManager);
         teleporter.teleport(target);
@@ -315,7 +318,7 @@ public class StargatePortal implements RealPortal {
             return;
         }
         Portal destination = behavior.getDestination();
-        if(target instanceof Player player && !network.canSeePortal(destination, this, player)){
+        if (target instanceof Player player && !network.canSeePortal(destination, this, player)) {
             denyTeleportOperation(languageManager.getErrorMessage(TranslatableMessage.DENY), player);
             return;
         }

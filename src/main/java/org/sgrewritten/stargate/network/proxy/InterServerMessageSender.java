@@ -7,6 +7,9 @@ import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 
+/**
+ * Handles any cross server information sending
+ */
 public class InterServerMessageSender implements PluginMessageSender {
 
     private final PluginMessageInterface pluginMessageInterface;
@@ -15,6 +18,9 @@ public class InterServerMessageSender implements PluginMessageSender {
         this.pluginMessageInterface = new BukkitPluginMessageInterface();
     }
 
+    /**
+     * @param pluginMessageInterface <p>Interface that handles sending plugin messages</p>
+     */
     public InterServerMessageSender(PluginMessageInterface pluginMessageInterface) {
         this.pluginMessageInterface = pluginMessageInterface;
     }

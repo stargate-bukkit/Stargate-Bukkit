@@ -5,6 +5,9 @@ import org.sgrewritten.stargate.Stargate;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Runs asynchronous tasks in a queue (an attempt to avoid race conditions, and probably better than not doing this)
+ */
 public abstract class StargateQueuedAsyncTask extends StargateTask {
     private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
     private static boolean asyncQueueThreadIsEnabled = false;

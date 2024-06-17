@@ -1,5 +1,8 @@
 package org.sgrewritten.stargate.property;
 
+/**
+ * Enum containing information whether a class can be found in the current setup
+ */
 public enum NonLegacyClass {
 
     CHAT_COLOR("net.md_5.bungee.api.ChatColor"),
@@ -23,6 +26,8 @@ public enum NonLegacyClass {
 
     private Class<?> aClass = null;
     private boolean isImplemented;
+
+
     NonLegacyClass(String classToCheckFor){
         try {
             this.aClass = Class.forName(classToCheckFor);
@@ -32,10 +37,17 @@ public enum NonLegacyClass {
         }
     }
 
+    /**
+     * @return <p>True if the class is implemented</p>
+     */
     public boolean isImplemented() {
         return isImplemented;
     }
 
+    /**
+     * @return <p>The class that this checks against</p>
+     * @throws ClassNotFoundException <p>If the class does could not be found</p>
+     */
     public Class<?> getRelatedClass() throws ClassNotFoundException {
         if(aClass == null){
             throw new ClassNotFoundException();

@@ -27,11 +27,17 @@ public abstract class StargateTask implements Runnable {
     public abstract void runTaskTimer(long period, long delay);
 
 
+    /**
+     * Cancel this task
+     */
     public void cancel() {
         this.cancelled = true;
         cancelIfTaskHasBeenScheduled(!USING_FOLIA);
     }
 
+    /**
+     * Register the task to all tasks that are currently run
+     */
     protected void registerTask() {
         if (taskIsRegistered) {
             return;
@@ -40,6 +46,10 @@ public abstract class StargateTask implements Runnable {
         tasks.add(this);
     }
 
+    /**
+     * Register a Folia task
+     * @param scheduledTask <p>The id of the task</p>
+     */
     protected void registerFoliaTask(ScheduledTask scheduledTask) {
         this.scheduledTask = scheduledTask;
         if (cancelled) {
@@ -49,6 +59,11 @@ public abstract class StargateTask implements Runnable {
         }
     }
 
+    /**
+     * Register a bukkit task
+     * @param scheduledBukkitTask <p>The ID of the task</p>
+     * @return <p>A bukkit runnable</p>
+     */
     protected BukkitRunnable registerBukkitTask(BukkitRunnable scheduledBukkitTask) {
         this.scheduledBukkitTask = scheduledBukkitTask;
         if (!cancelled) {
@@ -57,6 +72,10 @@ public abstract class StargateTask implements Runnable {
         return scheduledBukkitTask;
     }
 
+    /**
+     * Cancel this task if it has been scheduled
+     * @param bukkit <p>Whether it's a bukkit or Folia task</p>
+     */
     private void cancelIfTaskHasBeenScheduled(boolean bukkit) {
         if (bukkit) {
             scheduledBukkitTask.cancel();
@@ -113,6 +132,10 @@ public abstract class StargateTask implements Runnable {
         this.runTask();
     }
 
+    /**
+     * Should the task repeat itself?
+     * @param repeatable <p>Change the task to repeat it self, or to stop repeating itself</p>
+     */
     protected void setRepeatable(boolean repeatable) {
         this.repeatable = repeatable;
     }

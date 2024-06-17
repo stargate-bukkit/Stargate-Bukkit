@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * A data migrator to migrate from 1.0.0.14 to 1.0.0.16
+ */
 public class DataMigration9 extends DataMigration {
     private final Properties configConversions = loadConfigConversions("/migration/config-migrations-9.properties");
 

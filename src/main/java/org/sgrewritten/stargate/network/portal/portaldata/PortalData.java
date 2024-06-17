@@ -10,6 +10,7 @@ import java.util.UUID;
 /**
  * The data contained within a Portal.
  *
+ * @param gateData          Data of the gate owned by this portal
  * @param name              The name of the portal.
  * @param networkName       The name of the network that the portal is associated with.
  * @param destination       The name of the portal stored as this portal's destination.
@@ -18,6 +19,7 @@ import java.util.UUID;
  * @param serverUUID        The UUID of the server this portal was constructed on.
  * @param serverName        The name of the server this portal was constructed on.
  * @param portalType        The type associated with this portal.
+ * @param metaData          The metadata on this portal
  */
 public record PortalData(GateData gateData, String name, String networkName, String destination,
                          Set<PortalFlag> flags, UUID ownerUUID,

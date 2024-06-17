@@ -8,6 +8,9 @@ import org.sgrewritten.stargate.network.NetworkType;
 
 import java.util.Set;
 
+/**
+ * Does no permission checks, will always give permission to everything
+ */
 public class UnrestrictedPermissionManager implements PermissionManager {
     @Override
     public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {

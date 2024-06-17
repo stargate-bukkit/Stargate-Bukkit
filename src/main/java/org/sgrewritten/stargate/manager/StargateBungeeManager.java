@@ -40,6 +40,11 @@ public class StargateBungeeManager implements BungeeManager {
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
     private final NetworkManager networkManager;
 
+    /**
+     * @param registry <p>A registry containing all information about portals</p>
+     * @param languageManager <p>A manager able to provide localized messages</p>
+     * @param networkManager <p>A network manager</p>
+     */
     public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull NetworkManager networkManager) {
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);

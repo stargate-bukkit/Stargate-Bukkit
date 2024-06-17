@@ -42,6 +42,11 @@ public class StargateNetworkManager implements NetworkManager {
     private final RegistryAPI registry;
     private final StorageAPI storageAPI;
 
+    /**
+     *
+     * @param registryAPI <p>A registry containing all portal information</p>
+     * @param storageAPI <p>A database interface able to give and modify information about portals</p>
+     */
     public StargateNetworkManager(RegistryAPI registryAPI, StorageAPI storageAPI) {
         this.registry = registryAPI;
         this.storageAPI = storageAPI;

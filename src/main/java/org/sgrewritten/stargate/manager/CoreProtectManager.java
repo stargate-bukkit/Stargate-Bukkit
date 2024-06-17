@@ -6,6 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Logs certain events to coreprotect
+ */
 public class CoreProtectManager implements BlockLoggingManager {
 
     private CoreProtectAPI coreProtect;

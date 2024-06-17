@@ -5,7 +5,11 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 
 import java.util.List;
 
+/**
+ * Enum to keep track of all supported block events that can destroy a portal
+ */
 public enum BlockEventType {
+
     BLOCK_BURN("BlockBurnEvent"),
 
     BLOCK_PLACE("BlockPlaceEvent"),

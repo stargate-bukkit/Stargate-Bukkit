@@ -38,6 +38,9 @@ public class MoveEventListener implements Listener {
     private final RegistryAPI registry;
 
 
+    /**
+     * @param registry <p>the registry containing all information about portals</p>
+     */
     public MoveEventListener(RegistryAPI registry) {
         this.registry = registry;
     }

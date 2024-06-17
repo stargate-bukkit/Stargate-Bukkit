@@ -7,6 +7,9 @@ import org.bukkit.plugin.Plugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.thread.SynchronousPopulator;
 
+/**
+ * Runs task in a region (Folia) or in the main thread (paper)
+ */
 public abstract class StargateRegionTask extends StargateTask {
 
     private final Location location;

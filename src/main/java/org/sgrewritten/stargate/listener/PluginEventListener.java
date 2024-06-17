@@ -22,6 +22,10 @@ public class PluginEventListener implements Listener {
     private final @NotNull StargateEconomyAPI economyManager;
     private final @NotNull BlockLoggingManager blockLoggingManager;
 
+    /**
+     * @param economyManager <p>An economy manager</p>
+     * @param blockLoggingManager <p>A block logger interface</p>
+     */
     public PluginEventListener(@NotNull StargateEconomyAPI economyManager, @NotNull BlockLoggingManager blockLoggingManager) {
         this.economyManager = Objects.requireNonNull(economyManager);
         this.blockLoggingManager = Objects.requireNonNull(blockLoggingManager);

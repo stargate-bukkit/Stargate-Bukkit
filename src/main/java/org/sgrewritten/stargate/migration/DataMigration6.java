@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /**
- * The specification for data migration from legacy to 1.0.0
+ * The specification for data migration from legacy to 1.0.0.0
  */
 public class DataMigration6 extends DataMigration {
 

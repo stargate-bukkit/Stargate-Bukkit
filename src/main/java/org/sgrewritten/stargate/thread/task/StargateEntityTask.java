@@ -3,6 +3,9 @@ package org.sgrewritten.stargate.thread.task;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.Stargate;
 
+/**
+ * Runs task on an entity thread (Folia) or on the main thread (paper)
+ */
 public abstract class StargateEntityTask extends StargateTask {
 
     private final Entity entity;
