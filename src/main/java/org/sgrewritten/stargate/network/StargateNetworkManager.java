@@ -110,7 +110,7 @@ public class StargateNetworkManager implements NetworkManager {
         }
         Network network = registry.getNetwork(name, storageType);
         if (network == null || network.getType() != type) {
-            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", true);
+            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", type);
         }
         return network;
     }
@@ -179,7 +179,7 @@ public class StargateNetworkManager implements NetworkManager {
                     }.runNow();
                 }
             }
-            throw new NameConflictException("network of id '" + name + "' already exists", true);
+            throw new NameConflictException("network of id '" + name + "' already exists", type);
         }
         Network network = storageAPI.createNetwork(name, type, storageType);
         registry.registerNetwork(network);
@@ -234,7 +234,7 @@ public class StargateNetworkManager implements NetworkManager {
     public void rename(Portal portal, String newName) throws NameConflictException {
         Network network = portal.getNetwork();
         if (network.isPortalNameTaken(newName)) {
-            throw new NameConflictException(String.format("Portal name %s is already used by another portal", newName), false);
+            throw new NameConflictException(String.format("Portal name %s is already used by another portal", newName));
         }
         try {
             storageAPI.updatePortalName(newName, portal.getGlobalId(), portal.getStorageType());

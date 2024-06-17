@@ -130,4 +130,8 @@ public final class TranslatableMessageFormatter {
         String interServerTypeString = languageManager.getString(interServer.getType().getTerminology()) + " " + languageManager.getString(TranslatableMessage.FANCY_INTERSERVER);
         return initialMessage.replace("%name%", interServer.getName()).replace("%type1%", interServerTypeString.toLowerCase()).replace("%type2%", localTypeString.toLowerCase());
     }
+
+    public static String formatNetworkType(String message, NetworkType type, LanguageManager languageManager) {
+        return message.replace("%type%", languageManager.getString(type.getTerminology()));
+    }
 }

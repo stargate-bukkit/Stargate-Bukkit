@@ -153,7 +153,7 @@ public class StargateNetwork implements Network {
     public void addPortal(Portal portal) throws NameConflictException {
         if (isPortalNameTaken(portal.getName())) {
             throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" +
-                    this.getId() + "'", false);
+                    this.getId() + "'");
         }
         if (portal instanceof RealPortal realPortal) {
             registry.registerPortal(realPortal);

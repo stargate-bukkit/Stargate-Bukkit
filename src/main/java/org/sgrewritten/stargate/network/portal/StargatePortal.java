@@ -243,7 +243,7 @@ public class StargatePortal implements RealPortal {
     public void setNetwork(Network targetNetwork) throws NameConflictException {
         Portal conflictingPortal = targetNetwork.getPortal(this.name);
         if (conflictingPortal != null && conflictingPortal != this) {
-            throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()), false);
+            throw new NameConflictException(String.format("Portal of name %s already exists in network %s", this.name, targetNetwork.getId()));
         }
         this.network = targetNetwork;
         updateState();
