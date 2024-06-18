@@ -7,10 +7,10 @@
     <version>1.0.0.16-NIGHTLY</version>
     <name>StarGate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
-    <url>https://sgrewitten.org</url>
+    <url>https://sgrewritten.org</url>
     <organization>
         <name>Stargate Rewitten</name>
-        <url>https://sgrewitten.org</url>
+        <url>https://sgrewritten.org</url>
     </organization>
     <developers>
         <developer>
@@ -25,7 +25,7 @@
     <contributors>
         <contributor>
             <name>The contributors of the SGR Project</name>
-            <url>https://sgrewitten.org/credits</url>
+            <url>https://sgrewritten.org/credits</url>
         </contributor>
     </contributors>
 

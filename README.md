@@ -1,4 +1,4 @@
-> ### **Support Discord** __**[Link](https://sgrewitten.org/discord)**__
+> ### **Support Discord** __**[Link](https://sgrewritten.org/discord)**__
 
 # Stargate-Bukkit
 

@@ -3,7 +3,7 @@ main: org.sgrewritten.stargate.Stargate
 version: @version@
 description: The original, and still the best, transportation plugin for the Bukkit Ecosystem.
 authors: [ Knarvik, Thorin, sgrewitten.org/credits ]
-website: https://sgrewitten.org
+website: https://sgrewritten.org
 api-version: 1.20
 folia-supported: true
 softdepend: [Vault, BKCommonLib, BlockUtil]
