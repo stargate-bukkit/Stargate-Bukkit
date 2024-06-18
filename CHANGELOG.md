@@ -3,7 +3,7 @@
 #### [Version 1.0.0.15] Stargate-Rewritten
 
 - Added a trace command to improve UX for bug reporting
-- Changed to new package name (org.sgrewitten)
+- Changed to new package name (org.sgrewritten)
 - Moved low-usage flags to the SG-Mechanics module (`Q`, `H`, `N`, `S`)
 - Updated localisation targets and pulled most recent translations from crowdin.
 - Added default detections for sublanguage specifications based on parent locales.
