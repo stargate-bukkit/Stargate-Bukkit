@@ -9,7 +9,7 @@ body:
     attributes:
       label: "Bug Description"
       description: "A brief overview/description of what this bug is and when it occurs."
-      placeholder: "ex. In these circumstances, StarGate breaks by doing this instead of this!"
+      placeholder: "ex. In these circumstances, Stargate breaks by doing this instead of this!"
     validations:
       required: true
   - type: textarea

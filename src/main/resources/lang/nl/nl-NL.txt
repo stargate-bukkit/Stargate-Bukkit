@@ -53,7 +53,7 @@ conflictSpawn=Het spawngebied verstoort dit portaal!
 
 # Economy
 ecoDeduct=%cost% afgetrokken
-ecoObtain=%cost% ontvangen van StarGate %portal%!
+ecoObtain=%cost% ontvangen van Stargate %portal%!
 ecoInsolvent=Onvoldoende saldo!
 
 #Terminology
@@ -75,5 +75,5 @@ unimplementedFlag=De %flags% markeringen zijn nog niet geïmplementeerd.
 #Admin
 adminReload=Configuratie herladen!
 adminInfo=Uitvoeren van versie %version%. Changelog: https://git.io/JD4Qo
-adminHelp=De documentatie van StarGate kan gevonden worden op https://git.io/JDclf
+adminHelp=De documentatie van Stargate kan gevonden worden op https://git.io/JDclf
 translatedBy=Grovert11 & Matriarch!

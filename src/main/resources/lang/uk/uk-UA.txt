@@ -53,7 +53,7 @@ conflictSpawn=Чанки спавну заважають цьому портал
 
 # Economy
 ecoDeduct=Вираховано %cost%.
-ecoObtain=Отримано %cost% на StarGate %portal%!
+ecoObtain=Отримано %cost% на Stargate %portal%!
 ecoInsolvent=Недостатньо коштів!
 
 #Terminology
@@ -76,5 +76,5 @@ unimplementedFlag=Позначки %flags% ще не реалізовано.
 #Admin
 adminReload=Конфігурацію перезавантажено!
 adminInfo=Запускається версія %version%. Журнал змін: https://git.io/JD4Qo
-adminHelp=Документацію StarGate можна знайти за адресою https://git.io/JDclf
+adminHelp=Документацію Stargate можна знайти за адресою https://git.io/JDclf
 translatedBy=Veydzher

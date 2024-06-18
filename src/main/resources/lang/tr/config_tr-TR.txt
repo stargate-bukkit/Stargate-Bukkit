@@ -21,7 +21,7 @@ languageL2=Desteklenen değerler: %values%
 languageL4=Eğer Stargate sizin dilinizde mevcut değilse çevirmen olmayı düşünün:
 bungee.UsingBungeeL1=Bungee uyumlu bir vekil sunucuya mı bağlısın?
 bungee.usingBungeeL2=Eğer "u" geçit tipini kullanmayı planlıyorsanız bunu "true" olarak değiştirin.
-bungee.useRemoteDatabaseL1=Varsayılan olarak StarGate SQLite veritabanı kullanır.
+bungee.useRemoteDatabaseL1=Varsayılan olarak Stargate SQLite veritabanı kullanır.
 bungee.useRemoteDatabaseL3=Eğer büyük bir sunucu çalıştırıyorsanız uzak bir veritabanı kullanmanızı öneririz.
 bungee.useRemoteDatabaseL4="i" geçip tipi ile geçitler oluşturmayı planlıyorsanız o tarz bir veritabanı gerekli olduğunu unutmayınız.
 bungee.remoteDatabaseSettings.L1=Sadece useRemoteDatabase "true" olduğunda uygulanabilir.
@@ -29,7 +29,7 @@ bungee.remoteDatabaseSettings.driverL1=Stargate veritabanınıza bağlanmak içi
 bungee.remoteDatabaseSettings.driverL2=Şuan bu değerler desteklenmektedir: %values%
 bungee.remoteDatabaseSettings.addressL1=Stargate veritabanınızı nerede bulabilir?
 bungee.remoteDatabaseSettings.useSSLL1=Stargate veritabanınıza bağlanırken SSL kullanmalı mı?
-bungee.remoteDatabaseSettings.databaseL1=StarGate'nin verilerini saklayacağı veritabanının ismi. Zaten var olmalı.
+bungee.remoteDatabaseSettings.databaseL1=Stargate'nin verilerini saklayacağı veritabanının ismi. Zaten var olmalı.
 bungee.remoteDatabaseSettings.databaseL2=Eğer Bungee kullanıyorsanız bu tüm Stargate sunucularıyla paylaşılmalı.
 bungee.remoteDatabaseSettings.usernameL1=Bağlantı için kullanılacak olan bilgiler:
 bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Stargate klasörüne bir veritabanı yapılandırma dosyası ('hikari.properties') oluşturmalı mıyız?
@@ -47,7 +47,7 @@ defaultTerminalNetworkL7=Terminal desteği %version% için planlanmıştır!
 
 # Gate Behaviour
 networkLimitL1=Bir ağ en fazla kaç geçit içerebilir? (Sınırsız için -1)
-handleVehiclesL1=Araçlar ve yolcuları StarGate geçitlerinden geçebilecek mi?
+handleVehiclesL1=Araçlar ve yolcuları Stargate geçitlerinden geçebilecek mi?
 handleVehiclesL2=vagonlar, botlar ve eyerli moblar = araçlar | oyuncular ve moblar = yolcular
 handleLeashedCreaturesL1=Eğer bir oyuncu kayışla bir varlığa bağlıyken geçitten geçerse Stargate onu da ışınlamalı mı?
 CheckPortalValidityL1=Sunucu başlangıçta tüm geçitleri yeniden doğrulayacak mı?
@@ -59,8 +59,8 @@ gateExitSpeedMultiplierL1=Oyuncular geçitlerden hangi hız ile çıkarılmalı?
 gateExitSpeedMultiplierL2=Bir geçitten çıkarken oyuncular özgün hareket hızlarının bu sayı ile çarpılmış halini korur.
 
 # Economy
-useEconomyL1=StarGate sunucu ekonomisi ile etkileşime girecek mi?
-useEconomyL3=Bu özellikler için StarGate, Vault eklentisine bağlıdır.
+useEconomyL1=Stargate sunucu ekonomisi ile etkileşime girecek mi?
+useEconomyL3=Bu özellikler için Stargate, Vault eklentisine bağlıdır.
 taxAccountL1=Sunucun vergi hesabı (kapalı ekonomi) var mı?
 taxAccountL2=Eğer öyleyse lütfen vergi hesabının ismini sağlayınız (toplanan para o hesaba gönderilecek).
 taxAccountL3=Eğer yoksa bu kısmı boş bırakın (toplanan para silinecektir).
@@ -75,7 +75,7 @@ chargeFreeDestinationL1=Geçidin istikameti 'f' tipi bir geçit olsa bile 'creat
 chargeFreeDestinationL2=Bunun sadece istikameti belli geçitlerde uygulandığını unutmayınız.
 
 # Aesthetic Tweaks
-signFormattingL1=Bu ayarlar StarGate'nin tabelaları formatlarken kullandığı renkler ve stilleri özelleştirilmesine yarar.
+signFormattingL1=Bu ayarlar Stargate'nin tabelaları formatlarken kullandığı renkler ve stilleri özelleştirilmesine yarar.
 signFormattingL2=Daha gelişmiş stil seçenekleri için lütfen https://sgrewritten.org/extraColours adresini ziyaret edebilirsiniz.
 signFormatting.color.L1=Stargate tabelalarında kullanılan varsayılan renk (parlaklık tabela materyaline göre değişir)
 signFormatting.color.L2=Geçerli renklerin listesini https://sgrewritten.org/colourTypes adresinde bulabilirsiniz.

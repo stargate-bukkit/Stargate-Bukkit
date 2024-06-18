@@ -54,7 +54,7 @@ conflictSpawn=Spawn chunks are interfering with this portal!
 
 # Economy
 ecoDeduct=Deducted %cost%.
-ecoObtain=Obtained %cost% from StarGate %portal%!
+ecoObtain=Obtained %cost% from Stargate %portal%!
 ecoInsolvent=Insufficient funds!
 
 #Terminology
@@ -78,5 +78,5 @@ parityCommand=Automatically installing the %modules% module(s)! This may take a 
 #Admin
 adminReload=Configuration reloaded!
 adminInfo=Running version %version%. Changelog: https://git.io/JD4Qo
-adminHelp=StarGate's documentation can be found at https://git.io/JDclf
+adminHelp=Stargate's documentation can be found at https://git.io/JDclf
 translatedBy=Pheotis

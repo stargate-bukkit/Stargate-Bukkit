@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.property;
 
 /**
- * An enum containing all actions in the StarGate plugin message protocol
+ * An enum containing all actions in the Stargate plugin message protocol
  *
  * @author Thorin
  */

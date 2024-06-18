@@ -44,7 +44,7 @@ default-gate-network: lclo
 # What is the maximum number of gates a single network may contain? (0 for unlimited)
 maxgates: 0
 
-# Will vehicles and their passengers be able to travel through StarGate portals?
+# Will vehicles and their passengers be able to travel through Stargate portals?
 #  [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
 # 
 # …««»»…  This feature is partially incompatible with MineCraft 1.9+.
@@ -82,9 +82,9 @@ destroyexplosion: false
 # |                                            Economy                                           | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# Will StarGate interact with your server's economy?
+# Will Stargate interact with your server's economy?
 # 
-# …««»»…  For these features, StarGate depends on the Vault plugin.
+# …««»»…  For these features, Stargate depends on the Vault plugin.
 # “NOTE”  https://www.spigotmc.org/resources/vault.34315/
 useeconomy: false
 
@@ -116,7 +116,7 @@ chargefreedestination: true
 # |                                       Aesthetic Tweaks                                       | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# What colour will StarGate use for all text when formatting gate signs?
+# What colour will Stargate use for all text when formatting gate signs?
 # Note that players can override this with DYE and/or GLOW_INK_SAC
 # 
 # All colour names should follow this format:
