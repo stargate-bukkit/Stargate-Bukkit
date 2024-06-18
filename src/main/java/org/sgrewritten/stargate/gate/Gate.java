@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.gate;
 
 import com.google.common.base.Preconditions;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,7 +41,6 @@ import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.manager.BlockDropManager;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.ButtonHelper;

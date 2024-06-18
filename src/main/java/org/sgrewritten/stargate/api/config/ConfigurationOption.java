@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.api.config;
 
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.property.StargateConstant;
 
 /**

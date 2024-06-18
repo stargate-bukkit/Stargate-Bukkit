@@ -6,9 +6,6 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.Stargate;
-
-import java.util.logging.Level;
 
 public interface MetadataHolder {
 

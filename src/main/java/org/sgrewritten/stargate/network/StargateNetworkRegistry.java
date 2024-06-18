@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.network;
 
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -12,7 +11,6 @@ import org.sgrewritten.stargate.util.NameHelper;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class StargateNetworkRegistry implements NetworkRegistry {

@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.api.network;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +18,6 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

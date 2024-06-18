@@ -24,7 +24,6 @@ import org.sgrewritten.stargate.network.portal.LegacyVirtualPortal;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.NameHelper;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 

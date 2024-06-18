@@ -2,7 +2,6 @@ package org.sgrewritten.stargate.api.permission;
 
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.NetworkType;
 

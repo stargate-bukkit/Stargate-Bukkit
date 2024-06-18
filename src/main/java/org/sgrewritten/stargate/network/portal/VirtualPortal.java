@@ -14,7 +14,6 @@ import org.sgrewritten.stargate.network.proxy.BukkitPluginMessageInterface;
 import org.sgrewritten.stargate.network.proxy.PluginMessageInterface;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
-import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.io.ByteArrayOutputStream;

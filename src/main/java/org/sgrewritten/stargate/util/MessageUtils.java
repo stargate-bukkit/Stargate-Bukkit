@@ -9,10 +9,8 @@ import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.formatting.AdventureStargateComponent;
 import org.sgrewritten.stargate.api.network.portal.formatting.LegacyStargateComponent;
 import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
-import org.sgrewritten.stargate.property.NonLegacyClass;
 
 public class MessageUtils {
     private MessageUtils() {

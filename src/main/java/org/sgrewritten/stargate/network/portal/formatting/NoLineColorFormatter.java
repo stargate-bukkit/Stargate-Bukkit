@@ -7,7 +7,6 @@ import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
 import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

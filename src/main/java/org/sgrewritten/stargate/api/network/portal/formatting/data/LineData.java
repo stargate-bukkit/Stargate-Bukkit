@@ -1,7 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal.formatting.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.network.portal.formatting.LineFormatter;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
 

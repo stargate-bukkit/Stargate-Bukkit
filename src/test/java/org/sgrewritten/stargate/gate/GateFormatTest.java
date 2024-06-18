@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.gate;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import org.bukkit.util.BoundingBox;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +12,6 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class GateFormatTest {
 

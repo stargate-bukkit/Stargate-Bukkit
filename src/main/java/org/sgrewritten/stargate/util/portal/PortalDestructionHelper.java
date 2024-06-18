@@ -13,7 +13,6 @@ import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
-import org.sgrewritten.stargate.property.BlockEventType;
 import org.sgrewritten.stargate.util.EconomyHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
