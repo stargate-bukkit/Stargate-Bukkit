@@ -49,7 +49,7 @@ public class StargateConstant {
     /**
      * Maximum name length of networks and portals
      */
-    public static final int MAX_TEXT_LENGTH = 13;
+    public static final int MAX_TEXT_LENGTH = 14;
 
     /**
      * The id of the default network
