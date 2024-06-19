@@ -5,14 +5,15 @@
 `Supporting MC 1.20+ in the Bukkit Ecosystem`
 
 > [!WARNING]
-> THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!<br>
-> <br>
-> **FOR**: Stargate developers and contributors.<br>
-> **ENJOY**: Access to cutting edge features still under active development.<br>
-> **EXPECT**: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br>
 >
-> **THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT**<br>
->  **Use at your own risk, and remember to make backups!**
+> **THIS IS A TESTING BUILD FROM THE ALPHA CHANNEL!**<br>
+> <br>
+> **FOR**: Addon developers, early adopters, and adventure seekers.<br>
+> **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.<br>
+> **EXPECT**: Test builds with bugs, incompatible addons, and possible crashes.<br>
+>
+> **THIS BUILD IS NOT YET SUITABLE FOR USE AT SCALE OR ON MOST PRODUCTION SERVERS**<BR>
+> **Use at your own risk, remember to make backups, and please report the bugs you will find!**
 
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
