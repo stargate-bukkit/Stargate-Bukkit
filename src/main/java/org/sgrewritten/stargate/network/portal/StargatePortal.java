@@ -404,9 +404,11 @@ public class StargatePortal implements RealPortal {
 
     private void updateColorDrawer(Location location, DyeColor changedColor, PortalPosition portalPosition) {
         if (!(location.getBlock().getState() instanceof Sign sign)) {
-            Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
-                            + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
-                    this.name, this.network.getName()));
+            if (!hasFlag(PortalFlag.NO_SIGN)) {
+                Stargate.log(Level.WARNING, String.format("Could not find a sign for portal %s in network %s %n"
+                                + "This is most likely caused from a bug // please contact developers (use ''sg about'' for github repo)",
+                        this.name, this.network.getName()));
+            }
             return;
         }
         DyeColor color;
