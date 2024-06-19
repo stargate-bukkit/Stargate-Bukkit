@@ -4,7 +4,7 @@
 
     <groupId>org.sgrewritten</groupId>
     <artifactId>stargate</artifactId>
-    <version>1.0.0.16-ALPHA</version>
+    <version>1.0.0.17-NIGHTLY</version>
     <name>Stargate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
     <url>https://sgrewritten.org</url>
@@ -182,7 +182,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>Stargate-${project.version}</finalName>
+        <finalName>Stargate-${project.version}-${git.commit.id.abbrev}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
