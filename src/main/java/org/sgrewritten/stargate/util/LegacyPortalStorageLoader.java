@@ -80,7 +80,13 @@ public final class LegacyPortalStorageLoader {
                     continue;
                 }
                 try {
-                    portals.add(readPortal(line, world, stargateAPI, defaultNetworkName));
+                    Portal portal = readPortal(line, world, stargateAPI, defaultNetworkName);
+                    if(portal != null) {
+                        portals.add(portal);
+                    } else {
+                        String[] portalProperties = line.split(":");
+                        invalidPortals.add(new GlobalPortalId(portalProperties[0], (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID));
+                    }
                 } catch (InvalidStructureException e) {
                     String[] portalProperties = line.split(":");
                     invalidPortals.add(new GlobalPortalId(portalProperties[0], (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID) );
@@ -97,7 +103,7 @@ public final class LegacyPortalStorageLoader {
                     stringBuilder.append(globalPortalId.toString());
                 });
                 stringBuilder.append("\n\n");
-                stringBuilder.append("This has most likely been caused by an invalid or absent gate format");
+                stringBuilder.append("This has most likely been caused by an invalid or absent gate format or an invalid network name");
                 Stargate.log(Level.WARNING, stringBuilder.toString());
             }
         }
