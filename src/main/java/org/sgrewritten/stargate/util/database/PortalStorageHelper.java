@@ -154,7 +154,7 @@ public class PortalStorageHelper {
             networkName = StargateConstant.DEFAULT_NETWORK_ID;
         } else if (!ownerString.isEmpty()) {
             String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-            if (playerName != null && playerName.equals(networkName)) {
+            if (playerName != null && playerName.equalsIgnoreCase(networkName)) {
                 flags.add(StargateFlag.PERSONAL_NETWORK);
                 networkName = ownerUUID.toString();
             } else {
