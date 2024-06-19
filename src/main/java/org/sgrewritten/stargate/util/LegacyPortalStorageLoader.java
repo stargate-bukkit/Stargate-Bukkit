@@ -97,7 +97,7 @@ public final class LegacyPortalStorageLoader {
             }
             reader.close();
             if(!invalidPortals.isEmpty()){
-                final StringBuilder stringBuilder = new StringBuilder("Could not load the following gate formats:");
+                final StringBuilder stringBuilder = new StringBuilder("Could not load the following portals:");
                 invalidPortals.forEach(globalPortalId -> {
                     stringBuilder.append("\n");
                     stringBuilder.append(globalPortalId.toString());
