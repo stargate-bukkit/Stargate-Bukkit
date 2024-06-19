@@ -34,7 +34,7 @@ bungee:
   usingBungee: false
 
 
-  # By default, StarGate uses a local SQLite database to store its data.
+  # By default, Stargate uses a local SQLite database to store its data.
   #
   # If you are running a large server, we recommend using a remote database.
   # Note that such a database is required if you intend on building gates with the 'i' flag.
@@ -54,8 +54,8 @@ bungee:
     # Should stargate use SSL when connecting to your database?
     useSSL: true
 
-    # The name of the database StarGate will use to store its data. Must already exist.
-    # If you are using Bungee, this should be shared across all StarGate instances.
+    # The name of the database Stargate will use to store its data. Must already exist.
+    # If you are using Bungee, this should be shared across all Stargate instances.
     database: stargate
 
 
@@ -76,7 +76,7 @@ bungee:
 # Generally, that node is given to staff (we recommend stargate.create.personal for users).
 defaultGateNetwork: central
 
-# What network will StarGate reserve for terminal ('T') portals?
+# What network will Stargate reserve for terminal ('T') portals?
 #
 # Generally, this feature is used to make a group of portals in spawn known as a 'Terminal'.
 # Using this network, players can pay to connect their towns/bases/shops/etc. to the terminal.
@@ -93,18 +93,15 @@ defaultTerminalNetwork: terminal
 # What is the maximum number of gates a single network may contain? (-1 for unlimited)
 networkLimit: -1
 
-# Will vehicles and their passengers be able to travel through StarGate portals?
+# Will vehicles and their passengers be able to travel through Stargate portals?
 #  [minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers]
 handleVehicles: true
 
 # If a player teleports while attached with a lead to an entity, should SG also teleport the entity?
 handleLeashedCreatures: true
 
-# Will the server re-verify all existing portals on startup?
-# 
-# This checks that the expected gates are both present and using a valid layout.
-# Designed to catch .gate file modifications, world changes, and terrain regeneration.
-checkPortalValidity: true
+# The action that should be made whenever a loaded portal does not have a valid layout
+portalValidity: remove
 
 # Can StarGates be broken via an explosion?
 #  [tnt, creepers, etc.]
@@ -118,9 +115,9 @@ gateExitSpeedMultiplier: 1
 # |                                            Economy                                           | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# Will StarGate interact with your server's economy?
+# Will Stargate interact with your server's economy?
 # 
-#  …««»»…  For these features, StarGate depends on the Vault plugin.
+#  …««»»…  For these features, Stargate depends on the Vault plugin.
 #  “NOTE”  https://www.spigotmc.org/resources/vault.34315/
 useEconomy: false
 
@@ -217,7 +214,7 @@ customRemoteDatabasePrefix: SG_
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐥𝐢𝐦𝐢𝐭𝐞𝐝 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑔𝑒𝑛𝑒𝑟𝑎𝑙 𝑝𝑙𝑢𝑔𝑖𝑛 𝑒𝑣𝑒𝑛𝑡𝑠 (𝑙𝑜𝑎𝑑𝑖𝑛𝑔, 𝑑𝑖𝑠𝑎𝑏𝑙𝑖𝑛𝑔, 𝑐𝑜𝑛𝑛𝑒𝑐𝑡𝑖𝑜𝑛𝑠, 𝑒𝑡𝑐.).
 #   |=> FINER (Recommended for some addon developers).
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
-#   |=> FINEST (Only used by StarGate's core development team).
+#   |=> FINEST (Only used by Stargate's core development team).
 #   |   - 𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
 loggingLevel: INFO
 
@@ -226,4 +223,4 @@ loggingLevel: INFO
 
 # An internal value used by the plugin to determine how old your config is.
 # Please do not change this.
-configVersion: 8
+configVersion: 9

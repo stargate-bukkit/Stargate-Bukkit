@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.logging.Level;
 
@@ -26,7 +27,7 @@ class PluginEventListenerTest {
     @BeforeEach
     void setUp() {
         Stargate.setLogLevel(Level.SEVERE);
-        MockBukkit.mock();
+        StargateTestHelper.setup();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
         economyManager = new StargateEconomyManagerMock();
@@ -36,14 +37,14 @@ class PluginEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
         Stargate.setLogLevel(Level.INFO);
     }
 
     @Test
     void onPluginDisableVault() {
-        //TODO Find out a way to detect the disable message is sent
         Assertions.assertDoesNotThrow(() -> listener.onPluginDisable(new PluginDisableEvent(economy)));
+
     }
 
     @Test

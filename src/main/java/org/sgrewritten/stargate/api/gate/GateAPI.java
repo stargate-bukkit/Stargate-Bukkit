@@ -10,7 +10,9 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
@@ -23,11 +25,14 @@ public interface GateAPI {
 
     /**
      * Set button and draw sign
-     *
-     * @param signLines  <p>an array with 4 elements, representing each line of a sign</p>
-     * @param drawButton <p>whether or not include a button.</p>
      */
-    void drawControlMechanisms(SignLine[] signLines, boolean drawButton);
+    void drawControlMechanisms(LineData[] lines);
+
+    /**
+     * Update the state on the portal position according to its type
+     * @param portalPosition <p>The portal position to update</p>
+     */
+    void redrawPosition(PortalPosition portalPosition, @Nullable LineData[] lines);
 
     /**
      * Gets a copy of this gate's portal positions
@@ -106,11 +111,19 @@ public interface GateAPI {
     Location getLocation(@NotNull Vector vector);
 
     /**
+     * Check if this gate with the current settings is valid
+     *
+     * @return <p>True if this gate is valid</p>
+     * @throws GateConflictException <p>If this gate conflicts with another gate</p>
+     */
+    boolean isValid() throws GateConflictException;
+
+    /**
      * Calculates all portal positions for this gate
      *
      * @param alwaysOn <p>Whether this gate is always on</p>
      */
-    void calculatePortalPositions(boolean alwaysOn);
+    void calculatePortalPositions(boolean alwaysOn) throws InvalidStructureException;
 
     /**
      * Gets this gate's top-left location
@@ -157,4 +170,17 @@ public interface GateAPI {
      * Modify the world such that the gate follows its gateformat
      */
     void forceGenerateStructure();
+
+    /**
+     * Assign a real portal to this gate
+     * @param realPortal <p>The portal to assign to this gate</p>
+     */
+    @ApiStatus.Internal
+    void assignPortal(RealPortal realPortal);
+
+    /**
+     * Get the portal assigned to this portal position
+     * @return <p>The portal assigned to this portal position</p>
+     */
+    RealPortal getPortal();
 }

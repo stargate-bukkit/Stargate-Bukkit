@@ -1,11 +1,13 @@
 package org.sgrewritten.stargate.util.portal;
 
-import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.property.PortalValidity;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Set;
 public final class PortalHelper {
 
     private PortalHelper() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     /**
@@ -31,19 +33,33 @@ public final class PortalHelper {
         return flagsStringBuilder.toString();
     }
 
-
     /**
-     * Close all portals in specified map
      *
-     * @param networkMap <p> The map with all portals to close </p>
+     * @param portal <p>The portal to check for</p>
+     * @param networkManager <p>A stargate network manager</p>
+     * @return <p>True if the portal is valid</p>
      */
-    public static void closeAllPortals(Map<String, Network> networkMap) {
-        for (Network network : networkMap.values()) {
-            for (Portal portal : network.getAllPortals()) {
-                if (portal.hasFlag(PortalFlag.ALWAYS_ON) && portal instanceof RealPortal) {
-                    ((RealPortal) portal).getGate().close();
+    public static boolean portalValidityCheck(RealPortal portal, NetworkManager networkManager) {
+        PortalValidity portalValidity = PortalValidity.valueOf(ConfigurationHelper.getString(ConfigurationOption.PORTAL_VALIDITY).toUpperCase());
+        try {
+            boolean isValid = portal.getGate().isValid();
+            return switch (portalValidity){
+                case IGNORE -> isValid;
+                case REMOVE -> {
+                    if(!isValid){
+                        networkManager.destroyPortal(portal);
+                    }
+                    yield isValid;
                 }
-            }
+                case REPAIR -> {
+                    if(!isValid){
+                        portal.getGate().forceGenerateStructure();
+                    }
+                    yield true;
+                }
+            };
+        } catch (GateConflictException e) {
+            return false;
         }
     }
 

@@ -20,7 +20,7 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.portal.TeleportedEntityRelationDFS;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,6 +38,9 @@ public class MoveEventListener implements Listener {
     private final RegistryAPI registry;
 
 
+    /**
+     * @param registry <p>the registry containing all information about portals</p>
+     */
     public MoveEventListener(RegistryAPI registry) {
         this.registry = registry;
     }
@@ -50,7 +53,7 @@ public class MoveEventListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityPortalTeleport(@NotNull EntityPortalEvent event) {
         //The entity inside block event should already cancel this if necessary
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             return;
         }
         if (registry.isNextToPortal(event.getFrom(), GateStructureType.IRIS)) {
@@ -67,7 +70,7 @@ public class MoveEventListener implements Listener {
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
         //The EntityInsideBlockEvent won't trigger for END_GATEWAY, so treat it as normal
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() &&
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() &&
                 cause != PlayerTeleportEvent.TeleportCause.END_GATEWAY) {
             return;
         }
@@ -122,7 +125,7 @@ public class MoveEventListener implements Listener {
         //The EntityInsideBlockEvent makes the end portal workaround unnecessary
         if (toLocation != null && toLocation.getWorld() != null
                 && toLocation.getWorld().getEnvironment() == World.Environment.THE_END
-                && !NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
+                && !NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented() && hasPlayer(target)) {
             portal = getAdjacentEndPortalStargate(fromLocation, toLocation);
         }
 
@@ -224,7 +227,7 @@ public class MoveEventListener implements Listener {
     private List<Location> getRelevantAdjacentLocations(Location toLocation, Vector velocity) {
         List<Location> relevantLocations = new ArrayList<>();
         Vector zeroVector = new Vector();
-        Vector targetVelocity = normalizeVelocity(velocity);
+        Vector targetVelocity = velocity.toBlockVector();
 
         //Calculate all relevant vectors that might point to end portal Stargates
         Set<Vector> relevantVectors = new HashSet<>();
@@ -245,17 +248,6 @@ public class MoveEventListener implements Listener {
             }
         });
         return relevantLocations;
-    }
-
-    /**
-     * Normalizes the input velocity to a vector of length 1 or 0 in any direction (though the max length of the entire vector is sqrt(2))
-     */
-    private Vector normalizeVelocity(Vector velocity) {
-        Vector normalizedVector = new Vector(0, 0, 0);
-        normalizedVector = normalizedVector.setX(velocity.getX() < 0 ? -1 : (velocity.getX() > 0 ? 1 : 0));
-        normalizedVector = normalizedVector.setZ(velocity.getZ() < 0 ? -1 : (velocity.getZ() > 0 ? 1 : 0));
-        normalizedVector = normalizedVector.setY(velocity.getY() < 0 ? -1 : (velocity.getY() > 0 ? 1 : 0));
-        return normalizedVector;
     }
 
 }

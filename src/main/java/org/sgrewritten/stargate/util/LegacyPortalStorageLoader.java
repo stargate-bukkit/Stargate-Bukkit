@@ -1,15 +1,16 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -17,7 +18,9 @@ import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
 
@@ -27,11 +30,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * A helper tool for loading legacy portals from legacy storage
  */
 public final class LegacyPortalStorageLoader {
+
+    private static final Pattern DATABASE = Pattern.compile("\\.db$");
 
     private LegacyPortalStorageLoader() {
 
@@ -40,8 +46,7 @@ public final class LegacyPortalStorageLoader {
     /**
      * Loads legacy portals in .db files from the given folder
      *
-     * @param portalSaveLocation <p>The folder containing legacy portals</p>
-     * @param server             <p>The server this plugin is running on</p>
+     * @param dir                <p>The folder containing legacy portals</p>
      * @param stargateAPI        <p>The stargate API</p>
      * @param defaultNetworkName <p> The default network name </p>
      * @return <p>The list of loaded and saved portals</p>
@@ -49,30 +54,58 @@ public final class LegacyPortalStorageLoader {
      * @throws InvalidStructureException <p>If an encountered portal's structure is invalid</p>
      * @throws TranslatableException
      */
-    public static List<Portal> loadPortalsFromStorage(String portalSaveLocation, Server server,
-                                                      String defaultNetworkName, StargateAPI stargateAPI)
+    public static @NotNull List<Portal> loadPortalsFromStorage(File dir,
+                                                               String defaultNetworkName, StargateAPI stargateAPI)
             throws IOException, InvalidStructureException, TranslatableException {
         List<Portal> portals = new ArrayList<>();
-        File dir = new File(portalSaveLocation);
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> name.endsWith(".db")) : new File[0];
         if (files == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         for (File file : files) {
-            String worldName = file.getName().replaceAll("\\.db$", "");
+            String worldName = DATABASE.matcher(file.getName()).replaceAll("");
 
             BufferedReader reader = FileHelper.getBufferedReader(file);
             String line = reader.readLine();
+            List<GlobalPortalId> invalidPortals = new ArrayList<>();
             while (line != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
                     continue;
                 }
-                portals.add(readPortal(line, server.getWorld(worldName), stargateAPI, defaultNetworkName));
-
+                World world = Bukkit.getWorld(worldName);
+                if (world == null) {
+                    Stargate.log(Level.WARNING, "Could not load portal from world: " + worldName);
+                    Stargate.log(Level.WARNING, "Ignoring world...");
+                    continue;
+                }
+                try {
+                    Portal portal = readPortal(line, world, stargateAPI, defaultNetworkName);
+                    if(portal != null) {
+                        portals.add(portal);
+                    } else {
+                        String[] portalProperties = line.split(":");
+                        invalidPortals.add(new GlobalPortalId(portalProperties[0], (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID));
+                    }
+                } catch (InvalidStructureException e) {
+                    String[] portalProperties = line.split(":");
+                    invalidPortals.add(new GlobalPortalId(portalProperties[0], (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID) );
+                } catch (Exception e) {
+                    Stargate.log(e);
+                }
                 line = reader.readLine();
             }
             reader.close();
+            if(!invalidPortals.isEmpty()){
+                final StringBuilder stringBuilder = new StringBuilder("Could not load the following portals:");
+                invalidPortals.forEach(globalPortalId -> {
+                    stringBuilder.append("\n");
+                    stringBuilder.append(globalPortalId.toString());
+                });
+                stringBuilder.append("\n\n");
+                stringBuilder.append("This has most likely been caused by an invalid or absent gate format or an invalid network name");
+                Stargate.log(Level.WARNING, stringBuilder.toString());
+            }
         }
         return portals;
     }
@@ -100,7 +133,7 @@ public final class LegacyPortalStorageLoader {
         }
 
         Network network = stargateAPI.getRegistry().getNetwork(portalData.networkName(),
-                portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+                portalData.flags().contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
         Stargate.log(Level.INFO, "fetched networkName: " + portalData.networkName());
 
         if (network == null) {
@@ -116,7 +149,7 @@ public final class LegacyPortalStorageLoader {
             Stargate.log(Level.FINEST, "signLocation=" + signLocation);
             gate.addPortalPosition(signLocation, PositionType.SIGN, "Stargate");
         }
-        if (buttonLocation != null && !portalData.flags().contains(PortalFlag.ALWAYS_ON)) {
+        if (buttonLocation != null && !portalData.flags().contains(StargateFlag.ALWAYS_ON)) {
             Stargate.log(Level.FINEST, "buttonLocation=" + buttonLocation);
             gate.addPortalPosition(buttonLocation, PositionType.BUTTON, "Stargate");
         }

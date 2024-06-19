@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.api.config;
 
-import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 /**
  * An enum containing all available settings/configuration options
@@ -115,7 +115,7 @@ public enum ConfigurationOption {
      * The version of the configuration. Use for updating the config file
      */
     CONFIG_VERSION("configVersion", "The version of the configuration. Use for updating the config file",
-            Stargate.getCurrentConfigVersion(), OptionDataType.INTEGER, false),
+            StargateConstant.CURRENT_CONFIG_VERSION, OptionDataType.INTEGER, false),
 
     /**
      * The name of the .db file if using SQLite
@@ -217,11 +217,11 @@ public enum ConfigurationOption {
     UPKEEP_COST("economy.upkeepCost", null, null, null, true),
 
     /**
-     * Check if the portal is valid on startup (prevent zombie portals)
+     * The action that should be made whenever a loaded portal does not have a valid layout
      */
-    CHECK_PORTAL_VALIDITY("checkPortalValidity",
-            "Check if the portal is valid on startup (prevent zombie portals)", true,
-            OptionDataType.BOOLEAN, false),
+    PORTAL_VALIDITY("portalValidity",
+            "The action that should be made whenever a loaded portal does not have a valid layout", "remove",
+            OptionDataType.PORTAL_VALIDITY, false),
 
     /**
      * Handle leashed entities during teleportation

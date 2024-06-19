@@ -53,7 +53,7 @@ conflictSpawn=Spawn-Chunks stören dieses Portal!
 
 # Economy
 ecoDeduct=%cost% abgezogen .
-ecoObtain=%cost% von StarGate %portal% erhalten!
+ecoObtain=%cost% von Stargate %portal% erhalten!
 ecoInsolvent=Unzureichende Mittel
 
 #Terminology
@@ -75,5 +75,5 @@ unimplementedFlag=Die %flags% Flags sind noch nicht implementiert.
 #Admin
 adminReload=Konfiguration wurde neu geladen!
 adminInfo=Version %version%wird ausgeführt. Changelog: https://git.io/JD4Q
-adminHelp=StarGate's Dokumentation finden Sie unter https://git.io/JDclf
-translatedBy=Matriarch!
+adminHelp=Stargate's Dokumentation finden Sie unter https://git.io/JDclf
+translatedBy=EduardBaer & Matriarch!

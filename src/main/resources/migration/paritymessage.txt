@@ -1,6 +1,0 @@
-You are upgrading from a fork with non-standard features!
-Compatibility modules are required if you used any of the following features:
-[V gates, type-specific sign colouring, dynmap integration, command-based editing]
-
-To automatically install all required modules, type /sg parity
-For more information, visit sgrewritten.org/stargaterevived.

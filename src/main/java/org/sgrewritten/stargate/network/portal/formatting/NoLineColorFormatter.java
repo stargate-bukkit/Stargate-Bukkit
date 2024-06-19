@@ -2,9 +2,11 @@ package org.sgrewritten.stargate.network.portal.formatting;
 
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.*;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.NetworkLineData;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.PortalLineData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,44 +17,26 @@ import java.util.List;
 public class NoLineColorFormatter implements LineFormatter {
 
     @Override
-    public List<StargateComponent> formatPortalName(Portal portal, HighlightingStyle highlightingStyle) {
-        return new ArrayList<>(List.of(
-                new StargateComponent(highlightingStyle.getPrefix()),
-                new StargateComponent((portal != null) ? portal.getName() : "null"),
-                new StargateComponent(highlightingStyle.getSuffix())
-        ));
+    public SignLine convertToSignLine(LineData lineData) {
+        return switch (lineData.getType()){
+            case ERROR -> new TextLine(HighlightingStyle.SQUARE_BRACKETS.getHighlightedName(lineData.getText()), SignLineType.ERROR);
+            case TEXT -> new TextLine(lineData.getText());
+            case NETWORK ->getNetworkSignLine((NetworkLineData) lineData);
+            case DESTINATION_PORTAL -> getPortalSignLine((PortalLineData) lineData, HighlightingStyle.LESSER_GREATER_THAN);
+            case THIS_PORTAL -> getPortalSignLine((PortalLineData) lineData, HighlightingStyle.MINUS_SIGN);
+            case PORTAL -> getPortalSignLine((PortalLineData) lineData, HighlightingStyle.NOTHING);
+        };
     }
 
-    @Override
-    public List<StargateComponent> formatLine(String line) {
-        return new ArrayList<>(List.of(new StargateComponent(line)));
+    private SignLine getNetworkSignLine(NetworkLineData lineData){
+        Network network = lineData.getNetwork();
+        HighlightingStyle highlightingStyle = network.getHighlightingStyle();
+        return new NetworkLine(List.of(LegacyStargateComponent.of(highlightingStyle.getHighlightedName(network.getName()))),network);
     }
 
-    @Override
-    public List<StargateComponent> formatErrorLine(String error, HighlightingStyle highlightingStyle) {
-        return new ArrayList<>(List.of(
-                new StargateComponent(highlightingStyle.getPrefix()),
-                new StargateComponent(error),
-                new StargateComponent(highlightingStyle.getSuffix())
-        ));
+    private SignLine getPortalSignLine(PortalLineData lineData, HighlightingStyle highlightingStyle){
+        Portal portal = lineData.getPortal();
+        String portalName = portal == null ? lineData.getText() : portal.getName();
+        return new PortalLine(List.of(LegacyStargateComponent.of(highlightingStyle.getHighlightedName(portalName))),portal,lineData.getType());
     }
-
-    @Override
-    public List<StargateComponent> formatNetworkName(Network network, HighlightingStyle highlightingStyle) {
-        return new ArrayList<>(List.of(
-                new StargateComponent(highlightingStyle.getPrefix()),
-                new StargateComponent((network != null) ? network.getName() : "null"),
-                new StargateComponent(highlightingStyle.getSuffix())
-        ));
-    }
-
-    @Override
-    public List<StargateComponent> formatStringWithHighlighting(String aString, HighlightingStyle highlightingStyle) {
-        return new ArrayList<>(List.of(
-                new StargateComponent(highlightingStyle.getPrefix()),
-                new StargateComponent(aString),
-                new StargateComponent(highlightingStyle.getSuffix())
-        ));
-    }
-
 }

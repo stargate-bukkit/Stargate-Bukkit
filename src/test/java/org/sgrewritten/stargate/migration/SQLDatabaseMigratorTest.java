@@ -31,7 +31,7 @@ class SQLDatabaseMigratorTest {
 
         database = new SQLiteDatabase(sqlDatabaseFile);
         nameConfiguration = new TableNameConfiguration("", "");
-        databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/alpha-1_0_0_14", true);
+        databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/v-7", true);
     }
 
     @AfterEach

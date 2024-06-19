@@ -15,8 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.ConditionalDelayedAction;
-import org.sgrewritten.stargate.action.ConditionalRepeatedTask;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
@@ -32,6 +30,7 @@ import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.manager.BlockLoggingManager;
 import org.sgrewritten.stargate.manager.StargatePermissionManager;
 import org.sgrewritten.stargate.property.PluginChannel;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
 import org.sgrewritten.stargate.util.ButtonHelper;
 import org.sgrewritten.stargate.util.MessageUtils;
 
@@ -39,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -52,14 +50,21 @@ public class PlayerEventListener implements Listener {
     private final @NotNull LanguageManager languageManager;
     private final @NotNull BungeeManager bungeeManager;
     private final @NotNull RegistryAPI registry;
-    private final @NotNull BlockLoggingManager loggingCompatability;
+    private final @NotNull BlockLoggingManager loggingCompatibility;
     private final StorageAPI storageAPI;
 
-    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatability, StorageAPI storageAPI) {
+    /**
+     * @param languageManager <p>A localized message provider</p>
+     * @param registry <p>A registry containing all portal information</p>
+     * @param bungeeManager <p>A manager that deals with bungee related messages</p>
+     * @param loggingCompatibility <p>Block logger interface</p>
+     * @param storageAPI <p>An interface to the database containing all info about portals</p>
+     */
+    public PlayerEventListener(@NotNull LanguageManager languageManager, @NotNull RegistryAPI registry, @NotNull BungeeManager bungeeManager, @NotNull BlockLoggingManager loggingCompatibility, StorageAPI storageAPI) {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.bungeeManager = Objects.requireNonNull(bungeeManager);
         this.registry = Objects.requireNonNull(registry);
-        this.loggingCompatability = Objects.requireNonNull(loggingCompatability);
+        this.loggingCompatibility = Objects.requireNonNull(loggingCompatibility);
         this.storageAPI = storageAPI;
     }
 
@@ -75,16 +80,25 @@ public class PlayerEventListener implements Listener {
             return;
         }
         Action action = event.getAction();
-        if ((action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking()) || this.clickIsBug(event)) {
+        if ((action == Action.RIGHT_CLICK_BLOCK && event.getPlayer().isSneaking()) || clickIsBug(event)) {
             return;
         }
 
         PortalPosition portalPosition = registry.getPortalPosition(block.getLocation());
-        if (portalPosition == null) {
+        if (portalPosition != null) {
+            handleRelevantClickEvent(block, portalPosition, event);
             return;
         }
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && isNonInteractablePortalPart(block.getType()) && registry.getPortal(block.getLocation()) != null) {
+            event.setCancelled(true);
+        }
+    }
 
-        handleRelevantClickEvent(block, portalPosition, event);
+    private boolean isNonInteractablePortalPart(Material type) {
+        if (Tag.ANVIL.isTagged(type)) {
+            return true;
+        }
+        return Material.RESPAWN_ANCHOR == type;
     }
 
     /**
@@ -96,7 +110,7 @@ public class PlayerEventListener implements Listener {
     private void handleRelevantClickEvent(Block block, PortalPosition portalPosition, PlayerInteractEvent event) {
         Material blockMaterial = block.getType();
         Player player = event.getPlayer();
-        RealPortal portal = registry.getPortalFromPortalPosition(portalPosition);
+        RealPortal portal = portalPosition.getPortal();
         if (portal == null) {
             Stargate.log(Level.WARNING, "Improper use of unregistered PortalPositions");
             return;
@@ -104,21 +118,21 @@ public class PlayerEventListener implements Listener {
 
         if (Tag.WALL_SIGNS.isTagged(blockMaterial)) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && dyePortalSignText(event, portal)) {
-                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()));
+                portal.setSignColor(ColorConverter.getDyeColorFromMaterial(event.getMaterial()), registry.getPortalPosition(block.getLocation()));
                 event.setUseInteractedBlock(Event.Result.ALLOW);
                 return;
             }
-            loggingCompatability.logPlayerInteractEvent(event);
+            loggingCompatibility.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
             if (portal.isOpenFor(player)) {
                 Stargate.log(Level.FINEST, "Player name=" + player.getName());
-                portal.onSignClick(event);
+                portal.getBehavior().onSignClick(event);
                 return;
             }
         }
         if (ButtonHelper.isButton(blockMaterial)) {
-            portal.onButtonClick(event);
-            loggingCompatability.logPlayerInteractEvent(event);
+            portal.getBehavior().onButtonClick(event);
+            loggingCompatibility.logPlayerInteractEvent(event);
             event.setUseInteractedBlock(Event.Result.DENY);
         }
 
@@ -199,23 +213,24 @@ public class PlayerEventListener implements Listener {
      */
     private void getBungeeServerName() {
         //Action for loading bungee server id
-        Supplier<Boolean> action = (() -> {
-            try {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-                dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
-                Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
-                        byteArrayOutputStream.toByteArray());
-                return true;
-            } catch (IOException e) {
-                Stargate.log(e);
-                return false;
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                if (Bukkit.getServer().getOnlinePlayers().isEmpty()) {
+                    return;
+                }
+                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+                    dataOutputStream.writeUTF(PluginChannel.GET_SERVER.getChannel());
+                    Bukkit.getServer().sendPluginMessage(Stargate.getInstance(), PluginChannel.BUNGEE.getChannel(),
+                            byteArrayOutputStream.toByteArray());
+                } catch (IOException e) {
+                    Stargate.log(e);
+                }
+                this.cancel();
             }
-        });
+        }.runTaskTimer(0, 20);
 
-        //Repeatedly try to load bungee server id until either the id is known, or no player is able to send bungee messages.
-        Stargate.addSynchronousSecAction(new ConditionalRepeatedTask(action,
-                () -> !((Stargate.knowsServerName()) || (1 > Bukkit.getServer().getOnlinePlayers().size()))));
 
         //Update the server name in the database once it's known
         updateServerName();
@@ -225,15 +240,16 @@ public class PlayerEventListener implements Listener {
      * Updates this server's name in the database if necessary
      */
     private void updateServerName() {
-        ConditionalDelayedAction action = new ConditionalDelayedAction(() -> {
-            try {
-                storageAPI.startInterServerConnection();
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateGlobalTask(true) {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.startInterServerConnection();
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-            return true;
-        }, Stargate::knowsServerName);
-        Stargate.addSynchronousSecAction(action, true);
+        }.runNow();
     }
 
     /**

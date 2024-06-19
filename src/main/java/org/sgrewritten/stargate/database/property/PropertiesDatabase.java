@@ -18,6 +18,11 @@ public class PropertiesDatabase implements StoredPropertiesAPI {
     private final Properties handle;
     private final @NotNull File fileLocation;
 
+    /**
+     *
+     * @param fileLocation <p>The properties file to read</p>
+     * @throws IOException <p>If unable to read the file</p>
+     */
     public PropertiesDatabase(@NotNull File fileLocation) throws IOException {
         this.fileLocation = Objects.requireNonNull(fileLocation);
         if (!fileLocation.exists() && !fileLocation.createNewFile()) {

@@ -1,9 +1,11 @@
-> ### **Support Discord** __**[Link](https://sgrewitten.org/discord)**__
+> ### **Support Discord** __**[Link](https://sgrewritten.org/discord)**__
 
 # Stargate-Bukkit
 
-`Supporting MC 1.18+ in the Bukkit Ecosystem`
+`Supporting MC 1.20+ in the Bukkit Ecosystem`
 
+> [!WARNING]
+>
 > **THIS IS A TESTING BUILD FROM THE ALPHA CHANNEL!**<br>
 > <br>
 > **FOR**: Addon developers, early adopters, and adventure seekers.<br>
@@ -12,6 +14,7 @@
 >
 > **THIS BUILD IS NOT YET SUITABLE FOR USE AT SCALE OR ON MOST PRODUCTION SERVERS**<BR>
 > **Use at your own risk, remember to make backups, and please report the bugs you will find!**
+
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
@@ -25,11 +28,11 @@
 
 |                                                     **Immersive**                                                      |                                                                    **User-Oriented**                                                                    |                                                           **Capable**                                                           |
 |:----------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------:|
-| Stargate's interface is integrated within gameplay; players can create, use, and destroy portals without any commands! | All of StarGate's features are designed to allow for non-admin users to create and manage their own portal networks in a balanced and risk free manner. | By default, StarGate boasts a comprehensive network system, dozens of portal types (flags), and highly configurable behaviours. |
+| Stargate's interface is integrated within gameplay; players can create, use, and destroy portals without any commands! | All of Stargate's features are designed to allow for non-admin users to create and manage their own portal networks in a balanced and risk free manner. | By default, Stargate boasts a comprehensive network system, dozens of portal types (flags), and highly configurable behaviours. |
 
 |                                              **Configurable**                                               |                                                                                   **Expandable**                                                                                   |                                                     **Customizable**                                                      |
 |:-----------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------:|
-| Stargate has a comprehensive and intuitive config, highly granular permissions, and multi-language support! | The StarGate community has developed an ecosystem of [add-ons](https://sgrewritten.org/addons), which collectively add integration and design-philosophy expansions to the plugin. | Stargate supports numerous customizations; from sign formatting to gate designs, all user-facing details can be modified! |
+| Stargate has a comprehensive and intuitive config, highly granular permissions, and multi-language support! | The Stargate community has developed an ecosystem of [add-ons](https://sgrewritten.org/addons), which collectively add integration and design-philosophy expansions to the plugin. | Stargate supports numerous customizations; from sign formatting to gate designs, all user-facing details can be modified! |
 
 ------
 

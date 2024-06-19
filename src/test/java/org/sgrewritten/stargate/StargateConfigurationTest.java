@@ -3,6 +3,7 @@ package org.sgrewritten.stargate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.config.StargateYamlConfiguration;
@@ -40,21 +41,23 @@ public class StargateConfigurationTest {
     }
 
     @Test
-    public void configurationLoadReplaceEditAndSaveTest() throws IOException, InvalidConfigurationException {
+    void configurationLoadReplaceEditAndSaveTest() throws IOException, InvalidConfigurationException {
         for (File configFile : configFiles) {
-            FileConfiguration config = new StargateYamlConfiguration();
-            config.load(configFile);
-            logger.logMessage(Level.FINER, " Current config:\n " + config.saveToString());
-            File oldFile = new File(configFile.getAbsolutePath() + ".old");
-            if (oldFile.exists() && !oldFile.delete()) {
-                throw new IOException("Unable to delete config file backup");
-            }
-            if (!configFile.renameTo(oldFile)) {
-                throw new IOException("Unable to rename config file");
-            }
-            config.set("option", "Another value");
-            config.save(configFile);
-            logger.logMessage(Level.FINEST, " Current config:\n " + config.saveToString());
+            Assertions.assertDoesNotThrow(() -> {
+                FileConfiguration config = new StargateYamlConfiguration();
+                config.load(configFile);
+                logger.logMessage(Level.FINER, " Current config:\n " + config.saveToString());
+                File oldFile = new File(configFile.getAbsolutePath() + ".old");
+                if (oldFile.exists() && !oldFile.delete()) {
+                    throw new IOException("Unable to delete config file backup");
+                }
+                if (!configFile.renameTo(oldFile)) {
+                    throw new IOException("Unable to rename config file");
+                }
+                config.set("option", "Another value");
+                config.save(configFile);
+                logger.logMessage(Level.FINEST, " Current config:\n " + config.saveToString());
+            });
         }
     }
 

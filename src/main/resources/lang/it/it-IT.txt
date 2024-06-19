@@ -26,6 +26,7 @@ faultExists=Un portale con quel nome esiste già!
 faultFull=Quella rete è al completo!
 faultWorldDeny=Non hai accesso al mondo %world%!
 faultConflict=Questo portale è in conflitto con un portale esistente.
+faultConflictNetwork=Impossibile specificare forzatamente il tipo di rete; sarebbe in conflitto con la rete %type%, avente lo stesso nome!
 faultFlag=Non sei autorizzato a utilizzare i flag %flags%; il tuo portale è stato creato senza utilizzarli!
 faultControls=Il design di questo portale contiene troppi blocchi di controllo per accomodare i flag selezionati!
 faultAddon=Un addon ti ha impedito di farlo!
@@ -53,7 +54,7 @@ conflictSpawn=I chunk di generazione stanno interferendo con questo portale!
 
 # Economy
 ecoDeduct=%cost% detratto.
-ecoObtain=%cost% ottenuto dallo StarGate %portal%!
+ecoObtain=%cost% ottenuto dallo Stargate %portal%!
 ecoInsolvent=Fondi Insufficienti!
 
 #Terminology
@@ -68,7 +69,7 @@ local=Locale
 
 #Temporary
 unimplementedInterserver=I portali tra server sono ancora in via di sviluppo attivo e sono stati implementati soltanto parzialmente.
-unimplementedIConflict=Le reti locali e tra server %name% sono correntemente separate; in un aggiornamento futuro, saranno unite. \nQualsiasi StarGate correntemente sulla rete tra server %name% sarà spostato alla rete locale con lo stesso nome.
+unimplementedIConflict=Le reti locali e tra server %name% sono correntemente separate; in un aggiornamento futuro, saranno unite. \nQualsiasi Stargate correntemente sulla rete tra server %name% sarà spostato alla rete locale con lo stesso nome.
 unimplementedFlag=I flag %flags% non sono ancora stati implementati.
 
 #Parity
@@ -77,5 +78,5 @@ parityCommand=Installazione automatica dei moduli %modules%! Potrebbe richiedere
 #Admin
 adminReload=Configurazione ricaricata!
 adminInfo=Eseguendo la versione %version%. Changelog: https://git.io/JD4Qo
-adminHelp=La documentazione di StarGate si può trovare su https://git.io/JDclf
-translatedBy=Giorgio Arbato
+adminHelp=La documentazione di Stargate si può trovare su https://git.io/JDclf
+translatedBy=fr33soul & herbie_23

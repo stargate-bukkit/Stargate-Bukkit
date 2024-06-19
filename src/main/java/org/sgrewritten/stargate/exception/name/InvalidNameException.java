@@ -13,6 +13,9 @@ public class InvalidNameException extends TranslatableException {
     @Serial
     private static final long serialVersionUID = -9187508162071170232L;
 
+    /**
+     * @param message <p>The message to display on the stacktrace</p>
+     */
     public InvalidNameException(String message) {
         super(message);
     }

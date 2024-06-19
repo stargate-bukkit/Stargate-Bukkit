@@ -1,9 +1,11 @@
 package org.sgrewritten.stargate.api.network.portal;
 
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 
@@ -12,13 +14,15 @@ import java.util.Objects;
 /**
  * A position of a portal's control block
  */
-public class PortalPosition {
+public class PortalPosition implements MetadataHolder {
 
     private final PositionType positionType;
     private final BlockVector relativePositionLocation;
     private final String pluginName;
     private boolean active;
     private @Nullable String metaData = null;
+    private RealPortal portal;
+    private PortalPositionAttachment attachment;
 
     /**
      * Instantiates a new active portal position
@@ -67,36 +71,12 @@ public class PortalPosition {
     }
 
     /**
-     * @param portal <p> The portal which this position belongs to </p>
-     * @return
-     */
-    @Nullable
-    public String getMetaData(RealPortal portal) {
-        if (metaData != null) {
-            return metaData;
-        }
-        try {
-            metaData = Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
-            return metaData;
-        } catch (StorageReadException e) {
-            Stargate.log(e);
-            return null;
-        }
-    }
-
-    /**
-     * Set the metadata for specified portal position
      *
-     * @param portal <p>The owner of this portal position</p>
-     * @param data   <p>The new metadata</p>
+     * @param portal <p>The portal to assign to this portal position</p>
      */
-    public void setMetaData(@NotNull RealPortal portal, @NotNull String data) {
-        try {
-            this.metaData = Objects.requireNonNull(data);
-            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
-        } catch (StorageWriteException e) {
-            Stargate.log(e);
-        }
+    @ApiStatus.Internal
+    public void assignPortal(RealPortal portal) {
+        this.portal = Objects.requireNonNull(portal);
     }
 
     /**
@@ -112,6 +92,11 @@ public class PortalPosition {
             return false;
         }
         return otherPortalPosition.getRelativePositionLocation().equals(this.getRelativePositionLocation());
+    }
+
+    @Override
+    public int hashCode() {
+        return relativePositionLocation.hashCode();
     }
 
     @Override
@@ -133,5 +118,50 @@ public class PortalPosition {
      */
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void setMetadata(@Nullable String data) {
+        try {
+            this.metaData = Objects.requireNonNull(data);
+            Stargate.getStorageAPIStatic().setPortalPositionMetaData(portal, this, data, portal.getStorageType());
+        } catch (StorageWriteException e) {
+            Stargate.log(e);
+        }
+    }
+
+    @Override
+    public String getMetadata() {
+        if (metaData != null) {
+            return metaData;
+        }
+        try {
+            metaData = Stargate.getStorageAPIStatic().getPortalPositionMetaData(portal, this, portal.getStorageType());
+            return metaData;
+        } catch (StorageReadException e) {
+            Stargate.log(e);
+            return null;
+        }
+    }
+
+    /**
+     * @return <p>The portal owning this portal position</p>
+     */
+    public RealPortal getPortal() {
+        return this.portal;
+    }
+
+    @ApiStatus.Internal
+    public @Nullable PortalPositionAttachment getAttachment(){
+        return this.attachment;
+    }
+
+    @ApiStatus.Internal
+    public void setAttachment(@NotNull PortalPositionAttachment attachment){
+        Objects.requireNonNull(attachment);
+        if(this.attachment != null && this.attachment.getType() != attachment.getType()){
+            throw new IllegalArgumentException("Can't change attachment type");
+        }
+        this.attachment = attachment;
     }
 }

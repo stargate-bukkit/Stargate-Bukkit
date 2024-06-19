@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * The language manager is responsible for translating various messages
@@ -27,6 +28,7 @@ public class StargateLanguageManager implements LanguageManager {
     private Map<TranslatableMessage, String> translatedStrings;
     private final Map<TranslatableMessage, String> backupStrings;
     private static final Map<String, String> LANGUAGE_SHORTHANDS = new HashMap<>();
+    private static final Pattern COLOR_CODE = Pattern.compile("(&([a-f0-9]))");
 
     static {
         FileHelper.readInternalFileToMap("/language-edge-cases.properties", LANGUAGE_SHORTHANDS);
@@ -49,11 +51,11 @@ public class StargateLanguageManager implements LanguageManager {
      * @return <p>A map containing all backup translations</p>
      */
     private Map<TranslatableMessage, String> loadBackupLanguage() {
-        Map<String, String> translatedStrings = new HashMap<>();
+        Map<String, String> translations = new HashMap<>();
         Map<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
-        FileHelper.readInternalFileToMap("/lang/en-GB/en-GB.txt", translatedStrings);
+        FileHelper.readInternalFileToMap("/lang/en-GB/en-GB.txt", translations);
         for (TranslatableMessage translatableMessage : TranslatableMessage.values()) {
-            output.put(translatableMessage, translatedStrings.get(translatableMessage.getMessageKey()));
+            output.put(translatableMessage, translations.get(translatableMessage.getMessageKey()));
         }
         return output;
     }
@@ -93,26 +95,26 @@ public class StargateLanguageManager implements LanguageManager {
     @Override
     public void setLanguage(String languageSpecification) {
         //Replace any shorthands with the full language code
-        for (String languageShorthand : LANGUAGE_SHORTHANDS.keySet()) {
-            if (languageSpecification.equalsIgnoreCase(languageShorthand)) {
-                languageSpecification = LANGUAGE_SHORTHANDS.get(languageShorthand);
+        for (Map.Entry<String,String> entry : LANGUAGE_SHORTHANDS.entrySet()) {
+            if (languageSpecification.equalsIgnoreCase(entry.getKey())) {
+                languageSpecification = entry.getValue();
             }
         }
 
         //Find the specified language if possible
-        Language language = getLanguage(languageSpecification);
-        if (language != null) {
-            Stargate.log(Level.FINE, String.format("Found supported language %s", language.getLanguageCode()));
-            languageSpecification = language.getLanguageCode();
+        Language chosenLanguage = getLanguage(languageSpecification);
+        if (chosenLanguage != null) {
+            Stargate.log(Level.FINE, String.format("Found supported language %s", chosenLanguage.getLanguageCode()));
+            languageSpecification = chosenLanguage.getLanguageCode();
         }
 
         // Only update language if it has actually changed
         if (!languageSpecification.equals(this.language)) {
             this.language = languageSpecification;
-            translatedStrings = loadLanguage(language, languageSpecification);
+            translatedStrings = loadLanguage(chosenLanguage, languageSpecification);
             //Update the external language if it's not a custom language
-            if (language != null) {
-                updateLanguage(language, translatedStrings);
+            if (chosenLanguage != null) {
+                updateLanguage(chosenLanguage, translatedStrings);
             }
         }
     }
@@ -148,9 +150,9 @@ public class StargateLanguageManager implements LanguageManager {
     private Language getLanguage(String languageSpecification) {
         //Allow "_" as a language-country separator
         languageSpecification = languageSpecification.replace("_", "-");
-        for (Language language : Language.values()) {
-            if (language.matches(languageSpecification)) {
-                return language;
+        for (Language aLanguage : Language.values()) {
+            if (aLanguage.matches(languageSpecification)) {
+                return aLanguage;
             }
         }
         return null;
@@ -167,7 +169,7 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private String formatMessage(TranslatableMessage translatableMessage, ChatColor prefixColor) {
         String prefix = prefixColor + getString(TranslatableMessage.PREFIX);
-        String message = getString(translatableMessage).replaceAll("(&([a-f0-9]))", "\u00A7$2");
+        String message = COLOR_CODE.matcher(getString(translatableMessage)).replaceAll("§$2");
         Stargate.log(Level.FINE, String.format("Formatted TranslatableMessage '%s' to '%s'",
                 translatableMessage.toString(), message));
         return prefix + ChatColor.WHITE + message;
@@ -274,14 +276,14 @@ public class StargateLanguageManager implements LanguageManager {
         Map<TranslatableMessage, String> output = new EnumMap<>(TranslatableMessage.class);
 
         //Parse each line to its appropriate translatable message
-        for (String key : translations.keySet()) {
-            TranslatableMessage translatableMessage = TranslatableMessage.parse(key);
+        for (Map.Entry<String,String> entry : translations.entrySet()) {
+            TranslatableMessage translatableMessage = TranslatableMessage.parse(entry.getKey());
             if (translatableMessage == null) {
-                Stargate.log(Level.FINER, String.format("Skipping language prompt: %s = %s", key,
-                        translations.get(key)));
+                Stargate.log(Level.FINER, String.format("Skipping language prompt: %s = %s", entry.getKey(),
+                        entry.getValue()));
                 continue;
             }
-            String value = ChatColor.translateAlternateColorCodes('&', translations.get(key));
+            String value = ChatColor.translateAlternateColorCodes('&', entry.getValue());
             output.put(translatableMessage, value);
         }
 
@@ -321,10 +323,10 @@ public class StargateLanguageManager implements LanguageManager {
 
         //Find all translations in the internal file
         Map<TranslatableMessage, String> internalTranslatedValues = new EnumMap<>(TranslatableMessage.class);
-        for (String key : internalFileTranslations.keySet()) {
-            TranslatableMessage translatableMessageKey = TranslatableMessage.parse(key);
+        for (Map.Entry<String,String> entry : internalFileTranslations.entrySet()) {
+            TranslatableMessage translatableMessageKey = TranslatableMessage.parse(entry.getKey());
             if (translatableMessageKey != null) {
-                internalTranslatedValues.put(translatableMessageKey, internalFileTranslations.get(key));
+                internalTranslatedValues.put(translatableMessageKey, entry.getValue());
             }
         }
 
@@ -344,22 +346,22 @@ public class StargateLanguageManager implements LanguageManager {
      */
     private void addMissingInternalTranslations(File languageFile, Map<TranslatableMessage, String> translatedStrings,
                                                 Map<TranslatableMessage, String> internalTranslatedValues) {
-        File languageFolder = languageFile.getParentFile();
-        if (languageFolder != null && !languageFolder.exists() && !languageFolder.mkdirs()) {
+        File folder = languageFile.getParentFile();
+        if (folder != null && !folder.exists() && !folder.mkdirs()) {
             Stargate.log(Level.WARNING, "Unable to create folders required for copying language file");
             return;
         }
         try {
             BufferedWriter writer = FileHelper.getBufferedWriter(languageFile, true);
-            for (TranslatableMessage key : internalTranslatedValues.keySet()) {
-                if (translatedStrings.containsKey(key)) {
+            for (Map.Entry<TranslatableMessage, String> entry : internalTranslatedValues.entrySet()) {
+                if (translatedStrings.containsKey(entry.getKey())) {
                     continue;
                 }
-                translatedStrings.put(key, internalTranslatedValues.get(key));
+                translatedStrings.put(entry.getKey(), entry.getValue());
                 Stargate.log(Level.FINE, String.format("%n Adding a line of translations of key %s to language file '%s'",
-                        key.toString(), languageFile));
+                        entry.getKey().toString(), languageFile));
                 writer.newLine();
-                writer.write(String.format("%s=%s", key.getMessageKey(), internalTranslatedValues.get(key)));
+                writer.write(String.format("%s=%s", entry.getKey().getMessageKey(), entry.getValue()));
             }
             writer.close();
         } catch (IOException e) {

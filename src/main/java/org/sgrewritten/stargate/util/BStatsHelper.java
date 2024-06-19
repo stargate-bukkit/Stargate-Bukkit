@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import com.google.common.collect.Iterators;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
@@ -14,16 +15,19 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.AbstractPortal;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * A helper for preparing bStats metrics
@@ -46,7 +50,7 @@ public final class BStatsHelper {
 
         metrics.addCustomChart(new SimplePie("gateformats", () -> String.valueOf(GateFormatRegistry.formatsStored())));
 
-        metrics.addCustomChart(new SingleLineChart("totalPortals", () -> AbstractPortal.portalCount));
+        metrics.addCustomChart(new SingleLineChart("totalPortals", () -> StargatePortal.portalCount));
 
         metrics.addCustomChart(
                 new SimplePie("networksNumber", () -> String.valueOf(registry.getNetworkRegistry(StorageType.LOCAL).size()
@@ -91,11 +95,11 @@ public final class BStatsHelper {
             while (iterator.hasNext()) {
                 Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
-                    if (portal.hasFlag(PortalFlag.PERSONAL_NETWORK)) {
+                    if (portal.hasFlag(StargateFlag.PERSONAL_NETWORK)) {
                         personal++;
-                    } else if (portal.hasFlag(PortalFlag.DEFAULT_NETWORK)) {
+                    } else if (portal.hasFlag(StargateFlag.DEFAULT_NETWORK)) {
                         defaultNetwork++;
-                    } else if (portal.hasFlag(PortalFlag.TERMINAL_NETWORK)) {
+                    } else if (portal.hasFlag(StargateFlag.TERMINAL_NETWORK)) {
                         terminal++;
                     } else {
                         nonPersonal++;
@@ -126,9 +130,9 @@ public final class BStatsHelper {
             while (iterator.hasNext()) {
                 Network network = iterator.next();
                 for (Portal portal : network.getAllPortals()) {
-                    if (portal.hasFlag(PortalFlag.FIXED)) {
+                    if (portal.hasFlag(StargateFlag.FIXED)) {
                         fixed++;
-                    } else if (portal.hasFlag(PortalFlag.NETWORKED)) {
+                    } else if (portal.hasFlag(StargateFlag.NETWORKED)) {
                         networked++;
                     }
                 }
@@ -149,11 +153,11 @@ public final class BStatsHelper {
     private static void registerFlagMetrics(Metrics metrics) {
         metrics.addCustomChart(new AdvancedPie("flags", () -> {
             Map<String, Integer> flagStatus = new HashMap<>();
-            Set<PortalFlag> allUsedFlags = AbstractPortal.allUsedFlags;
-            for (PortalFlag portalFlag : PortalFlag.values()) {
+            Set<PortalFlag> allUsedFlags = StargatePortal.allUsedFlags;
+            for (StargateFlag portalFlag : StargateFlag.values()) {
                 //Skip internal flag, as those are not specifiable
                 if (!portalFlag.isInternalFlag()) {
-                    flagStatus.put(portalFlag.getCharacterRepresentation().toString(),
+                    flagStatus.put(String.valueOf(portalFlag.getCharacterRepresentation()),
                             allUsedFlags.contains(portalFlag) ? 1 : 0);
                 }
             }
@@ -172,16 +176,11 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SimplePie("largestNetwork", () -> {
             int largest = 0;
             int count;
-            Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
-            while (localNetworkIterator.hasNext()) {
-                count = localNetworkIterator.next().size();
-                if (largest <= count) {
-                    largest = count;
-                }
-            }
-            Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
-            while (localNetworkIterator.hasNext()) {
-                count = localNetworkIterator.next().size();
+
+            Stream<Network> stream = Stream.concat(registry.getNetworkRegistry(StorageType.LOCAL).stream(), registry.getNetworkRegistry(StorageType.INTER_SERVER).stream());
+            Iterator<Network> iterator = stream.iterator();
+            while (iterator.hasNext()) {
+                count = iterator.next().size();
                 if (largest <= count) {
                     largest = count;
                 }
@@ -197,21 +196,14 @@ public final class BStatsHelper {
      *                The metrics object to register metrics to</p>
      */
     private static void registerAddons(Metrics metrics) {
-        String stargate = "stargate";
         metrics.addCustomChart(new AdvancedPie("addonsUsed", () -> {
             Map<String, Integer> addonsList = new HashMap<>();
 
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                for (String depend : plugin.getDescription().getDepend()) {
-                    if (depend.toLowerCase().equals(stargate)) {
-                        addonsList.put(plugin.getName(), 1);
-                    }
-                }
-                for (String depend : plugin.getDescription().getSoftDepend()) {
-                    if (depend.toLowerCase().equals(stargate)) {
-                        addonsList.put(plugin.getName(), 1);
-                    }
-                }
+                Stream<String> hardDepend = plugin.getDescription().getDepend().stream();
+                Stream<String> softDepend = plugin.getDescription().getSoftDepend().stream();
+                Stream<String> dependStream = Stream.concat(hardDepend,softDepend);
+                dependStream.filter(depend -> depend.equalsIgnoreCase(StargateConstant.STARGATE_NAME)).forEach((depend)-> addonsList.put(plugin.getName(),1));
             }
             return addonsList;
         }));
@@ -227,18 +219,9 @@ public final class BStatsHelper {
         metrics.addCustomChart(new SingleLineChart("underwaterCount", () -> {
             int count = 0;
             Iterator<Network> localNetworkIterator = registry.getNetworkRegistry(StorageType.LOCAL).iterator();
-            while (localNetworkIterator.hasNext()) {
-                for (Portal portal : localNetworkIterator.next().getAllPortals()) {
-                    if (!(portal instanceof RealPortal realPortal)) {
-                        continue;
-                    }
-                    if (realPortal.getGate().getExit().getBlock().getType() == Material.WATER) {
-                        count++;
-                    }
-                }
-            }
             Iterator<Network> interserverNetworkIterator = registry.getNetworkRegistry(StorageType.INTER_SERVER).iterator();
-            while (localNetworkIterator.hasNext()) {
+            Iterator<Network> networkIterator = Iterators.concat(localNetworkIterator, interserverNetworkIterator);
+            while (networkIterator.hasNext()) {
                 for (Portal portal : localNetworkIterator.next().getAllPortals()) {
                     if (!(portal instanceof RealPortal realPortal)) {
                         continue;
@@ -277,7 +260,7 @@ public final class BStatsHelper {
                 ConfigurationOption.HANDLE_LEASHES))));
 
         metrics.addCustomChart(new SimplePie("checkPortalValidity", () -> String.valueOf(ConfigurationHelper.getBoolean(
-                ConfigurationOption.CHECK_PORTAL_VALIDITY))));
+                ConfigurationOption.PORTAL_VALIDITY))));
 
         metrics.addCustomChart(new SimplePie("destroyOnExplosion", () -> String.valueOf(ConfigurationHelper.getBoolean(
                 ConfigurationOption.DESTROY_ON_EXPLOSION))));

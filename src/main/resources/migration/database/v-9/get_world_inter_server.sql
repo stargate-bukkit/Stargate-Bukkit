@@ -1,0 +1,1 @@
+SELECT world FROM {InterPortal};

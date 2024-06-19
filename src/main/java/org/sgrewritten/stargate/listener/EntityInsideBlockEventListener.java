@@ -16,6 +16,9 @@ public class EntityInsideBlockEventListener implements Listener {
 
     private final RegistryAPI registry;
 
+    /**
+     * @param registry <p>The registry containing all information on portals</p>
+     */
     public EntityInsideBlockEventListener(RegistryAPI registry) {
         this.registry = registry;
     }

@@ -231,7 +231,7 @@ public enum TranslatableMessage {
     /**
      * The message to send whenever an inter-server portal is created
      */
-    UNIMPLEMENTED_INTER_SERVER("unimplementedInterServer"),
+    UNIMPLEMENTED_INTER_SERVER("unimplementedInterserver"),
 
     /**
      * The message to send when a flag is not implemented yet
@@ -273,6 +273,9 @@ public enum TranslatableMessage {
      */
     CUSTOM_NETWORK("custom"),
 
+    /**
+     * The message to send when installing parity modules
+     */
     PARITY_UPGRADE("parityCommand");
 
     /*

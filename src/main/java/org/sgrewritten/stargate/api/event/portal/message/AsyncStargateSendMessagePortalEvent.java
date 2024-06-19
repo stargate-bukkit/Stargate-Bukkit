@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
 public class AsyncStargateSendMessagePortalEvent extends StargateSendMessagePortalEvent {
     private static final HandlerList handlers = new HandlerList();
@@ -17,7 +18,7 @@ public class AsyncStargateSendMessagePortalEvent extends StargateSendMessagePort
      * @param entity <p>The entity receiving the message</p>
      * @param type   <p>The type of message being sent</p>
      */
-    public AsyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, String message) {
+    public AsyncStargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, StargateComponent message) {
         super(portal, entity, type, message, true);
     }
 

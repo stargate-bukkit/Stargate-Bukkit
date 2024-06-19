@@ -15,6 +15,8 @@ import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 public class StorageMock implements StorageAPI {
@@ -125,6 +127,11 @@ public class StorageMock implements StorageAPI {
     @Override
     public boolean netWorkExists(String netName, StorageType portalType) {
         return false;
+    }
+
+    @Override
+    public Set<String> getScheduledGatesClearing() {
+        return new HashSet<>();
     }
 
 }

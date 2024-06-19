@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.junit.jupiter.api.AfterAll;
@@ -21,13 +20,13 @@ class GateFormatReaderTest {
 
     @BeforeAll
     static void setUp() {
-        MockBukkit.mock();
+        StargateTestHelper.setup();
         Stargate.setLogLevel(Level.FINEST);
     }
 
     @AfterAll
     static void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
         Stargate.setLogLevel(Level.INFO);
     }
 

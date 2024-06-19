@@ -12,4 +12,4 @@
 
 
 #Admin
-translatedBy=Translated s.r.l.
+translatedBy=Furplag & Translated s.r.l.

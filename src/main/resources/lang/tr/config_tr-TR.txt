@@ -1,15 +1,121 @@
 # Headers
+headerVersion=Sürüm: %version%
+headerDocumentation=Dokümantasyon: %link%
+headerReports=Hata Raporlama: %link%
+headerPreferences=Genel Tercihler
+headerBehaviour=Geçit Davranışı
+headerEconomy=Ekonomi
+headerAesthetic=Estetik Ayarlar
+headerTechnical=Teknik
+subheaderCompat=Uyumluluk
+subheaderLogging=Günlük kaydı
+subheaderDebug=Hata Ayıklama
+descriptionCompatibility=Bu ayarlar Stargate'in diğer eklentilerle etkileşime geçmesi için sağlandı.
+descriptionLogging=Stargate konsola ne kadar bilgi göndermeli?     
+descriptionDebug=Bu ayarlar geliştiricilerin bu eklentiyle ilgili hataları bulması için sağlanmıştır. 
+tagNote=NOT
 
 # General Preferences
+languageL1=Stargate kullanıcılar ile iletişime geçerken hangi dili kullanmalı?
+languageL2=Desteklenen değerler: %values%
+languageL4=Eğer Stargate sizin dilinizde mevcut değilse çevirmen olmayı düşünün:
+bungee.UsingBungeeL1=Bungee uyumlu bir vekil sunucuya mı bağlısın?
+bungee.usingBungeeL2=Eğer "u" geçit tipini kullanmayı planlıyorsanız bunu "true" olarak değiştirin.
+bungee.useRemoteDatabaseL1=Varsayılan olarak Stargate SQLite veritabanı kullanır.
+bungee.useRemoteDatabaseL3=Eğer büyük bir sunucu çalıştırıyorsanız uzak bir veritabanı kullanmanızı öneririz.
+bungee.useRemoteDatabaseL4="i" geçip tipi ile geçitler oluşturmayı planlıyorsanız o tarz bir veritabanı gerekli olduğunu unutmayınız.
+bungee.remoteDatabaseSettings.L1=Sadece useRemoteDatabase "true" olduğunda uygulanabilir.
+bungee.remoteDatabaseSettings.driverL1=Stargate veritabanınıza bağlanmak için hangi veritabanı sürücüsünü kullanmalı?
+bungee.remoteDatabaseSettings.driverL2=Şuan bu değerler desteklenmektedir: %values%
+bungee.remoteDatabaseSettings.addressL1=Stargate veritabanınızı nerede bulabilir?
+bungee.remoteDatabaseSettings.useSSLL1=Stargate veritabanınıza bağlanırken SSL kullanmalı mı?
+bungee.remoteDatabaseSettings.databaseL1=Stargate'nin verilerini saklayacağı veritabanının ismi. Zaten var olmalı.
+bungee.remoteDatabaseSettings.databaseL2=Eğer Bungee kullanıyorsanız bu tüm Stargate sunucularıyla paylaşılmalı.
+bungee.remoteDatabaseSettings.usernameL1=Bağlantı için kullanılacak olan bilgiler:
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Stargate klasörüne bir veritabanı yapılandırma dosyası ('hikari.properties') oluşturmalı mıyız?
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Bunu yapmak bütün remoteDatabaseSettings i yeni dosyanın lehine görmezden gelecek!
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=Bu önbellek boyutları, bilgi havuzu sınırları vb. gibi gelişmiş RDMS özelliklerini kullanmanızı sağlar.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=Uygun ayarların bir listesi şurada bulunabilir: %link%
+defaultGateNetworkL1=Bir ağ belirtilmediğinde hangi ağ kullanılmalı? (En fazla 12 karakter)
+defaultGateNetworkL3=Bunun özellikle stargate.create.network iznine sahip kullanıcıları etkilediğini unutmayınız.
+defaultGateNetworkL4=Genelde o izin personellere verilir (Kullanıcılara stargate.create.personal iznini öneriyoruz).
+defaultTerminalNetworkL1=Stargate hangi ağı terminal ('T') geçitlerine ayırsın?
+defaultTerminalNetworkL3=Genelde bu özellik 'Terminal' olarak adlandırılan bir grup geçit oluşturmaya yarar.
+defaultTerminalNetworkL4=Bu ağı kullanarak oyuncular para karşılığında kendi üs/dükkan/kasaba vb terminale bağlayabilirler.
+defaultTerminalNetworkL6=Henüz bitirilemedi!
+defaultTerminalNetworkL7=Terminal desteği %version% için planlanmıştır!
 
 # Gate Behaviour
+networkLimitL1=Bir ağ en fazla kaç geçit içerebilir? (Sınırsız için -1)
+handleVehiclesL1=Araçlar ve yolcuları Stargate geçitlerinden geçebilecek mi?
+handleVehiclesL2=vagonlar, botlar ve eyerli moblar = araçlar | oyuncular ve moblar = yolcular
+handleLeashedCreaturesL1=Eğer bir oyuncu kayışla bir varlığa bağlıyken geçitten geçerse Stargate onu da ışınlamalı mı?
+CheckPortalValidityL1=Sunucu başlangıçta tüm geçitleri yeniden doğrulayacak mı?
+CheckPortalValidityL3=Bu geçitlerin hem var olduğunu hem de geçerli bir düzende olduğunu kontrol eder.
+CheckPortalValidityL4=.gate dosyalarındaki modifikasyonlar, dünya değişimleri ve arazi oluşumlarını yakalamak için tasarlandı
+destroyOnExplosionL1=Stargateler patlama ile yok edilebilir mi?
+destroyOnExplosionL2=[tnt, creeperlar, vb.]
+gateExitSpeedMultiplierL1=Oyuncular geçitlerden hangi hız ile çıkarılmalı?
+gateExitSpeedMultiplierL2=Bir geçitten çıkarken oyuncular özgün hareket hızlarının bu sayı ile çarpılmış halini korur.
 
 # Economy
+useEconomyL1=Stargate sunucu ekonomisi ile etkileşime girecek mi?
+useEconomyL3=Bu özellikler için Stargate, Vault eklentisine bağlıdır.
+taxAccountL1=Sunucun vergi hesabı (kapalı ekonomi) var mı?
+taxAccountL2=Eğer öyleyse lütfen vergi hesabının ismini sağlayınız (toplanan para o hesaba gönderilecek).
+taxAccountL3=Eğer yoksa bu kısmı boş bırakın (toplanan para silinecektir).
+TaxAccountL5=usageCost ücretinin gateOwnerRevenue doğru olduğunda bu sistemden hariç tutulduğunu unutmayınız.
+creationCostL1=Yeni bir geçit oluşturulurken oyuncuların hesabından ne kadar ücret alınmalı?
+destructionCostL1=Bir geçit yok edilirken oyuncuların hesabından ne kadar ücret alınmalı?
+usageCostL1=Oyuncular bir geçitten geçtiklerinde hesaplarından ne kadar ücret alınmalı?
+usageCostL2=Bu 'f' tipi geçitler için geçersizdir.
+gateOwnerRevenueL1=Bir geçitten toplanan 'usecost' ücretleri belirtilen geçidi oluşturana (sahip olana) ödenecek mi?
+gateOnwerRevenueL2=Eğer yanlışsa toplanan kaynaklar silinecektir (ya da vergi hesabına gönderilecektir).
+chargeFreeDestinationL1=Geçidin istikameti 'f' tipi bir geçit olsa bile 'creationCost' alınacak mı?
+chargeFreeDestinationL2=Bunun sadece istikameti belli geçitlerde uygulandığını unutmayınız.
 
 # Aesthetic Tweaks
+signFormattingL1=Bu ayarlar Stargate'nin tabelaları formatlarken kullandığı renkler ve stilleri özelleştirilmesine yarar.
+signFormattingL2=Daha gelişmiş stil seçenekleri için lütfen https://sgrewritten.org/extraColours adresini ziyaret edebilirsiniz.
+signFormatting.color.L1=Stargate tabelalarında kullanılan varsayılan renk (parlaklık tabela materyaline göre değişir)
+signFormatting.color.L2=Geçerli renklerin listesini https://sgrewritten.org/colourTypes adresinde bulabilirsiniz.
+signFormatting.pointerBehaviourL1=Stargate kullanıcıların seçtiği istikametleri bir imleç sembolü ile vurgular.
+signFormatting.pointerBehaviourL2=Stargate hangi imleç sembol stilini kullanmalı? (https://sgrewritten.org/pointerStyles)
+signFormatting.pointerBehaviourL3=Ayarlar:
+signFormatting.pointerBehaviourL4=1: Varsayılan stil (İmleç tabelanın yazısı ile aynı renk olacaktır).
+signFormatting.pointerBehaviourL5=2: İstikamet tipi (imleç seçilen istikamete bağlı olarak renk ile kodlanacaktır)
+signFormatting.pointerBehaviourL6=3: Vurgulu (işaretçi parlaklığı tabelanın varsayılan rengine bağlı olarak değişecektir)
+disableCustomColoredNamesL1=Varsayılan olarak Stargate kullanıcıların geçitlerine harici eklentiler ile renkli isimler tanımlamasına izin verir.
+disableCustomColoredNamesL2=Bu tarz isimler signStyle için belirlenen (yukarıdaki) renkleri geçersiz kılar.
+disableCustomColoredNamesL4=Stargate bu hareketi oyunu yazan şeyi göstermeye zorlayarak devre dışı bırakmalı mı?
+rememberLastDestinationL1=Ağa bağlı geçitler en son bağlandığı istikameti menüsünde ilk mi gösterecek?
 
 #Technical
+portalFileL1=useRemoteDatabase kapalı olduğunda Stargate tüm geçit verilerini düz bir dosyada saklar.
+portalFileL2=Bu dosyanın adı ne olmalı?
+gateFolderL1=Şuan açılışta geçit yerleşimlerinin saklandığı ’.gate’ dosyalarını içeren bir klasör kontrol ediliyor.
+gateFolderL2=Bu klasör nerede?
+gateFolderL4=Bu seçenek bazı eski forklardan veri aktarılmasını sağlayan bir yama olarak sağlandı.
+customRemoteDatabasePrefixL1=Varsayılan olarak Stargate uzak veritabanı tablolarına `SG_` ön ekini ekler.
+customRemoteDatabasePrefixL2=Eğer bu başka bir eklenti ile çakışıyorsa buradan ön eki değiştirebilirsiniz.
+loggingLevelL1=Kullanılabilir değerler:
+loggingLevelL2=Önerilmez.
+loggingLevelL3=Bütün her şeyi sakla. Sadece eklenti geri dönülemez şekilde çöktüğünde konsola yazdırır.
+loggingLevelL4=Büyük ve iyi test edilmiş uygulamalara önerilir.
+loggingLevelL5=Normal davranışları sakla. Sadece potansiyel sorunları yazdır.
+loggingLevelL6=Çoğu uygulamalara önerilir.
+loggingLevelL7=Normal davranışları yazdır. Geçit olaylarını (kullanım, oluşturulma, yok edilme vs.) yazdırır.
+loggingLevelL8=Üretim öncesi uygulamaları konfigüre etmek için yararlıdır.
+loggingLevelL9=İzin kontrollerini yazdırır. Bir oyuncunun bir işi yapabileceğine karar veren kontrolleri yazdırır.
+loggingLevelL10=Basit hata giderme için önerilir.
+loggingLevelL11=Kısıtlanmış sorun giderme bilgisini yazdırır. Genel eklenti olaylarını (yükleme, devre dışı bırakma, bağlantılar, vs.) yazdırır.
+loggingLevelL12=Bazı eklenti geliştiricileri için önerilir.
+loggingLevelL13=Çoğu hata giderme bilgisini yazdırır. Eklentinin mantığını ve davranışlarını ayrıntılı mesajlarla yazdırır.
+LoggingLevelL14=Sadece Stargate'nin temel geliştirici ekibi tarafından kullanılır.
+LoggingLevelL15=Her şeyin çıktısını al. Tam anlamıyla her şeyin çıktısını alır, çok sayıda yığın izlemeleri dahil.
+configVersionL1=Eklenti tarafından konfigürasyon dosyanızın ne kadar eski olduğunu belirlemek için kullanılan dahili bir değer.
+configVersionL2=Lütfen bunu değiştirmeyin.
 
 
 #Admin
-translatedBy=yugurr
+translatedBy=yugurr & axolotlagatsuma

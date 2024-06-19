@@ -53,7 +53,7 @@ conflictSpawn=スポーンチャンクがこのポータルを妨害していま
 
 # Economy
 ecoDeduct=%cost%を差し引きました。
-ecoObtain=StarGate%portal%から%cost%を入手しました！
+ecoObtain=Stargate%portal%から%cost%を入手しました！
 ecoInsolvent=お金が足りません！
 
 #Terminology
@@ -77,4 +77,4 @@ unimplementedFlag=%flags%フラグはまだ実装されていません。
 adminReload=設定をリロードしました！
 adminInfo=%version%バージョンを実行しています。変更履歴: https://git.io/JD4Qo
 adminHelp=StarGateのドキュメントは: https://git.io/JDclfにあります。
-translatedBy=Translated s.r.l.
+translatedBy=Furplag & Translated s.r.l.

@@ -1,14 +1,120 @@
 # Headers
+headerVersion=Version: %version%
+headerDocumentation=Dokumentation: %link%
+headerReports=Felrapporter: %link%
+headerPreferences=Allmänna inställningar
+headerBehaviour=Portens beteende
+headerEconomy=Ekonomi
+headerAesthetic=Estetiska Modifikationer
+headerTechnical=Teknisk
+subheaderCompat=Kompatibilitet
+subheaderLogging=Loggnings inställningar
+subheaderDebug=Felsökningsversion för utvecklare
+descriptionCompatibility=Dessa inställningar tillhandahålls för att förbättra SG-interaktioner med andra tillägg.
+descriptionLogging=Hur mycket information ska stargate skicka till konsolen?     
+descriptionDebug=Dessa inställningar tillhandahålls för att hjälpa utvecklare att diagnostisera problem med tillägget. 
+tagNote=OBS
 
 # General Preferences
+languageL1=Vilket språk kommer stargate att använda när du kommunicerar med dina användare?
+languageL2=Värden som stöds: %values%
+languageL4=Om SG ännu inte är tillgängligt på ditt språk, vänligen överväg att bli översättare:
+bungee.UsingBungeeL1=Är du ansluten till en bungee-kompatibel proxy?
+bungee.usingBungeeL2=Ange detta som "true" om du tänker bygga portar med 'u' flaggan.
+bungee.useRemoteDatabaseL1=Som standard använder Stargate en lokal SQLite-databas för att lagra sin data.
+bungee.useRemoteDatabaseL3=Om du kör en stor server rekommenderar vi att du använder en fjärrdatabas.
+bungee.useRemoteDatabaseL4=Observera att en sådan databas krävs om du tänker bygga portar med 'i' flaggan.
+bungee.remoteDatabaseSettings.L1=Gäller endast om useRemoteDatabase är satt till "true".
+bungee.remoteDatabaseSettings.driverL1=Vilken drivrutin ska användas för att ansluta till din databas?
+bungee.remoteDatabaseSettings.driverL2=För närvarande stöds dessa: %values%
+bungee.remoteDatabaseSettings.addressL1=Var kan stargate hitta din databas?
+bungee.remoteDatabaseSettings.useSSLL1=Ska stargate använda SSL när den ansluter till din databas?
+bungee.remoteDatabaseSettings.databaseL1=Namnet på databasen Stargate kommer att använda för att lagra sin data. Databasen måste redan finnas.
+bungee.remoteDatabaseSettings.databaseL2=Om du använder Bungee, bör detta delas över alla Stargate-instanser.
+bungee.remoteDatabaseSettings.usernameL1=Användaruppgifter som ska användas för anslutning:
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Bör vi generera en databaskonfigurationsfil ('hikari.properties') i din stargate-mapp?
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Att göra det kommer att ignorera alla remoteDatabaseSettings ovan till förmån för den nya filen!
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=Detta gör att du kan använda avancerade RDMS funktioner som poolgränser, cachestorlekar etc.
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=En lista över tillgängliga inställningar finns på denna länk: %link%.
+defaultGateNetworkL1=Vilket nätverk kommer att användas när ingen har angetts? (Max längd 12 tecken)
+defaultGateNetworkL3=Observera att detta i första hand gäller användare med stargate.create.network noden.
+defaultGateNetworkL4=Noden ges generellt till personal (vi rekommenderar stargate.create.personal för användare).
+defaultTerminalNetworkL1=Vilket nätverk kommer Stargate reservera för terminalportaler (T)?
+defaultTerminalNetworkL3=Generellt används den här funktionen för att göra en grupp portaler i spawn känd som en "Terminal".
+defaultTerminalNetworkL4=Med hjälp av detta nätverk kan spelare betala för att ansluta sina städer/baser/butiker/etc. till terminalen.
+defaultTerminalNetworkL6=Ännu inte implementerat!
+defaultTerminalNetworkL7=Terminalstödet är tänkt för %version%!
 
 # Gate Behaviour
+networkLimitL1=Vad är det maximala antalet portar ett enda nätverk kan innehålla? (-1 för obegränsat)
+handleVehiclesL1=Kommer fordon och deras passagerare att kunna resa genom Stargate-portalerna?
+handleVehiclesL2=minecarts, båtar, & sadlade djur = fordon | spelare & varelser = passagerare
+handleLeashedCreaturesL1=Om en spelare teleporterar sig med en koppel till ett djur, ska SG också teleportera djuret?
+CheckPortalValidityL1=Kommer servern att verifiera alla befintliga portaler vid uppstart?
+CheckPortalValidityL3=Detta kontrollerar att de förväntade portalerna är både närvarande och använder en giltig layout.
+CheckPortalValidityL4=Utformad för att hitta .gate fil ändringar, världsförändringar och terräng regenerering.
+destroyOnExplosionL1=Kan Stargates förstöras via en explosion?
+destroyOnExplosionL2=[tnt, creepers, etc.]
+gateExitSpeedMultiplierL1=Vid vilken hastighet ska spelare skickas ut från portaler?
+gateExitSpeedMultiplierL2=När du lämnar en grind behåller spelarna sin ursprungliga rörelsehastighet, multiplicerat med detta värde.
 
 # Economy
+useEconomyL1=Kommer Stargate att interagera med din servers ekonomi?
+useEconomyL3=För dessa funktioner beror Stargate på tilläget Vault.
+taxAccountL1=Har din server ett skattekonto (stängd ekonomi)?
+taxAccountL2=Om så är fallet, ange namnet på ditt skattekonto (insamlade pengar kommer att skickas till det).
+taxAccountL3=Om inte, lämna detta avsnitt tomt (insamlade pengar kommer att raderas).
+TaxAccountL5=Observera att användningKostnad pengar är uteslutna från detta system när gateOwnerRevenue är sant.
+creationCostL1=Hur mycket kommer att dras av från spelarnas konton när en ny port skapas?
+destructionCostL1=Hur mycket kommer att dras av från spelarnas konton när en befintlig port förstörs?
+usageCostL1=Hur mycket kommer att dras av från spelarnas konton när en stargate används för att teleportera?
+usageCostL2=Detta gäller inte för stargates med flaggan 'f'.
+gateOwnerRevenueL1=Kommer avgifter som tas ut för "usecost" att betalas till vem som skapat (äger) den tillämpliga stargate?
+gateOnwerRevenueL2=Om falskt, kommer insamlade medel att tas bort (eller skickas till skattkontot).
+chargeFreeDestinationL1=Kommer ”creationCost” fortfarande att debiteras om den nya portens destination är en port med flaggan 'f'?
+chargeFreeDestinationL2=Observera att detta endast gäller fasta grindar.
 
 # Aesthetic Tweaks
+signFormattingL1=Dessa inställningar används för att anpassa färger och stilar som används av SG vid formatering av skyltar.
+signFormattingL2=För mer avancerade stylingalternativ, använd https://sgrewritten.org/extraColours
+signFormatting.color.L1=Standard textfärg på alla stargate skylt (ljusstyrka skiftar baserat på skyltmaterial)
+signFormatting.color.L2=En lista över giltiga färger finns på https://sgrewritten.org/colourTypes
+signFormatting.pointerBehaviourL1=SG märker spelarnas valda destinationer med en pekarsymbol när användarna bläddrar.
+signFormatting.pointerBehaviourL2=Hur ska SG styla sin pekarsymbol? (https://sgrewritten.org/pointerStyles)
+signFormatting.pointerBehaviourL3=Alternativ:
+signFormatting.pointerBehaviourL4=1: Ingen styling (pekaren kommer att vara samma standardfärg som används av tecknets text).
+signFormatting.pointerBehaviourL5=2: Destinationstyp (pekaren kommer ha färgkod baserat på vald destination)
+signFormatting.pointerBehaviourL6=3: Accentuerad (pekarens ljusstyrka kommer att skifta till kontrast mot skyltens standardfärg)
+disableCustomColoredNamesL1=Som standard tillåter SG användare att ange färgade namn för sina portar via externa plugins.
+disableCustomColoredNamesL2=Sådana namn åsidosätter de färger som anges för signStyle (ovan).
+disableCustomColoredNamesL4=Bör SG inaktivera detta beteende genom att tvinga spelet att visa exakt vad som skrivits?
+rememberLastDestinationL1=Kommer destinationen en nätverksportal senast ansluten för att listas först i menyn?
 
 #Technical
+portalFileL1=När useRemoteDatabasen är falsk lagrar Stargate all sin portaldata i en flatfil.
+portalFileL2=Vad ska denna plattfil heta?
+gateFolderL1=För närvarande, vid uppstart, kontrolleras en mapp för gate layouter som lagras i ‘.gate’ filer.
+gateFolderL2=Var är den mappen?
+gateFolderL4=Det här alternativet tillhandahålls som en patch för att tillåta att data importeras från några äldre forks.
+customRemoteDatabasePrefixL1=Som standard kommer SG att föregå sina fjärrdatabastabeller med `SG_`.
+customRemoteDatabasePrefixL2=Om detta strider mot en annan plugin, kan du ändra detta prefix här.
+loggingLevelL1=Möjliga värden:
+loggingLevelL2=Rekommenderas inte
+loggingLevelL3=Dölj allt. Skriv bara ut till konsolen om insticksprogrammet kraschar.
+loggingLevelL4=Rekommenderas för stora och väl testade produktionsimplementationer
+loggingLevelL5=Dölj normalt beteende. Skriv endast ut potentiella problem.
+loggingLevelL6=Rekommenderas för de flesta produktionsimplementationerna
+loggingLevelL7=Skriv ut normalt beteende. Skriver ut portalhändelser (användning, skapande, förstörelse, etc.).
+loggingLevelL8=Användbart för att konfigurera preproduktionstillfällen
+loggingLevelL9=Skriva ut behörighetskontroller. Skriver ut kontroller som görs för att avgöra om spelare kan utföra en åtgärd.
+loggingLevelL10=Rekommenderas för grundläggande felsökning
+loggingLevelL11=Skriv ut begränsad felsökningsinformation. Skriver ut allmänna plugin-händelser (laddning, inaktivering, anslutningar, etc.).
+loggingLevelL12=Rekommenderas för några tilläggsutvecklare.
+loggingLevelL13=Skriv ut mest felsökningsinformation. Skriver ut meddelanden som beskriver tilläggets logik och beteende.
+LoggingLevelL14=Används endast av StarGates kärnutvecklingsteam
+LoggingLevelL15=Skriv ut allt. Skriver bokstavligen allt, inklusive många stacktraces.
+configVersionL1=Ett internt värde som används av plugin för att avgöra hur gammal din konfiguration är.
+configVersionL2=Vänligen ändra inte detta.
 
 
 #Admin

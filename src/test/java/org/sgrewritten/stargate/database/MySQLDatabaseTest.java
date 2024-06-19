@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.database;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -9,11 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,7 +32,7 @@ public class MySQLDatabaseTest {
 
     @BeforeAll
     public static void setUp() throws SQLException, InvalidStructureException, StargateInitializationException,
-            TranslatableException {
+            TranslatableException, GateConflictException, NoFormatFoundException {
         Stargate.log(Level.FINE, "Setting up test data");
         DatabaseDriver driver = DatabaseDriver.MYSQL;
         TestCredentialsManager credentialsManager = new TestCredentialsManager("mysql_credentials.secret");
@@ -53,7 +55,7 @@ public class MySQLDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
 
         try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE Stargate;").execute();
@@ -259,7 +261,7 @@ public class MySQLDatabaseTest {
         try {
             tester.addFlags();
         } catch (SQLException e) {
-            fail();
+            fail(e);
         }
     }
 
@@ -353,7 +355,8 @@ public class MySQLDatabaseTest {
     void changeNamesTest() {
         try {
             tester.changeNames(StorageType.LOCAL);
-        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException |
+                 GateConflictException | NoFormatFoundException e) {
             fail();
         }
     }
@@ -363,7 +366,8 @@ public class MySQLDatabaseTest {
     void changeInterNamesTest() {
         try {
             tester.changeNames(StorageType.INTER_SERVER);
-        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException e) {
+        } catch (SQLException | InvalidStructureException | StorageWriteException | TranslatableException |
+                 GateConflictException | NoFormatFoundException e) {
             fail();
         }
     }

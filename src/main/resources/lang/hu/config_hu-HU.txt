@@ -1,0 +1,15 @@
+# Headers
+
+# General Preferences
+
+# Gate Behaviour
+
+# Economy
+
+# Aesthetic Tweaks
+
+#Technical
+
+
+#Admin
+translatedBy=HPoltergeist

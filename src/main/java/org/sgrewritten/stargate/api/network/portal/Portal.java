@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
@@ -46,13 +47,6 @@ public interface Portal {
      * @param origin <p>The origin portal the entity is teleporting from</p>
      */
     void teleportHere(Entity target, RealPortal origin);
-
-    /**
-     * Teleports the given entity to this portal's current destination
-     *
-     * @param target <p>The entity to teleport</p>
-     */
-    void doTeleport(Entity target);
 
     /**
      * Closes this portal
@@ -101,6 +95,8 @@ public interface Portal {
     /**
      * Changes the player this portal belongs to
      *
+     * <p>DOES NOT SAVE TO DATABASE</p>
+     *
      * @param targetPlayer <p>The new player this portal should belong to</p>
      */
     void setOwner(UUID targetPlayer);
@@ -114,26 +110,16 @@ public interface Portal {
     boolean hasFlag(PortalFlag flag);
 
     /**
-     * Checks whether this portal has the given portal flag enabled
-     *
-     * @param flag <p>The portal flag to check for</p>
-     * @return <p>True if this portal has the given portal flag enabled</p>
+     * Remove a flag from this portal (does not do so from storage)
+     * @param flag <p>Flag to remove</p>
      */
-    boolean hasFlag(Character flag);
+    void removeFlag(PortalFlag flag);
 
     /**
-     * Temporary add a flag, does not save to storage
-     *
-     * @param flag
+     * Add a flag from this portal (does not do so to storage)
+     * @param flag <p>Flag to add</p>
      */
-    void addFlag(Character flag) throws UnsupportedOperationException;
-
-    /**
-     * Temporary remove a flag, does not save to storage
-     *
-     * @param flag
-     */
-    void removeFlag(Character flag) throws UnsupportedOperationException;
+    void addFlag(PortalFlag flag);
 
     /**
      * Gets all of this portal's portal flags in the form of a string
@@ -157,22 +143,6 @@ public interface Portal {
      * Looks into available portals to connect to, and updates appearance and behaviour accordingly
      */
     void updateState();
-
-    /**
-     * Gets the currently selected destination portal
-     *
-     * @return <p>The currently selected destination portal</p>
-     */
-    Portal getDestination();
-
-    /**
-     * Gets the destination name as originally specified on this portal's creation sign
-     *
-     * <p>This will be null for any non-fixed portals.</p>
-     *
-     * @return <p>The destination name specified for this portal</p>
-     */
-    String getDestinationName();
 
     /**
      * Gets the unique identifier for this portal
@@ -203,13 +173,6 @@ public interface Portal {
      */
     @ApiStatus.Internal
     void setName(String newName);
-
-    /**
-     * Activates this portal for the given player during internally specified time
-     *
-     * @param player <p>The player to activate this portal for</p>
-     */
-    void activate(Player player);
 
     /**
      * @return <p>True if this portal has been destroyed</p>

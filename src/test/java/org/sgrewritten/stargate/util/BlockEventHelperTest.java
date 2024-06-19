@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -14,24 +13,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.property.BlockEventType;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
 
 class BlockEventHelperTest {
 
@@ -39,29 +34,25 @@ class BlockEventHelperTest {
     private static RealPortal portal;
     private static Block signBlock;
     private static PlayerMock player;
-
-    private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static StargateAPIMock stargateAPI;
 
     @BeforeAll
-    static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        ServerMock server = MockBukkit.mock();
+    static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
+        ServerMock server = StargateTestHelper.setup();
         player = server.addPlayer();
         WorldMock world = server.addSimpleWorld("world");
 
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
         stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
-
-        portal = PortalFactory.generateFakePortal(signBlock, network, new HashSet<>(), "name", stargateAPI);
+        portal = new PortalBuilder(stargateAPI, player, "name").setGateBuilder(new ImplicitGateBuilder(signBlock.getLocation(), registry)).setNetwork(network).build();
 
     }
 
     @AfterAll
     static void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

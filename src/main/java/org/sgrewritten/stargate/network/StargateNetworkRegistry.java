@@ -65,8 +65,9 @@ public class StargateNetworkRegistry implements NetworkRegistry {
         if (network != null && network.getType() == NetworkType.PERSONAL) {
             networkNameMap.remove(normalizedName);
             networkNameMap.put(NameHelper.getNormalizedName(network.getName()), network);
+            return NameHelper.getNormalizedName(network.getName());
         }
-        return NameHelper.getNormalizedName(network.getName());
+        return normalizedName;
     }
 
     @Override

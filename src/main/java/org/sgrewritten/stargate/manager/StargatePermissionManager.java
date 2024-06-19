@@ -11,7 +11,8 @@ import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
@@ -21,7 +22,7 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.util.TranslatableMessageFormatter;
 import org.sgrewritten.stargate.util.portal.PortalPermissionHelper;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -48,6 +49,8 @@ public class StargatePermissionManager implements PermissionManager {
     private static final String DESTROY_OWNED = "sg.destroy.owned";
     private static final String USE_OWNED = "sg.use.owned";
 
+
+    private static final String PLAYER_OWNS_PORTAL_MESSAGE = "The player owns the portal, therefore has permission";
     /**
      * Instantiates a new permission manager
      *
@@ -63,7 +66,7 @@ public class StargatePermissionManager implements PermissionManager {
 
     @Override
     public Set<PortalFlag> returnDisallowedFlags(Set<PortalFlag> flags) {
-        Set<PortalFlag> disallowed = EnumSet.noneOf(PortalFlag.class);
+        Set<PortalFlag> disallowed = new HashSet<>();
         for (PortalFlag flag : flags) {
             if (flag.isInternalFlag()) {
                 continue;
@@ -133,10 +136,8 @@ public class StargatePermissionManager implements PermissionManager {
         }
 
         //If the entity has the parent permission, allow unless explicitly defined
-        if (hasPermission(entity, parentPermission)) {
-            if (!entity.isPermissionSet(permission)) {
-                return true;
-            }
+        if (hasPermission(entity, parentPermission) && !entity.isPermissionSet(permission)) {
+            return true;
         }
         return hasGivenPermission;
     }
@@ -159,7 +160,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasAccessPermission(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking access permissions");
         if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getAccessPermissions(portal, target);
@@ -171,7 +172,7 @@ public class StargatePermissionManager implements PermissionManager {
         Stargate.log(Level.CONFIG, "Checking create permissions");
         List<String> relatedPerms = PortalPermissionHelper.getCreatePermissions(portal, target);
         boolean hasPermission = hasPermissions(target, relatedPerms);
-        if (hasPermission && portal.hasFlag(PortalFlag.PERSONAL_NETWORK) && target instanceof Player) {
+        if (hasPermission && portal.hasFlag(StargateFlag.PERSONAL_NETWORK) && target instanceof Player) {
             return !isNetworkFull(portal.getNetwork());
         }
         return hasPermission;
@@ -181,7 +182,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasDestroyPermissions(RealPortal portal) {
         Stargate.log(Level.CONFIG, "Checking destroy permissions");
         if (portal.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, DESTROY_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getDestroyPermissions(portal, target);
@@ -192,7 +193,7 @@ public class StargatePermissionManager implements PermissionManager {
     public boolean hasOpenPermissions(RealPortal entrance, Portal exit) {
         Stargate.log(Level.CONFIG, "Checking open permissions");
         if (entrance.getOwnerUUID().equals(target.getUniqueId()) && hasPermission(target, USE_OWNED) && ConfigurationHelper.getBoolean(ConfigurationOption.ENABLE_OWNED_GATES)) {
-            Stargate.log(Level.CONFIG, "The player owns the portal, therefore has permission");
+            Stargate.log(Level.CONFIG, PLAYER_OWNS_PORTAL_MESSAGE);
             return true;
         }
         List<String> relatedPerms = PortalPermissionHelper.getOpenPermissions(entrance, exit, target);
@@ -220,6 +221,9 @@ public class StargatePermissionManager implements PermissionManager {
         if (permissionNode.equals("sg.use.follow")) {
             return languageManager.getErrorMessage(TranslatableMessage.TELEPORTATION_OCCUPIED);
         }
+        if(permissionNode.equals("sg.admin.bypass.private")){
+            return languageManager.getErrorMessage(TranslatableMessage.NET_DENY);
+        }
 
         if (permissionNode.contains("create") || permissionNode.contains("use")) {
             if (permissionNode.contains("world")) {
@@ -237,8 +241,8 @@ public class StargatePermissionManager implements PermissionManager {
                 return languageManager.getErrorMessage(TranslatableMessage.GATE_DENY);
             }
             if (permissionNode.contains("type")) {
-                PortalFlag flag = PortalFlag.valueOf(permissionNode.split(".type.")[1].charAt(0));
-                if (flag == PortalFlag.BUNGEE || flag == PortalFlag.FANCY_INTER_SERVER) {
+                StargateFlag flag = StargateFlag.valueOf(permissionNode.split(".type.")[1].charAt(0));
+                if (flag == StargateFlag.LEGACY_INTERSERVER || flag == StargateFlag.INTERSERVER) {
                     return languageManager.getErrorMessage(TranslatableMessage.BUNGEE_DENY);
                 }
             }
@@ -286,7 +290,7 @@ public class StargatePermissionManager implements PermissionManager {
      * @return <p> If the entity has the meta </p>
      */
     private boolean canFollow() {
-        if(!canProcessMetaData){
+        if (!canProcessMetaData) {
             return hasPermission(target, "sg.use.follow");
         }
         String metaString = "can-followthrough";
@@ -322,19 +326,18 @@ public class StargatePermissionManager implements PermissionManager {
             //It's not possible to create a non-bungee portal on this network
             return false;
         }
-        switch (type) {
-            case DEFAULT:
-                return hasPermission(target, NETWORK_CREATE_PERMISSION + ".default");
-            case TERMINAL:
-                return false; //NOT TET IMPLEMENTED
-            case PERSONAL:
+        return switch (type) {
+            case DEFAULT -> hasPermission(target, NETWORK_CREATE_PERMISSION + ".default");
+            case TERMINAL -> false; //NOT YET IMPLEMENTED
+            case PERSONAL -> {
                 if (target.getName().equals(networkName) || networkName.isBlank()) {
-                    return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.own");
+                    yield hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.own");
                 }
-                return hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);
-            default:
-                return hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
-        }
+                yield hasPermission(target, NETWORK_CREATE_PERMISSION + ".personal.other." + networkName);
+            }
+            default ->
+                    hasPermission(target, PortalPermissionHelper.generateCustomNetworkPermission(CREATE_PERMISSION, networkName));
+        };
     }
 
     @Override

@@ -1,0 +1,44 @@
+# General Styling
+prefix=[Stargate] 
+
+# Sign Formatting
+signNonFixedL2=Jobb katt a
+signNonFixedL3=használathoz
+signRandom=Random
+signDisconnected=Szétkapcsolva
+
+# Gate Actions
+gateDestroy=Kapu törölve!
+gateCreatePersonal=Kapu készítése magán hálózaton.
+
+# Gate Construction Problems
+faultNetwork=Nincs hozzáférésed ahhoz a hálózathoz!
+faultLayout=Nincs hozzáférésed ahhoz a kapucsoporthoz!
+faultLength=A név túl rövid vagy túl hosszú!
+faultExists=Már van ilyen nevű kapu!
+faultFull=Ez a hálózat tele van!
+faultConflict=Ez a kapu ütközik egy meglévö kapuval.
+
+# Bungee Problems
+
+# Gate Usage
+tpSuccess=Teleportálás!
+tpDestInvalid=Nincs ilyen cél!
+tpEmptyNet=A cél lista üres!
+
+# Access
+conflictPerms=Hozzáférés megtagadva!
+
+# Economy
+ecoDeduct=%cost% levonva.
+ecoObtain=%cost% bevétel a következő kapuból: %portal%!
+ecoInsolvent=Nincs elég pénzed!
+
+#Terminology
+
+#Temporary
+
+#Parity
+
+#Admin
+translatedBy=HPoltergeist

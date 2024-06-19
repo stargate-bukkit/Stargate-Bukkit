@@ -1,0 +1,8 @@
+You are upgrading from a fork with non-standard features!
+Compatibility modules are required if you used any of the following features:
+[V gates, type-specific sign colouring, dynmap integration, command-based editing]
+
+To automatically install all required modules, type /sg parityconfirm
+To stop this message from showing up, whilst not installing all required modules,
+type /sg parityreject
+For more information, visit sgrewritten.org/stargaterevived.

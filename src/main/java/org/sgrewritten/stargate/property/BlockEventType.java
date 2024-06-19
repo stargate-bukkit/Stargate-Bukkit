@@ -5,7 +5,11 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 
 import java.util.List;
 
+/**
+ * Enum to keep track of all supported block events that can destroy a portal
+ */
 public enum BlockEventType {
+
     BLOCK_BURN("BlockBurnEvent"),
 
     BLOCK_PLACE("BlockPlaceEvent"),
@@ -46,7 +50,10 @@ public enum BlockEventType {
 
     BLOCK_BREAK("BlockBreakEvent"),
 
-    TNT_PRIME("TNTPrimeEvent");
+    TNT_PRIME("TNTPrimeEvent"),
+
+    ENTITY_EXPLODE("EntityExplodeEvent"),
+    BLOCK_EXPLODE("BlockExplodeEvent");
 
 
     private final String eventName;
@@ -60,7 +67,7 @@ public enum BlockEventType {
      */
     public boolean canDestroyPortal() {
         List<String> events = ConfigurationHelper.getStringList(ConfigurationOption.SPECIFIC_PROTECTION_OVERRIDE);
-        if (events == null) {
+        if (events.isEmpty()) {
             return false;
         }
         return events.contains(this.eventName);

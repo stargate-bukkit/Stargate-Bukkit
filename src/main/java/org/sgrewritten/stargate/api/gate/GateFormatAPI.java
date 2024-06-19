@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.api.gate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
@@ -72,4 +73,10 @@ public interface GateFormatAPI {
      * @return <p>The width of the format (Z axis)</p>
      */
     int getWidth();
+
+    /**
+     * Get the bounding box of this gate format
+     * @return <p>The bounding box of this format</p>
+     */
+    BoundingBox getBoundingBox();
 }

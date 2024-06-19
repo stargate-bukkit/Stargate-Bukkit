@@ -1,7 +1,8 @@
 package org.sgrewritten.stargate.network;
 
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 
 import java.util.Set;
@@ -11,25 +12,25 @@ public enum NetworkType {
     /**
      * A network that is directly linked to players
      */
-    PERSONAL(HighlightingStyle.CURLY_BRACKETS, PortalFlag.PERSONAL_NETWORK, TranslatableMessage.PERSONAL_NETWORK),
+    PERSONAL(HighlightingStyle.CURLY_BRACKETS, StargateFlag.PERSONAL_NETWORK, TranslatableMessage.PERSONAL_NETWORK),
 
     /**
      * The default network
      */
-    DEFAULT(HighlightingStyle.SQUARE_BRACKETS, PortalFlag.DEFAULT_NETWORK, TranslatableMessage.DEFAULT_NETWORK),
+    DEFAULT(HighlightingStyle.SQUARE_BRACKETS, StargateFlag.DEFAULT_NETWORK, TranslatableMessage.DEFAULT_NETWORK),
 
     /**
      * A customised network
      */
-    CUSTOM(HighlightingStyle.ROUNDED_BRACKETS, PortalFlag.CUSTOM_NETWORK, TranslatableMessage.CUSTOM_NETWORK),
+    CUSTOM(HighlightingStyle.ROUNDED_BRACKETS, StargateFlag.CUSTOM_NETWORK, TranslatableMessage.CUSTOM_NETWORK),
 
     /**
      * A terminal network
      */
-    TERMINAL(HighlightingStyle.DOUBLE_GREATER_LESSER_THAN, PortalFlag.TERMINAL_NETWORK, TranslatableMessage.TERMINAL_NETWORK);
+    TERMINAL(HighlightingStyle.DOUBLE_GREATER_LESSER_THAN, StargateFlag.TERMINAL_NETWORK, TranslatableMessage.TERMINAL_NETWORK);
 
     private final HighlightingStyle style;
-    private final PortalFlag flag;
+    private final StargateFlag flag;
     private final TranslatableMessage terminology;
 
     /**
@@ -38,7 +39,7 @@ public enum NetworkType {
      * @param style <p>The applicable HighlightingStyle</p>
      * @param flag  <p>The applicable PortalFlag</p>
      */
-    NetworkType(HighlightingStyle style, PortalFlag flag, TranslatableMessage terminology) {
+    NetworkType(HighlightingStyle style, StargateFlag flag, TranslatableMessage terminology) {
         this.style = style;
         this.flag = flag;
         this.terminology = terminology;
@@ -58,7 +59,7 @@ public enum NetworkType {
      *
      * @return PortalFlag flag
      */
-    public PortalFlag getRelatedFlag() {
+    public StargateFlag getRelatedFlag() {
         return flag;
     }
 
@@ -86,7 +87,7 @@ public enum NetworkType {
      */
     public static void removeNetworkTypeRelatedFlags(Set<PortalFlag> flags) {
         for (NetworkType type : NetworkType.values()) {
-            PortalFlag flagToRemove = type.getRelatedFlag();
+            StargateFlag flagToRemove = type.getRelatedFlag();
             if (flagToRemove == null) {
                 continue;
             }
@@ -124,6 +125,10 @@ public enum NetworkType {
         return null;
     }
 
+    /**
+     * @param flag <p>A portal flag</p>
+     * @return <p>True if the specified flag relates to a network flag</p>
+     */
     public static boolean isNetworkTypeFlag(PortalFlag flag) {
         for (NetworkType type : NetworkType.values()) {
             if (flag == type.getRelatedFlag()) {

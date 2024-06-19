@@ -6,14 +6,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.proxy.BukkitPluginMessageInterface;
 import org.sgrewritten.stargate.network.proxy.PluginMessageInterface;
 import org.sgrewritten.stargate.property.PluginChannel;
 import org.sgrewritten.stargate.util.BungeeHelper;
-import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.NameHelper;
 
 import java.io.ByteArrayOutputStream;
@@ -34,7 +34,6 @@ import java.util.logging.Level;
 public class VirtualPortal implements Portal {
 
     protected final String server;
-    private final Set<Character> unrecognisedFlags;
     private final PluginMessageInterface pluginMessageInterface;
     private String name;
     private Network network;
@@ -50,12 +49,11 @@ public class VirtualPortal implements Portal {
      * @param flags     <p>The portal flags enabled for this virtual portal</p>
      * @param ownerUUID <p>The UUID of this virtual portal's owner</p>
      */
-    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, Set<Character> unrecognisedFlags, UUID ownerUUID) {
+    public VirtualPortal(String server, String name, Network network, Set<PortalFlag> flags, UUID ownerUUID) {
         this.server = server;
         this.name = name;
         this.network = network;
         this.flags = flags;
-        this.unrecognisedFlags = unrecognisedFlags;
         this.ownerUUID = ownerUUID;
         this.pluginMessageInterface = new BukkitPluginMessageInterface();
     }
@@ -78,6 +76,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void close(boolean force) {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -92,7 +91,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void overrideDestination(Portal destination) {
-        //TODO: Not implemented
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
@@ -102,35 +101,12 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void open(Player player) {
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     @Override
     public void destroy() {
         network.removePortal(this);
-    }
-
-    @Override
-    public boolean hasFlag(PortalFlag flag) {
-        return flags.contains(flag);
-    }
-
-    @Override
-    public boolean hasFlag(Character flag) {
-        return unrecognisedFlags.contains(flag) || (ExceptionHelper.doesNotThrow(() -> PortalFlag.valueOf(flag)) && flags.contains(PortalFlag.valueOf(flag)));
-    }
-
-    @Override
-    public void addFlag(Character flag) {
-
-    }
-
-    @Override
-    public void removeFlag(Character flag) {
-
-    }
-
-    @Override
-    public void doTeleport(Entity player) {
     }
 
     @Override
@@ -155,16 +131,7 @@ public class VirtualPortal implements Portal {
 
     @Override
     public void updateState() {
-    }
-
-    @Override
-    public Portal getDestination() {
-        return null;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return null;
+        // Nothing is currently done cross server, small actions like this seem unnecessary
     }
 
     /**
@@ -213,6 +180,21 @@ public class VirtualPortal implements Portal {
     }
 
     @Override
+    public boolean hasFlag(PortalFlag flag) {
+        return flags.contains(flag);
+    }
+
+    @Override
+    public void removeFlag(PortalFlag flag) {
+        // Nothing is currently done here, as it requires protocol messaging
+    }
+
+    @Override
+    public void addFlag(PortalFlag flag) {
+        // Nothing is currently done here, as it requires protocol messaging
+    }
+
+    @Override
     public String getId() {
         return NameHelper.getNormalizedName(name);
     }
@@ -222,22 +204,21 @@ public class VirtualPortal implements Portal {
         return GlobalPortalId.getFromPortal(this);
     }
 
+    /**
+     * @return <p>The server this portal is contained within</p>
+     */
     public String getServer() {
         return server;
     }
 
+    @Override
     public StorageType getStorageType() {
-        return (flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
+        return (flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL);
     }
 
     @Override
     public void setName(String newName) {
         this.name = newName;
-    }
-
-    @Override
-    public void activate(Player player) {
-
     }
 
     @Override

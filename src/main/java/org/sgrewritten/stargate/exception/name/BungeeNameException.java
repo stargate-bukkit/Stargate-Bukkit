@@ -7,6 +7,11 @@ public class BungeeNameException extends TranslatableException {
 
     private final TranslatableMessage translatableMessage;
 
+    /**
+     *
+     * @param message <p>The message to display on the stacktrace for this exception</p>
+     * @param translatableMessage <p>The translatable message of this exception</p>
+     */
     public BungeeNameException(String message, TranslatableMessage translatableMessage) {
         super(message);
         this.translatableMessage = translatableMessage;

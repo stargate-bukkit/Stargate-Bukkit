@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -11,6 +12,7 @@ import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.StargateChunk;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -18,6 +20,7 @@ import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -236,14 +239,6 @@ public interface RegistryAPI {
     @Nullable PortalPosition getPortalPosition(Location location);
 
     /**
-     * Get the portal the given portal position belong to
-     *
-     * @param portalPosition <p> A portal position</p>
-     * @return <p> The portal that owns the portal position (or null if the portal position is not registered)</p>
-     */
-    @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition);
-
-    /**
      * Use {@link NetworkManager} instead. This does not save to database, and is not cross server compatible
      *
      * @param network <p>The network to register</p>
@@ -260,4 +255,10 @@ public interface RegistryAPI {
     @ApiStatus.Internal
     void renameNetwork(String newId, String oldId, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException;
 
+    /**
+     * Get all the portals in a chunk
+     * @param chunk <p>The chunk to retrieve portals from</p>
+     * @return <p>The portals in the chunk</p>
+     */
+    @NotNull Set<RealPortal> getPortalsInChunk(StargateChunk chunk);
 }

@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.gate;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
@@ -23,13 +22,9 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-
-import java.io.File;
-import java.util.List;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 class GateTest {
-
-    private final File testGatesDir = new File("src/test/resources/gates");
     private @NotNull WorldMock world;
     private GateData gateData;
     private Block signBlock;
@@ -37,23 +32,18 @@ class GateTest {
 
     @BeforeEach
     void setUp() {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
-        Location topLeft = new Location(world, 0, 6, 0);
+        Location topLeft = new Location(world, 0, 7, 0);
         BlockFace facing = BlockFace.SOUTH;
         this.gateFileName = "nether.gate";
         this.gateData = new GateData(GateFormatRegistry.getFormat(gateFileName), false, topLeft, facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(testGatesDir);
-        if (gateFormats == null) {
-            throw new IllegalStateException("Cannot get gate formats required for testing");
-        }
-        GateFormatRegistry.setFormats(gateFormats);
     }
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

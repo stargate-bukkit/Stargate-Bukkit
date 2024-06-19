@@ -2,7 +2,7 @@
 prefix=[Stargate] 
 
 # Sign Formatting
-signLegacyBungee=Miras Bungee
+signLegacyBungee=Eski Bungee
 signNonFixedL2=Sağ tık
 signNonFixedL3=geçiti kullanmak için
 signRandom=Rastgele
@@ -26,6 +26,7 @@ faultExists=Bu isimde zaten bir geçit mevcut.
 faultFull=Bu ağ dolu!
 faultWorldDeny=%world% dünyasına erişim izniniz yok!
 faultConflict=Bu geçit var olan geçitle çakışmaktadır.
+faultConflictNetwork=Ağ türü zorla belirtilemiyor; aynı adı taşıyan %type% ağıyla çakışacaktır!
 faultFlag=%flags% Bayraklarını kullanmak için yetkin az; portalın bayraksız yaratıldı!
 faultControls=Bu geçidin tasarımında seçtiğiniz bayrakları yerleştirmek için çok az denetim bloğu bulunur.
 faultAddon=Bir eklenti bunu yapmanızı engelledi.
@@ -34,18 +35,18 @@ faultAddon=Bir eklenti bunu yapmanızı engelledi.
 bungeePerms=Bungee geçitleri yapmak için yetkiniz yok!
 bungeeDisabled=Bungeecord desteği aktif değil.
 bungeeLocal=Modern bungee geçitleri aktif değil.
-bungeeLegacySyntax=Miras bungee geçitleri senden sunucunun ve geçitin hedefini belirlemeni gerektirir.
+bungeeLegacySyntax=Eski bungee geçitleri senden sunucunun ve geçitin hedefini belirlemeni gerektirir.
 bungeeInvalidExitNetwork=Bu portal ağı hedef sunucuda artık bulunmamaktadır.
 bungeeInvalidExitGate=Bu portal'ın çıkışı hedef sunucuda artık bulunmamaktadır.
 bungeeProxyOffline=Bu portal şu an kapalı olan bir sunucuda bulunmaktadır.
-bungeeTargetOffline=Proxy şu anda kapalı; bungee portalları geçiçi olarak kapalı.
+bungeeTargetOffline=Vekil sunucu şu anda kapalı; bungee portalları geçiçi olarak kapalı.
 
 # Gate Usage
 tpSuccess=Işınlanıldı!
 tpDestInvalid=Geçersiz Hedef!
 tpEmptyNet=Hedef listesi boş!
 tpOccupied=Şu anda bu portalı başka bir oyuncu kullanıyor; birkaç dakika sonra tekrar deneyin.
-tpPastBorder=Varış noktası Worldborder dışında!
+tpPastBorder=Varış noktası dünya sınırları dışında!
 
 # Access
 conflictPerms=Erişim reddedildi!
@@ -72,9 +73,10 @@ unimplementedIConflict=Yerel ve sunucular arası %name% ağları şu anda birle�
 unimplementedFlag=%flags% bayrak henüz uygulanmadı.
 
 #Parity
+parityCommand=%modules% isimli modül(ler) otomatik olarak kuruluyor! Bu işlem birkaç dakika sürebilir.
 
 #Admin
 adminReload=Yapılandırma yeniden yüklendi!
 adminInfo=Şu anki versiyon %version%. Geliştirici Günlüğü: https://git.io/JD4Qo
-adminHelp=StarGate'in belgelerine https://git.io/JDclf üzerinden ulaşabilirsiniz
-translatedBy=yugurr
+adminHelp=Stargate'in belgelerine https://git.io/JDclf üzerinden ulaşabilirsiniz
+translatedBy=yugurr & axolotlagatsuma

@@ -17,23 +17,21 @@
  */
 package org.sgrewritten.stargate;
 
-import net.md_5.bungee.api.ChatColor;
+import dev.thorinwasher.blockutil.api.BlockUtilAPI;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import org.sgrewritten.stargate.action.SimpleAction;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationAPI;
@@ -45,8 +43,7 @@ import org.sgrewritten.stargate.api.manager.BungeeManager;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
-import org.sgrewritten.stargate.colors.ColorConverter;
-import org.sgrewritten.stargate.colors.ColorNameInterpreter;
+import org.sgrewritten.stargate.colors.ColorRegistry;
 import org.sgrewritten.stargate.command.CommandStargate;
 import org.sgrewritten.stargate.command.StargateTabCompleter;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -55,46 +52,38 @@ import org.sgrewritten.stargate.database.SQLDatabase;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.economy.VaultEconomyManager;
 import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.formatting.StargateLanguageManager;
-import org.sgrewritten.stargate.gate.GateFormat;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
-import org.sgrewritten.stargate.listener.BlockEventListener;
-import org.sgrewritten.stargate.listener.EntityInsideBlockEventListener;
-import org.sgrewritten.stargate.listener.MoveEventListener;
-import org.sgrewritten.stargate.listener.PlayerAdvancementListener;
-import org.sgrewritten.stargate.listener.PlayerEventListener;
-import org.sgrewritten.stargate.listener.PluginEventListener;
-import org.sgrewritten.stargate.listener.StargateBungeePluginMessageListener;
-import org.sgrewritten.stargate.manager.BlockLoggingManager;
-import org.sgrewritten.stargate.manager.CoreProtectManager;
-import org.sgrewritten.stargate.manager.StargateBungeeManager;
-import org.sgrewritten.stargate.manager.StargatePermissionManager;
+import org.sgrewritten.stargate.listener.*;
+import org.sgrewritten.stargate.manager.*;
 import org.sgrewritten.stargate.migration.DataMigrator;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.property.NonLegacyMethod;
+import org.sgrewritten.stargate.property.NonLegacyClass;
 import org.sgrewritten.stargate.property.PluginChannel;
-import org.sgrewritten.stargate.thread.SynchronousPopulator;
-import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.property.StargateConstant;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
+import org.sgrewritten.stargate.thread.task.StargateTask;
 import org.sgrewritten.stargate.util.BStatsHelper;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.FileHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A plugin that allows for instant-teleportation between large distances and across servers.
@@ -112,33 +101,18 @@ import java.util.logging.Level;
 public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAPI {
 
     private static Stargate instance;
-
-
-    private final String DATA_FOLDER = this.getDataFolder().getAbsolutePath();
-    private static final String INTERNAL_GATE_FOLDER = "gates";
-    private static final String INTERNAL_FOLDER = ".internal";
-    private static final String INTERNAL_PROPERTIES_FILE = "stargate.properties";
-    private static final String CONFIG_FILE = "config.yml";
-    private static final int CURRENT_CONFIG_VERSION = 7;
-
-    private static Level logLevel = Level.INFO;//setting before config loads
-    private String gateFolder;
+    private final String dataFolder = this.getDataFolder().getAbsolutePath();
+    private static Level logLevel = StargateConstant.PRE_STARTUP_LOG_LEVEL; //setting before config loads
     private PluginManager pluginManager;
     private StorageAPI storageAPI;
     private LanguageManager languageManager;
     private BungeeManager bungeeManager;
-    private final SynchronousPopulator synchronousTickPopulator = new SynchronousPopulator();
-    private final SynchronousPopulator syncSecPopulator = new SynchronousPopulator();
-    private static final int MAX_TEXT_LENGTH = 13;
-
     private StargateEconomyAPI economyManager;
     private ServicesManager servicesManager;
     private static String serverName;
     private static boolean knowsServerName = false;
 
     private static UUID serverUUID;
-
-    private org.bukkit.ChatColor legacySignColor;
 
     private FileConfiguration config;
 
@@ -148,25 +122,21 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     private PropertiesDatabase storedProperties;
 
-    private static final FileConfiguration staticConfig = new StargateYamlConfiguration();
+    private static final FileConfiguration EMPTY_CONFIG = new StargateYamlConfiguration();
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
-    private ChatColor defaultTextColor;
-    private ChatColor defaultPointerColor;
-    private DyeColor defaultDyeColor;
-    private BukkitTask asyncCycleThroughTask;
 
 
     @Override
     public void onEnable() {
         try {
-            instance = this;
-            if (!new File(this.getDataFolder(), CONFIG_FILE).exists()) {
+            Stargate.setInstance(this);
+            if (!new File(this.getDataFolder(), StargateConstant.CONFIG_FILE).exists()) {
                 super.saveDefaultConfig();
             }
             fetchServerId();
-            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(DATA_FOLDER, INTERNAL_FOLDER, INTERNAL_PROPERTIES_FILE));
+            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(dataFolder, StargateConstant.INTERNAL_FOLDER, StargateConstant.INTERNAL_PROPERTIES_FILE));
             this.setupManagers();
             boolean hasMigrated = false;
             try {
@@ -181,37 +151,68 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
             }
 
             pluginManager = getServer().getPluginManager();
+
             registerListeners();
-            BukkitScheduler scheduler = getServer().getScheduler();
-            scheduler.runTaskTimer(this, synchronousTickPopulator, 0L, 1L);
-            scheduler.runTaskTimer(this, syncSecPopulator, 0L, 20L);
-            ThreadHelper.setAsyncQueueEnabled(true);
-            this.asyncCycleThroughTask = scheduler.runTaskAsynchronously(this, ThreadHelper::cycleThroughAsyncQueue);
+            StargateRegionTask.startPopulator(this);
+            StargateQueuedAsyncTask.enableAsyncQueue();
             registerCommands();
+            sendWarningMessages();
 
             //Register bStats metrics
             int pluginId = 13629;
             BStatsHelper.registerMetrics(pluginId, this, getRegistry());
             servicesManager = this.getServer().getServicesManager();
             servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-        } catch (StargateInitializationException | IOException | SQLException e) {
+            if (NonLegacyClass.BLOCK_UTIL.isImplemented()) {
+                RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
+                BlockDropManager.setProvider(blockUtilProvider);
+            }
+
+        } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
     }
 
-    private void setupManagers() throws StargateInitializationException, SQLException, IOException {
-        String LANGUAGE_FOLDER = "lang";
-        languageManager = new StargateLanguageManager(new File(DATA_FOLDER, LANGUAGE_FOLDER));
+    private static void setInstance(@Nullable Stargate stargate) {
+        Stargate.instance = stargate;
+    }
+
+    private void sendWarningMessages() {
+        if ("true".equals(storedProperties.getProperty(StoredProperty.PARITY_UPGRADES_AVAILABLE))) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/parityMessage.txt")) {
+                Stargate.log(Level.WARNING, "\n" + FileHelper.readStreamToString(inputStream));
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        }
+        String scheduledGateClearingString = storedProperties.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
+        if (scheduledGateClearingString != null && Long.parseLong(scheduledGateClearingString) > System.currentTimeMillis()) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/gateClearingMessage.txt")) {
+                Date date = new Date(Long.parseLong(scheduledGateClearingString));
+                String dateString = date.toString();
+                String unformattedMessage = FileHelper.readStreamToString(inputStream);
+                String message = unformattedMessage.replace("%time%", dateString);
+                message = message.replace("%gateFormats%", this.storageAPI.getScheduledGatesClearing().toString());
+                Stargate.log(Level.WARNING, message);
+            } catch (IOException e) {
+                Stargate.log(e);
+            }
+        }
+    }
+
+    private void setupManagers() throws StargateInitializationException, SQLException, IOException, URISyntaxException {
+        String languageFolder = "lang";
+        languageManager = new StargateLanguageManager(new File(dataFolder, languageFolder));
         economyManager = new VaultEconomyManager(languageManager);
         database = DatabaseHelper.loadDatabase(this);
-        storageAPI = new SQLDatabase(database);
+        storageAPI = new SQLDatabase(database, storedProperties);
         blockHandlerResolver = new BlockHandlerResolver(storageAPI);
         registry = new StargateRegistry(storageAPI, blockHandlerResolver);
         networkManager = new StargateNetworkManager(registry, storageAPI);
         bungeeManager = new StargateBungeeManager(this.getRegistry(), this.getLanguageManager(), this.getNetworkManager());
         blockLogger = new CoreProtectManager();
-        loadGateFormats();
+        GateFormatRegistry.loadGateFormats(this.getDataFolder());
     }
 
     /**
@@ -234,85 +235,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     /**
-     * Gets the current version of the Stargate configuration
-     *
-     * @return <p>The current version of the Stargate configuration</p>
-     */
-    public static int getCurrentConfigVersion() {
-        return CURRENT_CONFIG_VERSION;
-    }
-
-    /**
      * Gets the absolute path to Stargate's data folder
      *
      * @return <p>The absolute path to the data folder</p>
      */
     public String getAbsoluteDataFolder() {
-        return DATA_FOLDER;
-    }
-
-    /**
-     * Gets the gate folder where all .gate files are stored
-     *
-     * @return <p>The gate folder</p>
-     */
-    public String getGateFolder() {
-        return gateFolder;
-    }
-
-    /**
-     * Adds a 1-tick action
-     *
-     * <p>The task is added to a queue which is processed every tick. Should be used in tasks that need to be finished
-     * within a short time frame</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousTickAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().synchronousTickPopulator.addAction(action);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action <p>The action to add</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, false);
-    }
-
-    /**
-     * Adds a 1-second action
-     *
-     * <p>The task is added to a queue which is processed every second (20 ticks). Should be used in delayed actions</p>
-     *
-     * @param action   <p>The action to add</p>
-     * @param isBungee <p>Whether the action relies on the server name being known and should be put in the bungee queue</p>
-     */
-    public static void addSynchronousSecAction(SimpleAction action, boolean isBungee) {
-        if (getInstance() == null) {
-            return;
-        }
-        getInstance().syncSecPopulator.addAction(action, isBungee);
-    }
-
-    /**
-     * Gets the max text length which will fit on a sign
-     *
-     * <p>The string length of a name consisting of only 'i'. This will fill a sign (including {@literal <>})</p>
-     *
-     * @return <p>The max text length which will fit on a sign</p>
-     */
-    public static int getMaxTextLength() {
-        return MAX_TEXT_LENGTH;
+        return dataFolder;
     }
 
     /**
@@ -370,53 +298,6 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     }
 
     /**
-     * Gets the default color used for light signs with legacy coloring
-     *
-     * @return <p>The default legacy color used for light signs</p>
-     */
-    public org.bukkit.ChatColor getLegacySignColor() {
-        return this.legacySignColor;
-    }
-
-    public static ChatColor getDefaultPointerColor() {
-        if (instance == null) {
-            return ChatColor.WHITE;
-        }
-        return instance.defaultPointerColor;
-    }
-
-    public static ChatColor getDefaultTextColor() {
-        if (instance == null) {
-            return ChatColor.BLACK;
-        }
-        return instance.defaultTextColor;
-    }
-
-    public static DyeColor getDefaultDyeColor() {
-        if (instance == null) {
-            return DyeColor.BLACK;
-        }
-        return instance.defaultDyeColor;
-    }
-
-    private void loadColors() {
-        try {
-            if (!NonLegacyMethod.CHAT_COLOR.isImplemented()) {
-                logMessage(Level.INFO, "Default stargate coloring is not supported on your current server implementation");
-                this.legacySignColor = org.bukkit.ChatColor.valueOf(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR).toUpperCase());
-                return;
-            }
-            String defaultColorString = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_SIGN_COLOR);
-            this.defaultTextColor = ColorNameInterpreter.getDefaultTextColor(defaultColorString);
-            this.defaultPointerColor = ColorNameInterpreter.getDefaultPointerColor(defaultColorString);
-            this.defaultDyeColor = ColorConverter.getClosestDyeColor(defaultTextColor);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            Stargate.log(e);
-            Stargate.log(Level.WARNING, "Invalid colors for sign text. Using default colors instead...");
-        }
-    }
-
-    /**
      * Registers all necessary listeners for this plugin
      */
     private void registerListeners() {
@@ -424,64 +305,42 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
         pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager(), this.getStorageAPI()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager(), getBlockLoggerManager()), this);
-        if (NonLegacyMethod.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
+        if (NonLegacyClass.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
         }
-        if (NonLegacyMethod.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
+        if (NonLegacyClass.ENTITY_INSIDE_BLOCK_EVENT.isImplemented()) {
             pluginManager.registerEvents(new EntityInsideBlockEventListener(getRegistry()), this);
         }
-    }
-
-    /**
-     * Saves all the default gate designs to the gate folder
-     *
-     * @throws IOException <p>If unable to read or write the default gates</p>
-     */
-    private void saveDefaultGates() throws IOException {
-        //TODO is there a way to check all files in a resource-folder? Possible solution seems unnecessarily complex
-        String[] gateList = {"nether.gate", "water.gate", "wool.gate", "end.gate"};
-        File directory = new File(this.getDataFolder(), this.getGateFolder());
-        if (!directory.exists() && !directory.mkdirs()) {
-            Stargate.log(Level.SEVERE, "Could not make gates directory");
-        }
-        for (String gateName : gateList) {
-            File fileToWrite = new File(directory, gateName);
-            if (!fileToWrite.exists()) {
-                InputStream stream = this.getResource(INTERNAL_GATE_FOLDER + "/" + gateName);
-                if (stream == null) {
-                    Stargate.log(Level.WARNING, "Unable to read internal gate file " + gateName);
-                    continue;
-                }
-                stream.transferTo(new FileOutputStream(fileToWrite));
-            }
+        if (NonLegacyClass.MULTI_BLOCK_CHANGE_EVENT.isImplemented()) {
+            pluginManager.registerEvents(new BKCommonLibListener(getRegistry(), getNetworkManager()), this);
         }
     }
 
     /**
      * Migrates data files and configuration files if necessary
      *
+     * @return <p>Whether the database does not need to be loaded</p>
      * @throws IOException                   <p>If unable to load or save a configuration file</p>
      * @throws InvalidConfigurationException <p>If unable to save the new configuration</p>
      * @throws SQLException                  <p>If unable to initialize the Portal Database API</p>
      */
-    private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException {
-        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), CONFIG_FILE), this.getServer(), this.getStoredPropertiesAPI());
+    private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException, URISyntaxException {
+        DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
 
         if (dataMigrator.isMigrationNecessary()) {
             File debugDirectory = new File(this.getDataFolder(), "debug");
             if (!debugDirectory.isDirectory() && !debugDirectory.mkdir()) {
                 throw new IOException("Could not create directory: " + debugDirectory);
             }
-            FileUtils.copyFile(new File(this.getDataFolder(), CONFIG_FILE), new File(debugDirectory, CONFIG_FILE + ".old"));
+            FileUtils.copyFile(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), new File(debugDirectory, StargateConstant.CONFIG_FILE + ".old"));
             Map<String, Object> updatedConfig = dataMigrator.getUpdatedConfig();
-            this.saveResource(CONFIG_FILE, true);
+            this.saveResource(StargateConstant.CONFIG_FILE, true);
             this.reloadConfig();
             dataMigrator.updateFileConfiguration(getConfig(), updatedConfig);
             this.reloadConfig();
-            this.loadGateFormats();
+            GateFormatRegistry.loadGateFormats(this.getDataFolder());
             this.setupManagers();
-            dataMigrator.run(database, this);
-            return true;
+            return !dataMigrator.run(database, this);
         }
         return false;
     }
@@ -498,7 +357,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     public void reloadConfig() {
         config = new StargateYamlConfiguration();
         try {
-            config.load(new File(this.getDataFolder(), CONFIG_FILE));
+            config.load(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE));
         } catch (IOException | InvalidConfigurationException e) {
             Stargate.log(e);
         }
@@ -507,21 +366,9 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     @Override
     public void saveConfig() {
         try {
-            config.save(new File(this.getDataFolder(), CONFIG_FILE));
+            config.save(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE));
         } catch (IOException e) {
             Stargate.log(e);
-        }
-    }
-
-    private void loadGateFormats() throws IOException {
-        this.gateFolder = ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER);
-        saveDefaultGates();
-        List<GateFormat> gateFormats = GateFormatHandler.loadGateFormats(new File(this.getDataFolder(), this.getGateFolder()));
-        if (gateFormats == null) {
-            log(Level.SEVERE, "Unable to load gate formats from the gate format folder");
-            GateFormatRegistry.setFormats(new ArrayList<>());
-        } else {
-            GateFormatRegistry.setFormats(gateFormats);
         }
     }
 
@@ -546,26 +393,25 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
         try {
             load();
-            loadGateFormats();
-            if (storageAPI instanceof SQLDatabase) {
-                SQLDatabaseAPI database = DatabaseHelper.loadDatabase(this);
-                ((SQLDatabase) storageAPI).load(database);
+            GateFormatRegistry.loadGateFormats(this.getDataFolder());
+            if (storageAPI instanceof SQLDatabase sqlDatabase) {
+                sqlDatabase.load(DatabaseHelper.loadDatabase(this));
             }
-            registry.clear(this);
+            registry.clear();
             networkManager.loadPortals(this);
             economyManager.setupEconomy();
-        } catch (StargateInitializationException | IOException | SQLException e) {
+        } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
             Stargate.log(e);
             getServer().getPluginManager().disablePlugin(this);
         }
     }
 
     private void load() throws StargateInitializationException {
-        loadColors();
+        ColorRegistry.loadDefaultColorsFromConfig();
         fetchServerId();
         blockLogger.setUpLogging();
         String defaultNetwork = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        if (defaultNetwork.length() >= Stargate.MAX_TEXT_LENGTH) {
+        if (defaultNetwork.length() >= StargateConstant.MAX_TEXT_LENGTH) {
             throw new StargateInitializationException("Invalid configuration name for default network, '" + defaultNetwork + "' name too long");
         }
         if (defaultNetwork.isBlank()) {
@@ -587,7 +433,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private void fetchServerId() {
 
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
-            BungeeHelper.getServerId(DATA_FOLDER, INTERNAL_FOLDER);
+            BungeeHelper.getServerId(dataFolder, StargateConstant.INTERNAL_FOLDER);
         }
     }
 
@@ -606,50 +452,71 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        /*
-         * Replacement for legacy, which used:
-         * methodPortal.closeAllGates(this); Portal.clearGates(); managedWorlds.clear();
-         */
-        synchronousTickPopulator.clear();
-        syncSecPopulator.clear();
-        ThreadHelper.setAsyncQueueEnabled(false);
+        StargateQueuedAsyncTask.disableAsyncQueue();
+        StargateTask.forceRunAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.unregisterOutgoingPluginChannel(this);
             messenger.unregisterIncomingPluginChannel(this);
         }
-        getServer().getScheduler().cancelTasks(this);
 
-        instance = null;
+        if (NonLegacyClass.REGIONIZED_SERVER.isImplemented()) {
+            getServer().getGlobalRegionScheduler().cancelTasks(this);
+        } else {
+            getServer().getScheduler().cancelTasks(this);
+        }
+        setInstance(null);
+
         if (!ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             return;
         }
         servicesManager.unregisterAll(this);
     }
 
+    /**
+     * Log an exception at the WARNING level
+     *
+     * @param throwable <p>THe exception to log</p>
+     */
     public static void log(Throwable throwable) {
         Stargate.log(Level.WARNING, throwable);
     }
 
+    /**
+     * Log an exception at the given level
+     *
+     * @param logLevel  <p>The level to log on</p>
+     * @param throwable <p>The exception to log</p>
+     */
     public static void log(Level logLevel, Throwable throwable) {
         if (throwable == null) {
             return;
         }
-        Stargate.log(logLevel, throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-        Stargate.logError(logLevel, throwable);
+        StringBuilder exceptionBuilder = new StringBuilder(throwable.getClass().getName() + (throwable.getMessage() == null ? "" : ": " + throwable.getMessage()) + "\n");
+        exceptionBuilder.append(Stargate.getStackTrace(throwable));
         while (throwable.getCause() != null) {
             throwable = throwable.getCause();
-            Stargate.log(logLevel, "Caused by: " + throwable.getClass().getName() + (throwable.getMessage() == null ? "" : " : " + throwable.getMessage()));
-            logError(logLevel, throwable);
+            exceptionBuilder.append("Caused by: ").append(throwable.getClass().getName());
+            exceptionBuilder.append(throwable.getMessage() == null ? "" : ": " + throwable.getMessage()).append("\n");
+            exceptionBuilder.append(getStackTrace(throwable));
         }
+        Stargate.log(logLevel, exceptionBuilder.toString());
     }
 
-    private static void logError(Level logLevel, Throwable throwable) {
+    private static String getStackTrace(Throwable throwable) {
+        StringBuilder builder = new StringBuilder();
         for (StackTraceElement element : throwable.getStackTrace()) {
-            Stargate.log(logLevel, "\t at " + element.toString());
+            builder.append("\t at ").append(element.toString()).append("\n");
         }
+        return builder.toString();
     }
 
+    /**
+     * Log any message at the given level
+     *
+     * @param priorityLevel <p>The log level to log the message on</p>
+     * @param message       <p>The message to log</p>
+     */
     public static void log(Level priorityLevel, String message) {
         if (priorityLevel.intValue() < Stargate.logLevel.intValue()) {
             return;
@@ -657,7 +524,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         if (instance != null) {
             instance.logMessage(priorityLevel, message);
         } else {
-            System.out.println("[" + priorityLevel + "]: " + message);
+            Logger.getLogger(Stargate.class.getName()).log(priorityLevel, message);
         }
     }
 
@@ -679,6 +546,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         return instance;
     }
 
+    /**
+     * Log any message at the given level
+     *
+     * @param priorityLevel <p>The log level to log the message on</p>
+     * @param message       <p>The message to log</p>
+     */
     public void logMessage(Level priorityLevel, String message) {
         if (priorityLevel.intValue() < logLevel.intValue()) {
             return;
@@ -690,11 +563,14 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    /**
+     * @return <p>Get the configuration of stargate, or an empty config</p>
+     */
     public static FileConfiguration getFileConfiguration() {
         if (instance != null) {
             return instance.getConfig();
         } else {
-            return staticConfig;
+            return EMPTY_CONFIG;
         }
     }
 
@@ -709,6 +585,10 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         }
     }
 
+    /**
+     * Static access of the database interface, will throw null pointer exception if stargate has not been initialized
+     * @return <p>A storage API instance</p>
+     */
     public static StorageAPI getStorageAPIStatic() {
         return instance.storageAPI;
     }

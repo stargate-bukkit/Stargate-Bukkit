@@ -9,8 +9,17 @@ import java.net.URL;
 
 public class WebHelper {
 
+    private WebHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Download file from the web
+     * @param link <p>URL for web address to fetch form</p>
+     * @param file <p>File location to save to</p>
+     * @throws IOException <p>If unable to download the file</p>
+     */
     public static void downloadFile(String link, File file) throws IOException {
-        OutputStream os = null;
         URL url = new URL(link);
         try (InputStream inputStream = url.openStream()) {
             try (OutputStream outputStream = new FileOutputStream(file)) {

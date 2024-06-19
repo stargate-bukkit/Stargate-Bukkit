@@ -23,6 +23,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public final class FileHelper {
     private static final String UTF8_BOM = "\uFEFF";
 
     private FileHelper() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     /**
@@ -122,12 +123,12 @@ public final class FileHelper {
                 return;
             }
             readPairs = FileHelper.readKeyValuePairs(FileHelper.getBufferedReaderFromInputStream(stream));
-            for (String key : readPairs.keySet()) {
-                String value = readPairs.get(key);
+            for (Map.Entry<String, String> entry : readPairs.entrySet()) {
+                String value = entry.getValue();
                 if (value.trim().isEmpty()) {
-                    targetMap.put(key, null);
+                    targetMap.put(entry.getKey(), null);
                 } else {
-                    targetMap.put(key, readPairs.get(key));
+                    targetMap.put(entry.getKey(), value);
                 }
             }
         } catch (IOException e) {
@@ -156,7 +157,7 @@ public final class FileHelper {
     public static List<Path> listFilesOfInternalDirectory(String directory) throws IOException, URISyntaxException {
         URL directoryURL = Stargate.class.getResource(directory);
         if (directoryURL == null) {
-            return null;
+            return new ArrayList<>();
         }
         URI uri = directoryURL.toURI();
         FileSystem fileSystem = null;
@@ -250,10 +251,8 @@ public final class FileHelper {
             }
         }
         File hiddenFile = new File(path, fileName);
-        if (!hiddenFile.exists()) {
-            if (!hiddenFile.createNewFile()) {
-                throw new FileNotFoundException(fileName + " was not found and could not be created");
-            }
+        if (!hiddenFile.exists() && !hiddenFile.createNewFile()) {
+            throw new FileNotFoundException(fileName + " was not found and could not be created");
         }
         return hiddenFile;
     }

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class BungeeHelperTest {
 
     @Test
-    public void getServerIdTest() {
+    void getServerIdTest() {
         String dataFolder = "src/test/resources";
         String internalFolder = "internal";
         BungeeHelper.getServerId(dataFolder, internalFolder);

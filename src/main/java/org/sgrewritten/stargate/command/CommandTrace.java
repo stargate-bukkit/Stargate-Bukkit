@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.property.CommandPermission;
 import org.sgrewritten.stargate.util.FileHelper;
 
@@ -75,7 +76,7 @@ public class CommandTrace implements CommandExecutor {
     }
 
     private String getGates() {
-        File dir = new File(Stargate.getInstance().getAbsoluteDataFolder(), Stargate.getInstance().getGateFolder());
+        File dir = new File(Stargate.getInstance().getAbsoluteDataFolder(), ConfigurationHelper.getString(ConfigurationOption.GATE_FOLDER));
         File[] files = dir.exists() ? dir.listFiles((directory, name) -> (name.endsWith(".gate") || name.endsWith(".gate.invalid"))) : new File[0];
         StringBuilder stringBuilder = new StringBuilder();
         if (files == null) {

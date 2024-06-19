@@ -77,5 +77,5 @@ parityCommand=Automatická instalace %modules% modulů! Může to trvat pár min
 #Admin
 adminReload=Konfigurace obnovena!
 adminInfo=Spuštěná verze %version%. Seznam změn : https://git.io/JD4Qo
-adminHelp=Dokumentace k StarGate je k dispozici na https://git.io/JDclf
+adminHelp=Dokumentace k Stargate je k dispozici na https://git.io/JDclf
 translatedBy=Domavatus

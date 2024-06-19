@@ -1,18 +1,38 @@
 # General Styling
+prefix=[Портал] 
 
 # Sign Formatting
+signNonFixedL2=Right click
+signNonFixedL3=to use gate
+signRandom=Random
+signDisconnected=Disconnected
 
 # Gate Actions
+gateDestroy=Портал уничтожен!
+gateCreatePersonal=Создание портала с персональной сетью.
 
 # Gate Construction Problems
+faultNetwork=У вас нет доступа к этой сети порталов!
+faultLayout=У вас нет доступа к размещению портала!
+faultLength=Имя слишком короткое или слишком длинное!
+faultExists=Портал с таким именем уже существует!
+faultFull=Эта сеть порталов заполнена!
+faultConflict=Портал конфликтует с уже существующим порталом.
 
 # Bungee Problems
 
 # Gate Usage
+tpSuccess=Вы перемещены!
+tpDestInvalid=Недопустимый пункт назначения!
+tpEmptyNet=Список пунктов назначения пуст!
 
 # Access
+conflictPerms=Доступ запрещен!
 
 # Economy
+ecoDeduct=Вычтено %cost%.
+ecoObtain=Получено %cost% с портала %portal%!
+ecoInsolvent=Недостаточно средств!
 
 #Terminology
 
@@ -21,3 +41,4 @@
 #Parity
 
 #Admin
+translatedBy=ckr@jk

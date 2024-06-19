@@ -1,18 +1,22 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.sgrewritten.stargate.Stargate;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 
-import java.util.logging.Level;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 /**
  * A helper class for dealing with buttons
  */
 public final class ButtonHelper {
-
-    private static final Material DEFAULT_BUTTON = Material.STONE_BUTTON;
-    private static final Material DEFAULT_WATER_BUTTON = Material.DEAD_TUBE_CORAL_WALL_FAN;
+    private static final List<Material> BUTTONS = List.copyOf(Tag.BUTTONS.getValues());
+    private static final List<Material> CORAL_WALL_FANS = Stream.concat(Tag.WALL_CORALS.getValues().stream(), getDeadWallCoralWallFans()).toList();
+    private static final Random RANDOM = new Random();
 
     private ButtonHelper() {
 
@@ -25,34 +29,45 @@ public final class ButtonHelper {
      * @return <p>True if the material is a button</p>
      */
     public static boolean isButton(Material material) {
-        return Tag.BUTTONS.isTagged(material) || Tag.WALL_CORALS.isTagged(material) ||
-                material == Material.DEAD_TUBE_CORAL_WALL_FAN ||
-                material == Material.DEAD_HORN_CORAL_WALL_FAN ||
-                material == Material.DEAD_FIRE_CORAL_WALL_FAN ||
-                material == Material.DEAD_BUBBLE_CORAL_WALL_FAN ||
-                material == Material.DEAD_BRAIN_CORAL_WALL_FAN;
+        return BUTTONS.contains(material) || CORAL_WALL_FANS.contains(material);
     }
 
 
     /**
      * Gets the button material to use for this gate
      *
-     * @param portalClosedMaterial <p>The iris material used by this gate when closed</p>
+     * @param locationToGenerateButton <p>The location of the button to be generated</p>
      * @return <p>The button material to use for this gate</p>
      */
-    public static Material getButtonMaterial(Material portalClosedMaterial) {
-        //TODO: Add support for using solid blocks as the gate-closed material for underwater portals
-        switch (portalClosedMaterial) {
-            case AIR:
-            case CAVE_AIR:
-            case VOID_AIR:
-                return DEFAULT_BUTTON;
-            case WATER:
-                return DEFAULT_WATER_BUTTON;
-            default:
-                Stargate.log(Level.FINE, portalClosedMaterial.name() +
-                        " is currently not supported as a portal closed material");
-                return DEFAULT_BUTTON;
+    public static Material getButtonMaterial(Location locationToGenerateButton) {
+        Material typeToReplace = locationToGenerateButton.getBlock().getType();
+        if (typeToReplace.isAir() || typeToReplace == Material.LIGHT) {
+            return getOverWaterButtonMaterial();
         }
+        if (typeToReplace == Material.WATER) {
+            return getUnderWaterButtonMaterial();
+        }
+        BlockData blockData = locationToGenerateButton.getBlock().getBlockData();
+        if (blockData instanceof Waterlogged waterlogged) {
+            if (waterlogged.isWaterlogged()) {
+                return getUnderWaterButtonMaterial();
+            } else {
+                return getOverWaterButtonMaterial();
+            }
+        }
+        return getOverWaterButtonMaterial();
+    }
+
+    private static Material getOverWaterButtonMaterial() {
+        return BUTTONS.get(RANDOM.nextInt(BUTTONS.size()));
+    }
+
+    private static Material getUnderWaterButtonMaterial() {
+        return CORAL_WALL_FANS.get(RANDOM.nextInt(CORAL_WALL_FANS.size()));
+    }
+
+    private static Stream<Material> getDeadWallCoralWallFans() {
+        return Stream.of(Material.DEAD_TUBE_CORAL_WALL_FAN, Material.DEAD_HORN_CORAL_WALL_FAN,
+                Material.DEAD_FIRE_CORAL_WALL_FAN, Material.DEAD_BUBBLE_CORAL_WALL_FAN, Material.DEAD_BRAIN_CORAL_WALL_FAN);
     }
 }

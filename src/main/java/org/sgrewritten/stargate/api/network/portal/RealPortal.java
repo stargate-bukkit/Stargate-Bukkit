@@ -4,24 +4,30 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.sgrewritten.stargate.api.MetadataHolder;
 import org.sgrewritten.stargate.api.gate.GateAPI;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A real portal with a physical sign that is located on this server
  */
 @SuppressWarnings("unused")
-public interface RealPortal extends Portal {
+public interface RealPortal extends Portal, MetadataHolder {
 
     /**
-     * Gets the line to be drawn for the signs
+     * Open this portal without any checks
      *
-     * @return <p> Lines to be drawn for the gate owned by this portal</p>
+     * @param destination <p>The destination to open to</p>
+     * @param actor       <p>The player which opened this portal</p>
      */
-    SignLine[] getDrawnControlLines();
+    void open(@Nullable Portal destination, @Nullable Player actor);
 
     /**
      * Updates the color of this portal's sign
@@ -31,21 +37,7 @@ public interface RealPortal extends Portal {
      *
      * @param color <p>Color to change the sign text to. If null, then the default color will be used</p>
      */
-    void setSignColor(DyeColor color);
-
-    /**
-     * The action to be run when this portal's button is clicked
-     *
-     * @param event <p>The player interact event that triggered the button click</p>
-     */
-    void onButtonClick(PlayerInteractEvent event);
-
-    /**
-     * The action to be triggered if this portal sign is interacted with
-     *
-     * @param event <p>The triggered player interact event</p>
-     */
-    void onSignClick(PlayerInteractEvent event);
+    void setSignColor(DyeColor color, PortalPosition portalPosition);
 
 
     /**
@@ -85,18 +77,15 @@ public interface RealPortal extends Portal {
     List<Location> getPortalPosition(PositionType type);
 
     /**
-     * Set metadata for this portal
-     *
-     * @param data <p> The meta data to set </p>
+     * @return <p>The uuid activator or null if portal is not active (or always on)</p>
      */
-    void setMetaData(String data);
+    @Nullable
+    UUID getActivatorUUID();
 
     /**
-     * Get metadata for this portal
-     *
-     * @return <p> The meta data of this portal </p>
+     * Deactivate this portal
      */
-    String getMetaData();
+    void deactivate();
 
     /**
      * Get the facing entities exit from this portal.
@@ -105,5 +94,47 @@ public interface RealPortal extends Portal {
      */
     BlockFace getExitFacing();
 
+    /**
+     * @return <p>The behavior which defines this portal destination selection and sign text</p>
+     */
+    PortalBehavior getBehavior();
 
+    /**
+     * Modify the behavior this portal uses
+     *
+     * @param portalBehavior <p>New behavior this portal should follow</p>
+     */
+    void setBehavior(PortalBehavior portalBehavior);
+
+    /**
+     * Redraw all signs in this portal
+     */
+    void redrawSigns();
+
+    /**
+     * Activates this portal for the given player during internally specified time
+     *
+     * @param player <p>The player to activate this portal for</p>
+     */
+    void activate(Player player);
+
+
+    /**
+     * @return <p>True if this portal is active</p>
+     */
+    boolean isActive();
+
+    /**
+     * Teleports the given entity to given destination
+     *
+     * @param target <p>The entity to teleport</p>
+     */
+    void doTeleport(@NotNull Entity target, @Nullable Portal destination);
+
+    /**
+     * Teleports the given entity to stored destination
+     *
+     * @param target <p>The entity to teleport</p>
+     */
+    void doTeleport(@NotNull Entity target);
 }

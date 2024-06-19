@@ -12,66 +12,42 @@ import java.util.logging.Level;
 public enum NonLegacyMethod {
 
     /**
-     * The bungee ChatColor of() method
-     *
-     * <p>This was added to Spigot to allow RGB coloring</p>
-     */
-    CHAT_COLOR("net.md_5.bungee.api.ChatColor", "of", String.class),
-
-    /**
      * The powered minecart pushX method
      *
      * <p>This was added to Paper to change a powered minecart's x-push</p>
      */
-    PUSH_X("org.bukkit.entity.minecart.PoweredMinecart", "setPushX", double.class),
+    PUSH_X(NonLegacyClass.POWERED_MINECART, "setPushX", double.class),
 
     /**
      * The powered minecart pushZ method
      *
      * <p>This was added to Paper to change a powered minecart's z-push</p>
      */
-    PUSH_Z("org.bukkit.entity.minecart.PoweredMinecart", "setPushZ", double.class),
+    PUSH_Z(NonLegacyClass.POWERED_MINECART, "setPushZ", double.class),
 
     /**
      * The world get getMinHeight() method
      *
      * <p> This was added as a cause of the cave update </p>
      */
-    GET_WORLD_MIN("org.bukkit.World", "getMinHeight"),
+    GET_WORLD_MIN(NonLegacyClass.WORLD, "getMinHeight"),
 
     /**
      * The world get getMaxHeight() method
      *
      * <p> This was added as a cause of the cave update </p>
      */
-    GET_WORLD_MAX("org.bukkit.World", "getMaxHeight"),
-
-    /**
-     * The paper PlayerAdvancementCriterionGrantEvent getPlayer() method
-     *
-     * <p> PlayerAdvancementCriterionGrantEvent was added to enable cancelling advancements </p>
-     */
-    PLAYER_ADVANCEMENT_CRITERION_EVENT("com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent", "getPlayer"),
-
-    /**
-     * The paper EntityInsideBlockEven getBlock() method
-     *
-     * <p> EntityInsideBlockEvent was added to allow cancelling certain blocks from getting triggered by entities </p>
-     */
-    ENTITY_INSIDE_BLOCK_EVENT("io.papermc.paper.event.entity.EntityInsideBlockEvent", "getBlock"),
+    GET_WORLD_MAX(NonLegacyClass.WORLD, "getMaxHeight"),
 
     /**
      * The powered minecart getFuel method
      *
      * <p>This was added to Paper to change a powered minecart's z-push</p>
      */
-    GET_FUEL("org.bukkit.entity.minecart.PoweredMinecart", "getFuel"),
+    GET_FUEL(NonLegacyClass.POWERED_MINECART, "getFuel");
 
-    COMPONENT("net.kyori.adventure.text.Component", "equals", Object.class),
 
-    TWO_SIDED_SIGNS(" org.bukkit.block.sign.SignSide", "equals", Object.class);
-
-    private String classToCheckFor;
+    private NonLegacyClass nonLegacyClass;
     private String methodInClassToCheckFor;
     private Class<?>[] parameters;
     private boolean isImplemented;
@@ -83,11 +59,11 @@ public enum NonLegacyMethod {
      * @param methodInClassToCheckFor <p>The legacy method itself</p>
      * @param parameterTypes          <p>The parameters expected by the method</p>
      */
-    NonLegacyMethod(String classToCheckFor, String methodInClassToCheckFor, Class<?>... parameterTypes) {
+    NonLegacyMethod(NonLegacyClass nonLegacyClass, String methodInClassToCheckFor, Class<?>... parameterTypes) {
         try {
-            Class<?> aClass = Class.forName(classToCheckFor);
+            Class<?> aClass = nonLegacyClass.getRelatedClass();
             aClass.getMethod(methodInClassToCheckFor, parameterTypes);
-            this.classToCheckFor = classToCheckFor;
+            this.nonLegacyClass = nonLegacyClass;
             this.methodInClassToCheckFor = methodInClassToCheckFor;
             this.parameters = parameterTypes;
             isImplemented = true;
@@ -115,7 +91,7 @@ public enum NonLegacyMethod {
     @SuppressWarnings("UnusedReturnValue")
     public Object invoke(Object object, Object... parameters) {
         try {
-            Class<?> aClass = Class.forName(classToCheckFor);
+            Class<?> aClass = nonLegacyClass.getRelatedClass();
             Method method = aClass.getMethod(methodInClassToCheckFor, this.parameters);
             return method.invoke(object, parameters);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |

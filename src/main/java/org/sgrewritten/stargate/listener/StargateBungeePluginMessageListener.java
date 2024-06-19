@@ -92,9 +92,7 @@ public class StargateBungeePluginMessageListener implements PluginMessageListene
                     Stargate.setServerName(in.readUTF());
                     Stargate.setKnowsServerName(!Stargate.getServerName().isEmpty());
                     break;
-                case PLAYER_CONNECT:
-                case PLUGIN_ENABLE:
-                case PLUGIN_DISABLE:
+                case PLAYER_CONNECT, PLUGIN_ENABLE, PLUGIN_DISABLE:
                     break;
                 case NETWORK_CHANGED:
                     bungeeManager.updateNetwork(in.readUTF());

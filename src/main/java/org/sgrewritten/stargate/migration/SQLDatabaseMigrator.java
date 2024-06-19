@@ -16,6 +16,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
+/**
+ * Helps with running sql database migrations by reading sql files.
+ * - Can read multiple queries in the same file
+ * - Can parse already defined stargate SQL statements and run them (in the same file)
+ */
 public class SQLDatabaseMigrator {
 
     private final @NotNull TableNameConfiguration nameConfiguration;
@@ -23,6 +28,12 @@ public class SQLDatabaseMigrator {
     private final boolean interServerEnabled;
     private final @NotNull SQLDatabaseAPI database;
 
+    /**
+     * @param database <p>A database api able to provide sql statements</p>
+     * @param nameConfiguration <p>SQL table name config</p>
+     * @param sqlFilesPath <p>The internal resource path to the SQL files to run</p>
+     * @param interServerEnabled <p>Whether inter server portals are enabled</p>
+     */
     public SQLDatabaseMigrator(@NotNull SQLDatabaseAPI database, @NotNull TableNameConfiguration nameConfiguration, @NotNull String sqlFilesPath, boolean interServerEnabled) {
         this.nameConfiguration = Objects.requireNonNull(nameConfiguration);
         this.sqlFilesPath = Objects.requireNonNull(sqlFilesPath);
@@ -31,6 +42,11 @@ public class SQLDatabaseMigrator {
 
     }
 
+    /**
+     * Run multiple SQL scripts in specified directory (constructor)
+     * @throws SQLException <p>Any sql exception</p>
+     * @throws IOException <p>if unable to read the internal file</p>
+     */
     public void run() throws SQLException, IOException {
         try (Connection connection = database.getConnection()) {
             run(StorageType.LOCAL, connection);

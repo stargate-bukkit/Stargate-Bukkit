@@ -15,6 +15,7 @@ public abstract class CancellableStargatePortalEvent extends StargatePortalEvent
      * Instantiates a new cancellable stargate event
      *
      * @param portal <p>The portal involved in this stargate event</p>
+     * @param async <p>Whether the event is asynchronous</p>
      */
     protected CancellableStargatePortalEvent(@NotNull Portal portal, boolean async) {
         super(portal, async);

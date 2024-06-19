@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.util;
 
-import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
@@ -10,7 +9,6 @@ import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * A helper class for creating a new network
@@ -21,27 +19,23 @@ public final class NetworkCreationHelper {
 
     }
 
+    /**
+     * Get banned network names
+     * @return <p>All banned network names</p>
+     */
     public static Set<String> getBannedNames() {
         Set<String> output = new HashSet<>();
         output.add(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK).toLowerCase());
         return output;
     }
 
+    /**
+     * @return <p>All names taken upp by the default networks</p>
+     */
     public static Set<String> getDefaultNamesTaken() {
         Set<String> output = new HashSet<>();
         output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK).toLowerCase());
-        //output.add(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_TERMINAL_NAME).toLowerCase());
         return output;
-    }
-
-    /**
-     * Gets a player's UUID from the player's name
-     *
-     * @param playerName <p>The name of a player</p>
-     * @return <p>The player's unique ID</p>
-     */
-    public static UUID getPlayerUUID(String playerName) {
-        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
     }
 
     /**

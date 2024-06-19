@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.database;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -9,10 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -27,7 +31,7 @@ public class SQLiteDatabaseTest {
     private static TableNameConfiguration nameConfig;
 
     @BeforeAll
-    public static void setUp() throws SQLException, InvalidStructureException, TranslatableException {
+    public static void setUp() throws SQLException, InvalidStructureException, TranslatableException, GateConflictException, NoFormatFoundException {
         Stargate.log(Level.FINE, "Setting up test data");
         SQLDatabaseAPI database = new SQLiteDatabase(new File("src/test/resources", "test.db"));
         nameConfig = new TableNameConfiguration("SG_Test_", "Server_");
@@ -37,7 +41,7 @@ public class SQLiteDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
         try {
             DatabaseTester.deleteAllTables(nameConfig);
         } finally {
@@ -299,7 +303,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(8)
-    void addAndRemovePortalFlagRelationTest() {
+    void addAndRemovePortalFlagRelationTest() throws PortalLoadException {
         try {
             tester.addAndRemovePortalFlags(StorageType.LOCAL);
         } catch (SQLException e) {
@@ -309,7 +313,7 @@ public class SQLiteDatabaseTest {
 
     @Test
     @Order(8)
-    void addAndRemoveInterPortalFlagRelationTest() {
+    void addAndRemoveInterPortalFlagRelationTest() throws PortalLoadException {
         try {
             tester.addAndRemovePortalFlags(StorageType.INTER_SERVER);
         } catch (SQLException e) {
@@ -360,13 +364,13 @@ public class SQLiteDatabaseTest {
     @Test
     @Order(8)
     void changeNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
-        tester.changeNames(StorageType.LOCAL);
+       Assertions.assertDoesNotThrow(() ->  tester.changeNames(StorageType.LOCAL));
     }
 
     @Test
     @Order(8)
     void changeInterNamesTest() throws StorageWriteException, SQLException, InvalidStructureException, TranslatableException {
-        tester.changeNames(StorageType.INTER_SERVER);
+        Assertions.assertDoesNotThrow(() -> tester.changeNames(StorageType.INTER_SERVER));
     }
 
     @Test

@@ -24,7 +24,7 @@ public abstract class EconomyManager implements EconomyAPI, StargateEconomyAPI {
      *
      * @param languageManager <p>The language manager to use for translations</p>
      */
-    public EconomyManager(LanguageManager languageManager) {
+    protected EconomyManager(LanguageManager languageManager) {
         this.languageManager = languageManager;
     }
 

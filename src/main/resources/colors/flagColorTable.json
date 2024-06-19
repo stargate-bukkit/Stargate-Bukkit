@@ -20,7 +20,7 @@
     "dyeColor": "RED"
   },
   {
-    "flag": "FANCY_INTER_SERVER",
+    "flag": "INTERSERVER",
     "dyeColor": "PURPLE"
   }
 ]

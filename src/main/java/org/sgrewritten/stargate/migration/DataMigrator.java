@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.migration;
 
-import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,6 +8,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.database.SQLDatabaseAPI;
 import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.property.StargateConstant;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,31 +24,32 @@ public class DataMigrator {
     private final File configFile;
     private Map<String, Object> configModifications;
     private final FileConfiguration fileConfig;
-    private final DataMigration[] MIGRATIONS;
+    private final DataMigration[] migrations;
 
     /**
      * Instantiates a new data migrator
      *
      * @param configurationFile <p>The configuration file to migrate to a newer format</p>
-     * @param server            <p>A server object</p>
+     * @param pluginFolder      <p>A server object</p>
      * @throws IOException                   <p>If unable to read or write to a file</p>
      * @throws InvalidConfigurationException <p>If unable to load the given configuration file</p>
      */
-    public DataMigrator(@NotNull File configurationFile, @NotNull Server server, StoredPropertiesAPI storedProperties)
+    public DataMigrator(@NotNull File configurationFile, File pluginFolder, StoredPropertiesAPI storedProperties)
             throws IOException, InvalidConfigurationException {
         // WARNING: Migrators must be defined from oldest to newest to prevent partial
         // migration
-        MIGRATIONS = new DataMigration[]{
-                new DataMigration_1_0_0(server, storedProperties),
-                new DataMigration_1_0_14()
+        migrations = new DataMigration[]{
+                new DataMigration6(pluginFolder, storedProperties),
+                new DataMigration7(),
+                new DataMigration9()
         };
 
         //Not StargateConfiguration, as we don't want to save comments
-        FileConfiguration fileConfig = new YamlConfiguration();
-        fileConfig.load(configurationFile);
-        this.fileConfig = fileConfig;
-        this.configModifications = fileConfig.getValues(true);
-        this.configVersion = fileConfig.getInt("configVersion", 0);
+        FileConfiguration configuration = new YamlConfiguration();
+        configuration.load(configurationFile);
+        this.fileConfig = configuration;
+        this.configModifications = configuration.getValues(true);
+        this.configVersion = configuration.getInt("configVersion", 0);
         this.configFile = configurationFile;
     }
 
@@ -58,7 +59,7 @@ public class DataMigrator {
      * @return <p>True if a migration is necessary</p>
      */
     public boolean isMigrationNecessary() {
-        for (DataMigration migration : MIGRATIONS) {
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 return true;
             }
@@ -74,7 +75,7 @@ public class DataMigrator {
      * @return <p>The update configuration values</p>
      */
     public Map<String, Object> getUpdatedConfig() {
-        for (DataMigration migration : MIGRATIONS) {
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 configModifications = migration.getUpdatedConfigValues(configModifications);
             }
@@ -84,15 +85,23 @@ public class DataMigrator {
 
     /**
      * Runs all relevant config migrations
+     * @param database <p>The stargate database</p>
+     * @param stargateAPI <p>The stargate API</p>
+     * @return <p>Whether data needs to be loaded from the database after migration</p>
      */
-    public void run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
-        for (DataMigration migration : MIGRATIONS) {
+    public boolean run(@NotNull SQLDatabaseAPI database, StargateAPI stargateAPI) {
+        boolean shouldReloadFromDatabase = true;
+        for (DataMigration migration : migrations) {
             if (isMigrationNecessary(migration)) {
                 Stargate.log(Level.INFO, String.format("Running database migration %s -> %s", migration.getVersionFrom(), migration.getVersionTo()));
                 migration.run(database, stargateAPI);
                 configVersion = migration.getConfigVersion();
+                if (migration.willPopulateRegistry()) {
+                    shouldReloadFromDatabase = false;
+                }
             }
         }
+        return shouldReloadFromDatabase;
     }
 
     /**
@@ -106,10 +115,10 @@ public class DataMigrator {
     public void updateFileConfiguration(FileConfiguration config, Map<String, Object> updatedConfig) throws IOException,
             InvalidConfigurationException {
         fileConfig.load(configFile);
-        for (String configKey : updatedConfig.keySet()) {
-            config.set(configKey, updatedConfig.get(configKey));
+        for (Map.Entry<String, Object> entry : updatedConfig.entrySet()) {
+            config.set(entry.getKey(), entry.getValue());
         }
-        config.set("configVersion", Stargate.getCurrentConfigVersion());
+        config.set("configVersion", StargateConstant.CURRENT_CONFIG_VERSION);
         config.save(configFile);
     }
 

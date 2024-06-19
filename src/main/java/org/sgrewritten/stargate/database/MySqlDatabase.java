@@ -116,13 +116,13 @@ public class MySqlDatabase implements SQLDatabaseAPI {
      */
     private HikariConfig setupConfig(DatabaseDriver driver, String address, int port, String database, String username,
                                      String password, boolean useSSL) {
-        HikariConfig config = new HikariConfig();
+        HikariConfig hikariConfig = new HikariConfig();
 
-        config.setJdbcUrl("jdbc:" + driver.getDriver() + "://" + address + ":" + port + "/" + database);
-        config.setUsername(username);
-        config.setPassword(password);
-        config.addDataSourceProperty("useSSL", useSSL);
-        return config;
+        hikariConfig.setJdbcUrl("jdbc:" + driver.getDriver() + "://" + address + ":" + port + "/" + database);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.addDataSourceProperty("useSSL", useSSL);
+        return hikariConfig;
     }
 
     /**
@@ -163,6 +163,7 @@ public class MySqlDatabase implements SQLDatabaseAPI {
         return builder.toString();
     }
 
+    @Override
     public DatabaseDriver getDriver() {
         return driver;
     }

@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.util;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.network.NetworkType;
 
 import javax.annotation.Nullable;
@@ -103,7 +103,7 @@ public final class TranslatableMessageFormatter {
      * @return <p>A string listing the flags</p>
      */
     private static String formatFlagsString(List<PortalFlag> flags) {
-        String characterRepresentation = flags.get(0).getCharacterRepresentation().toString();
+        String characterRepresentation = String.valueOf(flags.get(0).getCharacterRepresentation());
         if (flags.size() < 2) {
             return characterRepresentation;
         } else if (flags.size() == 2) {
@@ -123,11 +123,14 @@ public final class TranslatableMessageFormatter {
      */
     public static String formatUnimplementedConflictMessage(Network interServer, @Nullable Network local, LanguageManager languageManager) {
         String initialMessage = languageManager.getWarningMessage(TranslatableMessage.UNIMPLEMENTED_CONFLICT);
-        String localNetName = (local == null) ? interServer.getName() : local.getName();
         NetworkType localType = (local == null) ? interServer.getType() : local.getType();
 
         String localTypeString = languageManager.getString(localType.getTerminology());
         String interServerTypeString = languageManager.getString(interServer.getType().getTerminology()) + " " + languageManager.getString(TranslatableMessage.FANCY_INTERSERVER);
-        return initialMessage.replaceAll("%name%", interServer.getName()).replaceAll("%type1%", interServerTypeString.toLowerCase()).replaceAll("%type2%", localTypeString.toLowerCase());
+        return initialMessage.replace("%name%", interServer.getName()).replace("%type1%", interServerTypeString.toLowerCase()).replace("%type2%", localTypeString.toLowerCase());
+    }
+
+    public static String formatNetworkType(String message, NetworkType type, LanguageManager languageManager) {
+        return message.replace("%type%", languageManager.getString(type.getTerminology()));
     }
 }

@@ -26,9 +26,7 @@ public class StargateSignDyeChangePortalEvent extends StargatePortalEvent {
     }
 
     /**
-     * The location of the sign
-     *
-     * @return
+     * @return <p>The location of the sign</p>
      */
     public Location getLocation() {
         return this.location;

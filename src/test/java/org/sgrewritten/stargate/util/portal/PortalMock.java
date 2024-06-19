@@ -5,17 +5,19 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargate.gate.GateMock;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 
 import java.util.List;
 import java.util.UUID;
@@ -87,17 +89,12 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public boolean hasFlag(Character flag) {
-        return false;
-    }
-
-    @Override
-    public void addFlag(Character flag) {
+    public void addFlag(PortalFlag flag) {
 
     }
 
     @Override
-    public void removeFlag(Character flag) {
+    public void removeFlag(PortalFlag flag) {
 
     }
 
@@ -114,16 +111,6 @@ public class PortalMock implements RealPortal {
     @Override
     public void updateState() {
 
-    }
-
-    @Override
-    public Portal getDestination() {
-        return null;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return null;
     }
 
     @Override
@@ -152,27 +139,27 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
+    public void doTeleport(@NotNull Entity target, @Nullable Portal destination) {
+
+    }
+
+    @Override
     public boolean isDestroyed() {
         return false;
     }
 
     @Override
-    public SignLine[] getDrawnControlLines() {
-        return null;
-    }
-
-    @Override
-    public void setSignColor(DyeColor color) {
+    public void open(@Nullable Portal destination, @Nullable Player actor) {
 
     }
 
     @Override
-    public void onButtonClick(PlayerInteractEvent event) {
-
-    }
-
-    @Override
-    public void onSignClick(PlayerInteractEvent event) {
+    public void setSignColor(DyeColor color, PortalPosition portalPosition) {
 
     }
 
@@ -197,17 +184,42 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public void setMetaData(String data) {
+    public UUID getActivatorUUID() {
+        return null;
+    }
+
+    @Override
+    public void deactivate() {
 
     }
 
     @Override
-    public String getMetaData() {
+    public void setMetadata(String data) {
+
+    }
+
+    @Override
+    public String getMetadata() {
         return null;
     }
 
     @Override
     public BlockFace getExitFacing() {
         return null;
+    }
+
+    @Override
+    public PortalBehavior getBehavior() {
+        return null;
+    }
+
+    @Override
+    public void setBehavior(PortalBehavior portalBehavior) {
+
+    }
+
+    @Override
+    public void redrawSigns() {
+
     }
 }

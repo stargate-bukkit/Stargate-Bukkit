@@ -1,10 +1,17 @@
 package org.sgrewritten.stargate.util;
 
+import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
 
 public class VectorUtils {
+
+    private VectorUtils(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get all relative blockvectors that represent a position that represent a block adjacent to (0 0 0)
      *
@@ -52,5 +59,27 @@ public class VectorUtils {
      */
     public static double directionalAngleOperator(Vector vector1, Vector vector2) {
         return Math.atan2(vector1.clone().crossProduct(vector2).getY(), vector1.dot(vector2));
+    }
+
+    /**
+     * Convert between two different coordinate systems. In this case from format space to minecraft space
+     * @param topLeft <p>Origo of system in format space</p>
+     * @param vectorOperation <p>Rotations and z axis flips to convert between coordinate systems</p>
+     * @param vector <p>The vector to convert</p>
+     * @return <p>A location in minecraft space</p>
+     */
+    public static Location getLocation(Location topLeft, VectorOperation vectorOperation, Vector vector){
+        return topLeft.clone().add(vectorOperation.performToRealSpaceOperation(vector));
+    }
+
+    /**
+     * Convert between two different coordinate systems. In this case from minecraft space to format space
+     * @param topLeft <p>The origo of format space</p>
+     * @param vectorOperation <p>Rotations and z axis flips to convert between coordinate systems</p>
+     * @param location <p>A location to convert from</p>
+     * @return <p>A vector in format space</p>
+     */
+    public static Vector getFormatSpaceCoordinate(Location topLeft, VectorOperation vectorOperation, Location location){
+        return vectorOperation.performToAbstractSpaceOperation(topLeft.clone().subtract(location).toVector());
     }
 }

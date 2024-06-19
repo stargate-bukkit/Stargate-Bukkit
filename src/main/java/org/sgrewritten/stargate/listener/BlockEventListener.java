@@ -1,31 +1,16 @@
 package org.sgrewritten.stargate.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFertilizeEvent;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.block.SpongeAbsorbEvent;
-import org.bukkit.event.block.TNTPrimeEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -37,6 +22,7 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.event.StargatePreCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
@@ -50,7 +36,6 @@ import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.economy.StargateEconomyAPI;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.LocalisedMessageException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -144,8 +129,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(),
-                stargateAPI)) {
+        if (BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PLACE, event.getBlock().getLocation(), stargateAPI)) {
             event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.DESTROY));
         }
         if (!addonRegistry.hasRegisteredBlockHandler(event.getBlock().getType())) {
@@ -166,32 +150,35 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event) {
+        if (registry.getPortal(event.getBlock().getLocation()) != null) {
+            event.setCancelled(true);
+            return;
+        }
         Player player = event.getPlayer();
-        String line0 = event.getLine(0);
-        String line1 = event.getLine(1);
-        String line2 = event.getLine(2);
-        String line3 = event.getLine(3);
+        String portalName = event.getLine(0);
+        String destinationName = event.getLine(1);
+        String networkOrServerName = event.getLine(2);
+        String flagsString = event.getLine(3);
+        flagsString = flagsString == null ? "" : flagsString;
+
+        if (portalName == null || networkOrServerName == null) {
+            return;
+        }
+
         try {
             GateBuilder gateBuilder = new ImplicitGateBuilder(event.getBlock().getLocation(), registry);
-            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, line3, line0, gateBuilder);
-            portalBuilder.setNetwork(line2);
+            PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, player, portalName).setFlags(flagsString);
+            portalBuilder.setNetwork(networkOrServerName).setGateBuilder(gateBuilder);
             portalBuilder.addEventHandling(player).addMessageReceiver(player).addPermissionCheck(player).setCost(ConfigurationHelper.getDouble(ConfigurationOption.CREATION_COST), player);
-            portalBuilder.setDestination(line1).setAdaptiveGatePositionGeneration(true).setDestinationServerName(line2);
-            portalBuilder.build();
-        } catch (NoFormatFoundException noFormatFoundException) {
-            Stargate.log(Level.FINER, "No Gate format matches");
-        } catch (GateConflictException gateConflictException) {
-            event.getPlayer().sendMessage(languageManager.getErrorMessage(TranslatableMessage.GATE_CONFLICT));
-        } catch (LocalisedMessageException e) {
-            if (e.getPortal() != null) {
-                MessageUtils.sendMessageFromPortal(e.getPortal(), event.getPlayer(), e.getLocalisedMessage(languageManager), e.getMessageType());
-            } else {
-                MessageUtils.sendMessage(event.getPlayer(), e.getLocalisedMessage(languageManager));
+            portalBuilder.setDestination(destinationName).setAdaptiveGatePositionGeneration(true).setDestinationServerName(networkOrServerName);
+            StargatePreCreatePortalEvent builderEvent = new StargatePreCreatePortalEvent(portalBuilder, gateBuilder, event.getLines(), player);
+            Bukkit.getPluginManager().callEvent(builderEvent);
+            if (!builderEvent.isCancelled()) {
+                portalBuilder.build();
             }
-        } catch (TranslatableException e) {
-            event.getPlayer().sendMessage(e.getLocalisedMessage(languageManager));
-        } catch (InvalidStructureException e) {
-            throw new RuntimeException(e);
+        } catch (GateConflictException | TranslatableException suppressed) {
+            Stargate.log(Level.FINEST, suppressed);
+        } catch (InvalidStructureException | NoFormatFoundException ignored) {
         }
     }
 
@@ -202,7 +189,8 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlocks(), stargateAPI);
+        onPistonEvent(event.getBlocks(), event.getDirection(), BlockEventType.BLOCK_PISTON_EXTEND, event);
+        BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_EXTEND, event.getBlock().getRelative(event.getDirection()).getLocation(), stargateAPI);
     }
 
     /**
@@ -212,7 +200,16 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_PISTON_RETRACT, event.getBlocks(), stargateAPI);
+        onPistonEvent(event.getBlocks(), event.getDirection(), BlockEventType.BLOCK_PISTON_RETRACT, event);
+    }
+
+    private void onPistonEvent(List<Block> blocks, BlockFace blockFace, BlockEventType type, Cancellable event) {
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, type, blocks, stargateAPI);
+        if (event.isCancelled()) {
+            return;
+        }
+        List<Block> movedBlocks = blocks.stream().map(block -> block.getRelative(blockFace)).toList();
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, type, movedBlocks, stargateAPI);
     }
 
     /**
@@ -222,8 +219,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.ENTITY_EXPLODE, event.blockList(), stargateAPI);
     }
 
     /**
@@ -233,8 +229,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, ConfigurationHelper.getBoolean(ConfigurationOption.DESTROY_ON_EXPLOSION),
-                event.blockList(), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_EXPLODE, event.blockList(), stargateAPI);
     }
 
     /**
@@ -246,8 +241,7 @@ public class BlockEventListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block toBlock = event.getToBlock();
         Block fromBlock = event.getBlock();
-        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null)
-                || (registry.getPortal(fromBlock.getLocation(), GateStructureType.IRIS) != null)) {
+        if ((registry.getPortal(toBlock.getLocation(), GateStructureType.IRIS) != null) || (registry.getPortal(fromBlock.getLocation()) != null)) {
             event.setCancelled(true);
             return;
         }
@@ -286,8 +280,7 @@ public class BlockEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (!BlockEventType.BLOCK_BURN.canDestroyPortal()
-                && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
+        if (!BlockEventType.BLOCK_BURN.canDestroyPortal() && registry.isNextToPortal(event.getBlock().getLocation(), GateStructureType.FRAME)) {
             event.setCancelled(true);
         }
     }
@@ -304,8 +297,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
-        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE,
-                BlockEventHelper.getBlockList(event.getReplacedBlockStates()), stargateAPI);
+        BlockEventHelper.onAnyMultiBlockChangeEvent(event, BlockEventType.BLOCK_MULTI_PLACE, BlockEventHelper.getBlockList(event.getReplacedBlockStates()), stargateAPI);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -357,8 +349,8 @@ public class BlockEventListener implements Listener {
         BlockEventHelper.onAnyBlockChangeEvent(event, BlockEventType.BLOCK_DISPENSE, dispensedLocation, stargateAPI);
     }
 
-    @EventHandler(priority =  EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onTNTPrime(TNTPrimeEvent tntPrimeEvent){
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTNTPrime(TNTPrimeEvent tntPrimeEvent) {
         BlockEventHelper.onAnyBlockChangeEvent(tntPrimeEvent, BlockEventType.TNT_PRIME, tntPrimeEvent.getBlock().getLocation(), stargateAPI);
     }
 }

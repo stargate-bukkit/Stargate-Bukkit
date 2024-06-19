@@ -35,26 +35,22 @@ import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
-import org.sgrewritten.stargate.exception.name.InvalidNameException;
-import org.sgrewritten.stargate.exception.name.NameConflictException;
-import org.sgrewritten.stargate.exception.name.NameLengthException;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
+import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
+import org.sgrewritten.stargate.property.StargateConstant;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 class BlockEventListenerTest {
@@ -73,14 +69,12 @@ class BlockEventListenerTest {
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock();
-        System.setProperty("bstats.relocatecheck", "false");
+        server = StargateTestHelper.pluginSetup();
         plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         this.stargateAPI = plugin;
         this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
@@ -94,7 +88,7 @@ class BlockEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest
@@ -109,7 +103,7 @@ class BlockEventListenerTest {
 
 
         String netId = switch (networkName) {
-            case "" -> StargateNetwork.DEFAULT_NETWORK_ID;
+            case "" -> StargateConstant.DEFAULT_NETWORK_ID;
             case CUSTOM_NETNAME -> CUSTOM_NETNAME;
             case PLAYER_NAME -> player.getUniqueId().toString();
             default -> null;
@@ -181,18 +175,21 @@ class BlockEventListenerTest {
     }
 
     @Test
-    void blockPlace_registerBlockPosition() throws NameLengthException, InvalidNameException, NameConflictException,
-            UnimplementedFlagException, InvalidStructureException {
+    void blockPlace_registerBlockPosition() throws TranslatableException,
+            InvalidStructureException, GateConflictException, NoFormatFoundException {
         Material placedMaterial = Material.DIRT;
-        Character flag = 'g';
+        char flag = 'G';
+        stargateAPI.getMaterialHandlerResolver().registerCustomFlag(flag);
         BlockHandlerInterfaceMock blockHandler = new BlockHandlerInterfaceMock(PositionType.BUTTON, placedMaterial,
                 MockBukkit.createMockPlugin(), Priority.HIGH, flag);
         stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(blockHandler);
         Location location = new Location(world, 0, 5, 0);
         Network network = networkManager.createNetwork(CUSTOM_NETNAME, NetworkType.CUSTOM, StorageType.LOCAL, false);
-        RealPortal portal = PortalFactory.generateFakePortal(location,
-                network, "test", true, new HashSet<>(), Set.of(flag),
-                registry);
+        PortalBuilder builder = new PortalBuilder(stargateAPI, player, "test");
+        builder.setGateBuilder(location, GateFormatRegistry.getAllGateFormatNames().iterator().next());
+        builder.setFlags(String.valueOf(flag));
+        RealPortal portal = builder.build();
+        StargateTestHelper.runAllTasks();
         network.addPortal(portal);
         Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");
 

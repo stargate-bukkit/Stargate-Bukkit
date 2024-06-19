@@ -2,10 +2,13 @@ package org.sgrewritten.stargate.gate.structure;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.BlockDropManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +25,14 @@ public class GateFrame extends GateStructure {
 
     final Map<BlockVector, Set<Material>> parts;
     final static Random RANDOM = new Random();
+    private final BoundingBox boundingBox;
 
     /**
      * Instantiates a new gate frame
      */
     public GateFrame() {
         parts = new HashMap<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -38,6 +43,7 @@ public class GateFrame extends GateStructure {
      */
     public void addPart(BlockVector blockVector, Set<Material> materials) {
         parts.put(blockVector, materials);
+        boundingBox.union(blockVector);
     }
 
     @Override
@@ -57,12 +63,22 @@ public class GateFrame extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        for (BlockVector position : parts.keySet()) {
-            Location location = topLeft.clone().add(converter.performToRealSpaceOperation(position));
-            Set<Material> materialsAtPosition = parts.get(position);
+        for (Map.Entry<BlockVector,Set<Material>> entry : parts.entrySet()) {
+            Location location = topLeft.clone().add(converter.performToRealSpaceOperation(entry.getKey()));
+            Set<Material> materialsAtPosition = entry.getValue();
             Material material = materialsAtPosition.toArray(new Material[0])[RANDOM.nextInt(materialsAtPosition.size())];
-            location.getBlock().setType(material);
+            Block block = location.getBlock();
+            if(material == block.getType()){
+                continue;
+            }
+            block.setType(material);
+            BlockDropManager.disableBlockDrops(block);
         }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
 }

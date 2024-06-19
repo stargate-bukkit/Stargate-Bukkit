@@ -5,32 +5,44 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.network.StargateNetwork;
+import org.sgrewritten.stargate.exception.PortalLoadException;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.LegacyDataHandler;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class PortalStorageHelper {
 
+    private PortalStorageHelper() {
+        throw new IllegalStateException("Utility class");
+    }
 
-    public static PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException {
-        //TODO Check if portalType is necessary to keep track of // there's already flags.contains(PortalFlag.FANCY_INTERSERVER)
+    /**
+     * Load portal data from sql result set
+     * @param resultSet <p>Sql result set representing one row in the portals table</p>
+     * @param portalType <p>How the portal is stored</p>
+     * @return <p>Portal data which can be used to create a portal</p>
+     * @throws SQLException <p>If any sql problem</p>
+     * @throws PortalLoadException <p>See {@link PortalLoadException.FailureType} for causes</p>
+     */
+    public static @NotNull PortalData loadPortalData(ResultSet resultSet, StorageType portalType) throws SQLException, PortalLoadException {
         String name = resultSet.getString("name");
         String networkName = resultSet.getString("network");
         String destination = resultSet.getString("destination");
@@ -38,21 +50,6 @@ public class PortalStorageHelper {
         if (resultSet.wasNull()) {
             destination = "";
         }
-
-        World world = Bukkit.getWorld(resultSet.getString("world"));
-        if (world == null) {
-            return null;
-        }
-        Location topLeft = new Location(world, resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"));
-
-        String flagString = resultSet.getString("flags");
-        Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
-        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagString);
-        UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
-        String gateFileName = resultSet.getString("gateFileName");
-        boolean flipZ = resultSet.getBoolean("flipZ");
-        BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
-        String metadata = resultSet.getString("metaData");
         String serverUUID = null;
         String serverName = null;
         if (portalType == StorageType.INTER_SERVER) {
@@ -62,16 +59,38 @@ public class PortalStorageHelper {
                 serverName = resultSet.getString("serverName");
             }
         }
+        World world = Bukkit.getWorld(UUID.fromString(resultSet.getString("world")));
+        // Avoid the use of unecessary queries if server is not this server
+        if (world == null && serverName == null) {
+            Stargate.log(Level.FINE, "World does not exist for portal: " + networkName + ":" + name);
+            throw new PortalLoadException(PortalLoadException.FailureType.WORLD);
+        }
+        Location topLeft = new Location(world, resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"));
+
+        String flagString = resultSet.getString("flags");
+        Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
+        UUID ownerUUID = UUID.fromString(resultSet.getString("ownerUUID"));
+        String gateFileName = resultSet.getString("gateFileName");
+        boolean flipZ = resultSet.getBoolean("flipZ");
+        BlockFace facing = getBlockFaceFromOrdinal(Integer.parseInt(resultSet.getString("facing")));
+        String metadata = resultSet.getString("metaData");
         GateFormatAPI format = GateFormatRegistry.getFormat(gateFileName);
         if (format == null) {
             Stargate.log(Level.WARNING, String.format("Could not find the format ''%s''. Check the full startup " +
                     "log for more information", gateFileName));
-            throw new IllegalArgumentException("Could not find gate format");
+            throw new PortalLoadException(PortalLoadException.FailureType.GATE_FORMAT);
         }
         GateData gateData = new GateData(format, flipZ, topLeft, facing);
-        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, serverUUID, serverName, portalType, metadata);
+        return new PortalData(gateData, name, networkName, destination, flags, ownerUUID, serverUUID, serverName, portalType, metadata);
     }
 
+    /**
+     * Load a portal position from sql result set
+     * @param resultSet <p>Sql row in table</p>
+     * @return <p>A portal position based from the row in the table</p>
+     * @throws NumberFormatException <p>IF unable to parse integer</p>
+     * @throws SQLException <p>if any sql error</p>
+     */
     public static PortalPosition loadPortalPosition(ResultSet resultSet) throws NumberFormatException, SQLException {
         int xCoordinate = Integer.parseInt(resultSet.getString("xCoordinate"));
         int yCoordinate = Integer.parseInt(resultSet.getString("yCoordinate"));
@@ -106,7 +125,7 @@ public class PortalStorageHelper {
      */
     public static PortalData loadPortalData(String[] portalProperties, World world, String defaultNetworkName) {
         String name = portalProperties[0];
-        String networkName = (portalProperties.length > 9) ? portalProperties[9] : StargateNetwork.DEFAULT_NETWORK_ID;
+        String networkName = (portalProperties.length > 9) ? portalProperties[9] : StargateConstant.DEFAULT_NETWORK_ID;
 
         Stargate.log(Level.FINEST, String.format("-----------------Loading portal %s in network %s--------------" +
                 "--------", name, networkName));
@@ -126,24 +145,23 @@ public class PortalStorageHelper {
         String ownerString = (portalProperties.length > 10) ? portalProperties[10] : "";
         UUID ownerUUID = LegacyDataHandler.getPlayerUUID(ownerString);
         Set<PortalFlag> flags = LegacyDataHandler.parseFlags(portalProperties);
-        Set<Character> unrecognisedFlags = new HashSet<>();
         if (destination == null || destination.trim().isEmpty()) {
-            flags.add(PortalFlag.NETWORKED);
+            flags.add(StargateFlag.NETWORKED);
         }
 
         if (portalProperties.length <= 9 || networkName.equalsIgnoreCase(defaultNetworkName)) {
-            flags.add(PortalFlag.DEFAULT_NETWORK);
-            networkName = StargateNetwork.DEFAULT_NETWORK_ID;
+            flags.add(StargateFlag.DEFAULT_NETWORK);
+            networkName = StargateConstant.DEFAULT_NETWORK_ID;
         } else if (!ownerString.isEmpty()) {
             String playerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
-            if (playerName != null && playerName.equals(networkName)) {
-                flags.add(PortalFlag.PERSONAL_NETWORK);
+            if (playerName != null && playerName.equalsIgnoreCase(networkName)) {
+                flags.add(StargateFlag.PERSONAL_NETWORK);
                 networkName = ownerUUID.toString();
             } else {
-                flags.add(PortalFlag.CUSTOM_NETWORK);
+                flags.add(StargateFlag.CUSTOM_NETWORK);
             }
         } else {
-            flags.add(PortalFlag.CUSTOM_NETWORK);
+            flags.add(StargateFlag.CUSTOM_NETWORK);
         }
         GateFormatAPI format = GateFormatRegistry.getFormat(gateFileName);
         if (format == null) {
@@ -152,7 +170,7 @@ public class PortalStorageHelper {
             throw new IllegalArgumentException("Could not find gate format");
         }
         GateData gateData = new GateData(format, false, topLeft, facing);
-        return new PortalData(gateData, name, networkName, destination, flags, unrecognisedFlags, ownerUUID, null, null, StorageType.LOCAL, null);
+        return new PortalData(gateData, name, networkName, destination, flags, ownerUUID, null, null, StorageType.LOCAL, null);
     }
 
     /**

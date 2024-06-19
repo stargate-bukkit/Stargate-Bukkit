@@ -1,23 +1,24 @@
 package org.sgrewritten.stargate.database;
 
+import org.bukkit.Bukkit;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
+import org.sgrewritten.stargate.api.event.portal.StargatePortalLoadEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
-import org.sgrewritten.stargate.exception.GateConflictException;
-import org.sgrewritten.stargate.exception.InvalidStructureException;
-import org.sgrewritten.stargate.exception.StargateInitializationException;
-import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.database.property.StoredPropertiesAPI;
+import org.sgrewritten.stargate.database.property.StoredProperty;
+import org.sgrewritten.stargate.exception.*;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -27,32 +28,39 @@ import org.sgrewritten.stargate.gate.Gate;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.AbstractPortal;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
+import org.sgrewritten.stargate.network.portal.StargatePortal;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 import org.sgrewritten.stargate.util.portal.PortalCreationHelper;
+import org.sgrewritten.stargate.util.portal.PortalHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
+
+import static javax.management.timer.Timer.ONE_WEEK;
 
 /**
  * A generic SQL database used for loading and saving portal data
  */
 public class SQLDatabase implements StorageAPI {
 
+    private final StoredPropertiesAPI propertiesDatabase;
     private SQLDatabaseAPI database;
     private SQLQueryGenerator sqlQueryGenerator;
     private boolean useInterServerNetworks;
+    private final Set<String> invalidGateFormats = new HashSet<>();
 
     /**
      * Instantiates a new stargate registry
@@ -60,7 +68,8 @@ public class SQLDatabase implements StorageAPI {
      * @param database <p>The database connected to this Stargate instance</p>
      * @throws StargateInitializationException <p>If unable to initialize the database</p>
      */
-    public SQLDatabase(SQLDatabaseAPI database) throws StargateInitializationException {
+    public SQLDatabase(SQLDatabaseAPI database, StoredPropertiesAPI propertiesDatabase) throws StargateInitializationException {
+        this.propertiesDatabase = propertiesDatabase;
         load(database);
     }
 
@@ -72,7 +81,8 @@ public class SQLDatabase implements StorageAPI {
      * @param usingRemoteDatabase <p>Whether a remote database, not a flatfile database is used</p>
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
-    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase) throws SQLException {
+    public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase, StoredPropertiesAPI propertiesDatabase) throws SQLException {
+        this.propertiesDatabase = propertiesDatabase;
         load(database, usingBungee, usingRemoteDatabase);
     }
 
@@ -86,8 +96,9 @@ public class SQLDatabase implements StorageAPI {
      * @throws SQLException <p>If an SQL exception occurs</p>
      */
     public SQLDatabase(SQLDatabaseAPI database, boolean usingBungee, boolean usingRemoteDatabase,
-                       TableNameConfiguration config) throws SQLException {
+                       TableNameConfiguration config, StoredPropertiesAPI propertiesDatabase) throws SQLException {
         this.database = database;
+        this.propertiesDatabase = propertiesDatabase;
         useInterServerNetworks = usingRemoteDatabase && usingBungee;
         DatabaseDriver databaseEnum = usingRemoteDatabase ? DatabaseDriver.MYSQL : DatabaseDriver.SQLITE;
         this.sqlQueryGenerator = new SQLQueryGenerator(config, databaseEnum);
@@ -102,6 +113,11 @@ public class SQLDatabase implements StorageAPI {
             if (useInterServerNetworks) {
                 Stargate.log(Level.FINER, "Loading portals from inter-server bungee database");
                 loadAllPortals(database, StorageType.INTER_SERVER, stargateAPI);
+            }
+            if (invalidGateFormats.isEmpty()) {
+                propertiesDatabase.setProperty(StoredProperty.SCHEDULED_GATE_CLEARING, -1);
+            } else if (Long.parseLong(propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING)) > System.currentTimeMillis()) {
+                propertiesDatabase.setProperty(StoredProperty.SCHEDULED_GATE_CLEARING, System.currentTimeMillis() + ONE_WEEK);
             }
         } catch (SQLException exception) {
             throw new StorageReadException(exception);
@@ -131,8 +147,8 @@ public class SQLDatabase implements StorageAPI {
             connection.commit();
             connection.setAutoCommit(true);
             connection.close();
-            if (portal instanceof AbstractPortal abstractPortal) {
-                abstractPortal.setSavedToStorage();
+            if (portal instanceof StargatePortal stargatePortal) {
+                stargatePortal.setSavedToStorage();
             }
             return true;
         } catch (SQLException exception) {
@@ -188,18 +204,57 @@ public class SQLDatabase implements StorageAPI {
      */
     private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
         List<PortalData> portalDataList;
+        Set<String> worldsToRemove = new HashSet<>();
+        Set<String> gateFormatsToRemove = new HashSet<>();
         try (Connection connection = database.getConnection()) {
             PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
             ResultSet resultSet = statement.executeQuery();
             portalDataList = new ArrayList<>();
+
             while (resultSet.next()) {
-                portalDataList.add(PortalStorageHelper.loadPortalData(resultSet, portalType));
+                try {
+                    PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
+                    portalDataList.add(portalData);
+                } catch (PortalLoadException e) {
+                    switch (e.getFailureType()) {
+                        case WORLD -> worldsToRemove.add(resultSet.getString("world"));
+                        case GATE_FORMAT -> gateFormatsToRemove.add(resultSet.getString("gateFileName"));
+                    }
+                }
             }
             statement.close();
         }
+        removeWorlds(worldsToRemove, portalType);
+        String scheduledGateFormatClearing = propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
+        if (scheduledGateFormatClearing != null && Long.parseLong(scheduledGateFormatClearing) > System.currentTimeMillis()) {
+            removeGateFormats(gateFormatsToRemove, portalType);
+        } else {
+            invalidGateFormats.addAll(gateFormatsToRemove);
+        }
+
         for (PortalData portalData : portalDataList) {
             loadPortal(portalData, stargateAPI);
+        }
+    }
+
+    private void removeWorlds(Set<String> worldsToRemove, StorageType storageType) throws SQLException {
+        for (String world : worldsToRemove) {
+            try (Connection connection = database.getConnection()) {
+                try (PreparedStatement preparedStatement = sqlQueryGenerator.generateDeleteWorldStatement(connection, world, storageType)) {
+                    preparedStatement.execute();
+                }
+            }
+        }
+    }
+
+    private void removeGateFormats(Set<String> gateFormatsToRemove, StorageType storageType) throws SQLException {
+        try (Connection connection = database.getConnection()) {
+            for (String gateFormat : gateFormatsToRemove) {
+                try (PreparedStatement preparedStatement = sqlQueryGenerator.generateRemoveGateStatement(connection, gateFormat, storageType)) {
+                    preparedStatement.execute();
+                }
+            }
         }
     }
 
@@ -226,20 +281,27 @@ public class SQLDatabase implements StorageAPI {
         }
 
         if (portalData.destination() == null || portalData.destination().trim().isEmpty()) {
-            portalData.flags().add(PortalFlag.NETWORKED);
+            portalData.flags().add(StargateFlag.NETWORKED);
         }
 
+        final List<PortalPosition> portalPositions = getPortalPositions(portalData, portalData.flags().contains(PortalFlag.LEGACY_INTERSERVER) ? portalData.networkName() : network.getId());
+
         //Actually register the gate and its positions
-        try {
-            registerPortalGate(portalData, network, stargateAPI);
-        } catch (TranslatableException | GateConflictException e) {
-            Stargate.log(e);
-        } catch (InvalidStructureException e) {
-            Stargate.log(Level.WARNING, String.format(
-                    "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
-                    portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
-                    portalData.gateData().topLeft()));
-        }
+        new StargateRegionTask(portalData.gateData().topLeft()) {
+            @Override
+            public void run() {
+                try {
+                    registerPortalGate(portalData, network, stargateAPI, portalPositions);
+                } catch (TranslatableException e) {
+                    Stargate.log(e);
+                } catch (InvalidStructureException e) {
+                    Stargate.log(Level.WARNING, String.format(
+                            "The portal %s in %snetwork %s located at %s is in an invalid state, and could therefore not be recreated",
+                            portalData.name(), (portalData.portalType() == StorageType.INTER_SERVER ? "inter-server-" : ""), portalData.networkName(),
+                            portalData.gateData().topLeft()));
+                }
+            }
+        }.runNow();
     }
 
     /**
@@ -250,21 +312,26 @@ public class SQLDatabase implements StorageAPI {
      * @param stargateAPI <p>The portal stargate API</p>
      * @throws SQLException              <p>If unable to interact with the database</p>
      * @throws InvalidStructureException <p>If the portal's gate is invalid</p>
-     * @throws GateConflictException     <p>If the new gate conflicts with an existing gate</p>
      * @throws TranslatableException     <p>If some input is invalid</p>
      */
-    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI) throws SQLException,
-            InvalidStructureException, GateConflictException, TranslatableException {
-        List<PortalPosition> portalPositions = getPortalPositions(portalData, network.getId());
+    private void registerPortalGate(PortalData portalData, Network network, StargateAPI stargateAPI, List<PortalPosition> portalPositions) throws
+            InvalidStructureException, TranslatableException {
         Gate gate = new Gate(portalData.gateData(), stargateAPI.getRegistry());
-        if (ConfigurationHelper.getBoolean(ConfigurationOption.CHECK_PORTAL_VALIDITY)
-                && !gate.isValid()) {
-            throw new InvalidStructureException();
-        }
+
         gate.addPortalPositions(portalPositions);
         RealPortal portal = PortalCreationHelper.createPortal(network, portalData, gate, stargateAPI);
+        if (!PortalHelper.portalValidityCheck(portal, stargateAPI.getNetworkManager())) {
+            return;
+        }
+        if (portal instanceof StargatePortal stargatePortal) {
+            stargatePortal.setSavedToStorage();
+        }
+        gate.assignPortal(portal);
         network.addPortal(portal);
-        Stargate.log(Level.FINEST, "Added as normal portal");
+        StargatePortalLoadEvent event = new StargatePortalLoadEvent(portal);
+        Bukkit.getPluginManager().callEvent(event);
+
+        Stargate.log(Level.FINEST, "Added as normal portal: " + network.getId() + ":" + portal.getName());
     }
 
     /**
@@ -277,7 +344,7 @@ public class SQLDatabase implements StorageAPI {
      */
     private boolean registerVirtualPortal(StorageType portalType, PortalData portalData, Network network) {
         if (portalType == StorageType.INTER_SERVER && !portalData.serverUUID().equals(Stargate.getServerUUID())) {
-            Portal virtualPortal = new VirtualPortal(portalData.serverName(), portalData.name(), network, portalData.flags(), portalData.unrecognisedFlags(),
+            Portal virtualPortal = new VirtualPortal(portalData.serverName(), portalData.name(), network, portalData.flags(),
                     portalData.ownerUUID());
             try {
                 network.addPortal(virtualPortal);
@@ -299,15 +366,15 @@ public class SQLDatabase implements StorageAPI {
      * @return <p>The resulting network, or null if invalid</p>
      */
     private Network getNetwork(PortalData portalData, RegistryAPI registry, NetworkManager networkManager) {
-        StorageType storageType = portalData.flags().contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = portalData.flags().contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
         String targetNetwork = portalData.networkName();
-        if (portalData.flags().contains(PortalFlag.BUNGEE)) {
-            targetNetwork = BungeePortal.getLegacyNetworkName();
+        if (portalData.flags().contains(StargateFlag.LEGACY_INTERSERVER)) {
+            targetNetwork = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
         }
         Stargate.log(Level.FINEST,
                 "Trying to add portal " + portalData.name() + ", on network " + targetNetwork + ",storageType = " + storageType);
         try {
-            boolean isForced = portalData.flags().contains(PortalFlag.DEFAULT_NETWORK);
+            boolean isForced = portalData.flags().contains(StargateFlag.DEFAULT_NETWORK);
             Network network = networkManager.createNetwork(targetNetwork, portalData.flags(), isForced);
 
             if (NetworkCreationHelper.getDefaultNamesTaken().contains(network.getId().toLowerCase())) {
@@ -583,5 +650,10 @@ public class SQLDatabase implements StorageAPI {
         } catch (SQLException e) {
             throw new StorageReadException(e);
         }
+    }
+
+    @Override
+    public Set<String> getScheduledGatesClearing() {
+        return this.invalidGateFormats;
     }
 }

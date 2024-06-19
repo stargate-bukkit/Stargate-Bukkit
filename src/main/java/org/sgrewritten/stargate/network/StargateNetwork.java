@@ -9,7 +9,8 @@ import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
@@ -21,6 +22,7 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
+import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -37,8 +39,6 @@ import java.util.logging.Level;
  * A network of portals
  */
 public class StargateNetwork implements Network {
-
-    public static final String DEFAULT_NETWORK_ID = "<@default@>";
     private final PluginMessageSender messageSender;
     private final StorageType storageType;
 
@@ -74,11 +74,11 @@ public class StargateNetwork implements Network {
             UnimplementedFlagException {
         Objects.requireNonNull(name);
         this.networkType = Objects.requireNonNull(type);
-        setId(name, type);
+        setID(name, type);
         nameToPortalMap = new HashMap<>();
     }
 
-    private void setId(String name, NetworkType type) throws InvalidNameException, NameLengthException,
+    private void setID(String name, NetworkType type) throws InvalidNameException, NameLengthException,
             UnimplementedFlagException {
         switch (type) {
             case DEFAULT -> loadAsDefault(name);
@@ -91,18 +91,18 @@ public class StargateNetwork implements Network {
 
     private void loadAsDefault(String name) throws InvalidNameException {
         this.name = ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK);
-        if (!DEFAULT_NETWORK_ID.equals(name)) {
+        if (!StargateConstant.DEFAULT_NETWORK_ID.equals(name)) {
             throw new InvalidNameException("Invalid name '" + name + "' can not be default network, expected name '" +
-                    DEFAULT_NETWORK_ID + "'");
+                    StargateConstant.DEFAULT_NETWORK_ID + "'");
         }
-        id = DEFAULT_NETWORK_ID;
+        id = StargateConstant.DEFAULT_NETWORK_ID;
     }
 
     private void loadAsCustomNetwork(String networkName) throws NameLengthException {
         networkName = NameHelper.getTrimmedName(networkName);
         if (NameHelper.isInvalidName(networkName)) {
             throw new NameLengthException("Name '" + networkName + "' is to short or to long, expected length over 0 " +
-                    "and under " + Stargate.getMaxTextLength());
+                    "and under " + StargateConstant.MAX_TEXT_LENGTH);
         }
         this.name = networkName.trim();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.DISABLE_CUSTOM_COLORED_NAMES)) {
@@ -153,7 +153,7 @@ public class StargateNetwork implements Network {
     public void addPortal(Portal portal) throws NameConflictException {
         if (isPortalNameTaken(portal.getName())) {
             throw new NameConflictException("portal of name '" + portal.getName() + "' already exist in network '" +
-                    this.getId() + "'", false);
+                    this.getId() + "'");
         }
         if (portal instanceof RealPortal realPortal) {
             registry.registerPortal(realPortal);
@@ -180,10 +180,7 @@ public class StargateNetwork implements Network {
         Set<String> removeList = new HashSet<>();
         for (String portalName : output) {
             Portal target = getPortal(portalName);
-            boolean deny = (target.hasFlag(PortalFlag.PRIVATE) && !playerCanSeePrivatePortal(target, player));
-            StargateListPortalEvent event = new StargateListPortalEvent(requester, player, target, deny);
-            Bukkit.getPluginManager().callEvent(event);
-            if (event.getDeny()) {
+            if (!canSeePortal(target, requester, player)) {
                 removeList.add(portalName);
             }
         }
@@ -194,6 +191,14 @@ public class StargateNetwork implements Network {
     private boolean playerCanSeePrivatePortal(Portal portalToSee, Player player) {
         return player != null && (player.hasPermission(BypassPermission.PRIVATE.getPermissionString())
                 || player.getUniqueId().equals(portalToSee.getOwnerUUID()));
+    }
+
+    @Override
+    public boolean canSeePortal(Portal portalToSee, Portal origin, Player player){
+        boolean deny = (portalToSee.hasFlag(StargateFlag.PRIVATE) && !playerCanSeePrivatePortal(portalToSee, player));
+        StargateListPortalEvent event = new StargateListPortalEvent(origin, player, portalToSee, deny);
+        Bukkit.getPluginManager().callEvent(event);
+        return !event.getDeny();
     }
 
     @Override
@@ -240,7 +245,7 @@ public class StargateNetwork implements Network {
 
     @Override
     public void setID(String newName) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
-        setId(newName, this.getType());
+        setID(newName, this.getType());
     }
 
     @Override

@@ -16,6 +16,10 @@ public enum GateStructureType {
 
     private final GateFormatStructureType gateFormatEquivalent;
 
+    /**
+     *
+     * @param gateFormatStructureType <p>The gate format equivalent of this gate structure type</p>
+     */
     GateStructureType(GateFormatStructureType gateFormatStructureType) {
         this.gateFormatEquivalent = gateFormatStructureType;
     }

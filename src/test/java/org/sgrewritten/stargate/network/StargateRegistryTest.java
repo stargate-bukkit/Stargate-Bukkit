@@ -39,8 +39,7 @@ class StargateRegistryTest {
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
-        ServerMock server = MockBukkit.mock();
-        StargateTestHelper.setup();
+        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
         this.storageMock = new StorageMock();
@@ -52,7 +51,7 @@ class StargateRegistryTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test
@@ -95,8 +94,10 @@ class StargateRegistryTest {
         Plugin plugin = MockBukkit.createMockPlugin("Stargate");
         PortalPosition portalPosition = registry.savePortalPosition(portal, location, type, plugin);
         registry.registerPortalPosition(portalPosition, location, portal);
+        StargateTestHelper.runAllTasks();
         Assertions.assertNotNull(storageMock.getNextAddedPortalPosition());
         registry.removePortalPosition(location);
+        StargateTestHelper.runAllTasks();
         Assertions.assertNotNull(storageMock.getNextRemovedPortalPosition());
     }
 
@@ -108,7 +109,7 @@ class StargateRegistryTest {
 
     @Test
     void removePortalPosition_doesNotExist() {
-        registry.removePortalPosition(new Location(world, 0, 0, 0));
+        Assertions.assertDoesNotThrow(() -> registry.removePortalPosition(new Location(world, 0, 0, 0)));
     }
 
     @ParameterizedTest
@@ -118,6 +119,6 @@ class StargateRegistryTest {
         Location location = new Location(world, 0, 0, 0);
         PortalMock portal = new PortalMock();
         this.registry.registerPortalPosition(portalPosition, location, portal);
-        Assertions.assertEquals(portal, this.registry.getPortalFromPortalPosition(portalPosition));
+        Assertions.assertEquals(portal, portalPosition.getPortal());
     }
 }

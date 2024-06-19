@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
 import org.sgrewritten.stargate.api.manager.BungeeManager;
@@ -13,13 +14,13 @@ import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.VirtualPortal;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
@@ -38,6 +39,11 @@ public class StargateBungeeManager implements BungeeManager {
     private final HashMap<String, Portal> bungeeQueue = new HashMap<>();
     private final NetworkManager networkManager;
 
+    /**
+     * @param registry <p>A registry containing all information about portals</p>
+     * @param languageManager <p>A manager able to provide localized messages</p>
+     * @param networkManager <p>A network manager</p>
+     */
     public StargateBungeeManager(@NotNull RegistryAPI registry, @NotNull LanguageManager languageManager, @NotNull NetworkManager networkManager) {
         this.registry = Objects.requireNonNull(registry);
         this.languageManager = Objects.requireNonNull(languageManager);
@@ -88,7 +94,6 @@ public class StargateBungeeManager implements BungeeManager {
         String server = json.get(StargateProtocolProperty.SERVER.toString()).getAsString();
         String flagString = json.get(StargateProtocolProperty.PORTAL_FLAG.toString()).getAsString();
         Set<PortalFlag> flags = PortalFlag.parseFlags(flagString);
-        Set<Character> unrecognisedFlags = PortalFlag.getUnrecognisedFlags(flagString);
         UUID ownerUUID = UUID.fromString(json.get(StargateProtocolProperty.OWNER.toString()).getAsString());
 
         try {
@@ -103,7 +108,7 @@ public class StargateBungeeManager implements BungeeManager {
                 Stargate.log(Level.WARNING, "Unable to get inter-server network " + network);
                 return;
             }
-            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, unrecognisedFlags, ownerUUID);
+            VirtualPortal portal = new VirtualPortal(server, portalName, targetNetwork, flags, ownerUUID);
             switch (requestType) {
                 case PORTAL_ADD -> {
                     targetNetwork.addPortal(portal);
@@ -150,7 +155,7 @@ public class StargateBungeeManager implements BungeeManager {
             player.sendMessage(languageManager.getErrorMessage(TranslatableMessage.BUNGEE_INVALID_GATE));
             return;
         }
-        if(destinationPortal instanceof VirtualPortal){
+        if (destinationPortal instanceof VirtualPortal) {
             Stargate.log(Level.WARNING, "The receiving portal for this bungee teleport message should not be a virtual portal, contact developers (do /sg for more info)");
             return;
         }
@@ -159,7 +164,7 @@ public class StargateBungeeManager implements BungeeManager {
 
     @Override
     public void legacyPlayerConnect(String message) {
-        String bungeeNetworkName = BungeePortal.getLegacyNetworkName();
+        String bungeeNetworkName = ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK);
 
         String[] parts = message.split("#@#");
 

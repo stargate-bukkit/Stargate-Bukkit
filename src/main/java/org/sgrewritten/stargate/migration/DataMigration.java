@@ -24,12 +24,12 @@ public abstract class DataMigration {
      */
     public Map<String, Object> getUpdatedConfigValues(Map<String, Object> oldConfig) {
         Map<String, Object> updatedConfig = new HashMap<>();
-        for (String key : oldConfig.keySet()) {
-            Object value = oldConfig.get(key);
+        for (Map.Entry<String, Object> entry : oldConfig.entrySet()) {
+            Object value = entry.getValue();
             if (value instanceof ConfigurationSection) {
                 continue;
             }
-            TwoTuple<String, Object> oldSetting = new TwoTuple<>(key, value);
+            TwoTuple<String, Object> oldSetting = new TwoTuple<>(entry.getKey(), value);
 
             TwoTuple<String, Object> newSetting = getNewConfigPair(oldSetting);
             if (newSetting == null) {
@@ -65,7 +65,20 @@ public abstract class DataMigration {
      */
     protected abstract TwoTuple<String, Object> getNewConfigPair(TwoTuple<String, Object> oldPair);
 
+    /**
+     * @return <p>The version this migrator is migrating from</p>
+     */
     public abstract String getVersionFrom();
 
+    /**
+     * @return <p>The version this migrator is migrating to</p>
+     */
     public abstract String getVersionTo();
+
+    /**
+     * @return Whether the manager will add portals / networks to the registry
+     */
+    public boolean willPopulateRegistry() {
+        return false;
+    }
 }

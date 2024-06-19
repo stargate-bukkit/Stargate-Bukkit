@@ -3,6 +3,7 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -20,6 +21,10 @@ import java.util.Set;
  */
 public class TeleportationHelper {
 
+    private TeleportationHelper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final int CONE_LENGTH = 7;
     private static final int MAXIMUM_CONE_EXTENSION = 4;
 
@@ -31,7 +36,7 @@ public class TeleportationHelper {
      * @return <p>A possible spawn location, or null if no viable location could be found</p>
      */
     public static Location findViableSpawnLocation(Entity entity, RealPortal destinationPortal) {
-        BlockVector forward = destinationPortal.getExitFacing().getDirection().toBlockVector();
+        BlockVector forward = destinationPortal.getExitFacing().getOppositeFace().getDirection().toBlockVector();
         BlockVector left = forward.clone().rotateAroundY(Math.PI / 2).toBlockVector();
         BlockVector right = forward.clone().rotateAroundY(-Math.PI / 2).toBlockVector();
         BlockVector up = new BlockVector(0, 1, 0);
@@ -127,7 +132,8 @@ public class TeleportationHelper {
 
         //If a single solid block is found, the entity would be crushed to death
         for (Location occupiedLocation : getOccupiedLocations(width, height, corner)) {
-            if (occupiedLocation.getBlock().getType().isSolid()) {
+            Block block = occupiedLocation.getBlock();
+            if (block.getType().isSolid()) {
                 return false;
             }
         }

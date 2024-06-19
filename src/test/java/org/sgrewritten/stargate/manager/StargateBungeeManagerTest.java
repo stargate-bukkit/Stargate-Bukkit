@@ -1,54 +1,47 @@
 package org.sgrewritten.stargate.manager;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
+import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
+import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.database.StorageMock;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
+import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.network.NetworkType;
-import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
-import org.sgrewritten.stargate.network.StargateRegistry;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
+import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class StargateBungeeManagerTest {
 
     private ServerMock server;
-    private StargateRegistry registry;
+    private RegistryAPI registry;
     private WorldMock world;
     private StargateBungeeManager bungeeManager;
     private RealPortal realPortal;
     private RealPortal bungeePortal;
-    private static final File testGatesDir = new File("src/test/resources/gates");
 
     private static final String SERVER = "server";
     private static final String NETWORK = "network1";
@@ -58,25 +51,29 @@ class StargateBungeeManagerTest {
     private static final String PLAYER = "player";
     private static final String REGISTERED_PORTAL = "rPortal";
     private StargateNetworkManager networkManager;
+    private StargateAPI stargateAPI;
+    private int count = 0;
+    private TestPortalBuilder testPortalBuilder;
 
     @BeforeEach
-    void setUp() throws TranslatableException, InvalidStructureException {
-        server = MockBukkit.mock();
-        GateFormatRegistry.setFormats(
-                Objects.requireNonNull(GateFormatHandler.loadGateFormats(testGatesDir)));
+    void setUp() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+        server = StargateTestHelper.setup();
         Stargate.setServerName(SERVER);
-        registry = new RegistryMock();
-        this.networkManager = new StargateNetworkManager(registry, new StorageMock());
+        stargateAPI = new StargateAPIMock();
+        registry = stargateAPI.getRegistry();
+        this.networkManager = (StargateNetworkManager) stargateAPI.getNetworkManager();
         world = server.addSimpleWorld("world");
         Network network2 = networkManager.createNetwork(NETWORK2, NetworkType.CUSTOM, StorageType.INTER_SERVER, false);
-        realPortal = PortalFactory.generateFakePortal(world, network2, REGISTERED_PORTAL, true);
+
+        this.testPortalBuilder = new TestPortalBuilder(registry, world);
+        testPortalBuilder.setNetwork(network2).setStorageType(StorageType.INTER_SERVER).setName(REGISTERED_PORTAL);
+        realPortal = testPortalBuilder.build();
         network2.addPortal(realPortal);
 
-        Network bungeeNetwork = networkManager.createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL,
+        Network bungeeNetwork = networkManager.createNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL,
                 false);
-        Set<PortalFlag> bungeePortalFlags = new HashSet<>();
-        bungeePortal = PortalFactory.generateFakePortal(new Location(world, 0, 10, 0), bungeeNetwork,
-                NETWORK, false, bungeePortalFlags, new HashSet<>(), registry);
+        testPortalBuilder.setNetwork(bungeeNetwork).setStorageType(StorageType.LOCAL).setFlags(Set.of(StargateFlag.LEGACY_INTERSERVER));
+        bungeePortal = testPortalBuilder.build();
         bungeeNetwork.addPortal(bungeePortal);
 
         bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock(), networkManager);
@@ -84,15 +81,17 @@ class StargateBungeeManagerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test
-    void updateNetwork() throws TranslatableException, InvalidStructureException {
+    void updateNetwork() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         //A network not assigned to a registry
         Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
-        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
-        RealPortal portal2 = PortalFactory.generateFakePortal(world, network, PORTAL2, true);
+        testPortalBuilder.setNetwork(network).setName(PORTAL).setStorageType(StorageType.INTER_SERVER);
+        RealPortal portal = testPortalBuilder.build();
+        testPortalBuilder.setName(PORTAL2);
+        RealPortal portal2 = testPortalBuilder.build();
 
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal2, StargateProtocolRequestType.PORTAL_ADD));
@@ -103,10 +102,11 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void updateNetwork_renamePortal() throws TranslatableException, InvalidStructureException {
+    void updateNetwork_renamePortal() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         //A network not assigned to a registry
         Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
-        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        testPortalBuilder.setNetwork(network).setName(PORTAL).setStorageType(StorageType.INTER_SERVER);
+        RealPortal portal = testPortalBuilder.build();
         String newName = "new_portal";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         bungeeManager.updateNetwork(BungeeHelper.generateRenamePortalMessage(newName, portal.getName(), network));
@@ -117,10 +117,11 @@ class StargateBungeeManagerTest {
     }
 
     @Test
-    void updateNetwork_renameNetwork() throws TranslatableException, InvalidStructureException {
+    void updateNetwork_renameNetwork() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
         //A network not assigned to a registry
         Network network = new StargateNetwork(NETWORK, NetworkType.CUSTOM, StorageType.INTER_SERVER);
-        RealPortal portal = PortalFactory.generateFakePortal(world, network, PORTAL, true);
+        testPortalBuilder.setNetwork(network).setName(PORTAL).setStorageType(StorageType.INTER_SERVER);
+        RealPortal portal = testPortalBuilder.build();
         String newName = "new_network";
         bungeeManager.updateNetwork(BungeeHelper.generateJsonMessage(portal, StargateProtocolRequestType.PORTAL_ADD));
         Network preRenameNetwork = registry.getNetwork(NETWORK, StorageType.INTER_SERVER);

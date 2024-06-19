@@ -1,9 +1,10 @@
 package org.sgrewritten.stargate.network;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.action.SupplierAction;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -12,7 +13,8 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
@@ -25,7 +27,9 @@ import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
-import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.property.StargateConstant;
+import org.sgrewritten.stargate.thread.task.StargateGlobalTask;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
 
@@ -38,6 +42,11 @@ public class StargateNetworkManager implements NetworkManager {
     private final RegistryAPI registry;
     private final StorageAPI storageAPI;
 
+    /**
+     *
+     * @param registryAPI <p>A registry containing all portal information</p>
+     * @param storageAPI <p>A database interface able to give and modify information about portals</p>
+     */
     public StargateNetworkManager(RegistryAPI registryAPI, StorageAPI storageAPI) {
         this.registry = registryAPI;
         this.storageAPI = storageAPI;
@@ -46,12 +55,16 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public @NotNull Network selectNetwork(String name, PermissionManager permissionManager, OfflinePlayer player, Set<PortalFlag> flags) throws TranslatableException {
 
+        if (flags.contains(StargateFlag.LEGACY_INTERSERVER)) {
+            return selectNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), NetworkType.CUSTOM, StorageType.LOCAL);
+        }
+
         Stargate.log(Level.FINER, "....Choosing network name....");
         Stargate.log(Level.FINER, "initial name is '" + name + "'");
         HighlightingStyle highlight = HighlightingStyle.getHighlightType(name);
         String unHighlightedName = NameHelper.getNormalizedName(HighlightingStyle.getNameFromHighlightedText(name));
         TwoTuple<NetworkType, String> data;
-        StorageType storageType = flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
+        StorageType storageType = flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL;
 
         if (flags.contains(NetworkType.TERMINAL.getRelatedFlag())) {
             data = new TwoTuple<>(NetworkType.TERMINAL, unHighlightedName);
@@ -69,12 +82,16 @@ public class StargateNetworkManager implements NetworkManager {
             if (finalNetworkName.equals(player.getName())) {
                 finalNetworkName = player.getUniqueId().toString();
             } else {
-                finalNetworkName = NetworkCreationHelper.getPlayerUUID(finalNetworkName).toString();
+                UUID playerUUID = this.getPlayerUUID(finalNetworkName);
+                if (playerUUID == null) {
+                    throw new InvalidNameException("No such player: " + finalNetworkName);
+                }
+                finalNetworkName = playerUUID.toString();
             }
         }
         if (type == NetworkType.DEFAULT
                 && finalNetworkName.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            finalNetworkName = StargateNetwork.DEFAULT_NETWORK_ID;
+            finalNetworkName = StargateConstant.DEFAULT_NETWORK_ID;
         }
         Stargate.log(Level.FINE, "Ended up with: " + type + ", " + finalNetworkName);
 
@@ -84,7 +101,7 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public @NotNull Network selectNetwork(String name, NetworkType type, StorageType storageType) throws TranslatableException {
         if (type == NetworkType.TERMINAL) {
-            throw new UnimplementedFlagException("Terminal networks aare not implemented", PortalFlag.TERMINAL_NETWORK);
+            throw new UnimplementedFlagException("Terminal networks aare not implemented", StargateFlag.TERMINAL_NETWORK);
         }
         name = NameHelper.getTrimmedName(name);
         try {
@@ -93,12 +110,12 @@ public class StargateNetworkManager implements NetworkManager {
         }
         Network network = registry.getNetwork(name, storageType);
         if (network == null || network.getType() != type) {
-            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", true);
+            throw new NameConflictException("Could not find or create a network of type '" + type + "' with name '" + name + "'", type);
         }
         return network;
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, StorageType storageType) {
+    private TwoTuple<NetworkType, String> getNetworkDataFromExplicitDefinition(HighlightingStyle highlight, String name, RegistryAPI registry, StorageType storageType) {
         String nameToTestFor = name;
         NetworkType type = NetworkType.getNetworkTypeFromHighlight(highlight);
         if (type == NetworkType.CUSTOM || type == NetworkType.TERMINAL) {
@@ -115,28 +132,27 @@ public class StargateNetworkManager implements NetworkManager {
         return new TwoTuple<>(type, nameToTestFor);
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
-                                                                                   PermissionManager permissionManager) {
+    private TwoTuple<NetworkType, String> getNetworkDataFromEmptyDefinition(OfflinePlayer player,
+                                                                            PermissionManager permissionManager) {
         if (permissionManager.canCreateInNetwork("", NetworkType.DEFAULT)) {
-            return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, StargateConstant.DEFAULT_NETWORK_ID);
         }
         return new TwoTuple<>(NetworkType.PERSONAL, player.getName());
     }
 
-    private static TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
-                                                                                      PermissionManager permissionManager, StorageType storageType, RegistryAPI registry) {
+    private TwoTuple<NetworkType, String> getNetworkDataFromImplicitDefinition(String name, OfflinePlayer player,
+                                                                               PermissionManager permissionManager, StorageType storageType, RegistryAPI registry) {
         if (name.equals(player.getName()) && permissionManager.canCreateInNetwork(name, NetworkType.PERSONAL)) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         if (name.equals(ConfigurationHelper.getString(ConfigurationOption.DEFAULT_NETWORK))) {
-            return new TwoTuple<>(NetworkType.DEFAULT, StargateNetwork.DEFAULT_NETWORK_ID);
+            return new TwoTuple<>(NetworkType.DEFAULT, StargateConstant.DEFAULT_NETWORK_ID);
         }
         Network possibleNetwork = registry.getNetwork(name, storageType);
         if (possibleNetwork != null) {
             return new TwoTuple<>(possibleNetwork.getType(), name);
         }
-        UUID playerUUID = NetworkCreationHelper.getPlayerUUID(name);
-        if (registry.getNetwork(playerUUID.toString(), storageType) != null) {
+        if (registry.getNetworkRegistry(storageType).getFromName(name) != null) {
             return new TwoTuple<>(NetworkType.PERSONAL, name);
         }
         return new TwoTuple<>(NetworkType.CUSTOM, name);
@@ -151,28 +167,31 @@ public class StargateNetworkManager implements NetworkManager {
                 if (network != null && network.getType() != type) {
                     String newId = registry.getValidNewName(network);
                     registry.renameNetwork(newId, network.getId(), network.getStorageType());
-                    ThreadHelper.callAsynchronously(() -> {
-                        try {
-                            storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
-                        } catch (StorageWriteException e) {
-                            Stargate.log(e);
+                    new StargateQueuedAsyncTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                storageAPI.updateNetworkName(newId, network.getName(), network.getStorageType());
+                            } catch (StorageWriteException e) {
+                                Stargate.log(e);
+                            }
                         }
-                    });
+                    }.runNow();
                 }
             }
-            throw new NameConflictException("network of id '" + name + "' already exists", true);
+            throw new NameConflictException("network of id '" + name + "' already exists", type);
         }
         Network network = storageAPI.createNetwork(name, type, storageType);
         registry.registerNetwork(network);
         Stargate.log(
-                Level.FINEST, String.format("Adding network id %s to interServer = %b", network.getId(), storageType));
+                Level.FINEST, String.format("Adding network id %s to interServer = %s", network.getId(), storageType));
         return network;
     }
 
 
     @Override
     public Network createNetwork(String targetNetwork, Set<PortalFlag> flags, boolean isForced) throws InvalidNameException, NameLengthException, NameConflictException, UnimplementedFlagException {
-        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(PortalFlag.FANCY_INTER_SERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
+        return this.createNetwork(targetNetwork, NetworkType.getNetworkTypeFromFlags(flags), flags.contains(StargateFlag.INTERSERVER) ? StorageType.INTER_SERVER : StorageType.LOCAL, isForced);
     }
 
 
@@ -196,17 +215,26 @@ public class StargateNetworkManager implements NetworkManager {
             Stargate.log(e);
             return;
         }
-        Stargate.addSynchronousTickAction(new SupplierAction(() -> {
-            registry.updateAllPortals();
-            return true;
-        }));
+        /*
+         * Note one why we need to have this delay: it's because the loaded portals will be registered one tick after
+         * startup, or even later than that if we're using the StargatePopulator, as there's lag on startup.
+         * This is because of Folia compatibility, there's portal validation tasks that needs to be done using the
+         * region scheduler. Temporary solution right now is to just have a large delay here.
+         * TODO: come up with a general solution
+         */
+        new StargateGlobalTask() {
+            @Override
+            public void run() {
+                registry.updateAllPortals();
+            }
+        }.runDelayed(20);
     }
 
     @Override
     public void rename(Portal portal, String newName) throws NameConflictException {
         Network network = portal.getNetwork();
         if (network.isPortalNameTaken(newName)) {
-            throw new NameConflictException(String.format("Portal name %s is already used by another portal", newName), false);
+            throw new NameConflictException(String.format("Portal name %s is already used by another portal", newName));
         }
         try {
             storageAPI.updatePortalName(newName, portal.getGlobalId(), portal.getStorageType());
@@ -224,13 +252,16 @@ public class StargateNetworkManager implements NetworkManager {
     @Override
     public void savePortal(RealPortal portal, Network network) throws NameConflictException {
         network.addPortal(portal);
-        ThreadHelper.callAsynchronously(() -> {
-            try {
-                storageAPI.savePortalToStorage(portal);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.savePortalToStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        });
+        }.runNow();
         network.getPluginMessageSender().sendCreatePortal(portal);
         network.updatePortals();
     }
@@ -242,14 +273,29 @@ public class StargateNetworkManager implements NetworkManager {
         portal.destroy();
         registry.unregisterPortal(portal);
         network.updatePortals();
-        ThreadHelper.callAsynchronously(() -> {
-            try {
-                storageAPI.removePortalFromStorage(portal);
-            } catch (StorageWriteException e) {
-                Stargate.log(e);
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.removePortalFromStorage(portal);
+                } catch (StorageWriteException e) {
+                    Stargate.log(e);
+                }
             }
-        });
+        }.runNow();
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
+    }
+
+
+    /**
+     * Gets a player's UUID from the player's name
+     *
+     * @param playerName <p>The name of a player</p>
+     * @return <p>The player's unique ID</p>
+     */
+    private @Nullable UUID getPlayerUUID(String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
+        return offlinePlayer == null ? null : offlinePlayer.getUniqueId();
     }
 
 }

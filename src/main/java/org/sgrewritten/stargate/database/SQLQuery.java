@@ -171,7 +171,6 @@ public enum SQLQuery {
     DELETE_PORTAL_FLAG_RELATIONS,
 
 
-    //TODO Better naming
     /**
      * The query for deleting an inter-portal flag relation
      */
@@ -207,8 +206,14 @@ public enum SQLQuery {
      */
     SHOW_INDEX_INTER_PORTAL_POSITION,
 
+    /**
+     * Remove portal position from the database
+     */
     DELETE_PORTAL_POSITION,
 
+    /**
+     * Remove inter portal from the database
+     */
     DELETE_INTER_PORTAL_POSITION,
 
     /**
@@ -241,21 +246,63 @@ public enum SQLQuery {
      */
     SET_INTER_PORTAL_POSITION_META,
 
+    /**
+     * Get the meta inside a portal position
+     */
     GET_PORTAL_POSITION_META,
 
+    /**
+     * Get the meta inside a inter-portal position
+     */
     GET_INTER_PORTAL_POSITION_META,
 
+    /**
+     * Change the name of the network
+     */
     UPDATE_NETWORK_NAME,
 
+    /**
+     * Change the name of an inter server network
+     */
     UPDATE_INTER_NETWORK_NAME,
 
+    /**
+     * Change the name of a portal
+     */
     UPDATE_PORTAL_NAME,
 
+    /**
+     * Change the name of an inter server portal
+     */
     UPDATE_INTER_PORTAL_NAME,
 
+    /**
+     * Get all portals of specified network
+     */
     GET_ALL_PORTALS_OF_NETWORK,
 
+    /**
+     * Get all inter server portals of network
+     */
     GET_ALL_INTER_PORTALS_OF_NETWORK,
 
+    /**
+     * Delete all portals residing in specified world
+     */
+    DELETE_WORLD,
 
+    /**
+     * Delete all inter server portals residing in specified world and server
+     */
+    DELETE_INTER_WORLD,
+
+    /**
+     * Delete all portals with the specified gate format
+     */
+    DELETE_GATE_FORMAT,
+
+    /**
+     * Delete all inter server portals with the specified gate format and server
+     */
+    DELETE_INTER_GATE_FORMAT
 }

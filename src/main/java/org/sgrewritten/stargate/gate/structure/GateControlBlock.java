@@ -1,14 +1,18 @@
 package org.sgrewritten.stargate.gate.structure;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.BlockDropManager;
+import org.sgrewritten.stargate.util.ButtonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +23,15 @@ import java.util.List;
 public class GateControlBlock extends GateStructure {
 
     final List<BlockVector> parts;
+    private final BoundingBox boundingBox;
+    private static final Material SIGN_MATERIAL = Material.OAK_WALL_SIGN;
 
     /**
      * Instantiates a new gate control block container
      */
     public GateControlBlock() {
         parts = new ArrayList<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -34,6 +41,7 @@ public class GateControlBlock extends GateStructure {
      */
     public void addPart(BlockVector blockVector) {
         parts.add(blockVector);
+        boundingBox.union(blockVector);
     }
 
     @Override
@@ -43,26 +51,31 @@ public class GateControlBlock extends GateStructure {
 
     @Override
     protected boolean isValidBlock(BlockVector blockVector, Material material) {
-        //TODO maybe add some fancy detection here
-        return true;
+        material = material.isLegacy() ? XMaterial.matchXMaterial(material).parseMaterial() : material;
+        if (Tag.WALL_SIGNS.isTagged(material) || ButtonHelper.isButton(material)) {
+            return true;
+        }
+        return material.isAir() || material == Material.WATER || material == Material.LIGHT;
     }
 
+    @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
-        BlockVector signPosition = parts.get(0);
-        Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(signPosition)).getBlock();
-        // TODO: isWaterLogged is never used
-        boolean isWaterlogged = false;
-        if (signLocation.getBlockData() instanceof Waterlogged waterlogged) {
-            isWaterlogged = waterlogged.isWaterlogged();
+        if (parts.stream().map(position -> topLeft.clone().add(converter.performToRealSpaceOperation(position)).getBlock().getType())
+                .anyMatch(Tag.WALL_SIGNS::isTagged)) {
+            return;
         }
+        Block signLocation = topLeft.clone().add(converter.performToRealSpaceOperation(parts.get(0))).getBlock();
         BlockState state = signLocation.getState();
-        /*
-         * TODO: remove this hardcoded thing
-         */
         state.setType(Material.OAK_WALL_SIGN);
         WallSign signData = (WallSign) state.getBlockData();
         signData.setFacing(converter.getFacing());
         state.setBlockData(signData);
         state.update(true);
+        BlockDropManager.disableBlockDrops(signLocation);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 }

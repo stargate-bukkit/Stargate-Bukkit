@@ -1,7 +1,7 @@
 package org.sgrewritten.stargate.database;
 
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.GlobalPortalId;
 
@@ -38,9 +38,9 @@ public class SQLQueryExecutor {
      * @param flags          <p>The flags to add</p>
      * @throws SQLException <p>If unable to execute the query</p>
      */
-    public void executeAddFlagRelation(StorageType type, GlobalPortalId globalPortalId, Set<PortalFlag> flags) throws SQLException {
+    public void executeAddFlagRelation(StorageType type, GlobalPortalId globalPortalId, Set<StargateFlag> flags) throws SQLException {
         PreparedStatement flagStatement = queryGenerator.generateAddPortalFlagRelationStatement(connection, type);
-        for (PortalFlag flag : flags) {
+        for (StargateFlag flag : flags) {
             char flagCharacter = flag.getCharacterRepresentation();
             Stargate.log(Level.FINER, "Adding flag " + flagCharacter + " to portal: " + globalPortalId);
             flagStatement.setString(1, globalPortalId.portalId());

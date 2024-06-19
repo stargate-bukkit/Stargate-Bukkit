@@ -3,7 +3,8 @@ package org.sgrewritten.stargate.util;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 
@@ -28,10 +29,16 @@ public final class EconomyHelper {
         if (player.hasPermission(bypassPermission.getPermissionString())) {
             return false;
         }
-
-        return ConfigurationHelper.getBoolean(ConfigurationOption.CHARGE_FREE_DESTINATION) ||
-                !portal.hasFlag(PortalFlag.FIXED) ||
-                !portal.getDestination().hasFlag(PortalFlag.FREE);
+        if (portal instanceof RealPortal realPortal) {
+            Portal destination = realPortal.getBehavior().getDestination();
+            if (destination == null) {
+                return false;
+            }
+            return (ConfigurationHelper.getBoolean(ConfigurationOption.CHARGE_FREE_DESTINATION) ||
+                    !destination.hasFlag(PortalFlag.FREE)) &&
+                    !portal.hasFlag(PortalFlag.FREE);
+        }
+        return false;
     }
 
 }

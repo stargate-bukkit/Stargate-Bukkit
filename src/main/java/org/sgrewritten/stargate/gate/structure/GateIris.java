@@ -2,21 +2,31 @@ package org.sgrewritten.stargate.gate.structure;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
 import org.sgrewritten.stargate.api.vectorlogic.VectorOperation;
+import org.sgrewritten.stargate.manager.BlockDropManager;
+import org.sgrewritten.stargate.thread.task.StargateRegionTask;
+import org.sgrewritten.stargate.util.VectorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * Represents the iris (opening) part of the gate structure
  */
 public class GateIris extends GateStructure {
+    private static final Random RANDOM = new Random();
 
     public final Set<Material> irisOpen;
     public final Set<Material> irisClosed;
+    private final BoundingBox boundingBox;
     BlockVector exit;
     protected final List<BlockVector> blocks;
 
@@ -30,6 +40,7 @@ public class GateIris extends GateStructure {
         this.irisOpen = irisOpen;
         this.irisClosed = irisClosed;
         blocks = new ArrayList<>();
+        this.boundingBox = new BoundingBox();
     }
 
     /**
@@ -39,6 +50,7 @@ public class GateIris extends GateStructure {
      */
     public void addPart(BlockVector blockVector) {
         blocks.add(blockVector);
+        boundingBox.union(blockVector);
     }
 
     /**
@@ -63,7 +75,35 @@ public class GateIris extends GateStructure {
 
     @Override
     public void generateStructure(VectorOperation converter, Location topLeft) {
+        // (Clear all blocks that are in the portal iris)
+        Material[] irisClosedList = irisClosed.toArray(new Material[0]);
+        for (BlockVector blockVector : this.blocks) {
+            int target = RANDOM.nextInt(irisClosedList.length);
+            Material chosenType = irisClosedList[target];
+            Location location = VectorUtils.getLocation(topLeft, converter, blockVector);
+            new StargateRegionTask(location) {
+                @Override
+                public void run() {
+                    Block block = location.getBlock();
+                    if (chosenType == block.getType()) {
+                        return;
+                    }
+                    BlockData blockData = chosenType.createBlockData();
+                    // Over-engineering :)
+                    if (blockData instanceof Orientable orientable) {
+                        orientable.setAxis(converter.getIrisNormal());
+                    }
+                    block.setBlockData(blockData);
+                    BlockDropManager.disableBlockDrops(block);
+                }
+            }.runNow();
 
+        }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 
     /**

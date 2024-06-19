@@ -3,7 +3,7 @@ package org.sgrewritten.stargate.util.portal;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
-import org.sgrewritten.stargate.api.event.portal.StargateDestroyPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargatePlayerDestroyPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.MessageType;
 import org.sgrewritten.stargate.api.formatting.LanguageManager;
 import org.sgrewritten.stargate.api.formatting.TranslatableMessage;
@@ -38,7 +38,7 @@ public final class PortalDestructionHelper {
         StargatePermissionManager permissionManager = new StargatePermissionManager(player, languageManager);
 
         boolean hasPermission = permissionManager.hasDestroyPermissions((RealPortal) portal);
-        StargateDestroyPortalEvent portalDestroyEvent = new StargateDestroyPortalEvent(portal, player, !hasPermission,
+        StargatePlayerDestroyPortalEvent portalDestroyEvent = new StargatePlayerDestroyPortalEvent(portal, player, !hasPermission,
                 permissionManager.getDenyMessage(), cost);
         Bukkit.getPluginManager().callEvent(portalDestroyEvent);
 

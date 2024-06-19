@@ -1,14 +1,18 @@
 package org.sgrewritten.stargate.util;
 
 import net.md_5.bungee.api.ChatColor;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
+import org.sgrewritten.stargate.property.StargateConstant;
+
+import java.util.regex.Pattern;
 
 /**
  * A helper class for dealing with portal and network names
  */
 public final class NameHelper {
+
+    private static final Pattern WHITE_CHARACTERS = Pattern.compile("\\s\\s+");
 
     private NameHelper() {
 
@@ -24,7 +28,7 @@ public final class NameHelper {
         if (name == null) {
             return null;
         }
-        name = name.replaceAll("\\s\\s+", " ");
+        name = WHITE_CHARACTERS.matcher(name).replaceAll(" ");
         return name.trim();
     }
 
@@ -52,7 +56,7 @@ public final class NameHelper {
      * @return <p> If the name has a valid length </p>
      */
     public static boolean isInvalidName(String name) {
-        return name == null || name.isEmpty() || name.length() >= Stargate.getMaxTextLength();
+        return name == null || name.isEmpty() || name.length() >= StargateConstant.MAX_TEXT_LENGTH;
     }
 
 }

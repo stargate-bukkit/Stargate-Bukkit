@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.network.Network;
@@ -17,11 +18,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.property.StargateProtocolProperty;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -82,7 +79,7 @@ public final class BungeeHelper {
      * @param registry      <p>The registry to use</p>
      * @param bungeeNetwork <p>The name of the legacy bungee network</p>
      * @return <p>The legacy bungee network, or null if unobtainable</p>
-     * @throws UnimplementedFlagException
+     * @throws UnimplementedFlagException <p>If an unimplemented network type was used in creation (should not trigger)</p>
      */
     public static @Nullable Network getLegacyBungeeNetwork(RegistryAPI registry, NetworkManager networkManager, String bungeeNetwork) throws UnimplementedFlagException {
         Network network = registry.getNetwork(bungeeNetwork, StorageType.LOCAL);
@@ -101,6 +98,11 @@ public final class BungeeHelper {
         return network;
     }
 
+    /**
+     * @param portal      <p>The portal which was created or destroyed</p>
+     * @param requestType <p>Whether the portal was created or destroyed</p>
+     * @return <p>A json string message</p>
+     */
     public static String generateJsonMessage(Portal portal, StargateProtocolRequestType requestType) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(requestType.toString()));
@@ -112,6 +114,12 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
+    /**
+     * Get json message for changing the id of a network
+     * @param newId <p>The id to change to</p>
+     * @param oldId <p>Previous id of the network</p>
+     * @return <p>A json string with a rename network message</p>
+     */
     public static String generateRenameNetworkMessage(String newId, String oldId) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.NETWORK_RENAME.toString()));
@@ -120,6 +128,13 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
+    /**
+     *
+     * @param newName <p>The new portal name to change to</p>
+     * @param oldName <p>The previous portal name</p>
+     * @param network <p>The network of the portal</p>
+     * @return <p>A json string with a rename portal message</p>
+     */
     public static String generateRenamePortalMessage(String newName, String oldName, Network network) {
         JsonObject jsonData = new JsonObject();
         jsonData.add(StargateProtocolProperty.REQUEST_TYPE.toString(), new JsonPrimitive(StargateProtocolRequestType.PORTAL_RENAME.toString()));
@@ -129,15 +144,34 @@ public final class BungeeHelper {
         return jsonData.toString();
     }
 
+    /**
+     * @param player <p>The player to teleport</p>
+     * @param portal <p>The portal to teleport to (in the other server)</p>
+     * @return <p>A json string with a teleport player message</p>
+     */
     public static String generateTeleportJsonMessage(String player, Portal portal) {
-        JsonObject JsonData = new JsonObject();
-        JsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player));
-        JsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
-        JsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
-        return JsonData.toString();
+        JsonObject jsonData = new JsonObject();
+        jsonData.add(StargateProtocolProperty.PLAYER.toString(), new JsonPrimitive(player));
+        jsonData.add(StargateProtocolProperty.PORTAL.toString(), new JsonPrimitive(portal.getName()));
+        jsonData.add(StargateProtocolProperty.NETWORK.toString(), new JsonPrimitive(portal.getNetwork().getId()));
+        return jsonData.toString();
     }
 
+    /**
+     * @param player <p>The player to teleport</p>
+     * @param portal <p>The portal to teleport</p>
+     * @return <p>A legacy format (csv-ish) with teleport message</p>
+     */
     public static String generateLegacyTeleportMessage(String player, Portal portal) {
         return player + "#@#" + portal.getName();
+    }
+
+    /**
+     * To send bungee messages, it is required that a player is online and that stargate knows the server name as defined
+     * In the velocity / bungee config.
+     * @return <p>True if the server can send bungee messages</p>
+     */
+    public static boolean canSendBungeeMessages() {
+        return (!Bukkit.getServer().getOnlinePlayers().isEmpty() && Stargate.knowsServerName());
     }
 }

@@ -12,13 +12,22 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
+import org.sgrewritten.stargate.exception.GateConflictException;
 
 import java.util.List;
 
 public class GateMock implements GateAPI {
+    private RealPortal portal;
+
     @Override
-    public void drawControlMechanisms(SignLine[] signLines, boolean drawButton) {
+    public void drawControlMechanisms(LineData[] lines) {
+
+    }
+
+    @Override
+    public void redrawPosition(PortalPosition portalPosition, @Nullable LineData[] lines) {
 
     }
 
@@ -78,6 +87,11 @@ public class GateMock implements GateAPI {
     }
 
     @Override
+    public boolean isValid() throws GateConflictException {
+        return false;
+    }
+
+    @Override
     public void calculatePortalPositions(boolean alwaysOn) {
 
     }
@@ -110,5 +124,15 @@ public class GateMock implements GateAPI {
     @Override
     public void forceGenerateStructure() {
 
+    }
+
+    @Override
+    public void assignPortal(RealPortal realPortal) {
+        this.portal = realPortal;
+    }
+
+    @Override
+    public RealPortal getPortal() {
+        return portal;
     }
 }

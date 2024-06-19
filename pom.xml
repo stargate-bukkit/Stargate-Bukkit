@@ -4,13 +4,13 @@
 
     <groupId>org.sgrewritten</groupId>
     <artifactId>stargate</artifactId>
-    <version>1.0.0.15-ALPHA</version>
-    <name>StarGate</name>
+    <version>1.0.0.16-ALPHA</version>
+    <name>Stargate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
-    <url>https://sgrewitten.org</url>
+    <url>https://sgrewritten.org</url>
     <organization>
-        <name>Stargate Rewitten</name>
-        <url>https://sgrewitten.org</url>
+        <name>Stargate Rewritten</name>
+        <url>https://sgrewritten.org</url>
     </organization>
     <developers>
         <developer>
@@ -25,7 +25,7 @@
     <contributors>
         <contributor>
             <name>The contributors of the SGR Project</name>
-            <url>https://sgrewitten.org/credits</url>
+            <url>https://sgrewritten.org/credits</url>
         </contributor>
     </contributors>
 
@@ -60,19 +60,23 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>MG-Dev Jenkins CI Maven Repository</id>
+            <url>https://ci.mg-dev.eu/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.2-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
+            <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -96,43 +100,49 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.44.1.0</version>
+            <version>3.45.3.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
-            <version>8.2.0</version>
+            <version>8.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.0</version>
+            <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.joshka</groupId>
             <artifactId>junit-json-params</artifactId>
-            <version>5.9.3-r0</version>
+            <version>5.10.2-r0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.9</version>
+            <version>2.0.13</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
             <artifactId>MockBukkit-v1.20</artifactId>
-            <version>3.58.0</version>
+            <version>3.86.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.8.0</version>
+            <version>10.0.0</version>
         </dependency>
         <dependency>
             <groupId>net.coreprotect</groupId>
@@ -152,6 +162,24 @@
             <version>5.2.5</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.bergerkiller.bukkit</groupId>
+            <artifactId>BKCommonLib</artifactId>
+            <version>1.20.4-v1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.13</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Thorinwasher</groupId>
+            <artifactId>BlockUtil</artifactId>
+            <version>v1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>Stargate-${project.version}</finalName>
@@ -159,7 +187,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <release>17</release>
                 </configuration>
@@ -167,7 +195,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.3</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <artifactSet>
@@ -271,7 +299,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>9.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.commit.id.abbrev</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -280,6 +330,8 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>**</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>

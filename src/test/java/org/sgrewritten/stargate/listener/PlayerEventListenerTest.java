@@ -1,6 +1,5 @@
 package org.sgrewritten.stargate.listener;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -15,41 +14,36 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.database.StorageMock;
-import org.sgrewritten.stargate.gate.GateFormatHandler;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
 import org.sgrewritten.stargate.manager.StargateBungeeManager;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
-import java.io.File;
-import java.util.Objects;
 
 class PlayerEventListenerTest {
 
     private PlayerEventListener listener;
     private Block signBlock;
     private @NotNull PlayerMock player;
-    private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
 
     @BeforeEach
     void setUp() {
-        ServerMock server = MockBukkit.mock();
+        ServerMock server = StargateTestHelper.setup();
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
-        GateFormatRegistry.setFormats(Objects.requireNonNull(GateFormatHandler.loadGateFormats(TEST_GATES_DIR)));
         listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock(), new StargateNetworkManager(registry, new StorageMock())), new BlockLoggerMock(), new StorageMock());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
     }
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

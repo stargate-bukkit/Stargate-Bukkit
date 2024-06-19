@@ -1,5 +1,9 @@
 package org.sgrewritten.stargate.api.config;
 
+import org.sgrewritten.stargate.property.PortalValidity;
+
+import java.util.Arrays;
+
 /**
  * An enum defining the different data types an option can have
  */
@@ -48,7 +52,12 @@ public enum OptionDataType {
     /**
      * The data type if the option is a string remote database driver
      */
-    REMOTE_DATABASE_DRIVER(generateDrivers());
+    REMOTE_DATABASE_DRIVER(generateDrivers()),
+
+    /**
+     * How to handle invalid portals
+     */
+    PORTAL_VALIDITY(Arrays.stream(PortalValidity.values()).map(Enum::name).toArray(String[]::new));
 
     private final String[] values;
 

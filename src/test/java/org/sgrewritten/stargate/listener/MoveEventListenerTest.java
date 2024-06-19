@@ -21,15 +21,15 @@ import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
 import org.sgrewritten.stargate.util.StargateTestHelper;
-
-import java.util.HashSet;
 
 class MoveEventListenerTest {
 
@@ -43,11 +43,9 @@ class MoveEventListenerTest {
     private @NotNull Stargate plugin;
 
     @BeforeEach
-    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        System.setProperty("bstats.relocatecheck", "false");
-        server = MockBukkit.mock();
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
+        server = StargateTestHelper.pluginSetup();
         plugin = MockBukkit.load(Stargate.class);
-        StargateTestHelper.setup();
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
         Location from = new Location(theEnd, 0, 0, 0);
@@ -55,7 +53,7 @@ class MoveEventListenerTest {
         vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
         StargateAPI stargateAPI = new StargateAPIMock();
-        portal = PortalFactory.generateFakePortal(sign, "network", new HashSet<>(), "portal", stargateAPI);
+        portal = new PortalBuilder(stargateAPI, player, "portal").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(), stargateAPI.getRegistry())).setNetwork("network").build();
         listener = new MoveEventListener(stargateAPI.getRegistry());
 
         iris = portal.getGate().getLocations(GateStructureType.IRIS).get(0).getLocation();
@@ -64,7 +62,7 @@ class MoveEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        MockBukkit.unmock();
+        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -3,6 +3,7 @@ package org.sgrewritten.stargate;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import be.seeseemelk.mockbukkit.scheduler.BukkitSchedulerMock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -10,22 +11,25 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sgrewritten.stargate.action.SupplierAction;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
+import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.PortalFlag;
+import org.sgrewritten.stargate.api.network.PortalBuilder;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.database.TestCredential;
 import org.sgrewritten.stargate.database.TestCredentialsManager;
 import org.sgrewritten.stargate.exception.GateConflictException;
+import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.network.portal.BungeePortal;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.network.portal.PortalFactory;
-import org.sgrewritten.stargate.thread.ThreadHelper;
+import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,75 +47,41 @@ class StargateTest {
     private RealPortal bungeePortal;
 
     private static final String PORTAL2 = "name2";
+    private static final String PORTAL1 = "name1";
+    private WorldMock world;
+    private PlayerMock player;
 
     @BeforeEach
-    public void setup() throws TranslatableException, NoFormatFoundException, GateConflictException {
-        server = MockBukkit.mock();
+    void setup() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
+        server = StargateTestHelper.pluginSetup();
         scheduler = server.getScheduler();
-        WorldMock world = server.addSimpleWorld("world");
-        System.setProperty("bstats.relocatecheck", "false");
+        this.world = server.addSimpleWorld("world");
+        this.player = server.addPlayer();
         plugin = MockBukkit.load(Stargate.class);
 
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-        Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
 
         Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
-
-        String PORTAL1 = "name1";
-        portal = PortalFactory.generateFakePortal(signBlock1, network, new HashSet<>(), PORTAL1, plugin);
-        Set<PortalFlag> flags = new HashSet<>();
-        flags.add(PortalFlag.BUNGEE);
-        Network bungeeNetwork = plugin.getNetworkManager().createNetwork(BungeePortal.getLegacyNetworkName(), NetworkType.CUSTOM, StorageType.LOCAL, false);
-        bungeePortal = PortalFactory.generateFakePortal(signBlock2, bungeeNetwork, flags, PORTAL2, plugin);
-        ThreadHelper.setAsyncQueueEnabled(false);
-        server.getScheduler().waitAsyncTasksFinished();
+        portal = new PortalBuilder(plugin, player, PORTAL1).setGateBuilder(new ImplicitGateBuilder(signBlock1.getLocation(), plugin.getRegistry())).setNetwork(network).build();
     }
 
     @AfterEach
-    public void tearDown() {
-        MockBukkit.unmock();
+    void tearDown() {
+        StargateTestHelper.tearDown();
     }
 
     @Test
-    public void getEconomyManager() {
+    void getEconomyManager() {
         assertNotNull(plugin.getEconomyManager());
     }
 
     @Test
-    public void getCurrentConfigVersion() {
-        Assertions.assertNotEquals(Stargate.getCurrentConfigVersion(), 0);
-    }
-
-    @Test
-    public void getAbsoluteDataFolder() {
+    void getAbsoluteDataFolder() {
         assertNotNull(plugin.getAbsoluteDataFolder());
     }
 
     @Test
-    public void getGateFolder() {
-        assertNotNull(plugin.getGateFolder());
-    }
-
-    @Test
-    public void addSynchronousTickAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousTickAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true)));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void addSynchronousBungeeSecAction() {
-        Assertions.assertDoesNotThrow(() -> Stargate.addSynchronousSecAction(new SupplierAction(() -> true), true));
-        scheduler.performOneTick();
-    }
-
-    @Test
-    public void setGetConfigurationOptionValue() {
+    void setGetConfigurationOptionValue() {
         plugin.setConfigurationOptionValue(ConfigurationOption.UPKEEP_COST, 2);
         Assertions.assertEquals(2, plugin.getConfigurationOptionValue(ConfigurationOption.UPKEEP_COST));
         plugin.reload();
@@ -119,14 +89,14 @@ class StargateTest {
     }
 
     @Test
-    public void reload() {
+    void reload() {
         Stargate.log(Level.FINEST, "reloading");
         plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
 
     @Test
-    public void reload_StupidDefaultNetworkNameUUID() {
+    void reload_StupidDefaultNetworkNameUUID() {
         Stargate.setLogLevel(Level.OFF);
         plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, UUID.randomUUID().toString());
         plugin.reload();
@@ -134,60 +104,47 @@ class StargateTest {
         Assertions.assertFalse(plugin.isEnabled());
     }
 
-    @Test
-    public void reload_StupidDefaultNetworkNameTooLong() {
+    @ParameterizedTest
+    @ValueSource(strings = {"thisNameIsWayTooLong", "", "Test1\nTest2"})
+    void reload_StupidDefaultNetworkName(String name) {
         Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "thisNameIsWayTooLong");
+        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, name);
         plugin.reload();
         Stargate.setLogLevel(Level.INFO);
         Assertions.assertFalse(plugin.isEnabled());
     }
 
     @Test
-    public void reload_StupidDefaultNetworkNameEmpty() {
-        Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "");
-        plugin.reload();
-        Stargate.setLogLevel(Level.INFO);
-        Assertions.assertFalse(plugin.isEnabled());
-    }
-
-    @Test
-    public void reload_StupidDefaultNetworkNameNewlines() {
-        Stargate.setLogLevel(Level.OFF);
-        plugin.setConfigurationOptionValue(ConfigurationOption.DEFAULT_NETWORK, "Test1\nTest2");
-        plugin.reload();
-        Stargate.setLogLevel(Level.INFO);
-        Assertions.assertFalse(plugin.isEnabled());
-    }
-
-    @Test
-    public void reloadInterServer() {
+    void reloadInterServer() {
         setInterServerEnabled();
-        plugin.reload();
         Assertions.assertTrue(plugin.isEnabled());
     }
 
     @Test
-    public void reloadConfig() {
+    void reloadConfig() {
         Assertions.assertDoesNotThrow(() -> plugin.reloadConfig());
     }
 
     @Test
-    public void restart() {
+    void restart() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+        plugin.setConfigurationOptionValue(ConfigurationOption.USING_BUNGEE, true);
+        createBungeePortal();
+        server.getScheduler().performOneTick();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
+        server.getScheduler().waitAsyncTasksFinished();
         server.getPluginManager().enablePlugin(plugin);
+        server.getScheduler().performOneTick();
         Assertions.assertTrue(plugin.isEnabled());
-        Network network = plugin.getRegistry().getNetwork(BungeePortal.getLegacyNetworkName(), StorageType.LOCAL);
-        plugin.getRegistry().getNetworkRegistry(StorageType.LOCAL).stream().forEach((aNetwork) -> Stargate.log(Level.INFO, aNetwork.getId()));
+        Network network = plugin.getRegistry().getNetwork(ConfigurationHelper.getString(ConfigurationOption.LEGACY_BUNGEE_NETWORK), StorageType.LOCAL);
         assertNotNull(network);
         assertNotNull(network.getPortal(PORTAL2));
     }
 
     @Test
-    public void restartInterServer() {
+    void restartInterServer() {
         setInterServerEnabled();
+        StargateTestHelper.runAllTasks();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);
@@ -215,5 +172,14 @@ class StargateTest {
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_PORT, credentialsManager.getCredentialInt(TestCredential.MYSQL_DB_PORT, 3306));
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_USE_SSL, false);
         plugin.setConfigurationOptionValue(ConfigurationOption.BUNGEE_DATABASE, credentialsManager.getCredentialString(TestCredential.MYSQL_DB_NAME, "Stargate"));
+    }
+
+    private void createBungeePortal() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
+        Block signBlock2 = PortalBlockGenerator.generatePortal(new Location(world, 0, 20, 0));
+        Set<StargateFlag> flags = new HashSet<>();
+        flags.add(StargateFlag.LEGACY_INTERSERVER);
+        PortalBuilder portalBuilder = new PortalBuilder(plugin, player, PORTAL2).setGateBuilder(new ImplicitGateBuilder(signBlock2.getLocation(), plugin.getRegistry())).setFlags(flags);
+        bungeePortal = portalBuilder.setDestinationServerName("server").setDestination("destination").build();
+        plugin.reload();
     }
 }

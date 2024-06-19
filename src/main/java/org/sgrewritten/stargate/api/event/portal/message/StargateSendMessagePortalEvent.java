@@ -3,11 +3,14 @@ package org.sgrewritten.stargate.api.event.portal.message;
 import org.bukkit.entity.Entity;
 import org.sgrewritten.stargate.api.event.portal.CancellableStargatePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
+
+import org.sgrewritten.stargate.api.container.Holder;
 
 public abstract class StargateSendMessagePortalEvent extends CancellableStargatePortalEvent {
     private final MessageType type;
     private final Entity entity;
-    private String message;
+    private Holder<StargateComponent> message;
 
     /**
      * Instantiates a new stargate player event
@@ -18,11 +21,11 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
      * @param entity <p>The entity receiving the message</p>
      * @param type   <p>The type of message being sent</p>
      */
-    public StargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, String message, boolean async) {
+    protected StargateSendMessagePortalEvent(Portal portal, Entity entity, MessageType type, StargateComponent message, boolean async) {
         super(portal, async);
         this.type = type;
         this.entity = entity;
-        this.message = message;
+        this.message = new Holder<>(message);
     }
 
     /**
@@ -42,14 +45,14 @@ public abstract class StargateSendMessagePortalEvent extends CancellableStargate
     /**
      * @return <p>The message that will be sent</p>
      */
-    public String getMessage() {
+    public Holder<StargateComponent> getMessage() {
         return this.message;
     }
 
     /**
      * @param message <p>The message that will be sent</p>
      */
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(StargateComponent message) {
+        this.message.value = message;
     }
 }

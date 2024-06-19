@@ -1,23 +1,32 @@
 package org.sgrewritten.stargate.database;
 
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.util.FileHelper;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A handler which keeps track of all queries and query variations
  */
 public class SQLQueryHandler {
 
-    private static final Map<SQLQuery, Map<DatabaseDriver, String>> queries = new HashMap<>();
+    private SQLQueryHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static final Map<SQLQuery, Map<DatabaseDriver, String>> queries = new EnumMap<>(SQLQuery.class);
+    private static final Pattern SQL_FILE = Pattern.compile(".sql$");
 
     static {
         //Load all queries from the query files
@@ -92,20 +101,21 @@ public class SQLQueryHandler {
         return readQueryFiles;
     }
 
-    private static Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
+    private static @NotNull Map<String, String> readQueryFilesFromFolder(String folder) throws IOException, URISyntaxException {
         final Map<String, String> queries = new HashMap<>();
         String fullFolder = "/database/" + folder;
         List<Path> walk = FileHelper.listFilesOfInternalDirectory(fullFolder);
-        if (walk == null) {
-            return null;
+        if (walk.isEmpty()) {
+            return new HashMap<>();
         }
-        walk.forEach((path) -> {
-            if (!path.toString().endsWith(".sql")) {
+        walk.forEach(path -> {
+            Matcher sqlFileMatcher = SQL_FILE.matcher(path.getFileName().toString());
+            if (!sqlFileMatcher.find()) {
                 return;
             }
             try {
                 String query = FileHelper.readStreamToString(FileHelper.getInputStreamForInternalFile(fullFolder + "/" + path.getFileName().toString()));
-                queries.put(path.getFileName().toString().replaceAll(".sql$", ""), query);
+                queries.put(sqlFileMatcher.replaceAll(""), query);
             } catch (IOException e) {
                 Stargate.log(e);
             }
@@ -127,12 +137,10 @@ public class SQLQueryHandler {
                 continue;
             }
             Map<String, String> readQueries = readQueryFiles.get(databaseDriver.getQueryFolder());
-            for (String query : readQueries.keySet()) {
-                SQLQuery sqlQuery = SQLQuery.valueOf(query);
-                String queryString = readQueries.get(query);
-                if (!queries.containsKey(sqlQuery)) {
-                    queries.put(sqlQuery, new HashMap<>());
-                }
+            for (Map.Entry<String, String> entry : readQueries.entrySet()) {
+                SQLQuery sqlQuery = SQLQuery.valueOf(entry.getKey());
+                String queryString = entry.getValue();
+                queries.putIfAbsent(sqlQuery, new EnumMap<>(DatabaseDriver.class));
                 queries.get(sqlQuery).put(databaseDriver, queryString);
             }
         }

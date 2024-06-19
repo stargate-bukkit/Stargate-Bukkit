@@ -14,17 +14,12 @@ public class StargateInitializationException extends Exception {
         super(message);
     }
 
+    /**
+     *
+     * @param exception <p>The real cause of this exception</p>
+     */
     public StargateInitializationException(Throwable exception) {
         super(exception);
-    }
-
-    /**
-     * Sets the stack trace for this exception
-     *
-     * @param stackTrace <p>The new stack trace</p>
-     */
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-        super.setStackTrace(stackTrace);
     }
 
 }
