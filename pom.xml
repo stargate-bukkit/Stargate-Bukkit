@@ -4,7 +4,7 @@
 
     <groupId>org.sgrewritten</groupId>
     <artifactId>stargate</artifactId>
-    <version>1.0.0.16-NIGHTLY</version>
+    <version>1.0.0.17-NIGHTLY</version>
     <name>Stargate</name>
     <description>The original, and still the best, transportation plugin for the Bukkit Ecosystem.</description>
     <url>https://sgrewritten.org</url>

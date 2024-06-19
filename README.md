@@ -2,7 +2,7 @@
 
 # Stargate-Bukkit
 
-`Supporting MC 1.18+ in the Bukkit Ecosystem`
+`Supporting MC 1.20+ in the Bukkit Ecosystem`
 
 > [!WARNING]
 > THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!<br>
