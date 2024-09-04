@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS {InterPortalFlagRelation}
       name,
       network
    )
-   ON UPDATE CASCADE,
+   ON UPDATE CASCADE
+   ON DELETE CASCADE,
    FOREIGN KEY (flag) REFERENCES {Flag} (id)
 );

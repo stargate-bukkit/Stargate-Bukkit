@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS {InterPortalPosition}
       name,
       network
    )
-   ON UPDATE CASCADE,
+   ON UPDATE CASCADE
+   ON DELETE CASCADE,
    FOREIGN KEY (positionType) REFERENCES {PositionType} (id)
 );
