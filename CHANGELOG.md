@@ -1,5 +1,10 @@
 # Changes
 
+#### [Version 1.0.0.17] Stargate-Rewritten
+
+- Fixed several incompatibilities with the MyWorlds plugin
+- Fixed several incompatibilities with hybrid servers.
+
 #### [Version 1.0.0.16] Stargate-Rewritten
 
 - Added full support for MineCraft 1.20.X; fixed related bugs introduced by double sided and editable signs.
