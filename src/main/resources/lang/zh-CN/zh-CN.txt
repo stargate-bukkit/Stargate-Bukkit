@@ -26,6 +26,7 @@ faultExists=本星门网络中已存在一个同名星门!
 faultFull=该星门网络已满!
 faultWorldDeny=你没有链接世界 %world% 的权限!
 faultConflict=这个星门与现有星门冲突.
+faultConflictNetwork=强制指定网络类型失败；可能与 %type% 类型的网络名称冲突！
 faultFlag=你没有使用 %flags% 的权限; 已从星门中去除!
 faultControls=这个星门的控制方块太少了, 无法容纳你选择的标志!
 faultAddon=一个插件阻止你这样做！
@@ -72,6 +73,7 @@ unimplementedIConflict=本地网络和服务器间%name%网络当前脱节；在
 unimplementedFlag=%flags%标志尚未实施。
 
 #Parity
+parityCommand=正在自动载入 %modules% 个模块！这可能需要等上几分钟。
 
 #Admin
 adminReload=配置文件已重载!
