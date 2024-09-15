@@ -57,7 +57,7 @@ class TeleporterTest {
         populator = new SynchronousPopulator();
         teleporter = new Teleporter(destination, origin, destination.getGate().getFacing(),
                 origin.getGate().getFacing(), 0, "empty", new LanguageManagerMock(), new StargateEconomyManagerMock());
-        furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.MINECART_FURNACE);
+        furnaceMinecart = (PoweredMinecartMock) world.spawnEntity(new Location(world, 0, 0, 0), EntityType.FURNACE_MINECART);
 
     }
 

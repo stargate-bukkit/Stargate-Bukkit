@@ -1,8 +1,8 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
-import com.drew.lang.annotations.NotNull;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An interface for text components, meant to support both spigot and adventure text formats.
