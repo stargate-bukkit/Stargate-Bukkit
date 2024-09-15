@@ -1,4 +1,9 @@
-CREATE TABLE IF NOT EXISTS {PortalPosition}
+/*
+ * Add a update on cascade constraint to the PortalPosition table
+ * This is the only way of doing it in sqlite (by recreating the table)
+ */
+
+CREATE TABLE IF NOT EXISTS {PortalPosition}1
 (
    portalName NVARCHAR (180) NOT NULL,
    networkName NVARCHAR (180) NOT NULL,
@@ -30,3 +35,11 @@ CREATE TABLE IF NOT EXISTS {PortalPosition}
    ON DELETE CASCADE,
    FOREIGN KEY (positionType) REFERENCES {PositionType} (id)
 );
+
+INSERT INTO {PortalPosition}1 SELECT *
+FROM
+   {PortalPosition};
+
+DROP TABLE {PortalPosition};
+
+ALTER TABLE {PortalPosition}1 RENAME TO {PortalPosition};

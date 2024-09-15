@@ -18,11 +18,12 @@ import java.sql.SQLException;
 
 class SQLDatabaseMigratorTest {
 
-    private SQLDatabaseMigrator databaseMigrator;
+    private SQLDatabaseMigrator databaseMigrator7;
     private SQLiteDatabase database;
     private TableNameConfiguration nameConfiguration;
     private static final File sqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.db");
     private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
+    private SQLDatabaseMigrator databaseMigrator9;
 
     @BeforeEach
     void setUp() throws SQLException, IOException {
@@ -31,7 +32,8 @@ class SQLDatabaseMigratorTest {
 
         database = new SQLiteDatabase(sqlDatabaseFile);
         nameConfiguration = new TableNameConfiguration("", "");
-        databaseMigrator = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/v-7", true);
+        databaseMigrator7 = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/v-7", true);
+        databaseMigrator9 = new SQLDatabaseMigrator(database, nameConfiguration, "/migration/database/v-9", true);
     }
 
     @AfterEach
@@ -43,7 +45,8 @@ class SQLDatabaseMigratorTest {
     // CHECK IF THE UPDATE ON CASCADE OPTION IS THERE, BY LOOKING AT THE BEHAVIOR
     @Test
     void renamePortalPosition() throws SQLException, IOException {
-        databaseMigrator.run();
+        databaseMigrator7.run();
+        databaseMigrator9.run();
         renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getPortalPositionTableName(), "portal", "network",
@@ -54,7 +57,8 @@ class SQLDatabaseMigratorTest {
 
     @Test
     void renameInterPortalPosition() throws SQLException, IOException {
-        databaseMigrator.run();
+        databaseMigrator7.run();
+        databaseMigrator9.run();
         renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getInterPortalPositionTableName(), "portal", "network",
@@ -66,7 +70,8 @@ class SQLDatabaseMigratorTest {
 
     @Test
     void renamePortalFlag() throws SQLException, IOException {
-        databaseMigrator.run();
+        databaseMigrator7.run();
+        databaseMigrator9.run();
         renamePortal(nameConfiguration.getPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getFlagRelationTableName(), "portal", "network", connection);
@@ -76,7 +81,8 @@ class SQLDatabaseMigratorTest {
 
     @Test
     void renameInterPortalFlag() throws SQLException, IOException {
-        databaseMigrator.run();
+        databaseMigrator7.run();
+        databaseMigrator9.run();
         renamePortal(nameConfiguration.getInterPortalTableName());
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfHasNot(nameConfiguration.getInterFlagRelationTableName(), "portal", "network",
@@ -88,7 +94,8 @@ class SQLDatabaseMigratorTest {
 
     @Test
     void portalPosition_checkPluginName() throws SQLException, IOException {
-        databaseMigrator.run();
+        databaseMigrator7.run();
+        databaseMigrator9.run();
         try (Connection connection = database.getConnection()) {
             SQLTestHelper.checkIfColumnIs(nameConfiguration.getPortalPositionTableName(), "pluginName", "portal", "network", "Stargate", connection);
         }

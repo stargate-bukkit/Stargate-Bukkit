@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * A data migrator to migrate from 1.0.0.14 to 1.0.0.16
+ * A data migrator to migrate from 1.0.0.14 to 1.0.0.17
  */
 public class DataMigration9 extends DataMigration {
     private final Properties configConversions = loadConfigConversions("/migration/config-migrations-9.properties");
@@ -41,6 +41,12 @@ public class DataMigration9 extends DataMigration {
                 runChangeWorldNameToUUID(database, tableNameConfiguration, StorageType.INTER_SERVER);
             }
             runChangeWorldNameToUUID(database, tableNameConfiguration, StorageType.LOCAL);
+        } catch (SQLException | IOException e) {
+            Stargate.log(e);
+        }
+
+        try {
+            new SQLDatabaseMigrator(database, tableNameConfiguration, "/migration/database/v-9", isInterServer).run();
         } catch (SQLException | IOException e) {
             Stargate.log(e);
         }

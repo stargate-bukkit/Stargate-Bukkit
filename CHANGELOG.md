@@ -1,5 +1,12 @@
 # Changes
 
+#### [Version 1.0.0.17] Stargate-Rewritten
+
+- Fixed several incompatibilities with the MyWorlds plugin.
+- Fixed several incompatibilities with hybrid servers.
+- Updated dependencies and bumped java version to 21.
+- Changed minimum minecraft version to 1.20.6.
+
 #### [Version 1.0.0.16] Stargate-Rewritten
 
 - Added full support for MineCraft 1.20.X; fixed related bugs introduced by double sided and editable signs.
