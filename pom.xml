@@ -204,8 +204,9 @@
                             <include>com.zaxxer:HikariCP</include>
                             <include>com.github.cryptomorin:XSeries</include>
                             <include>org.slf4j:slf4j-api</include>
-                            <include>org.apache.tika:tika-parsers</include>
+                            <include>org.apache.tika:tika-parsers-standard-package</include>
                             <include>org.apache.poi:poi</include>
+                            <include>org.apache.tika:tika-parser-text-module</include>
                         </includes>
                     </artifactSet>
                     <relocations>
