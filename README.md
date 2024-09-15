@@ -6,15 +6,13 @@
 
 > [!WARNING]
 >
-> **THIS IS A TESTING BUILD FROM THE ALPHA CHANNEL!**<Br>
->  
->   **FOR**: Addon developers, early adopters, and adventure seekers.<Br>
->   **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.<Br>
->   **EXPECT**: Test builds with bugs, incompatible addons, and possible crashes.<Br>
->
-> **THIS BUILD IS NOT YET SUITABLE FOR USE AT SCALE OR ON MOST PRODUCTION SERVERS**<Br>
->   **Use at your own risk, remember to make backups, and please report the bugs you will find!**<Br>
-
+> THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!
+> 
+> FOR: Stargate developers and contributors.<br>
+> ENJOY: Access to cutting edge features still under active development.<br>
+> EXPECT: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br>
+> 
+> THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT Use at your own risk, and remember to make backups!
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
