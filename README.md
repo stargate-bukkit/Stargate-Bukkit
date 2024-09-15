@@ -6,13 +6,14 @@
 
 > [!WARNING]
 >
-> THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!
+> **THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL**!
 > 
-> FOR: Stargate developers and contributors.<br>
-> ENJOY: Access to cutting edge features still under active development.<br>
-> EXPECT: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br>
+> **FOR**: Stargate developers and contributors.<br>
+> **ENJOY**: Access to cutting edge features still under active development.<br>
+> **EXPECT**: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.<br>
 > 
-> THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT Use at your own risk, and remember to make backups!
+> **THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT**<Br>
+> Use at your own risk, and remember to make backups!
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
 
