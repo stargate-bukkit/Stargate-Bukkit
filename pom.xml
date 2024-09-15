@@ -152,7 +152,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
-            <artifactId>tika-parsers</artifactId>
+            <artifactId>tika-parsers-standard-package</artifactId>
             <version>2.9.2</version>
             <scope>compile</scope>
         </dependency>

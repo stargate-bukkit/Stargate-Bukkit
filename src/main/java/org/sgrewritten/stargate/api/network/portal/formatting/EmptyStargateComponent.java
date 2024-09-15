@@ -1,6 +1,6 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
-import com.drew.lang.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 

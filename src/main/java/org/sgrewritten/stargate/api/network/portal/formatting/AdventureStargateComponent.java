@@ -1,11 +1,11 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
-import com.drew.lang.annotations.NotNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.container.Holder;
 
 import java.util.Objects;

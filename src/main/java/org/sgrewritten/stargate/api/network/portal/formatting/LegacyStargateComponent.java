@@ -1,10 +1,10 @@
 package org.sgrewritten.stargate.api.network.portal.formatting;
 
-import com.drew.lang.annotations.NotNull;
-import com.drew.lang.annotations.Nullable;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.container.Holder;
 
 public final class LegacyStargateComponent implements StargateComponent {
@@ -24,15 +24,15 @@ public final class LegacyStargateComponent implements StargateComponent {
     }
 
     @Override
-    public void setSignLine(int index,@NotNull Sign sign) {
-        if(text != null) {
+    public void setSignLine(int index, @NotNull Sign sign) {
+        if (text != null) {
             sign.setLine(index, text);
         }
     }
 
     @Override
     public void sendMessage(Entity receiver) {
-        if(text != null && !text.isEmpty()) {
+        if (text != null && !text.isEmpty()) {
             receiver.sendMessage(text);
         }
     }
@@ -42,7 +42,7 @@ public final class LegacyStargateComponent implements StargateComponent {
         if (value instanceof LegacyStargateComponent legacyStargateComponent) {
             return new LegacyStargateComponent(this.getText() + legacyStargateComponent.getText());
         }
-        if (value instanceof EmptyStargateComponent){
+        if (value instanceof EmptyStargateComponent) {
             return new LegacyStargateComponent(this.getText());
         }
         throw new IllegalArgumentException("Can not combine with AdventureComponent");
@@ -50,7 +50,7 @@ public final class LegacyStargateComponent implements StargateComponent {
 
     @Override
     public String plainText() {
-        if(text == null){
+        if (text == null) {
             return "";
         }
         return ChatColor.stripColor(text);
