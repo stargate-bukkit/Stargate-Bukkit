@@ -2,18 +2,18 @@
 
 # Stargate-Bukkit
 
-`Supporting MC 1.20+ in the Bukkit Ecosystem`
+`Supporting MC 1.20.6+ in the Bukkit Ecosystem`
 
 > [!WARNING]
 >
-> **THIS IS AN DEVELOPMENT BUILD FROM THE NIGHTLY CHANNEL!**
+> **THIS IS A TESTING BUILD FROM THE ALPHA CHANNEL!**<Br>
 >  
->  **FOR**: Stargate developers and contributors.
->  **ENJOY**: Access to cutting edge features still under active development.
->  **EXPECT**: Crashes, unstable test builds, bugs, incomplete integrations, possible data corruption.
+>   **FOR**: Addon developers, early adopters, and adventure seekers.<Br>
+>   **ENJOY**: Acccess to experimental features -- your feedback helps determine what makes it to beta.<Br>
+>   **EXPECT**: Test builds with bugs, incompatible addons, and possible crashes.<Br>
 >
-> **THIS BUILD IS NOT SUITABLE FOR USE ON PRODUCTION SERVERS OF ANY SORT**
->  **Use at your own risk, and remember to make backups!**
+> **THIS BUILD IS NOT YET SUITABLE FOR USE AT SCALE OR ON MOST PRODUCTION SERVERS**<Br>
+>   **Use at your own risk, remember to make backups, and please report the bugs you will find!**<Br>
 
 
 ![Stargate Banner](https://i.imgur.com/7Ji4jrr.png)
