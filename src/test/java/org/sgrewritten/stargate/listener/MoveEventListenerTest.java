@@ -50,7 +50,7 @@ class MoveEventListenerTest {
         theEnd.setEnvironment(Environment.THE_END);
         Location from = new Location(theEnd, 0, 0, 0);
         player = server.addPlayer();
-        vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.MINECART_FURNACE);
+        vehicle = (PoweredMinecartMock) theEnd.spawnEntity(from, EntityType.FURNACE_MINECART);
         Block sign = PortalBlockGenerator.generatePortal(new Location(theEnd, 0, 10, 0));
         StargateAPI stargateAPI = new StargateAPIMock();
         portal = new PortalBuilder(stargateAPI, player, "portal").setGateBuilder(new ImplicitGateBuilder(sign.getLocation(), stargateAPI.getRegistry())).setNetwork("network").build();
