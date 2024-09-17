@@ -77,7 +77,7 @@ public final class LegacyPortalStorageLoader {
                 if (world == null) {
                     Stargate.log(Level.WARNING, "Could not load portal from world: " + worldName);
                     Stargate.log(Level.WARNING, "Ignoring world...");
-                    continue;
+                    break;
                 }
                 try {
                     Portal portal = readPortal(line, world, stargateAPI, defaultNetworkName);
