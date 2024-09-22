@@ -302,6 +302,11 @@ public enum SQLQuery {
     DELETE_GATE_FORMAT,
 
     /**
+     * Get all portals in world
+     */
+    GET_ALL_PORTALS_IN_WORLD,
+    GET_ALL_INTER_PORTALS_IN_WORLD,
+    /**
      * Delete all inter server portals with the specified gate format and server
      */
     DELETE_INTER_GATE_FORMAT

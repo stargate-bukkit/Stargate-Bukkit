@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api.network;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -113,4 +114,10 @@ public interface NetworkManager {
      * @param portal <p>Destroy portal</p>
      */
     void destroyPortal(RealPortal portal);
+
+    /**
+     * Load all portals in world
+     * @param world <p>The world to load all portals from</p>
+     */
+    void loadWorld(World world, StargateAPI stargateAPI);
 }

@@ -127,4 +127,5 @@ public class StargateNetworkRegistry implements NetworkRegistry {
     public int size() {
         return networkMap.size();
     }
+
 }
