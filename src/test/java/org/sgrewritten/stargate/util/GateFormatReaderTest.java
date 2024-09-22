@@ -6,9 +6,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.container.TwoTuple;
 import org.sgrewritten.stargate.exception.ParsingErrorException;
 
@@ -16,17 +18,16 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
+@ExtendWith(StargateExtension.class)
 class GateFormatReaderTest {
 
     @BeforeAll
     static void setUp() {
-        StargateTestHelper.setup();
         Stargate.setLogLevel(Level.FINEST);
     }
 
     @AfterAll
     static void tearDown() {
-        StargateTestHelper.tearDown();
         Stargate.setLogLevel(Level.INFO);
     }
 

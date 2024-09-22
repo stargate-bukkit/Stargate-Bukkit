@@ -6,7 +6,9 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.config.TableNameConfiguration;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargate.exception.InvalidStructureException;
@@ -15,7 +17,6 @@ import org.sgrewritten.stargate.exception.StargateInitializationException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.network.StorageType;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,6 +25,7 @@ import java.util.logging.Level;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(StargateExtension.class)
 public class MySQLDatabaseTest {
 
     private static DatabaseTester tester;
@@ -55,8 +57,6 @@ public class MySQLDatabaseTest {
 
     @AfterAll
     public static void tearDown() throws SQLException {
-        StargateTestHelper.tearDown();
-
         try (Connection connection = database.getConnection()) {
             connection.prepareStatement("DROP DATABASE Stargate;").execute();
             connection.prepareStatement("CREATE DATABASE Stargate;").execute();

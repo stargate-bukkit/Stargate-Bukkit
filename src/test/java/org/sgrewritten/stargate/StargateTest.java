@@ -1,24 +1,24 @@
 package org.sgrewritten.stargate;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import be.seeseemelk.mockbukkit.scheduler.BukkitSchedulerMock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
-import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.database.TestCredential;
 import org.sgrewritten.stargate.database.TestCredentialsManager;
@@ -29,7 +29,6 @@ import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,9 +37,12 @@ import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(StargateExtension.class)
 class StargateTest {
 
+    @StargateInject
     private Stargate plugin;
+    @MockBukkitInject
     private ServerMock server;
     private RealPortal portal;
     private BukkitSchedulerMock scheduler;
@@ -53,21 +55,14 @@ class StargateTest {
 
     @BeforeEach
     void setup() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        server = StargateTestHelper.pluginSetup();
         scheduler = server.getScheduler();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
-        plugin = MockBukkit.load(Stargate.class);
 
         Block signBlock1 = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
 
         Network network = plugin.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
         portal = new PortalBuilder(plugin, player, PORTAL1).setGateBuilder(new ImplicitGateBuilder(signBlock1.getLocation(), plugin.getRegistry())).setNetwork(network).build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test
@@ -144,7 +139,6 @@ class StargateTest {
     @Test
     void restartInterServer() {
         setInterServerEnabled();
-        StargateTestHelper.runAllTasks();
         server.getPluginManager().disablePlugin(plugin);
         Assertions.assertNull(Stargate.getInstance());
         server.getPluginManager().enablePlugin(plugin);

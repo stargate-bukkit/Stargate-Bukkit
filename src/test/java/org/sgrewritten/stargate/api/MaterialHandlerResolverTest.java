@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.api;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -12,9 +13,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -38,8 +41,10 @@ import org.sgrewritten.stargate.util.StargateTestHelper;
 import java.util.List;
 import java.util.Set;
 
+@ExtendWith(StargateExtension.class)
 class MaterialHandlerResolverTest {
 
+    @MockBukkitInject
     private ServerMock server;
     private BlockHandlerResolver blockHandlerResolver;
     private RegistryMock registry;
@@ -52,7 +57,6 @@ class MaterialHandlerResolverTest {
 
     @BeforeEach
     void setUp() throws InvalidNameException, UnimplementedFlagException, NameLengthException, NameConflictException {
-        this.server = StargateTestHelper.setup();
         this.storage = new StorageMock();
         this.blockHandlerResolver = new BlockHandlerResolver(storage);
         this.registry = new RegistryMock(storage, blockHandlerResolver);
@@ -61,11 +65,6 @@ class MaterialHandlerResolverTest {
         this.player = server.addPlayer();
         this.world = server.addSimpleWorld("world");
         this.network = networkManager.createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

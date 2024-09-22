@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.network.portal;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.HorseMock;
@@ -12,7 +13,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
@@ -29,20 +32,20 @@ import org.sgrewritten.stargate.thread.SynchronousPopulator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 
-
+@ExtendWith(StargateExtension.class)
 class TeleporterTest {
 
     private HorseMock horse;
     private static Teleporter teleporter;
     private static SynchronousPopulator populator;
     private static PoweredMinecartMock furnaceMinecart;
+    @MockBukkitInject
     private ServerMock server;
     private BukkitSchedulerMock scheduler;
     private StargateAPIMock stargateAPI;
 
     @BeforeEach
     public void setup() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
-        this.server = StargateTestHelper.setup();
         this.scheduler = server.getScheduler();
         WorldMock world = server.addSimpleWorld("world");
         PlayerMock player = server.addPlayer();
@@ -68,15 +71,11 @@ class TeleporterTest {
         return testPortalBuilder.build();
     }
 
-    @AfterEach
-    public void tearDown() {
-        StargateTestHelper.tearDown();
-    }
-
     @Test
     void teleport() {
         teleporter.teleport(horse);
         StargateTestHelper.runAllTasks();
+
         Assertions.assertTrue(horse.hasTeleported());
     }
 

@@ -3,8 +3,10 @@ package org.sgrewritten.stargate.network;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
@@ -12,23 +14,13 @@ import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.proxy.InterServerMessageSender;
 import org.sgrewritten.stargate.network.proxy.LocalNetworkMessageSender;
 import org.sgrewritten.stargate.property.StargateConstant;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.UUID;
 
+@ExtendWith(StargateExtension.class)
 public class StargateNetworkTest {
 
     private static final String NET_NAME = "network";
-
-    @BeforeEach
-    void setup() {
-        StargateTestHelper.setup();
-    }
-
-    @AfterEach
-    void teardown() {
-        StargateTestHelper.tearDown();
-    }
 
     @ParameterizedTest
     @EnumSource

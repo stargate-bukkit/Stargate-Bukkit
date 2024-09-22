@@ -81,6 +81,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -123,58 +124,57 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private PropertiesDatabase storedProperties;
 
     private static final FileConfiguration EMPTY_CONFIG = new StargateYamlConfiguration();
+    private static final Random RANDOM = new Random();
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
-
+    private final long threadQueueId = RANDOM.nextLong();
 
     @Override
     public void onEnable() {
         // TEMPORARY FIX FOR CUSTOM WORLD PLUGINS
-        Bukkit.getScheduler().runTask(this, () -> {
-            try {
-                Stargate.setInstance(this);
-                if (!new File(this.getDataFolder(), StargateConstant.CONFIG_FILE).exists()) {
-                    super.saveDefaultConfig();
-                }
-                fetchServerId();
-                storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(dataFolder, StargateConstant.INTERNAL_FOLDER, StargateConstant.INTERNAL_PROPERTIES_FILE));
-                this.setupManagers();
-                boolean hasMigrated = false;
-                try {
-                    hasMigrated = this.migrateConfigurationAndData();
-                } catch (IOException | InvalidConfigurationException | SQLException e) {
-                    Stargate.log(e);
-                }
-
-                load();
-                if (!hasMigrated) {
-                    networkManager.loadPortals(this);
-                }
-
-                pluginManager = getServer().getPluginManager();
-
-                registerListeners();
-                StargateRegionTask.startPopulator(this);
-                StargateQueuedAsyncTask.enableAsyncQueue();
-                registerCommands();
-                sendWarningMessages();
-
-                //Register bStats metrics
-                int pluginId = 13629;
-                BStatsHelper.registerMetrics(pluginId, this, getRegistry());
-                servicesManager = this.getServer().getServicesManager();
-                servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
-                if (NonLegacyClass.BLOCK_UTIL.isImplemented()) {
-                    RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
-                    BlockDropManager.setProvider(blockUtilProvider);
-                }
-
-            } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
-                Stargate.log(e);
-                getServer().getPluginManager().disablePlugin(this);
+        try {
+            Stargate.setInstance(this);
+            if (!new File(this.getDataFolder(), StargateConstant.CONFIG_FILE).exists()) {
+                super.saveDefaultConfig();
             }
-        });
+            fetchServerId();
+            storedProperties = new PropertiesDatabase(FileHelper.createHiddenFileIfNotExists(dataFolder, StargateConstant.INTERNAL_FOLDER, StargateConstant.INTERNAL_PROPERTIES_FILE));
+            this.setupManagers();
+            boolean hasMigrated = false;
+            try {
+                hasMigrated = this.migrateConfigurationAndData();
+            } catch (IOException | InvalidConfigurationException | SQLException e) {
+                Stargate.log(e);
+            }
+
+            load();
+            if (!hasMigrated) {
+                networkManager.loadPortals(this);
+            }
+
+            pluginManager = getServer().getPluginManager();
+
+            registerListeners();
+            StargateRegionTask.startPopulator(this);
+            StargateQueuedAsyncTask.enableAsyncQueue(threadQueueId);
+            registerCommands();
+            sendWarningMessages();
+
+            //Register bStats metrics
+            int pluginId = 13629;
+            BStatsHelper.registerMetrics(pluginId, this, getRegistry());
+            servicesManager = this.getServer().getServicesManager();
+            servicesManager.register(StargateAPI.class, this, this, ServicePriority.High);
+            if (NonLegacyClass.BLOCK_UTIL.isImplemented()) {
+                RegisteredServiceProvider<BlockUtilAPI> blockUtilProvider = servicesManager.getRegistration(BlockUtilAPI.class);
+                BlockDropManager.setProvider(blockUtilProvider);
+            }
+
+        } catch (StargateInitializationException | IOException | SQLException | URISyntaxException e) {
+            Stargate.log(e);
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
 
     private static void setInstance(@Nullable Stargate stargate) {
@@ -455,7 +455,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        StargateQueuedAsyncTask.disableAsyncQueue();
+        StargateQueuedAsyncTask.disableAsyncQueue(threadQueueId);
         StargateTask.forceRunAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
@@ -590,6 +590,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     /**
      * Static access of the database interface, will throw null pointer exception if stargate has not been initialized
+     *
      * @return <p>A storage API instance</p>
      */
     public static StorageAPI getStorageAPIStatic() {

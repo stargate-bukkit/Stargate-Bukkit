@@ -1,13 +1,17 @@
 package org.sgrewritten.stargate.util;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
@@ -15,21 +19,13 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 
+@ExtendWith(StargateExtension.class)
 class TranslatableMessageFormatterTest {
 
+    @MockBukkitInject
     private ServerMock server;
+    @StargateInject
     private Stargate plugin;
-
-    @BeforeEach
-    void setUp() {
-        server = StargateTestHelper.pluginSetup();
-        this.plugin = MockBukkit.load(Stargate.class);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
-    }
 
     @Test
     void formatUnimplementedConflictMessage() throws NameLengthException, InvalidNameException, UnimplementedFlagException {

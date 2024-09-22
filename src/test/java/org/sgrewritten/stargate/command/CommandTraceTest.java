@@ -1,20 +1,25 @@
 package org.sgrewritten.stargate.command;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import org.bukkit.command.Command;
 import org.bukkit.command.defaults.VersionCommand;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
-import org.sgrewritten.stargate.util.StargateTestHelper;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 
+@ExtendWith(StargateExtension.class)
 class CommandTraceTest {
 
+    @MockBukkitInject
+    ServerMock server;
+    @StargateInject
     private @NotNull Stargate plugin;
     private @NotNull PlayerMock sender;
     private CommandTrace traceCommand;
@@ -22,16 +27,9 @@ class CommandTraceTest {
 
     @BeforeEach
     void setUp() {
-        ServerMock server = StargateTestHelper.pluginSetup();
         sender = server.addPlayer();
-        plugin = MockBukkit.load(Stargate.class);
         traceCommand = new CommandTrace(plugin);
         sender.addAttachment(plugin, "sg.admin.trace", true);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.command;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
@@ -12,14 +13,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 import org.sgrewritten.stargate.database.property.PropertiesDatabase;
 import org.sgrewritten.stargate.database.property.StoredProperty;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
 
+@ExtendWith(StargateExtension.class)
 class CommandParityTest {
 
     private @NotNull PlayerMock player;
@@ -28,10 +32,11 @@ class CommandParityTest {
     private @NotNull ConsoleCommandSenderMock console;
     private final Command fakeCommand = new VersionCommand("fake");
     private MockPlugin plugin;
+    @MockBukkitInject
+    ServerMock server;
 
     @BeforeEach
     void setUp() throws IOException {
-        @NotNull ServerMock server = StargateTestHelper.setup();
         this.plugin = MockBukkit.createMockPlugin();
         console = server.getConsoleSender();
         player = server.addPlayer();
@@ -39,11 +44,6 @@ class CommandParityTest {
         File testPluginFile = new File(new File("").getAbsolutePath(), "/src/test/resources/TestPlugin-1.0-SNAPSHOT.jar");
         String testPluginPath = "file://" + testPluginFile.toURI().toURL().getFile();
         command = new CommandParity(properties, true, plugin.getDataFolder(), testPluginPath, testPluginPath, testPluginPath, testPluginPath, new File(""), new LanguageManagerMock());
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

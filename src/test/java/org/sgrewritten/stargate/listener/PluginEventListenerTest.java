@@ -9,13 +9,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.economy.StargateEconomyManagerMock;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.logging.Level;
 
+@ExtendWith(StargateExtension.class)
 class PluginEventListenerTest {
 
     private @NotNull MockPlugin economy;
@@ -27,7 +29,6 @@ class PluginEventListenerTest {
     @BeforeEach
     void setUp() {
         Stargate.setLogLevel(Level.SEVERE);
-        StargateTestHelper.setup();
         economy = MockBukkit.createMockPlugin("Vault");
         blockLogger = MockBukkit.createMockPlugin("CoreProtect");
         economyManager = new StargateEconomyManagerMock();
@@ -37,7 +38,6 @@ class PluginEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        StargateTestHelper.tearDown();
         Stargate.setLogLevel(Level.INFO);
     }
 
