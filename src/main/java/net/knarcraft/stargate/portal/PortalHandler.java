@@ -440,7 +440,7 @@ public class PortalHandler {
         for (Portal portal : PortalRegistry.getAllPortals()) {
             //Try and verify the portal. Invalidate it if it cannot be validated
             PortalStructure structure = portal.getStructure();
-            if (!structure.wasVerified() && (!structure.isVerified() || !structure.checkIntegrity())) {
+            if (!structure.wasVerified() && !structure.isVerified() && !structure.checkIntegrity()) {
                 invalidPortals.add(portal);
             }
         }
