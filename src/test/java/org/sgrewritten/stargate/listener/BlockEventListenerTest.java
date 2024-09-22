@@ -71,7 +71,6 @@ class BlockEventListenerTest {
     @StargateInject
     private Stargate stargateAPI;
     private NetworkManager networkManager;
-    private Stargate plugin;
 
     @BeforeEach
     void setUp() {
@@ -79,7 +78,6 @@ class BlockEventListenerTest {
 
         world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
-        this.stargateAPI = plugin;
         this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
         Stargate.setServerUUID(UUID.randomUUID());
