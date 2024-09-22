@@ -7,6 +7,8 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
+import java.util.List;
+
 public class WorldEventListener implements Listener {
 
     private final StargateAPI stargateAPI;
@@ -17,14 +19,19 @@ public class WorldEventListener implements Listener {
 
     @EventHandler
     void onWordUnload(WorldUnloadEvent event) {
-        stargateAPI.getRegistry().getAllPortals().filter(portal -> portal instanceof RealPortal)
+        List<RealPortal> unloadedPortals = stargateAPI.getRegistry().getAllPortals()
+                .filter(portal -> portal instanceof RealPortal)
                 .map(portal -> (RealPortal) portal)
-                .filter(realPortal -> realPortal.getExit().getWorld().equals(event.getWorld()))
-                .forEach(stargateAPI.getRegistry()::unregisterPortal);
+                .filter(realPortal -> realPortal.getWorldUuid().equals(event.getWorld().getUID()))
+                .toList();
+        unloadedPortals.forEach(stargateAPI.getRegistry()::unregisterPortal);
+        unloadedPortals.forEach(portal -> portal.getNetwork().removePortal(portal));
+        stargateAPI.getRegistry().updateAllPortals();
     }
 
     @EventHandler
     void onWorldLoad(WorldLoadEvent event) {
         stargateAPI.getNetworkManager().loadWorld(event.getWorld(), stargateAPI);
+        stargateAPI.getRegistry().updateAllPortals();
     }
 }
