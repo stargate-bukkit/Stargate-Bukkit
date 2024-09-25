@@ -182,7 +182,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>Stargate-${project.version}-${git.branch.caps}-${git.commit.id.abbrev}</finalName>
+        <finalName>${fullReleaseName}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -337,6 +337,43 @@
                     </replacementProperties>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>filter_commits</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <name>passOne</name>
+                            <value>Stargate-${project.version}-${git.branch.caps}-${git.commit.id.abbrev}</value>
+                            <regex>(alpha|beta|release).*</regex>
+                            <replacement>${git.branch.caps}</replacement>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>filter_branches</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <name>fullReleaseName</name>
+                            <value>${passOne}</value>
+                            <regex>(release).*</regex>
+                            <replacement></replacement>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>
