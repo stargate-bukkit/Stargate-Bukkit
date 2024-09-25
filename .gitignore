@@ -3,6 +3,8 @@ target/
 *.prefs
 *.class
 
+README.md
+
 # Eclipse
 .externalToolBuilders/
 *.launch
