@@ -1,5 +1,13 @@
 # Changes
 
+#### [Version 1.0.0.18] Stargate-Rewritten
+
+- Fixed a series of problems in Stargate's multiworld support.
+- Added support for hot loading and unloading of worlds.
+- Mitigated some migration edge cases pertaining to multiple worlds.
+- Improved zh-CN translations (courtesy of SnowCutieOwO)
+- Fixed some continuous integration pipelines.
+
 #### [Version 1.0.0.17] Stargate-Rewritten
 
 - Fixed several incompatibilities with the MyWorlds plugin.

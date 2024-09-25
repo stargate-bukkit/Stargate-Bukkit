@@ -2,9 +2,9 @@ version: 2.1
 jobs:
   build-and-test:
     docker:
-      - image: debian:12.4
+      - image: maven:3.9.9-amazoncorretto-21-debian
 
-      - image: cimg/mariadb:11.2.1
+      - image: mariadb:latest
         environment:
           MARIADB_ROOT_PASSWORD: password
           MARIADB_DATABASE: Stargate
@@ -31,7 +31,6 @@ jobs:
             cd ~/my-projects/stargate/core
             apt-get update && apt-get install -y mariadb-client
             apt-get install -y git
-            apt-get install -y maven
 
       - run:
           name: Clone Repository
