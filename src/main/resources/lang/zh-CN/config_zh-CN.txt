@@ -3,21 +3,118 @@ headerVersion=版本：%version%
 headerDocumentation=相关文档链接：%link%
 headerReports=错误报告： %link%
 headerPreferences=常规设置
+headerBehaviour=星门行为
 headerEconomy=经济
 headerAesthetic=外观调整
+headerTechnical=技术性
 subheaderCompat=兼容性
 subheaderLogging=日志
 subheaderDebug=Debug
+descriptionCompatibility=这些设定用于提升星门与其他插件联动的效果。
+descriptionLogging=星门向控制台发送信息的详细程度？     
+descriptionDebug=这些设置会给开发者提供解决插件问题的相关信息。 
+tagNote=注意
 
 # General Preferences
+languageL1=在玩家使用星门时，插件应该使用哪种语言？
+languageL2=支持填入：%values%
+languageL4=若本插件在你的语言中不可用，请考虑为我们贡献译文：
+bungee.UsingBungeeL1=你连接的群组服是否支持 Bungee？
+bungee.usingBungeeL2=若你需要在 'u' 标志存在时创建星门，请将该项设置为 true。
+bungee.useRemoteDatabaseL1=默认情况下，本插件使用 SQLIte 数据库进行存储。
+bungee.useRemoteDatabaseL3=若你正在运行较大规模的服务器，我们推荐使用远程数据库。
+bungee.useRemoteDatabaseL4=若你在带有 'i' 标志的情况下创建星门，则需要注意必须使用该种数据库。
+bungee.remoteDatabaseSettings.L1=仅在 useRemoteDatabase 设置为为 true 时可用。
+bungee.remoteDatabaseSettings.driverL1=本插件连接至数据库使用的驱动类型？
+bungee.remoteDatabaseSettings.driverL2=当前支持：%values%
+bungee.remoteDatabaseSettings.addressL1=插件可以在哪里找到你的数据库？
+bungee.remoteDatabaseSettings.useSSLL1=连接至数据库时插件是否需要使用 SSL？
+bungee.remoteDatabaseSettings.databaseL1=本插件用于存储的数据库名称。所填名称需要在数据库中预先创建。
+bungee.remoteDatabaseSettings.databaseL2=若你使用的是 Bungee 核心，则这些数据会在安装了本插件的子服上同步。
+bungee.remoteDatabaseSettings.usernameL1=用于连接的登录凭据：
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=是否要在本插件的文件夹中生成一个数据库配置文件（“hikari.properties”）？
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=这么做会使得新文件无视 remoteDatamaseSettings 下的设置！
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL4=这允许你使用高级的 RDMS 功能，例如连接池限制、缓存大小等。
+bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=可用设置可在如下链接中找到：%link%。
+defaultGateNetworkL1=在未指定时使用哪种网络类型？（最大 12 字符）
+defaultGateNetworkL3=请注意，这会应用至所有拥有 stargate.create.network 权限的玩家。
+defaultGateNetworkL4=一般情况下，这个节点只应被管理员拥有（对于玩家，我们推荐给予 stargate.create.personal 权限）。
+defaultTerminalNetworkL1=插件对终端（“T”）传送门保留的网络是什么？
+defaultTerminalNetworkL3=一般来说，这个功能会将主区域创建的一系列传送门形成一个“终端”。
+defaultTerminalNetworkL4=在使用此网络时，玩家可以付费连接至他们的城镇/基地/商店/等，至“终端”。
+defaultTerminalNetworkL6=尚未实现！
+defaultTerminalNetworkL7=终端支持将在 %version% 版本上线！
 
 # Gate Behaviour
+networkLimitL1=单个网络能容纳的最大传送门数量是多少？（设置为 -1 表示不作限制）
+handleVehiclesL1=是否允许载具及其骑乘者使用星门？
+handleVehiclesL2=矿车、船、带鞍的生物即为载具，而玩家与其他实体即为骑乘者
+handleLeashedCreaturesL1=若玩家手持栓绳时使用星门，是否将被拴住的生物一并传送？
+CheckPortalValidityL1=服务器重启时是否重新验证现存的传送门？
+CheckPortalValidityL3=这个检查会确认传送门是否存在，及是否使用了有效的样式。
+CheckPortalValidityL4=这个功能可以用于检测 .gate 文件的改变，世界变动及地形重生成导致的星门潜在失效问题。
+destroyOnExplosionL1=爆炸是否可以破坏本插件的星门？
+destroyOnExplosionL2=[TNT、苦力怕等]
+gateExitSpeedMultiplierL1=玩家离开传送门时的速度有多大？
+gateExitSpeedMultiplierL2=在离开传送门时，玩家会保留进入时的加速度，离开后的速度为原速度乘以该值所得。
 
 # Economy
+useEconomyL1=是否允许本插件与服务器经济插件交互？
+useEconomyL3=本插件依赖 Vault 实现这些功能。
+taxAccountL1=你的服务器是否有税收专用账号（封闭经济）？
+taxAccountL2=若有，请将税收账号的名称填入此处（所得税款会流向这个账号）。
+taxAccountL3=若无，请留空（所得税收会被直接删除）。
+TaxAccountL5=需要注意的是 usageCost 的钱会在 gateOwnerRevenue 设置为 true 时忽略。
+creationCostL1=创建新星门需要玩家支付多少钱？
+destructionCostL1=移除现有星门需要玩家支付多少钱？
+usageCostL1=使用已有星门需要玩家支付多少钱？
+usageCostL2=这些内容不会对带有“f”标志的星门生效。
+gateOwnerRevenueL1=“使用收费”是否流向创建（拥有）该星门的玩家？
+gateOnwerRevenueL2=若为 false，被支付的钱款会直接消失（或发送至税收账号）。
+chargeFreeDestinationL1=若目的地为带“f”标志的星门，是否收取“creationCost”中规定的价格？
+chargeFreeDestinationL2=这个选项仅对固定星门生效。
 
 # Aesthetic Tweaks
+signFormattingL1=这些设定会在星门格式化告示牌时决定其颜色和样式。
+signFormattingL2=对更高级的样式选项，请使用 https://sgrewritten.org/extraColours 网站。
+signFormatting.color.L1=在所有星门告示牌上的默认文本颜色（亮度会基于告示牌材质略有差距）
+signFormatting.color.L2=可用颜色可以在 https://sgrewritten.org/colourTypes 找到
+signFormatting.pointerBehaviourL1=星门会以指针符号高亮玩家选定的目的地，并使用滚轮切换目的地。
+signFormatting.pointerBehaviourL2=星门的指针符号样式应当是什么样的？（https://sgrewritten.org/pointerStyles）
+signFormatting.pointerBehaviourL3=可用选项：
+signFormatting.pointerBehaviourL4=1: 无样式（指针为告示牌所使用文本的默认颜色）。
+signFormatting.pointerBehaviourL5=2：目的地类型（指针颜色受目的地告示牌文本颜色影响）
+signFormatting.pointerBehaviourL6=3：高亮（指针亮度会与文本默认颜色互为对比色）
+disableCustomColoredNamesL1=默认情况下，本插件允许玩家通过外部插件为星门指定颜色。
+disableCustomColoredNamesL2=这些名称中的颜色会覆盖（上述）signStyle 的样式。
+disableCustomColoredNamesL4=本插件是否要通过强制游戏显示实际文本来禁用该功能？
+rememberLastDestinationL1=网络传送门中的最后一个目的地是否会出现在滚动列表的首项？
 
 #Technical
+portalFileL1=在 useRemoteDatabase 设置为 false 的情况下，插件会将所有星门数据存储在文件中。
+portalFileL2=数据文件的名称应该是什么？
+gateFolderL1=目前，在启动时，会检查存储“.gate”格式传送门样式的文件夹。
+gateFolderL2=这个文件夹的位置在哪？
+gateFolderL4=该选项作为修复选项，允许你从其他稍老的分支版插件中导入数据。
+customRemoteDatabasePrefixL1=默认情况下，插件会将会连入以“SG_”开头的数据库表。
+customRemoteDatabasePrefixL2=若此与其他插件冲突，你可以在这里修改前缀。
+loggingLevelL1=可用值：
+loggingLevelL2=不推荐
+loggingLevelL3=隐藏所有。仅在插件出现严重错误时想控制台发送消息。
+loggingLevelL4=推荐在较大型且较多测试过的服务器上使用
+loggingLevelL5=隐藏默认行为。仅向控制台输出潜在问题。
+loggingLevelL6=适用于大部分生产环境的服务器。
+loggingLevelL7=显示默认行为。显示星门相关事件（使用、创建、移除等）。
+loggingLevelL8=在配置预生产环境时很有用
+loggingLevelL9=输出权限检查。输出内容为玩家是否拥有执行某操作的权限。
+loggingLevelL10=推荐用于基本问题排查的情况
+loggingLevelL11=输出有限的调试信息。输出全局插件事件（载入、禁用、连接等）。
+loggingLevelL12=适用于部分附属开发者。
+loggingLevelL13=输出大部分调试信息。输出内容为插件逻辑与行为的详细信息。
+LoggingLevelL14=一般仅会被本插件的核心开发团队用到。
+LoggingLevelL15=显示所有内容。字面上的所有内容，包括大量的堆栈。
+configVersionL1=插件用于检查配置版本的内部值。
+configVersionL2=请勿修改此项。
 
 
 #Admin

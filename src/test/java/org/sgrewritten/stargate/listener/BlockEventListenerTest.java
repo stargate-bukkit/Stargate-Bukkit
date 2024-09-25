@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.listener;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.block.BlockMock;
@@ -25,12 +26,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 import org.sgrewritten.stargate.api.BlockHandlerInterfaceMock;
 import org.sgrewritten.stargate.api.Priority;
-import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
@@ -48,13 +51,15 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.StargateConstant;
-import org.sgrewritten.stargate.util.StargateTestHelper;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 
 import java.io.File;
 import java.util.UUID;
 
+@ExtendWith(StargateExtension.class)
 class BlockEventListenerTest {
 
+    @MockBukkitInject
     private ServerMock server;
     private RegistryAPI registry;
     private PlayerMock player;
@@ -63,19 +68,16 @@ class BlockEventListenerTest {
     private static final File TEST_GATES_DIR = new File("src/test/resources/gates");
     private static final String PLAYER_NAME = "player";
     private static final String CUSTOM_NETNAME = "custom";
-    private StargateAPI stargateAPI;
+    @StargateInject
+    private Stargate stargateAPI;
     private NetworkManager networkManager;
-    private Stargate plugin;
 
     @BeforeEach
     void setUp() {
-        server = StargateTestHelper.pluginSetup();
-        plugin = MockBukkit.load(Stargate.class);
         player = server.addPlayer(PLAYER_NAME);
 
         world = new WorldMock(Material.GRASS_BLOCK, 0);
         server.addWorld(world);
-        this.stargateAPI = plugin;
         this.registry = stargateAPI.getRegistry();
         this.networkManager = stargateAPI.getNetworkManager();
         Stargate.setServerUUID(UUID.randomUUID());
@@ -84,11 +86,6 @@ class BlockEventListenerTest {
         Assertions.assertInstanceOf(WallSign.class, BlockDataMock.mock(Material.ACACIA_WALL_SIGN), " Too old mockbukkit version, requires at least v1.19:1.141.0");
 
         player.setOp(true);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest
@@ -189,7 +186,7 @@ class BlockEventListenerTest {
         builder.setGateBuilder(location, GateFormatRegistry.getAllGateFormatNames().iterator().next());
         builder.setFlags(String.valueOf(flag));
         RealPortal portal = builder.build();
-        StargateTestHelper.runAllTasks();
+        StargateQueuedAsyncTask.waitForEmptyQueue();
         network.addPortal(portal);
         Assertions.assertNotNull(registry.getPortal(portal.getGate().getLocations(GateStructureType.FRAME).get(0).getLocation()), "Portal not assigned to registry");
 

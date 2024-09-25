@@ -53,7 +53,7 @@ conflictSpawn=スポーンチャンクがこのポータルを妨害していま
 
 # Economy
 ecoDeduct=%cost%を差し引きました。
-ecoObtain=Stargate%portal%から%cost%を入手しました！
+ecoObtain=StarGate%portal%から%cost%を入手しました！
 ecoInsolvent=お金が足りません！
 
 #Terminology

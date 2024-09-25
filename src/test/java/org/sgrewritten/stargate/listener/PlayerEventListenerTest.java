@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.listener;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -12,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.database.StorageMock;
 import org.sgrewritten.stargate.manager.BlockLoggerMock;
@@ -22,28 +25,23 @@ import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.StargateNetworkManager;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
-
+@ExtendWith(StargateExtension.class)
 class PlayerEventListenerTest {
 
     private PlayerEventListener listener;
     private Block signBlock;
     private @NotNull PlayerMock player;
+    @MockBukkitInject
+    ServerMock server;
 
     @BeforeEach
     void setUp() {
-        ServerMock server = StargateTestHelper.setup();
         WorldMock world = server.addSimpleWorld("world");
         player = server.addPlayer();
         RegistryAPI registry = new RegistryMock();
         listener = new PlayerEventListener(new LanguageManagerMock(), registry, new StargateBungeeManager(registry, new LanguageManagerMock(), new StargateNetworkManager(registry, new StorageMock())), new BlockLoggerMock(), new StorageMock());
         signBlock = PortalBlockGenerator.generatePortal(new Location(world, 0, 10, 0));
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

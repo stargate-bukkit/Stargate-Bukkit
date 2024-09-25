@@ -1,31 +1,26 @@
 package org.sgrewritten.stargate.gate;
 
+import be.seeseemelk.mockbukkit.MockBukkitExtension;
 import org.bukkit.util.BoundingBox;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
-
+@ExtendWith(MockBukkitExtension.class)
 class GateFormatTest {
 
     private GateFormat gateFormat;
 
     @BeforeEach
     void setUp() {
-        StargateTestHelper.setup();
         this.gateFormat = GateFormatRegistry.getFormat("nether.gate");
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

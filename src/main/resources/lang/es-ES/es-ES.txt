@@ -53,7 +53,7 @@ conflictSpawn=¡Hay chunks de spawn interfiriendo con este portal!
 
 # Economy
 ecoDeduct=Se han restado %cost%.
-ecoObtain=¡Has obtenido %cost% del portal %portal% de Stargate!
+ecoObtain=¡Has obtenido %cost% del portal %portal% de StarGate!
 ecoInsolvent=¡Fondos insuficientes!
 
 #Terminology
@@ -76,5 +76,5 @@ unimplementedFlag=Las banderas %flags% aún no se han implementado.
 #Admin
 adminReload=¡Configuración cargada!
 adminInfo=Ejecutando la versión %version%. Registro de cambios: https://git.io/JD4Qo
-adminHelp=La documentación de Stargate se puede encontrar en https://git.io/JDclf
+adminHelp=La documentación de StarGate se puede encontrar en https://git.io/JDclf
 translatedBy=Manuestaire & Translated s.r.l.

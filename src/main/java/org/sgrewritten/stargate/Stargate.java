@@ -81,6 +81,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -123,13 +124,15 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
     private PropertiesDatabase storedProperties;
 
     private static final FileConfiguration EMPTY_CONFIG = new StargateYamlConfiguration();
+    private static final Random RANDOM = new Random();
     private BlockHandlerResolver blockHandlerResolver;
     private NetworkManager networkManager;
     private SQLDatabaseAPI database;
-
+    private final long threadQueueId = RANDOM.nextLong();
 
     @Override
     public void onEnable() {
+        // TEMPORARY FIX FOR CUSTOM WORLD PLUGINS
         try {
             Stargate.setInstance(this);
             if (!new File(this.getDataFolder(), StargateConstant.CONFIG_FILE).exists()) {
@@ -154,7 +157,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
             registerListeners();
             StargateRegionTask.startPopulator(this);
-            StargateQueuedAsyncTask.enableAsyncQueue();
+            StargateQueuedAsyncTask.enableAsyncQueue(threadQueueId);
             registerCommands();
             sendWarningMessages();
 
@@ -305,6 +308,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         pluginManager.registerEvents(new MoveEventListener(getRegistry()), this);
         pluginManager.registerEvents(new PlayerEventListener(this.getLanguageManager(), getRegistry(), this.getBungeeManager(), this.getBlockLoggerManager(), this.getStorageAPI()), this);
         pluginManager.registerEvents(new PluginEventListener(getEconomyManager(), getBlockLoggerManager()), this);
+        pluginManager.registerEvents(new WorldEventListener(this), this);
         if (NonLegacyClass.PLAYER_ADVANCEMENT_CRITERION_EVENT.isImplemented()) {
             pluginManager.registerEvents(new PlayerAdvancementListener(getRegistry()), this);
         }
@@ -452,7 +456,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
         //Close networked always-on Stargates as they have no destination on next start
         registry.getNetworkRegistry(StorageType.LOCAL).closeAllPortals();
         registry.getNetworkRegistry(StorageType.INTER_SERVER).closeAllPortals();
-        StargateQueuedAsyncTask.disableAsyncQueue();
+        StargateQueuedAsyncTask.disableAsyncQueue(threadQueueId);
         StargateTask.forceRunAllTasks();
         if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE)) {
             Messenger messenger = Bukkit.getMessenger();
@@ -587,6 +591,7 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
 
     /**
      * Static access of the database interface, will throw null pointer exception if stargate has not been initialized
+     *
      * @return <p>A storage API instance</p>
      */
     public static StorageAPI getStorageAPIStatic() {

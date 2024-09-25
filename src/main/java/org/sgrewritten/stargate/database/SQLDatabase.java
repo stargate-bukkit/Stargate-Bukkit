@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.database;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
@@ -43,10 +44,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 import static javax.management.timer.Timer.ONE_WEEK;
@@ -203,52 +201,45 @@ public class SQLDatabase implements StorageAPI {
      * @throws SQLException <p>If an SQL error occurs</p>
      */
     private void loadAllPortals(SQLDatabaseAPI database, StorageType portalType, StargateAPI stargateAPI) throws SQLException {
-        List<PortalData> portalDataList;
-        Set<String> worldsToRemove = new HashSet<>();
-        Set<String> gateFormatsToRemove = new HashSet<>();
+        PortalLoadData portalLoadData;
         try (Connection connection = database.getConnection()) {
             PreparedStatement statement = sqlQueryGenerator.generateGetAllPortalsStatement(connection, portalType);
 
             ResultSet resultSet = statement.executeQuery();
-            portalDataList = new ArrayList<>();
-
-            while (resultSet.next()) {
-                try {
-                    PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
-                    portalDataList.add(portalData);
-                } catch (PortalLoadException e) {
-                    switch (e.getFailureType()) {
-                        case WORLD -> worldsToRemove.add(resultSet.getString("world"));
-                        case GATE_FORMAT -> gateFormatsToRemove.add(resultSet.getString("gateFileName"));
-                    }
-                }
-            }
+            portalLoadData = loadPortalsInQuery(resultSet, portalType);
             statement.close();
         }
-        removeWorlds(worldsToRemove, portalType);
         String scheduledGateFormatClearing = propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
         if (scheduledGateFormatClearing != null && Long.parseLong(scheduledGateFormatClearing) > System.currentTimeMillis()) {
-            removeGateFormats(gateFormatsToRemove, portalType);
+            removeGateFormats(portalLoadData.invalidGates, portalType);
         } else {
-            invalidGateFormats.addAll(gateFormatsToRemove);
+            invalidGateFormats.addAll(portalLoadData.invalidGates);
         }
 
-        for (PortalData portalData : portalDataList) {
+        for (PortalData portalData : portalLoadData.loadedPortals) {
             loadPortal(portalData, stargateAPI);
         }
     }
 
-    private void removeWorlds(Set<String> worldsToRemove, StorageType storageType) throws SQLException {
-        for (String world : worldsToRemove) {
-            try (Connection connection = database.getConnection()) {
-                try (PreparedStatement preparedStatement = sqlQueryGenerator.generateDeleteWorldStatement(connection, world, storageType)) {
-                    preparedStatement.execute();
+    private PortalLoadData loadPortalsInQuery(ResultSet resultSet, StorageType portalType) throws SQLException {
+        List<PortalData> portalDataList = new ArrayList<>();
+        Set<String> worldsToRemove = new HashSet<>();
+        Set<String> gateFormatsToRemove = new HashSet<>();
+        while (resultSet.next()) {
+            try {
+                PortalData portalData = PortalStorageHelper.loadPortalData(resultSet, portalType);
+                portalDataList.add(portalData);
+            } catch (PortalLoadException e) {
+                switch (e.getFailureType()) {
+                    case WORLD -> worldsToRemove.add(resultSet.getString("world"));
+                    case GATE_FORMAT -> gateFormatsToRemove.add(resultSet.getString("gateFileName"));
                 }
             }
         }
+        return new PortalLoadData(portalDataList, worldsToRemove, gateFormatsToRemove);
     }
 
-    private void removeGateFormats(Set<String> gateFormatsToRemove, StorageType storageType) throws SQLException {
+    private void removeGateFormats(Collection<String> gateFormatsToRemove, StorageType storageType) throws SQLException {
         try (Connection connection = database.getConnection()) {
             for (String gateFormat : gateFormatsToRemove) {
                 try (PreparedStatement preparedStatement = sqlQueryGenerator.generateRemoveGateStatement(connection, gateFormat, storageType)) {
@@ -655,5 +646,40 @@ public class SQLDatabase implements StorageAPI {
     @Override
     public Set<String> getScheduledGatesClearing() {
         return this.invalidGateFormats;
+    }
+
+    @Override
+    public void loadPortalsInWorld(World world, StorageType storageType, StargateAPI stargateAPI) throws StorageReadException, StorageWriteException {
+        PortalLoadData portalLoadData;
+        try (Connection connection = database.getConnection()) {
+            ResultSet resultSet = sqlQueryGenerator.generateLoadPortalsInWorldStatement(connection, world, storageType).executeQuery();
+            portalLoadData = loadPortalsInQuery(resultSet, storageType);
+        } catch (SQLException e) {
+            throw new StorageReadException(e);
+        }
+
+        String scheduledGateFormatClearing = propertiesDatabase.getProperty(StoredProperty.SCHEDULED_GATE_CLEARING);
+        if (scheduledGateFormatClearing != null && Long.parseLong(scheduledGateFormatClearing) > System.currentTimeMillis()) {
+            try {
+                removeGateFormats(portalLoadData.invalidGates, storageType);
+            } catch (SQLException e) {
+                throw new StorageWriteException(e);
+            }
+        } else {
+            invalidGateFormats.addAll(portalLoadData.invalidGates);
+        }
+
+        for (PortalData portalData : portalLoadData.loadedPortals) {
+            try {
+                loadPortal(portalData, stargateAPI);
+            } catch (SQLException e) {
+                throw new StorageReadException(e);
+            }
+        }
+    }
+
+    private record PortalLoadData(Collection<PortalData> loadedPortals, Collection<String> invalidWorlds,
+                                  Collection<String> invalidGates) {
+
     }
 }

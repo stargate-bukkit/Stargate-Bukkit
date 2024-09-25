@@ -78,5 +78,5 @@ parityCommand=%modules% isimli modül(ler) otomatik olarak kuruluyor! Bu işlem 
 #Admin
 adminReload=Yapılandırma yeniden yüklendi!
 adminInfo=Şu anki versiyon %version%. Geliştirici Günlüğü: https://git.io/JD4Qo
-adminHelp=Stargate'in belgelerine https://git.io/JDclf üzerinden ulaşabilirsiniz
+adminHelp=StarGate'in belgelerine https://git.io/JDclf üzerinden ulaşabilirsiniz
 translatedBy=yugurr & axolotlagatsuma

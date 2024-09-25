@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.manager;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -8,8 +9,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.network.Network;
@@ -30,12 +34,13 @@ import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.property.StargateProtocolRequestType;
 import org.sgrewritten.stargate.util.BungeeHelper;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.Set;
 
+@ExtendWith(StargateExtension.class)
 class StargateBungeeManagerTest {
 
+    @MockBukkitInject
     private ServerMock server;
     private RegistryAPI registry;
     private WorldMock world;
@@ -57,7 +62,6 @@ class StargateBungeeManagerTest {
 
     @BeforeEach
     void setUp() throws TranslatableException, InvalidStructureException, GateConflictException, NoFormatFoundException {
-        server = StargateTestHelper.setup();
         Stargate.setServerName(SERVER);
         stargateAPI = new StargateAPIMock();
         registry = stargateAPI.getRegistry();
@@ -77,11 +81,6 @@ class StargateBungeeManagerTest {
         bungeeNetwork.addPortal(bungeePortal);
 
         bungeeManager = new StargateBungeeManager(registry, new LanguageManagerMock(), networkManager);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.gate;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
@@ -22,28 +25,24 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.network.RegistryMock;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.network.portal.portaldata.GateData;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
+@ExtendWith(StargateExtension.class)
 class GateTest {
     private @NotNull WorldMock world;
     private GateData gateData;
     private Block signBlock;
     private String gateFileName;
+    @MockBukkitInject
+    private ServerMock server;
 
     @BeforeEach
     void setUp() {
-        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         Location topLeft = new Location(world, 0, 7, 0);
         BlockFace facing = BlockFace.SOUTH;
         this.gateFileName = "nether.gate";
         this.gateData = new GateData(GateFormatRegistry.getFormat(gateFileName), false, topLeft, facing);
         this.signBlock = PortalBlockGenerator.generatePortal(gateData.topLeft().clone().subtract(new Vector(0, 4, 0)));
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

@@ -54,7 +54,7 @@ conflictSpawn=Les chunks d'apparition interfèrent avec ce portail !
 
 # Economy
 ecoDeduct=Déduction de %cost%.
-ecoObtain=Obtenu %cost% par Stargate %portal% !
+ecoObtain=Obtenu %cost% par StarGate %portal% !
 ecoInsolvent=Fonds insuffisants !
 
 #Terminology

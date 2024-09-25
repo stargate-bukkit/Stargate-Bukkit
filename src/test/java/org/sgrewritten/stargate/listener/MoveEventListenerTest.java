@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.listener;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -17,8 +18,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
@@ -29,10 +33,11 @@ import org.sgrewritten.stargate.exception.InvalidStructureException;
 import org.sgrewritten.stargate.exception.NoFormatFoundException;
 import org.sgrewritten.stargate.exception.TranslatableException;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
+@ExtendWith(StargateExtension.class)
 class MoveEventListenerTest {
 
+    @MockBukkitInject
     private @NotNull ServerMock server;
     private MoveEventListener listener;
     private @NotNull PlayerMock player;
@@ -40,12 +45,11 @@ class MoveEventListenerTest {
     private Location iris;
     private @NotNull Location outsideIris;
     private @NotNull PoweredMinecartMock vehicle;
+    @StargateInject
     private @NotNull Stargate plugin;
 
     @BeforeEach
     void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        server = StargateTestHelper.pluginSetup();
-        plugin = MockBukkit.load(Stargate.class);
         @NotNull WorldMock theEnd = server.addSimpleWorld("world");
         theEnd.setEnvironment(Environment.THE_END);
         Location from = new Location(theEnd, 0, 0, 0);
@@ -60,10 +64,6 @@ class MoveEventListenerTest {
         outsideIris = iris.clone().add(portal.getGate().getFacing().getDirection());
     }
 
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
-    }
 
     @Test
     void onPlayerTeleportEndGateway() {

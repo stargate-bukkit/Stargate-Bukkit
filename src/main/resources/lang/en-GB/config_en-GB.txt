@@ -21,7 +21,7 @@ languageL2=Supported values: %values%
 languageL4=If SG isn't yet available in your language, please consider becoming a translator:
 bungee.UsingBungeeL1=Are you connected to a bungee-compatible proxy?
 bungee.usingBungeeL2=Set this to true if you intend on building gates with the 'u' flag.
-bungee.useRemoteDatabaseL1=By default, Stargate uses a local SQLite database to store its data.
+bungee.useRemoteDatabaseL1=By default, StarGate uses a local SQLite database to store its data.
 bungee.useRemoteDatabaseL3=If you are running a large server, we recommend using a remote database.
 bungee.useRemoteDatabaseL4=Note that such a database is required if you intend on building gates with the 'i' flag.
 bungee.remoteDatabaseSettings.L1=Only applicable if useRemoteDatabase is true.
@@ -29,8 +29,8 @@ bungee.remoteDatabaseSettings.driverL1=What driver should stargate use to connec
 bungee.remoteDatabaseSettings.driverL2=Currently, these are supported: %values%
 bungee.remoteDatabaseSettings.addressL1=Where can stargate find your database?
 bungee.remoteDatabaseSettings.useSSLL1=Should stargate use SSL when connecting to your database?
-bungee.remoteDatabaseSettings.databaseL1=The name of the database Stargate will use to store its data. Must already exist.
-bungee.remoteDatabaseSettings.databaseL2=If you are using Bungee, this should be shared across all Stargate instances.
+bungee.remoteDatabaseSettings.databaseL1=The name of the database StarGate will use to store its data. Must already exist.
+bungee.remoteDatabaseSettings.databaseL2=If you are using Bungee, this should be shared across all StarGate instances.
 bungee.remoteDatabaseSettings.usernameL1=Credentials to use for the connection:
 bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL1=Should we generate a database config file ('hikari.properties') in your stargate folder?
 bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL2=Doing so will ignore all the remoteDatabaseSettings above in favour of the new file!
@@ -39,7 +39,7 @@ bungee.remoteDatabaseSettings.advancedDatabaseConfigurationL5=A list of availabl
 defaultGateNetworkL1=What network will be used when none has been specified? (Max length 12 characters)
 defaultGateNetworkL3=Note that this primarily applies to users with the stargate.create.network node.
 defaultGateNetworkL4=Generally, that node is given to staff (we recommend stargate.create.personal for users).
-defaultTerminalNetworkL1=What network will Stargate reserve for terminal ('T') portals?
+defaultTerminalNetworkL1=What network will StarGate reserve for terminal ('T') portals?
 defaultTerminalNetworkL3=Generally, this feature is used to make a group of portals in spawn known as a 'Terminal'.
 defaultTerminalNetworkL4=Using this network, players can pay to connect their towns/bases/shops/etc. to the terminal.
 defaultTerminalNetworkL6=Not yet implemented!
@@ -47,7 +47,7 @@ defaultTerminalNetworkL7=Terminal support is slated for %version%!
 
 # Gate Behaviour
 networkLimitL1=What is the maximum number of gates a single network may contain? (-1 for unlimited)
-handleVehiclesL1=Will vehicles and their passengers be able to travel through Stargate portals?
+handleVehiclesL1=Will vehicles and their passengers be able to travel through StarGate portals?
 handleVehiclesL2=minecarts, boats, & saddled mobs = vehicles | players & mobs = passengers
 handleLeashedCreaturesL1=If a player teleports while attached with a lead to an entity, should SG also teleport the entity?
 CheckPortalValidityL1=Will the server re-verify all existing portals on startup?
@@ -59,8 +59,8 @@ gateExitSpeedMultiplierL1=At what speed should players be sent out of portals?
 gateExitSpeedMultiplierL2=When exiting a gate, players retain their original movement velocity, multiplied by this value.
 
 # Economy
-useEconomyL1=Will Stargate interact with your server's economy?
-useEconomyL3=For these features, Stargate depends on the Vault plugin.
+useEconomyL1=Will StarGate interact with your server's economy?
+useEconomyL3=For these features, StarGate depends on the Vault plugin.
 taxAccountL1=Does your server have a tax account (closed economy)?
 taxAccountL2=If so, please provide the name of your tax account (collected money will be sent to it).
 taxAccountL3=If not, leave this section blank (collected money will be deleted).
@@ -111,7 +111,7 @@ loggingLevelL10=Recommended for basic troubleshooting
 loggingLevelL11=𝐏𝐫𝐢𝐧𝐭 𝐥𝐢𝐦𝐢𝐭𝐞𝐝 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑔𝑒𝑛𝑒𝑟𝑎𝑙 𝑝𝑙𝑢𝑔𝑖𝑛 𝑒𝑣𝑒𝑛𝑡𝑠 (𝑙𝑜𝑎𝑑𝑖𝑛𝑔, 𝑑𝑖𝑠𝑎𝑏𝑙𝑖𝑛𝑔, 𝑐𝑜𝑛𝑛𝑒𝑐𝑡𝑖𝑜𝑛𝑠, 𝑒𝑡𝑐.).
 loggingLevelL12=Recommended for some addon developers.
 loggingLevelL13=𝐏𝐫𝐢𝐧𝐭 𝐦𝐨𝐬𝐭 𝐝𝐞𝐛𝐮𝐠 𝐢𝐧𝐟𝐨. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑚𝑒𝑠𝑠𝑎𝑔𝑒𝑠 𝑑𝑒𝑡𝑎𝑖𝑙𝑖𝑛𝑔 𝑡ℎ𝑒 𝑝𝑙𝑢𝑔𝑖𝑛'𝑠 𝑙𝑜𝑔𝑖𝑐 𝑎𝑛𝑑 𝑏𝑒ℎ𝑎𝑣𝑖𝑜𝑢𝑟.
-LoggingLevelL14=Only used by Stargate's core development team
+LoggingLevelL14=Only used by StarGate's core development team
 LoggingLevelL15=𝐏𝐫𝐢𝐧𝐭 𝐞𝐯𝐞𝐫𝐲𝐭𝐡𝐢𝐧𝐠. 𝑃𝑟𝑖𝑛𝑡𝑠 𝑙𝑖𝑡𝑒𝑟𝑎𝑙𝑙𝑦 𝑒𝑣𝑒𝑟𝑦𝑡ℎ𝑖𝑛𝑔, 𝑖𝑛𝑐𝑙𝑢𝑑𝑖𝑛𝑔 𝑛𝑢𝑚𝑒𝑟𝑜𝑢𝑠 𝑠𝑡𝑎𝑐𝑘 𝑡𝑟𝑎𝑐𝑒𝑠.
 configVersionL1=An internal value used by the plugin to determine how old your config is.
 configVersionL2=Please do not change this.

@@ -6,7 +6,7 @@ authors: [ Knarvik, Thorin, sgrewritten.org/credits ]
 website: https://sgrewritten.org
 api-version: 1.20
 folia-supported: true
-softdepend: [Vault, BKCommonLib, BlockUtil, My_Worlds]
+softdepend: [Vault, BKCommonLib, BlockUtil, My_Worlds, Multiverse-Core, Hyperverse]
 commands:
   stargate:
     description: Used to interact with the Stargate plugin at a system level.

@@ -54,7 +54,7 @@ conflictSpawn=Spawn-chunks stör denna portal!
 
 # Economy
 ecoDeduct=Avdrog %cost%.
-ecoObtain=Erhöll %cost% från Stargate %portal%!
+ecoObtain=Erhöll %cost% från StarGate %portal%!
 ecoInsolvent=Inte tillräckligt med pengar.
 
 #Terminology

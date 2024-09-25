@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import org.bukkit.World;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.database.StorageAPI;
 import org.sgrewritten.stargate.api.network.Network;
@@ -8,6 +9,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.container.ThreeTuple;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
+import org.sgrewritten.stargate.exception.database.StorageReadException;
+import org.sgrewritten.stargate.exception.database.StorageWriteException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
 import org.sgrewritten.stargate.network.NetworkType;
@@ -132,6 +135,11 @@ public class StorageMock implements StorageAPI {
     @Override
     public Set<String> getScheduledGatesClearing() {
         return new HashSet<>();
+    }
+
+    @Override
+    public void loadPortalsInWorld(World world, StorageType storageType, StargateAPI stargateAPI) throws StorageReadException, StorageWriteException {
+
     }
 
 }

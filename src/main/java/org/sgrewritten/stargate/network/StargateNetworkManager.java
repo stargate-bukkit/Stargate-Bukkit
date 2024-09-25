@@ -2,6 +2,7 @@ package org.sgrewritten.stargate.network;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.Stargate;
@@ -13,9 +14,9 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.permission.PermissionManager;
 import org.sgrewritten.stargate.config.ConfigurationHelper;
 import org.sgrewritten.stargate.container.TwoTuple;
@@ -43,9 +44,8 @@ public class StargateNetworkManager implements NetworkManager {
     private final StorageAPI storageAPI;
 
     /**
-     *
      * @param registryAPI <p>A registry containing all portal information</p>
-     * @param storageAPI <p>A database interface able to give and modify information about portals</p>
+     * @param storageAPI  <p>A database interface able to give and modify information about portals</p>
      */
     public StargateNetworkManager(RegistryAPI registryAPI, StorageAPI storageAPI) {
         this.registry = registryAPI;
@@ -284,6 +284,23 @@ public class StargateNetworkManager implements NetworkManager {
             }
         }.runNow();
         portal.getNetwork().getPluginMessageSender().sendDeletePortal(portal);
+    }
+
+    @Override
+    public void loadWorld(World world, StargateAPI stargateAPI) {
+        new StargateQueuedAsyncTask() {
+            @Override
+            public void run() {
+                try {
+                    storageAPI.loadPortalsInWorld(world, StorageType.LOCAL, stargateAPI);
+                    if (ConfigurationHelper.getBoolean(ConfigurationOption.USING_BUNGEE) && ConfigurationHelper.getBoolean(ConfigurationOption.USING_REMOTE_DATABASE)) {
+                        storageAPI.loadPortalsInWorld(world, StorageType.INTER_SERVER, stargateAPI);
+                    }
+                } catch (StorageReadException | StorageWriteException e) {
+                    Stargate.log(e);
+                }
+            }
+        }.runNow();
     }
 
 

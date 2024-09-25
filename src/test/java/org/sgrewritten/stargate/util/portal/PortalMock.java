@@ -49,6 +49,11 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
+    public UUID getWorldUuid() {
+        return null;
+    }
+
+    @Override
     public void close(boolean forceClose) {
 
     }

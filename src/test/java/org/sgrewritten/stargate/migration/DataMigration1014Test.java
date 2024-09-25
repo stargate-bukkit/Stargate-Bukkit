@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.migration;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.google.common.io.Files;
@@ -8,11 +9,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.network.portal.flag.StargateFlag;
 import org.sgrewritten.stargate.database.SQLiteDatabase;
 import org.sgrewritten.stargate.property.StargateConstant;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@ExtendWith(StargateExtension.class)
 class DataMigration1014Test {
 
     private DataMigration7 migration;
@@ -30,6 +33,8 @@ class DataMigration1014Test {
     private static final File oldSqlDatabaseFile = new File("src/test/resources", "alpha-1_0_0_11.old");
     private static final String UUID_STRING = "9a091c5a-b320-4123-8e5c-867edebc455b";
     private StargateAPIMock stargateAPI;
+    @MockBukkitInject
+    ServerMock server;
 
     @BeforeEach
     void setUp() throws IOException, SQLException {
@@ -38,7 +43,6 @@ class DataMigration1014Test {
         database = new SQLiteDatabase(sqlDatabaseFile);
         this.stargateAPI = new StargateAPIMock();
 
-        @NotNull ServerMock server = StargateTestHelper.setup();
         PlayerMock player = new PlayerMock(server, "player", UUID.fromString(UUID_STRING));
         server.addPlayer(player);
     }
@@ -47,7 +51,6 @@ class DataMigration1014Test {
     void tearDown() {
         Assertions.assertTrue(sqlDatabaseFile.delete());
         Assertions.assertTrue(oldSqlDatabaseFile.renameTo(sqlDatabaseFile));
-        StargateTestHelper.tearDown();
     }
 
     @Test

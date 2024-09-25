@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.migration;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import jakarta.json.JsonArray;
@@ -13,9 +14,11 @@ import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.config.ConfigurationOption;
 import org.sgrewritten.stargate.api.database.StorageAPI;
@@ -43,9 +46,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
+@ExtendWith(StargateExtension.class)
 class DataMigratorTest {
 
-
+    @MockBukkitInject
     private ServerMock server;
     private File workFolder;
     private File defaultConfigFile;
@@ -59,7 +63,6 @@ class DataMigratorTest {
 
     @BeforeEach
     void setup() throws SQLException {
-        this.server = StargateTestHelper.setup();
         Plugin plugin = MockBukkit.createMockPlugin();
         this.workFolder = plugin.getDataFolder();
         this.defaultConfigFile = new File("src/main/resources", "config.yml");
@@ -70,11 +73,6 @@ class DataMigratorTest {
         this.registry = new StargateRegistry(storageAPI, new BlockHandlerResolver(storageAPI));
         this.stargateAPI = new StargateAPIMock(storageAPI, registry);
         server.addPlayer(new PlayerMock(server, "Thorinwasher", UUID.fromString("d2b440c3-edde-4443-899e-6825c31d0919")));
-    }
-
-    @AfterEach
-    void tearDown(){
-        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest

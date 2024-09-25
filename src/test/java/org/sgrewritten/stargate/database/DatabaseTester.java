@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.database;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
@@ -33,7 +34,6 @@ import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
 import org.sgrewritten.stargate.network.portal.portaldata.PortalData;
 import org.sgrewritten.stargate.util.NameHelper;
 import org.sgrewritten.stargate.util.SQLTestHelper;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.database.DatabaseHelper;
 import org.sgrewritten.stargate.util.database.PortalStorageHelper;
 
@@ -94,7 +94,7 @@ public class DatabaseTester {
         this.isMySQL = isMySQL;
         this.nameConfig = nameConfig;
 
-        this.server = StargateTestHelper.setup();
+        this.server = MockBukkit.getMock();
         world = server.addSimpleWorld("world");
 
         int interServerPortalTestLength = 3;

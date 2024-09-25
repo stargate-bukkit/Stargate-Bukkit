@@ -17,12 +17,7 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkRegistry;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.BlockLocation;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.StargateChunk;
+import org.sgrewritten.stargate.api.network.portal.*;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.database.StorageReadException;
 import org.sgrewritten.stargate.exception.database.StorageWriteException;
@@ -33,15 +28,9 @@ import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.ExceptionHelper;
 import org.sgrewritten.stargate.util.VectorUtils;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 /**
  * Registry of all portals and networks
@@ -314,7 +303,7 @@ public class StargateRegistry implements RegistryAPI {
     public PortalPosition savePortalPosition(RealPortal portal, Location location, PositionType type, Plugin plugin) {
         BlockVector relativeVector = portal.getGate().getRelativeVector(location).toBlockVector();
         PortalPosition portalPosition = new PortalPosition(type, relativeVector, plugin.getName());
-        new StargateQueuedAsyncTask(){
+        new StargateQueuedAsyncTask() {
             @Override
             public void run() {
                 try {
@@ -416,6 +405,16 @@ public class StargateRegistry implements RegistryAPI {
         } else {
             return currentPosition < target;
         }
+    }
+
+
+    @Override
+    public Stream<Portal> getAllPortals() {
+        Stream<Network> localNetworks = getNetworkRegistry(StorageType.LOCAL).stream();
+        Stream<Network> interNetworks = getNetworkRegistry(StorageType.INTER_SERVER).stream();
+        Stream<Network> networks = Stream.concat(localNetworks, interNetworks);
+        return networks.map(Network::getAllPortals)
+                .flatMap(Collection::stream);
     }
 
 }

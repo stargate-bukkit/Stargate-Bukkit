@@ -21,6 +21,7 @@ import org.sgrewritten.stargate.network.StorageType;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 
 /**
@@ -261,4 +262,6 @@ public interface RegistryAPI {
      * @return <p>The portals in the chunk</p>
      */
     @NotNull Set<RealPortal> getPortalsInChunk(StargateChunk chunk);
+
+    Stream<Portal> getAllPortals();
 }

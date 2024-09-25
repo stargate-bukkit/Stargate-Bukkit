@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util.portal;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import org.bukkit.Location;
@@ -11,7 +12,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
+import org.sgrewritten.stargate.StargateInject;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.ExplicitGateBuilder;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
@@ -29,7 +33,6 @@ import org.sgrewritten.stargate.network.NetworkType;
 import org.sgrewritten.stargate.network.StargateNetwork;
 import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.TestPortalBuilder;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,24 +41,20 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(StargateExtension.class)
 class TeleportationHelperTest {
 
     private static WorldMock world;
     private static StargateNetwork network;
+    @MockBukkitInject
     private ServerMock server;
     private StargateAPI stargateAPI;
 
     @BeforeEach
     public void setUp() throws NameLengthException, InvalidNameException, UnimplementedFlagException {
-        this.server = StargateTestHelper.setup();
         world = server.addSimpleWorld("world");
         this.stargateAPI = new StargateAPIMock();
         network = new StargateNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

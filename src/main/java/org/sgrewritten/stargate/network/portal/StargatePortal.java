@@ -71,6 +71,7 @@ public class StargatePortal implements RealPortal {
     public static final Set<PortalFlag> allUsedFlags = new HashSet<>();
 
     private static final int OPEN_DELAY = 20 * 20; // ticks
+    private final UUID worldUuid;
     protected Network network;
     protected String name;
     protected UUID openFor;
@@ -113,6 +114,7 @@ public class StargatePortal implements RealPortal {
         this.languageManager = Objects.requireNonNull(languageManager);
         this.economyManager = Objects.requireNonNull(economyManager);
         this.metaData = metaData;
+        this.worldUuid = gate.getExit().getWorld().getUID();
 
         name = NameHelper.getTrimmedName(name);
         if (NameHelper.isInvalidName(name)) {
@@ -323,6 +325,11 @@ public class StargatePortal implements RealPortal {
             return;
         }
         this.doTeleport(target, destination);
+    }
+
+    @Override
+    public UUID getWorldUuid() {
+        return this.worldUuid;
     }
 
     @Override

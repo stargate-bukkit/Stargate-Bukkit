@@ -137,4 +137,9 @@ public interface RealPortal extends Portal, MetadataHolder {
      * @param target <p>The entity to teleport</p>
      */
     void doTeleport(@NotNull Entity target);
+
+    /**
+     * @return The UUID of the world this portal is in
+     */
+    UUID getWorldUuid();
 }

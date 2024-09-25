@@ -9,10 +9,23 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Runs asynchronous tasks in a queue (an attempt to avoid race conditions, and probably better than not doing this)
  */
 public abstract class StargateQueuedAsyncTask extends StargateTask {
-    private static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
-    private static boolean asyncQueueThreadIsEnabled = false;
+    public static final BlockingQueue<Runnable> asyncQueue = new LinkedBlockingQueue<>();
 
     protected StargateQueuedAsyncTask() {
+    }
+
+    public static void waitForEmptyQueue() {
+        while (true) {
+            if (asyncQueue.peek() == null) {
+                return;
+            }
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
     }
 
     @Override
@@ -49,53 +62,56 @@ public abstract class StargateQueuedAsyncTask extends StargateTask {
         }.runTaskTimer(period, delay);
     }
 
-    public static void disableAsyncQueue() {
+    public static void disableAsyncQueue(long id) {
         try {
-            asyncQueue.put(new DisableQueueTask());
+            asyncQueue.put(new DisableQueueTask(id));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    public static void enableAsyncQueue() {
-        try {
-            asyncQueue.put(new EnableQueueTask());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    public static void enableAsyncQueue(long id) {
         new StargateAsyncTask() {
             @Override
             public void run() {
-                StargateQueuedAsyncTask.cycleThroughAsyncQueue();
+                StargateQueuedAsyncTask.cycleThroughAsyncQueue(id);
             }
         }.runNow();
     }
 
-    private static void cycleThroughAsyncQueue() {
+    private static void cycleThroughAsyncQueue(long id) {
         do {
             try {
                 Runnable runnable = asyncQueue.take();
+                if (runnable instanceof DisableQueueTask disableQueueTask && !disableQueueTask.hasId(id)) {
+                    asyncQueue.put(runnable);
+                    continue;
+                }
                 runnable.run();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                break;
             } catch (Exception e) {
                 Stargate.log(e);
             }
-        } while (asyncQueueThreadIsEnabled || !asyncQueue.isEmpty());
+        } while (!Thread.currentThread().isInterrupted());
     }
 
     private static class DisableQueueTask implements Runnable {
-        @Override
-        public void run() {
-            asyncQueueThreadIsEnabled = false;
+        private final long id;
+
+        public DisableQueueTask(long id) {
+            this.id = id;
         }
-    }
-
-    private static class EnableQueueTask implements Runnable {
 
         @Override
         public void run() {
-            asyncQueueThreadIsEnabled = true;
+            Thread.currentThread().interrupt();
+            asyncQueue.clear();
+        }
+
+        public boolean hasId(long id) {
+            return this.id == id;
         }
     }
 }

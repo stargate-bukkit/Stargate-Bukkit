@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.network;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -11,8 +12,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.BlockHandlerResolver;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.Network;
@@ -24,9 +27,11 @@ import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
 import org.sgrewritten.stargate.exception.name.NameLengthException;
+import org.sgrewritten.stargate.thread.task.StargateQueuedAsyncTask;
 import org.sgrewritten.stargate.util.StargateTestHelper;
 import org.sgrewritten.stargate.util.portal.PortalMock;
 
+@ExtendWith(StargateExtension.class)
 class StargateRegistryTest {
 
     private StargateRegistry registry;
@@ -36,10 +41,11 @@ class StargateRegistryTest {
     private PlayerMock player;
     private StorageMock storageMock;
     private StargateNetworkManager networkManager;
+    @MockBukkitInject
+    ServerMock server;
 
     @BeforeEach
     void setUp() throws NameLengthException, NameConflictException, InvalidNameException, UnimplementedFlagException {
-        ServerMock server = StargateTestHelper.setup();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer();
         this.storageMock = new StorageMock();
@@ -47,11 +53,6 @@ class StargateRegistryTest {
         this.networkManager = new StargateNetworkManager(registry, storageMock);
         network = networkManager.createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
         personalNetwork = networkManager.createNetwork(player.getUniqueId().toString(), NetworkType.PERSONAL, StorageType.LOCAL, false);
-    }
-
-    @AfterEach
-    void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

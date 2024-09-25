@@ -1,6 +1,7 @@
 package org.sgrewritten.stargate.network;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -9,10 +10,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sgrewritten.stargate.Stargate;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
@@ -28,18 +31,19 @@ import org.sgrewritten.stargate.network.portal.formatting.HighlightingStyle;
 import org.sgrewritten.stargate.property.StargateConstant;
 import org.sgrewritten.stargate.util.LanguageManagerMock;
 import org.sgrewritten.stargate.util.NetworkCreationHelper;
-import org.sgrewritten.stargate.util.StargateTestHelper;
 
 import java.util.HashSet;
 import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+@ExtendWith(StargateExtension.class)
 class NetworkManagerTest {
     private PlayerMock player;
     private RegistryAPI registry;
     private PermissionManager permissionManager;
     private String[] emptyNames;
+    @MockBukkitInject
     private ServerMock server;
 
     private static final String CENTRAL = "central";
@@ -53,7 +57,6 @@ class NetworkManagerTest {
 
     @BeforeEach
     void setup() {
-        server = StargateTestHelper.setup();
         player = new PlayerMock(server, PLAYER_NAME);
         plugin = MockBukkit.createMockPlugin();
         permissionManager = new StargatePermissionManager(player, new LanguageManagerMock());
@@ -62,11 +65,6 @@ class NetworkManagerTest {
         registry = new RegistryMock();
         this.networkManager = new StargateNetworkManager(registry, new StorageMock());
         emptyNames = new String[]{"", " ", "  "};
-    }
-
-    @AfterEach
-    void teardown() {
-        StargateTestHelper.tearDown();
     }
 
     @Test

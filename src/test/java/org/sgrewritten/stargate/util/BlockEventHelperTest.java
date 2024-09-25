@@ -1,5 +1,6 @@
 package org.sgrewritten.stargate.util;
 
+import be.seeseemelk.mockbukkit.MockBukkitInject;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -7,12 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.StargateAPIMock;
+import org.sgrewritten.stargate.StargateExtension;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.gate.ImplicitGateBuilder;
 import org.sgrewritten.stargate.api.network.Network;
@@ -28,17 +30,19 @@ import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargate.network.portal.PortalBlockGenerator;
 import org.sgrewritten.stargate.property.BlockEventType;
 
+@ExtendWith(StargateExtension.class)
 class BlockEventHelperTest {
 
-    private static RegistryAPI registry;
-    private static RealPortal portal;
-    private static Block signBlock;
-    private static PlayerMock player;
-    private static StargateAPIMock stargateAPI;
+    private RegistryAPI registry;
+    private RealPortal portal;
+    private Block signBlock;
+    private PlayerMock player;
+    private StargateAPIMock stargateAPI;
+    @MockBukkitInject
+    ServerMock server;
 
-    @BeforeAll
-    static void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
-        ServerMock server = StargateTestHelper.setup();
+    @BeforeEach
+    void setUp() throws TranslatableException, NoFormatFoundException, GateConflictException, InvalidStructureException {
         player = server.addPlayer();
         WorldMock world = server.addSimpleWorld("world");
 
@@ -48,11 +52,6 @@ class BlockEventHelperTest {
         Network network = stargateAPI.getNetworkManager().createNetwork("network", NetworkType.CUSTOM, StorageType.LOCAL, false);
         portal = new PortalBuilder(stargateAPI, player, "name").setGateBuilder(new ImplicitGateBuilder(signBlock.getLocation(), registry)).setNetwork(network).build();
 
-    }
-
-    @AfterAll
-    static void tearDown() {
-        StargateTestHelper.tearDown();
     }
 
     @ParameterizedTest
