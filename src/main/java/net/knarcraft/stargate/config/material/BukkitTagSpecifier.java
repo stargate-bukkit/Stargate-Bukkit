@@ -32,4 +32,18 @@ public class BukkitTagSpecifier implements MaterialSpecifier {
         return this.tag.getValues();
     }
 
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof BukkitTagSpecifier bukkitMaterialSpecifier)) {
+            return false;
+        }
+        return this.tag == bukkitMaterialSpecifier.tag;
+    }
+
+    @Override
+    public int hashCode() {
+        return tag.hashCode();
+    }
+
 }

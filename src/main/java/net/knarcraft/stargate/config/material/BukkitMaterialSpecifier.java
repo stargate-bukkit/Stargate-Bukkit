@@ -33,4 +33,17 @@ public class BukkitMaterialSpecifier implements MaterialSpecifier {
         return Set.of(this.material);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof BukkitMaterialSpecifier bukkitMaterialSpecifier)) {
+            return false;
+        }
+        return this.material == bukkitMaterialSpecifier.material;
+    }
+
+    @Override
+    public int hashCode() {
+        return material.hashCode();
+    }
+
 }
