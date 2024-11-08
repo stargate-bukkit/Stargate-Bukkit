@@ -358,8 +358,7 @@ public class PortalSignDrawer {
     private void drawFixedSign(@NotNull SignData signData, @NotNull String[] output) {
         ChatColor highlightColor = signData.getHighlightSignColor();
         ChatColor mainColor = signData.getMainSignColor();
-        Portal destinationPortal = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
-                portal.getCleanNetwork());
+        Portal destinationPortal = PortalHandler.getByName(portal.getDestinationName(), portal.getCleanNetwork());
         String destinationName = portal.getOptions().isRandom() ? Stargate.getString(Message.SIGN_RANDOM) :
                 (destinationPortal != null ? destinationPortal.getName() : portal.getDestinationName());
         setLine(signData, 1, highlightColor + ">" + mainColor + translateAllColorCodes(destinationName) +
@@ -371,8 +370,7 @@ public class PortalSignDrawer {
             setLine(signData, 2, highlightColor + "(" + mainColor +
                     translateAllColorCodes(portal.getNetwork()) + highlightColor + ")", output);
         }
-        Portal destination = PortalHandler.getByName(Portal.cleanString(portal.getDestinationName()),
-                portal.getNetwork());
+        Portal destination = PortalHandler.getByName(portal.getDestinationName(), portal.getNetwork());
         if (destination == null && !portal.getOptions().isRandom()) {
             setLine(signData, 3, errorColor + Stargate.getString(Message.SIGN_DISCONNECTED), output);
         } else {

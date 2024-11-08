@@ -82,6 +82,7 @@ public class PlayerEventListener implements Listener {
         //Check if the player is waiting to be teleported to a stargate
         String destination = BungeeHelper.removeFromQueue(player.getUniqueId());
         if (destination == null) {
+            Stargate.debug("PlayerJoin", "No bungee request found in queue");
             return;
         }
 

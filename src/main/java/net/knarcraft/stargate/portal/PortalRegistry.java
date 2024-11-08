@@ -95,38 +95,47 @@ public class PortalRegistry {
     }
 
     /**
-     * Gets a copy of the lookup map for finding a portal by its frame
+     * Gets a portal that the given frame block belongs to
      *
-     * @return <p>A copy of the frame block lookup map</p>
+     * @param blockLocation <p>The location that might be a frame block</p>
+     * @return <p>The portal the frame block belongs to, or null</p>
      */
-    @NotNull
-    public static Map<BlockLocation, Portal> getLookupBlocks() {
-        return new HashMap<>(lookupBlocks);
+    @Nullable
+    public static Portal getPortalFromFrame(@NotNull BlockLocation blockLocation) {
+        return lookupBlocks.get(blockLocation);
     }
 
     /**
-     * Gets a copy of the lookup map for finding a portal by its control block
+     * Gets the portal that the given control block belongs to
      *
-     * @return <p>A copy of the control block lookup map</p>
+     * @param blockLocation <p>The location that might be a portal control block</p>
+     * @return <p>The portal the control block belongs to, or null</p>
      */
-    @NotNull
-    public static Map<BlockLocation, Portal> getLookupControls() {
-        return new HashMap<>(lookupControls);
+    @Nullable
+    public static Portal getPortalFromControl(@NotNull BlockLocation blockLocation) {
+        return lookupControls.get(blockLocation);
     }
 
     /**
-     * Gets a copy of the lookup map for finding all portals in a network
+     * Gets the portal identified by the given network name and portal name
      *
-     * @return <p>A copy of the network portal lookup map</p>
+     * @param networkName <p>The name of the network the portal belongs to</p>
+     * @param portalName  <p>The name of the portal</p>
+     * @return <p>The portal, or null if no such network and/or portal exists</p>
      */
-    @NotNull
-    public static Map<String, Map<String, Portal>> getPortalLookupByNetwork() {
-        return new HashMap<>(portalLookupByNetwork);
+    @Nullable
+    public static Portal getPortalInNetwork(@NotNull String networkName, @NotNull String portalName) {
+        Map<String, Portal> portalsInNetwork = portalLookupByNetwork.get(Portal.cleanString(networkName));
+        if (portalsInNetwork == null) {
+            return null;
+        }
+        return portalsInNetwork.get(Portal.cleanString(portalName));
     }
 
     /**
      * Gets a portal from the location of a possible entrance
      *
+     * @param blockLocation <p>A location that might be a portal's entrance</p>
      * @return <p>A portal, or null</p>
      */
     @Nullable
@@ -145,13 +154,14 @@ public class PortalRegistry {
     }
 
     /**
-     * Gets a copy of all bungee portals
+     * Gets the BungeeCord portal with the given name
      *
-     * @return <p>A copy of all bungee portals</p>
+     * @param portalName <p>The name of the portal to get</p>
+     * @return <p>The portal, or null</p>
      */
-    @NotNull
-    public static Map<String, Portal> getBungeePortals() {
-        return new HashMap<>(bungeePortals);
+    @Nullable
+    public static Portal getBungeePortal(@NotNull String portalName) {
+        return bungeePortals.get(Portal.cleanString(portalName));
     }
 
     /**
@@ -160,7 +170,7 @@ public class PortalRegistry {
      * @param network <p>The network to get portals from</p>
      * @return <p>A list of portal names</p>
      */
-    @NotNull
+    @Nullable
     public static List<String> getNetwork(@NotNull String network) {
         return allPortalNetworks.get(network.toLowerCase());
     }

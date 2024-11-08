@@ -79,10 +79,10 @@ public class PortalActivator {
             }
             //Get one random destination
             String randomDestination = ListHelper.getRandom(destinations);
-            return PortalHandler.getByName(Portal.cleanString(randomDestination), portalNetwork);
+            return PortalHandler.getByName(randomDestination, portalNetwork);
         } else {
             //Just return the normal fixed destination
-            return PortalHandler.getByName(Portal.cleanString(destination), portalNetwork);
+            return PortalHandler.getByName(destination, portalNetwork);
         }
     }
 
@@ -249,8 +249,10 @@ public class PortalActivator {
             }
             activate = true;
 
-            Stargate.debug("cycleDestination", "Network Size: " +
-                    PortalHandler.getNetwork(portal.getCleanNetwork()).size());
+            List<String> portalsInNetwork = PortalHandler.getNetwork(portal.getCleanNetwork());
+            if (portalsInNetwork != null) {
+                Stargate.debug("cycleDestination", "Network Size: " + portalsInNetwork.size());
+            }
             Stargate.debug("cycleDestination", "Player has access to: " + destinations.size());
         }
 

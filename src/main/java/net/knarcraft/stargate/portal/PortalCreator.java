@@ -303,7 +303,7 @@ public class PortalCreator {
 
         if (portal.getOptions().isBungee()) {
             //Check if the bungee portal's name has been duplicated
-            if (PortalHandler.getBungeePortals().get(portal.getCleanName()) != null) {
+            if (PortalRegistry.getBungeePortal(portal.getCleanName()) != null) {
                 Stargate.debug(route, "Gate name duplicate");
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NAME_COLLISION));
                 return false;
@@ -317,7 +317,7 @@ public class PortalCreator {
             }
 
             //Check if the number of portals in the network has been surpassed
-            List<String> networkList = PortalHandler.getAllPortalNetworks().get(portal.getCleanNetwork());
+            List<String> networkList = PortalHandler.getNetwork(portal.getCleanNetwork());
             int maxGates = Stargate.getGateConfig().maxGatesEachNetwork();
             if (maxGates > 0 && networkList != null && networkList.size() >= maxGates) {
                 Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.CREATION_NETWORK_FULL));

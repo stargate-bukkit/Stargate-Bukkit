@@ -43,23 +43,13 @@ public class PortalHandler {
     }
 
     /**
-     * Gets a copy of all bungee portals
-     *
-     * @return <p>A copy of all bungee portals</p>
-     */
-    @NotNull
-    public static Map<String, Portal> getBungeePortals() {
-        return PortalRegistry.getBungeePortals();
-    }
-
-    /**
      * Gets names of all portals within a network
      *
      * @param network <p>The network to get portals from</p>
      * @return <p>A list of portal names</p>
      */
-    @NotNull
-    public static List<String> getNetwork(String network) {
+    @Nullable
+    public static List<String> getNetwork(@NotNull String network) {
         return PortalRegistry.getNetwork(network);
     }
 
@@ -75,7 +65,11 @@ public class PortalHandler {
     public static List<String> getDestinations(@NotNull Portal entrancePortal, @Nullable Player player,
                                                @NotNull String network) {
         List<String> destinations = new ArrayList<>();
-        for (String destination : PortalRegistry.getAllPortalNetworks().get(network)) {
+        List<String> portalsInNetwork = PortalRegistry.getNetwork(network);
+        if (portalsInNetwork == null) {
+            return List.of();
+        }
+        for (String destination : portalsInNetwork) {
             Portal portal = getByName(destination, network);
             if (portal == null) {
                 continue;
@@ -148,17 +142,18 @@ public class PortalHandler {
      */
     public static boolean isValidBungeePortal(@NotNull Map<PortalOption, Boolean> portalOptions, @NotNull Player player,
                                               @NotNull String destinationName, String network) {
-        if (portalOptions.get(PortalOption.BUNGEE)) {
-            if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_CREATION_DENIED));
-                return false;
-            } else if (!Stargate.getGateConfig().enableBungee()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_DISABLED));
-                return false;
-            } else if (destinationName.isEmpty() || network.isEmpty()) {
-                Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_MISSING_INFO));
-                return false;
-            }
+        if (!portalOptions.get(PortalOption.BUNGEE)) {
+            return true;
+        }
+        if (!PermissionHelper.hasPermission(player, "stargate.admin.bungee")) {
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_CREATION_DENIED));
+            return false;
+        } else if (!Stargate.getGateConfig().enableBungee()) {
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_DISABLED));
+            return false;
+        } else if (destinationName.isEmpty() || network.isEmpty()) {
+            Stargate.getMessageSender().sendErrorMessage(player, Stargate.getString(Message.BUNGEE_MISSING_INFO));
+            return false;
         }
         return true;
     }
@@ -215,7 +210,11 @@ public class PortalHandler {
      * @param portal <p>The newly created portal</p>
      */
     public static void updatePortalsPointingAtNewPortal(@NotNull Portal portal) {
-        for (String originName : PortalRegistry.getAllPortalNetworks().get(portal.getCleanNetwork())) {
+        List<String> portalsInNetwork = PortalRegistry.getNetwork(portal.getCleanNetwork());
+        if (portalsInNetwork == null) {
+            return;
+        }
+        for (String originName : portalsInNetwork) {
             Portal origin = getByName(originName, portal.getCleanNetwork());
             if (origin == null ||
                     !Portal.cleanString(origin.getDestinationName()).equals(portal.getCleanName()) ||
@@ -283,12 +282,7 @@ public class PortalHandler {
      */
     @Nullable
     public static Portal getByName(@NotNull String name, @NotNull String network) {
-        Map<String, Map<String, Portal>> lookupMap = PortalRegistry.getPortalLookupByNetwork();
-        if (!lookupMap.containsKey(network.toLowerCase())) {
-            return null;
-        }
-        return lookupMap.get(network.toLowerCase()).get(name.toLowerCase());
-
+        return PortalRegistry.getPortalInNetwork(Portal.cleanString(network), Portal.cleanString(name));
     }
 
     /**
@@ -371,7 +365,7 @@ public class PortalHandler {
      */
     @Nullable
     public static Portal getByControl(@NotNull Block block) {
-        return PortalRegistry.getLookupControls().get(new BlockLocation(block));
+        return PortalRegistry.getPortalFromControl(new BlockLocation(block));
     }
 
     /**
@@ -382,7 +376,7 @@ public class PortalHandler {
      */
     @Nullable
     public static Portal getByBlock(@NotNull Block block) {
-        return PortalRegistry.getLookupBlocks().get(new BlockLocation(block));
+        return PortalRegistry.getPortalFromFrame(new BlockLocation(block));
     }
 
     /**
@@ -393,7 +387,7 @@ public class PortalHandler {
      */
     @Nullable
     public static Portal getBungeePortal(@NotNull String name) {
-        return PortalRegistry.getBungeePortals().get(name.toLowerCase());
+        return PortalRegistry.getBungeePortal(name);
     }
 
     /**
