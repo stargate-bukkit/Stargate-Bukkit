@@ -6,6 +6,7 @@ import net.knarcraft.stargate.container.BlockLocation;
 import net.knarcraft.stargate.utility.PortalFileHelper;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,13 +125,13 @@ public class PortalRegistry {
     }
 
     /**
-     * Gets a copy of all portal entrances available for lookup
+     * Gets a portal from the location of a possible entrance
      *
-     * @return <p>A copy of all entrances to portal mappings</p>
+     * @return <p>A portal, or null</p>
      */
-    @NotNull
-    public static Map<BlockLocation, Portal> getLookupEntrances() {
-        return new HashMap<>(lookupEntrances);
+    @Nullable
+    public static Portal getPortalFromEntrance(@NotNull BlockLocation blockLocation) {
+        return lookupEntrances.get(blockLocation);
     }
 
     /**

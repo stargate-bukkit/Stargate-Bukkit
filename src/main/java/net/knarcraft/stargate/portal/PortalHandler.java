@@ -302,7 +302,7 @@ public class PortalHandler {
         if (location.getWorld() == null) {
             return null;
         }
-        return PortalRegistry.getLookupEntrances().get(new BlockLocation(location.getWorld(), location.getBlockX(),
+        return PortalRegistry.getPortalFromEntrance(new BlockLocation(location.getWorld(), location.getBlockX(),
                 location.getBlockY(), location.getBlockZ()));
     }
 
@@ -314,7 +314,7 @@ public class PortalHandler {
      */
     @Nullable
     public static Portal getByEntrance(@NotNull Block block) {
-        return PortalRegistry.getLookupEntrances().get(new BlockLocation(block));
+        return PortalRegistry.getPortalFromEntrance(new BlockLocation(block));
     }
 
     /**
@@ -355,7 +355,7 @@ public class PortalHandler {
         }
 
         for (BlockLocation adjacentPosition : adjacentPositions) {
-            Portal portal = PortalRegistry.getLookupEntrances().get(adjacentPosition);
+            Portal portal = PortalRegistry.getPortalFromEntrance(adjacentPosition);
             if (portal != null) {
                 return portal;
             }

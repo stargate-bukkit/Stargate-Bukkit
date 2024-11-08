@@ -523,7 +523,7 @@ portalInfoServer=Server: %server%
 
 # Changes
 
-# 
+#   
 
 #### \[Version 0.11.5.9] Unified Legacy Fork
 
@@ -532,7 +532,8 @@ portalInfoServer=Server: %server%
 #### \[Version 0.11.5.8] Unified Legacy Fork
 
 - Cleaned up handling of invalid gate files during both migration and startup.
-- Backported the rewrite's translation system to legacy: to add new localisations, please use [this page](https://sgrewritten.org/translate).
+- Backported the rewrite's translation system to legacy: to add new localisations, please
+  use [this page](https://sgrewritten.org/translate).
 - Updated various dependencies.
 - Optimisations in the migrator as to mitigate issues associated with importing large past deployments.
 - Improved handling of some potential error states involving Floodgate and Geyser.
