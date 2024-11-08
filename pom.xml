@@ -89,14 +89,13 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.3.2</version>
-            <scope>compile</scope>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-base</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>de.themoep</groupId>
@@ -140,16 +139,6 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.1</version>
 
-                <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <artifactSet>
-                        <includes>
-                            <include>org.bstats:*</include>
-                            <include>net.knarcraft:knarlib</include>
-                            <include>de.themoep:minedown</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -157,24 +146,38 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>net.knarcraft.stargate.metrics</shadedPattern>
+                                    <shadedPattern>net.knarcraft.stargate.lib.metrics</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.knarcraft</pattern>
-                                    <shadedPattern>net.knarcraft</shadedPattern>
+                                    <pattern>net.knarcraft.knarlib</pattern>
+                                    <shadedPattern>net.knarcraft.stargate.lib.knarlib</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.kyori</pattern>
+                                    <pattern>de.themoep</pattern>
+                                    <shadedPattern>net.knarcraft.stargate.lib.minedown</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>de.themoep.minedown</pattern>
-                                    <shadedPattern>net.knarcraft.stargate.minedown</shadedPattern>
+                                    <pattern>org.jetbrains.annotations</pattern>
+                                    <shadedPattern>net.knarcraft.blacksmith.lib.annotations</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
+                                <filter>
+                                    <artifact>de.themoep:minedown</artifact>
+                                    <includes>
+                                        <include>de/themoep/minedown/**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.bstats</artifact>
+                                    <includes>
+                                        <include>org/bstats/**</include>
+                                    </includes>
+                                </filter>
                                 <filter>
                                     <artifact>net.knarcraft:knarlib</artifact>
                                     <includes>
@@ -182,10 +185,10 @@
                                     </includes>
                                 </filter>
                                 <filter>
-                                    <excludes>
-                                        <exclude>*.MF</exclude>
-                                        <exclude>*.yml</exclude>
-                                    </excludes>
+                                    <artifact>org.jetbrains:annotations</artifact>
+                                    <includes>
+                                        <include>org/jetbrains/annotations/**</include>
+                                    </includes>
                                 </filter>
                             </filters>
                         </configuration>
