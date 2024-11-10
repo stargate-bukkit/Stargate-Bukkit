@@ -525,6 +525,11 @@ portalInfoServer=Server: %server%
 
 #### \[Version 0.11.5.9] Unified Legacy Fork
 
+- Fixed a problem with material tag support
+- Made serveral optimisations to significantly improve performance on servers with high playercounts.
+
+#### \[Version 0.11.5.9] Unified Legacy Fork
+
 - Hotfix for the previous release, which accidently broke backwards compatibility for older servers (1.17-1.19).
 
 #### \[Version 0.11.5.8] Unified Legacy Fork
