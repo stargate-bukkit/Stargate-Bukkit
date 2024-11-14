@@ -330,7 +330,12 @@ public class Stargate extends JavaPlugin implements StargateAPI, ConfigurationAP
      */
     private boolean migrateConfigurationAndData() throws IOException, InvalidConfigurationException, SQLException, StargateInitializationException, URISyntaxException {
         DataMigrator dataMigrator = new DataMigrator(new File(this.getDataFolder(), StargateConstant.CONFIG_FILE), this.getDataFolder(), this.getStoredPropertiesAPI());
-
+        if (dataMigrator.getConfigVersion() <= 6) {
+            try (InputStream inputStream = Stargate.class.getResourceAsStream("/messages/migrationInit.txt")) {
+                String initMessage = FileHelper.readStreamToString(inputStream);
+                getLogger().severe(initMessage);
+            }
+        }
         if (dataMigrator.isMigrationNecessary()) {
             File debugDirectory = new File(this.getDataFolder(), "debug");
             if (!debugDirectory.isDirectory() && !debugDirectory.mkdir()) {

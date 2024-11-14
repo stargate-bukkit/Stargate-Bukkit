@@ -1,0 +1,5 @@
+You are upgrading from a legacy version to a rewritten version.
+
+This involves upgrading your server's Stargate data to a new format.
+
+Your old data has been moved to plugins\stargate\debug\legacy.

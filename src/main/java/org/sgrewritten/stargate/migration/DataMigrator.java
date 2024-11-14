@@ -132,4 +132,8 @@ public class DataMigrator {
         return dataMigration.getConfigVersion() > configVersion;
     }
 
+    public int getConfigVersion(){
+        return configVersion;
+    }
+
 }
