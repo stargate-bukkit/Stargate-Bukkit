@@ -175,7 +175,7 @@ public class DataMigration6 extends DataMigration {
     private void moveFilesToDebugDirectory(String portalFolder) {
         Map<String, String> filesToMove = new HashMap<>();
         FileHelper.readInternalFileToMap("/migration/file-migrations-6.properties", filesToMove);
-        filesToMove.put(portalFolder, "plugins/Stargate/debug/legacy_portals");
+        filesToMove.put(portalFolder, "debug/legacy/portals");
 
         for (String directoryString : filesToMove.keySet()) {
             moveLegacyData(directoryString, filesToMove);
